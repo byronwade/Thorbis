@@ -12,13 +12,11 @@ import { Suspense } from "react";
 import { MaintenancePlansData } from "@/components/work/maintenance-plans/maintenance-plans-data";
 import { MaintenancePlansSkeleton } from "@/components/work/maintenance-plans/maintenance-plans-skeleton";
 
-
 export default async function MaintenancePlansPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 
 	return (

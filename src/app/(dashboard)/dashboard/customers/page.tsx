@@ -20,7 +20,6 @@ export default async function CustomersPage({
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 	return (
 		<>

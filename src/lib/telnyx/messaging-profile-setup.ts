@@ -79,9 +79,7 @@ export async function verifyMessagingProfile(
 		const profileData = profile.data as any;
 
 		if (!profileData) {
-			status.issues.push(
-				`Messaging profile ${profileId} not found in Telnyx`,
-			);
+			status.issues.push(`Messaging profile ${profileId} not found in Telnyx`);
 			status.needsFix = true;
 			return status;
 		}
@@ -106,8 +104,11 @@ export async function verifyMessagingProfile(
 			status.needsFix = true;
 		} else {
 			// Accept both base webhook URL and company-specific URLs (with query params)
-			const baseUrl = status.webhookUrl.split('?')[0];
-			if (baseUrl === expectedWebhookUrl || status.webhookUrl === expectedWebhookUrl) {
+			const baseUrl = status.webhookUrl.split("?")[0];
+			if (
+				baseUrl === expectedWebhookUrl ||
+				status.webhookUrl === expectedWebhookUrl
+			) {
 				status.hasWebhookUrl = true;
 			} else {
 				status.issues.push(
@@ -134,9 +135,7 @@ export async function verifyMessagingProfile(
 		return status;
 	} catch (error: any) {
 		if (error?.statusCode === 404) {
-			status.issues.push(
-				`Messaging profile ${profileId} not found in Telnyx`,
-			);
+			status.issues.push(`Messaging profile ${profileId} not found in Telnyx`);
 		} else {
 			status.issues.push(
 				error?.message || "Failed to retrieve messaging profile",
@@ -181,8 +180,7 @@ export async function fixMessagingProfile(
 		}
 
 		// Get expected webhook URL
-		const expectedWebhookUrl =
-			options?.webhookUrl || getWebhookUrl();
+		const expectedWebhookUrl = options?.webhookUrl || getWebhookUrl();
 		if (!expectedWebhookUrl) {
 			return {
 				success: false,
@@ -199,21 +197,18 @@ export async function fixMessagingProfile(
 		// Fix webhook URL
 		if (status.webhookUrl !== expectedWebhookUrl) {
 			updateData.webhook_url = expectedWebhookUrl;
-			changes.push(
-				`Updated webhook URL to ${expectedWebhookUrl}`,
-			);
+			changes.push(`Updated webhook URL to ${expectedWebhookUrl}`);
 		}
 
 		// Fix webhook failover URL
-		const expectedFailoverUrl = options?.webhookFailoverUrl ||
+		const expectedFailoverUrl =
+			options?.webhookFailoverUrl ||
 			process.env.TELNYX_WEBHOOK_FAILOVER_URL ||
 			null;
 		if (status.webhookFailoverUrl !== expectedFailoverUrl) {
 			updateData.webhook_failover_url = expectedFailoverUrl;
 			if (expectedFailoverUrl) {
-				changes.push(
-					`Updated webhook failover URL to ${expectedFailoverUrl}`,
-				);
+				changes.push(`Updated webhook failover URL to ${expectedFailoverUrl}`);
 			} else {
 				changes.push("Removed webhook failover URL");
 			}
@@ -283,4 +278,3 @@ export async function getMessagingProfileDetails(
 		};
 	}
 }
-

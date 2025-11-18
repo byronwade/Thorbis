@@ -12,6 +12,9 @@
 
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import {
 	answerCall,
@@ -22,7 +25,10 @@ import {
 	stopRecording,
 } from "@/lib/telnyx/calls";
 import { TELNYX_CONFIG } from "@/lib/telnyx/client";
-import { validateCallConfig, validateSmsConfig } from "@/lib/telnyx/config-validator";
+import {
+	validateCallConfig,
+	validateSmsConfig,
+} from "@/lib/telnyx/config-validator";
 import { verifyConnection } from "@/lib/telnyx/connection-setup";
 import { formatPhoneNumber, sendMMS, sendSMS } from "@/lib/telnyx/messaging";
 import { verifyMessagingProfile } from "@/lib/telnyx/messaging-profile-setup";
@@ -38,14 +44,11 @@ import {
 	verifyVoiceCapability,
 } from "@/lib/telnyx/phone-number-setup";
 import {
+	type CompanyTelnyxSettingsRow,
 	ensureCompanyTelnyxSetup,
 	fetchCompanyTelnyxSettings,
-	type CompanyTelnyxSettingsRow,
 } from "@/lib/telnyx/provision-company";
 import type { Database, Json } from "@/types/supabase";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { ensureMessagingCampaign } from "./messaging-branding";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -194,7 +197,9 @@ async function buildAbsoluteUrl(path: string): Promise<string | undefined> {
 	return `${base}${normalizedPath}`;
 }
 
-async function getTelnyxWebhookUrl(companyId?: string): Promise<string | undefined> {
+async function getTelnyxWebhookUrl(
+	companyId?: string,
+): Promise<string | undefined> {
 	if (companyId) {
 		return buildAbsoluteUrl(`/api/webhooks/telnyx?company=${companyId}`);
 	}
@@ -289,13 +294,14 @@ export async function purchasePhoneNumber(params: {
 		const smsConfig = await validateSmsConfig();
 		const callConfig = validateCallConfig();
 		if (!smsConfig.valid || !callConfig.valid) {
-			let errorMessage = "Telnyx configuration is incomplete. Please configure all required environment variables.";
-			
+			let errorMessage =
+				"Telnyx configuration is incomplete. Please configure all required environment variables.";
+
 			// If we have a suggested profile ID, include it in the error
 			if (smsConfig.suggestedProfileId) {
 				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
 			}
-			
+
 			return {
 				success: false,
 				error: errorMessage,
@@ -544,7 +550,8 @@ export async function makeCall(params: {
 		);
 
 		const connectionOverride =
-			companySettings?.call_control_application_id || TELNYX_CONFIG.connectionId;
+			companySettings?.call_control_application_id ||
+			TELNYX_CONFIG.connectionId;
 		const outboundNumber =
 			params.from || companySettings?.default_outbound_number || "";
 
@@ -578,7 +585,8 @@ export async function makeCall(params: {
 		if (!voiceCapability.hasVoice) {
 			return {
 				success: false,
-				error: voiceCapability.error || "Phone number does not support voice calls",
+				error:
+					voiceCapability.error || "Phone number does not support voice calls",
 			};
 		}
 
@@ -861,22 +869,35 @@ export async function sendTextMessage(params: {
 	estimateId?: string;
 }) {
 	try {
+		console.log("📱 SMS Send Request:", {
+			to: params.to,
+			from: params.from,
+			companyId: params.companyId,
+		});
+
 		const supabase = await createClient();
 		if (!supabase) {
+			console.error("❌ Supabase client unavailable");
 			return { success: false, error: "Service unavailable" };
 		}
+		console.log("✅ Supabase client created");
 
 		const companySettings = await getCompanyTelnyxSettings(
 			supabase,
 			params.companyId,
 		);
 		if (!companySettings) {
+			console.error("❌ Company settings not found");
 			return {
 				success: false,
 				error:
 					"Unable to provision Telnyx resources for this company. Please verify the company's onboarding is complete and try again.",
 			};
 		}
+		console.log("✅ Company settings loaded:", {
+			messagingProfileId: companySettings.messaging_profile_id,
+			defaultNumber: companySettings.default_outbound_number,
+		});
 
 		const smsConfig = await validateSmsConfig();
 		if (!smsConfig.valid && !companySettings?.messaging_profile_id) {
@@ -884,35 +905,44 @@ export async function sendTextMessage(params: {
 			if (smsConfig.suggestedProfileId) {
 				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} or provision company-specific settings.`;
 			}
+			console.error("❌ SMS config invalid:", errorMessage);
 			return {
 				success: false,
 				error: errorMessage,
 			};
 		}
+		console.log("✅ SMS config valid");
 
 		const messagingProfileId =
 			companySettings?.messaging_profile_id || DEFAULT_MESSAGING_PROFILE_ID;
 		if (!messagingProfileId) {
+			console.error("❌ No messaging profile ID");
 			return {
 				success: false,
 				error:
 					"Messaging profile is not configured for this company. Please provision communications before sending SMS.",
 			};
 		}
+		console.log("✅ Using messaging profile:", messagingProfileId);
 
 		if (messagingProfileId) {
-			const messagingProfileStatus = await verifyMessagingProfile(
-				messagingProfileId,
-			);
+			const messagingProfileStatus =
+				await verifyMessagingProfile(messagingProfileId);
 			if (messagingProfileStatus.needsFix) {
+				console.error(
+					"❌ Messaging profile needs fix:",
+					messagingProfileStatus.issues,
+				);
 				return {
 					success: false,
 					error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() or reprovision the company.`,
 				};
 			}
+			console.log("✅ Messaging profile verified");
 		}
 
 		if (!params.from && !companySettings.default_outbound_number) {
+			console.error("❌ No from number available");
 			return {
 				success: false,
 				error:
@@ -924,26 +954,36 @@ export async function sendTextMessage(params: {
 			params.from || companySettings.default_outbound_number || params.from,
 		);
 		const toAddress = normalizePhoneNumber(params.to);
+		console.log("✅ Phone numbers normalized:", {
+			from: fromAddress,
+			to: toAddress,
+		});
 
 		// Verify phone number has SMS capability
+		console.log("🔍 Verifying SMS capability for:", fromAddress);
 		const smsCapability = await verifySmsCapability(fromAddress);
 		if (!smsCapability.hasSms) {
+			console.error("❌ SMS capability check failed:", smsCapability.error);
 			return {
 				success: false,
 				error: smsCapability.error || "Phone number does not support SMS",
 			};
 		}
+		console.log("✅ SMS capability verified");
 
 		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);
 		if (!webhookUrl) {
+			console.error("❌ No webhook URL");
 			return {
 				success: false,
 				error:
 					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
 			};
 		}
+		console.log("✅ Webhook URL:", webhookUrl);
 
 		// Send SMS via Telnyx
+		console.log("📤 Sending SMS via Telnyx API...");
 		const result = await sendSMS({
 			to: toAddress,
 			from: fromAddress,
@@ -953,8 +993,10 @@ export async function sendTextMessage(params: {
 		});
 
 		if (!result.success) {
+			console.error("❌ Telnyx API failed:", result.error);
 			return result;
 		}
+		console.log("✅ Telnyx API success:", result.messageId);
 
 		// Create communication record
 		const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
@@ -998,9 +1040,18 @@ export async function sendTextMessage(params: {
 		};
 	} catch (error) {
 		console.error("SMS send error:", error);
+		console.error("Error details:", {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			type: typeof error,
+			stringified: JSON.stringify(error, null, 2),
+		});
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to send SMS",
+			error:
+				error instanceof Error
+					? error.message
+					: `Failed to send SMS: ${String(error)}`,
 		};
 	}
 }
@@ -1083,9 +1134,8 @@ export async function sendMMSMessage(params: {
 		}
 
 		if (messagingProfileId) {
-			const messagingProfileStatus = await verifyMessagingProfile(
-				messagingProfileId,
-			);
+			const messagingProfileStatus =
+				await verifyMessagingProfile(messagingProfileId);
 			if (messagingProfileStatus.needsFix) {
 				return {
 					success: false,

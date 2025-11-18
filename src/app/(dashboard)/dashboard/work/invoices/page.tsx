@@ -25,7 +25,6 @@ export default async function InvoicesPage({
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 	return (
 		<WorkPageLayout

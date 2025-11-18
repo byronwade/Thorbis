@@ -51,35 +51,35 @@ export type CustomersPageResult = {
  * Server-side pagination keeps payloads to ~50 rows (10-20x smaller than previous implementation).
  */
 export async function getCustomersPageData(
-		page: number,
-		pageSize: number = CUSTOMERS_PAGE_SIZE,
-	) : Promise<CustomersPageResult> {
+	page: number,
+	pageSize: number = CUSTOMERS_PAGE_SIZE,
+): Promise<CustomersPageResult> {
 	"use cache";
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			return { customers: [], totalCount: 0 };
-		}
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return { customers: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("customers")
-			.select(CUSTOMER_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.is("deleted_at", null)
-			.order("display_name", { ascending: true })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("customers")
+		.select(CUSTOMER_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.is("deleted_at", null)
+		.order("display_name", { ascending: true })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to load customers: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load customers: ${error.message}`);
+	}
 
-		return {
-			customers: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		customers: data ?? [],
+		totalCount: count ?? 0,
+	};
 }
 
 export type CustomerSummaryStats = {
@@ -94,34 +94,34 @@ export type CustomerSummaryStats = {
  * Aggregated customer metrics used by dashboard stats cards.
  * Backed by a Postgres RPC (customer_dashboard_metrics) so the database does the heavy lifting.
  */
-export async function getCustomerStats() : Promise<CustomerSummaryStats | null> {
+export async function getCustomerStats(): Promise<CustomerSummaryStats | null> {
 	"use cache";
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			return null;
-		}
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return null;
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const { data, error } = await supabase.rpc("customer_dashboard_metrics", {
-			p_company_id: companyId,
-		});
+	const supabase = await createServiceSupabaseClient();
+	const { data, error } = await supabase.rpc("customer_dashboard_metrics", {
+		p_company_id: companyId,
+	});
 
-		if (error) {
-			throw new Error(`Failed to load customer stats: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load customer stats: ${error.message}`);
+	}
 
-		const metrics = data?.[0];
-		const total = Number(metrics?.total_customers ?? 0);
-		const active = Number(metrics?.active_customers ?? 0);
-		const prospect = Number(metrics?.prospect_customers ?? 0);
-		const totalRevenueCents = Number(metrics?.total_revenue_cents ?? 0);
-		const inactive = Math.max(total - active - prospect, 0);
+	const metrics = data?.[0];
+	const total = Number(metrics?.total_customers ?? 0);
+	const active = Number(metrics?.active_customers ?? 0);
+	const prospect = Number(metrics?.prospect_customers ?? 0);
+	const totalRevenueCents = Number(metrics?.total_revenue_cents ?? 0);
+	const inactive = Math.max(total - active - prospect, 0);
 
-		return {
-			total,
-			active,
-			inactive,
-			prospect,
-			totalRevenueCents,
-		};
+	return {
+		total,
+		active,
+		inactive,
+		prospect,
+		totalRevenueCents,
+	};
 }

@@ -86,9 +86,7 @@ export async function GET(request: Request) {
 				);
 			}
 		} else {
-			(summary.errors as string[]).push(
-				"Connection ID is not configured",
-			);
+			(summary.errors as string[]).push("Connection ID is not configured");
 		}
 
 		// Auto-fix messaging profile webhook configuration

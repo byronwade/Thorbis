@@ -79,9 +79,8 @@ export async function verifyConnection(
 	}
 
 	try {
-		const connection = await telnyxClient.callControlApplications.retrieve(
-			connId,
-		);
+		const connection =
+			await telnyxClient.callControlApplications.retrieve(connId);
 		const connectionData = connection.data as any;
 
 		if (!connectionData) {
@@ -116,8 +115,11 @@ export async function verifyConnection(
 			status.needsFix = true;
 		} else {
 			// Accept both base webhook URL and company-specific URLs (with query params)
-			const baseUrl = status.webhookUrl.split('?')[0];
-			if (baseUrl === expectedWebhookUrl || status.webhookUrl === expectedWebhookUrl) {
+			const baseUrl = status.webhookUrl.split("?")[0];
+			if (
+				baseUrl === expectedWebhookUrl ||
+				status.webhookUrl === expectedWebhookUrl
+			) {
 				status.hasWebhookUrl = true;
 			} else {
 				status.issues.push(
@@ -146,9 +148,7 @@ export async function verifyConnection(
 		if (error?.statusCode === 404) {
 			status.issues.push(`Connection ${connId} not found in Telnyx`);
 		} else {
-			status.issues.push(
-				error?.message || "Failed to retrieve connection",
-			);
+			status.issues.push(error?.message || "Failed to retrieve connection");
 		}
 		status.needsFix = true;
 		return status;
@@ -217,9 +217,7 @@ export async function fixConnection(
 		if (status.webhookFailoverUrl !== expectedFailoverUrl) {
 			updateData.webhook_event_failover_url = expectedFailoverUrl;
 			if (expectedFailoverUrl) {
-				changes.push(
-					`Updated webhook failover URL to ${expectedFailoverUrl}`,
-				);
+				changes.push(`Updated webhook failover URL to ${expectedFailoverUrl}`);
 			} else {
 				changes.push("Removed webhook failover URL");
 			}
@@ -260,9 +258,7 @@ export async function fixConnection(
 /**
  * Get connection details
  */
-export async function getConnectionDetails(
-	connectionId?: string,
-): Promise<{
+export async function getConnectionDetails(connectionId?: string): Promise<{
 	success: boolean;
 	data?: any;
 	error?: string;
@@ -277,9 +273,8 @@ export async function getConnectionDetails(
 	}
 
 	try {
-		const connection = await telnyxClient.callControlApplications.retrieve(
-			connId,
-		);
+		const connection =
+			await telnyxClient.callControlApplications.retrieve(connId);
 		return {
 			success: true,
 			data: connection.data,
@@ -291,4 +286,3 @@ export async function getConnectionDetails(
 		};
 	}
 }
-

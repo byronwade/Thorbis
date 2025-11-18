@@ -79,46 +79,46 @@ export type JobsPageResult = {
 };
 
 export async function getJobsPageData(
-		page: number,
-		pageSize: number = JOBS_PAGE_SIZE,
-		searchQuery = "",
-		companyIdOverride?: string,
-	) : Promise<JobsPageResult> {
+	page: number,
+	pageSize: number = JOBS_PAGE_SIZE,
+	searchQuery = "",
+	companyIdOverride?: string,
+): Promise<JobsPageResult> {
 	"use cache";
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { jobs: [], totalCount: 0 };
-		}
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { jobs: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		let query = supabase
-			.from("jobs")
-			.select(JOBS_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.is("deleted_at", null)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	let query = supabase
+		.from("jobs")
+		.select(JOBS_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.is("deleted_at", null)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		const normalizedSearch = searchQuery.trim();
-		if (normalizedSearch) {
-			const sanitized = normalizedSearch.replace(/,/g, "\\,");
-			const term = `%${sanitized}%`;
-			query = query.or(
-				`job_number.ilike.${term},title.ilike.${term},description.ilike.${term},status.ilike.${term},priority.ilike.${term}`,
-			);
-		}
+	const normalizedSearch = searchQuery.trim();
+	if (normalizedSearch) {
+		const sanitized = normalizedSearch.replace(/,/g, "\\,");
+		const term = `%${sanitized}%`;
+		query = query.or(
+			`job_number.ilike.${term},title.ilike.${term},description.ilike.${term},status.ilike.${term},priority.ilike.${term}`,
+		);
+	}
 
-		const { data, error, count } = await query;
+	const { data, error, count } = await query;
 
-		if (error) {
-			throw new Error(`Failed to load jobs: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load jobs: ${error.message}`);
+	}
 
-		return {
-			jobs: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		jobs: data ?? [],
+		totalCount: count ?? 0,
+	};
 }

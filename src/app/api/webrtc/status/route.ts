@@ -10,7 +10,6 @@
 import { NextResponse } from "next/server";
 import { getWebRTCService } from "@/services/webrtc";
 
-
 export async function GET() {
 	try {
 		// Get service instance (safe - returns null if unavailable)

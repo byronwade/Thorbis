@@ -29,33 +29,33 @@ export type PurchaseOrdersPageResult = {
 };
 
 export async function getPurchaseOrdersPageData(
-		page: number,
-		pageSize: number = PURCHASE_ORDERS_PAGE_SIZE,
-		companyIdOverride?: string,
-	) : Promise<PurchaseOrdersPageResult> {
+	page: number,
+	pageSize: number = PURCHASE_ORDERS_PAGE_SIZE,
+	companyIdOverride?: string,
+): Promise<PurchaseOrdersPageResult> {
 	"use cache";
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { purchaseOrders: [], totalCount: 0 };
-		}
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { purchaseOrders: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("purchase_orders")
-			.select(PURCHASE_ORDERS_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("purchase_orders")
+		.select(PURCHASE_ORDERS_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to fetch purchase orders: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to fetch purchase orders: ${error.message}`);
+	}
 
-		return {
-			purchaseOrders: (data ?? []) as PurchaseOrderRecord[],
-			totalCount: count ?? 0,
-		};
+	return {
+		purchaseOrders: (data ?? []) as PurchaseOrderRecord[],
+		totalCount: count ?? 0,
+	};
 }

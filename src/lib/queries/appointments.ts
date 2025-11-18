@@ -46,49 +46,49 @@ export type AppointmentsPageResult = {
 };
 
 export async function getAppointmentsPageData(
-		page: number,
-		pageSize: number = APPOINTMENTS_PAGE_SIZE,
-		searchQuery = "",
-		companyIdOverride?: string,
-	) : Promise<AppointmentsPageResult> {
+	page: number,
+	pageSize: number = APPOINTMENTS_PAGE_SIZE,
+	searchQuery = "",
+	companyIdOverride?: string,
+): Promise<AppointmentsPageResult> {
 	"use cache";
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { appointments: [], totalCount: 0 };
-		}
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { appointments: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		let query = supabase
-			.from("appointments")
-			.select(APPOINTMENTS_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.eq("type", "appointment")
-			.is("deleted_at", null)
-			.order("start_time", { ascending: false })
-			.range(start, end);
+	let query = supabase
+		.from("appointments")
+		.select(APPOINTMENTS_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.eq("type", "appointment")
+		.is("deleted_at", null)
+		.order("start_time", { ascending: false })
+		.range(start, end);
 
-		const normalizedSearch = searchQuery.trim();
-		if (normalizedSearch) {
-			const sanitized = normalizedSearch.replace(/,/g, "\\,");
-			const term = `%${sanitized}%`;
-			query = query.or(
-				`title.ilike.${term},description.ilike.${term},status.ilike.${term},id.ilike.${term}`,
-			);
-		}
+	const normalizedSearch = searchQuery.trim();
+	if (normalizedSearch) {
+		const sanitized = normalizedSearch.replace(/,/g, "\\,");
+		const term = `%${sanitized}%`;
+		query = query.or(
+			`title.ilike.${term},description.ilike.${term},status.ilike.${term},id.ilike.${term}`,
+		);
+	}
 
-		const { data, error, count } = await query;
+	const { data, error, count } = await query;
 
-		if (error) {
-			throw new Error(`Failed to load appointments: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load appointments: ${error.message}`);
+	}
 
-		return {
-			appointments: (data ?? []) as AppointmentListRecord[],
-			totalCount: count ?? 0,
-		};
+	return {
+		appointments: (data ?? []) as AppointmentListRecord[],
+		totalCount: count ?? 0,
+	};
 }
 
 export async function getAppointmentStats(companyIdOverride?: string) {

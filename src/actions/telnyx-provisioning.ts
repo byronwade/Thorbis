@@ -2,14 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import {
-	ensureCompanyTelnyxSetup,
-	purchaseAdditionalNumbers,
-	type CompanyTelnyxSettingsRow,
-	fetchCompanyTelnyxSettings,
-} from "@/lib/telnyx/provision-company";
-import { fixMessagingProfile } from "@/lib/telnyx/messaging-profile-setup";
 import { telnyxClient } from "@/lib/telnyx/client";
+import { fixMessagingProfile } from "@/lib/telnyx/messaging-profile-setup";
+import {
+	type CompanyTelnyxSettingsRow,
+	ensureCompanyTelnyxSetup,
+	fetchCompanyTelnyxSettings,
+	purchaseAdditionalNumbers,
+} from "@/lib/telnyx/provision-company";
 
 export async function provisionCompanyTelnyx(companyId: string) {
 	const supabase = await createClient();
@@ -65,7 +65,11 @@ export async function fixCompanyTelnyxWebhooks(companyId: string) {
 
 	try {
 		const settings = await fetchCompanyTelnyxSettings(supabase, companyId);
-		if (!settings || !settings.messaging_profile_id || !settings.call_control_application_id) {
+		if (
+			!settings ||
+			!settings.messaging_profile_id ||
+			!settings.call_control_application_id
+		) {
 			return {
 				success: false,
 				error: "Company Telnyx settings not found. Run provisioning first.",
@@ -80,7 +84,7 @@ export async function fixCompanyTelnyxWebhooks(companyId: string) {
 			settings.messaging_profile_id,
 			{
 				webhookUrl: CORRECT_WEBHOOK_URL,
-			}
+			},
 		);
 
 		if (messagingResult.success && messagingResult.fixed) {
@@ -95,7 +99,7 @@ export async function fixCompanyTelnyxWebhooks(companyId: string) {
 		// Fix call control application
 		try {
 			const callApp = await telnyxClient.callControlApplications.retrieve(
-				settings.call_control_application_id
+				settings.call_control_application_id,
 			);
 			const currentWebhook = (callApp.data as any)?.webhook_event_url;
 
@@ -105,9 +109,11 @@ export async function fixCompanyTelnyxWebhooks(companyId: string) {
 					{
 						webhook_event_url: CORRECT_WEBHOOK_URL,
 						webhook_api_version: "2",
-					}
+					},
 				);
-				changes.push(`Updated call control webhook URL to ${CORRECT_WEBHOOK_URL}`);
+				changes.push(
+					`Updated call control webhook URL to ${CORRECT_WEBHOOK_URL}`,
+				);
 				changes.push("Updated call control webhook API version to 2");
 			}
 		} catch (error: any) {
@@ -144,7 +150,11 @@ export async function enablePhoneNumberMessaging(companyId: string) {
 
 	try {
 		const settings = await fetchCompanyTelnyxSettings(supabase, companyId);
-		if (!settings || !settings.default_outbound_phone_number_id || !settings.messaging_profile_id) {
+		if (
+			!settings ||
+			!settings.default_outbound_phone_number_id ||
+			!settings.messaging_profile_id
+		) {
 			return {
 				success: false,
 				error: "Company Telnyx settings incomplete. Run provisioning first.",
@@ -168,7 +178,7 @@ export async function enablePhoneNumberMessaging(companyId: string) {
 				body: JSON.stringify({
 					messaging_profile_id: settings.messaging_profile_id,
 				}),
-			}
+			},
 		);
 
 		const data = await response.json();

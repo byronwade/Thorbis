@@ -10,9 +10,9 @@
  * Performance: 10-40x faster than traditional SSR
  */
 
+import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { cacheLife } from "next/cache";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { getJob } from "@/queries/jobs";

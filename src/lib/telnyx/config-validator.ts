@@ -43,18 +43,14 @@ function getBaseAppUrl(): string | undefined {
 		if (candidate && candidate.trim()) {
 			const trimmed = candidate.trim();
 			if (!isLocalUrl(trimmed)) {
-				return trimmed.startsWith("http")
-					? trimmed
-					: `https://${trimmed}`;
+				return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
 			}
 		}
 	}
 
 	const vercelUrl = process.env.VERCEL_URL;
 	if (vercelUrl && !isLocalUrl(vercelUrl)) {
-		return vercelUrl.startsWith("http")
-			? vercelUrl
-			: `https://${vercelUrl}`;
+		return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
 	}
 
 	return undefined;
@@ -110,7 +106,10 @@ export function validateTelnyxConfig(): ValidationResult {
 	}
 
 	// Check Webhook Secret (recommended for production)
-	if (!TELNYX_CONFIG.webhookSecret || TELNYX_CONFIG.webhookSecret.trim() === "") {
+	if (
+		!TELNYX_CONFIG.webhookSecret ||
+		TELNYX_CONFIG.webhookSecret.trim() === ""
+	) {
 		warnings.push(
 			"TELNYX_WEBHOOK_SECRET is not set. Webhook signature verification will be disabled. Set this in production for security.",
 		);
@@ -271,4 +270,3 @@ export function getFormattedErrorMessage(validation: ValidationResult): string {
 
 	return lines.join("\n");
 }
-

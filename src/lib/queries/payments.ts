@@ -60,33 +60,33 @@ export type PaymentsPageResult = {
 };
 
 export async function getPaymentsPageData(
-		page: number,
-		pageSize: number = PAYMENTS_PAGE_SIZE,
-	) : Promise<PaymentsPageResult> {
+	page: number,
+	pageSize: number = PAYMENTS_PAGE_SIZE,
+): Promise<PaymentsPageResult> {
 	"use cache";
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			return { payments: [], totalCount: 0 };
-		}
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return { payments: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("payments")
-			.select(PAYMENT_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("processed_at", { ascending: false, nullsFirst: false })
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("payments")
+		.select(PAYMENT_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("processed_at", { ascending: false, nullsFirst: false })
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to load payments: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load payments: ${error.message}`);
+	}
 
-		return {
-			payments: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		payments: data ?? [],
+		totalCount: count ?? 0,
+	};
 }

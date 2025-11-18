@@ -59,33 +59,33 @@ export type EquipmentPageResult = {
 };
 
 export async function getEquipmentPageData(
-		page: number,
-		pageSize: number = EQUIPMENT_PAGE_SIZE,
-		companyIdOverride?: string,
-	) : Promise<EquipmentPageResult> {
+	page: number,
+	pageSize: number = EQUIPMENT_PAGE_SIZE,
+	companyIdOverride?: string,
+): Promise<EquipmentPageResult> {
 	"use cache";
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { equipment: [], totalCount: 0 };
-		}
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { equipment: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("equipment")
-			.select(EQUIPMENT_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("equipment")
+		.select(EQUIPMENT_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to load equipment: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load equipment: ${error.message}`);
+	}
 
-		return {
-			equipment: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		equipment: data ?? [],
+		totalCount: count ?? 0,
+	};
 }

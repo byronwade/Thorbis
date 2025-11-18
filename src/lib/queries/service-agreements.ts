@@ -44,34 +44,34 @@ export type ServiceAgreementsPageResult = {
 };
 
 export async function getServiceAgreementsPageData(
-		page: number,
-		pageSize: number = SERVICE_AGREEMENTS_PAGE_SIZE,
-		companyIdOverride?: string,
-	) : Promise<ServiceAgreementsPageResult> {
+	page: number,
+	pageSize: number = SERVICE_AGREEMENTS_PAGE_SIZE,
+	companyIdOverride?: string,
+): Promise<ServiceAgreementsPageResult> {
 	"use cache";
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { agreements: [], totalCount: 0 };
-		}
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { agreements: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("service_plans")
-			.select(SERVICE_AGREEMENTS_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.eq("type", "contract")
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("service_plans")
+		.select(SERVICE_AGREEMENTS_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.eq("type", "contract")
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to fetch service agreements: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to fetch service agreements: ${error.message}`);
+	}
 
-		return {
-			agreements: (data ?? []) as ServiceAgreementRecord[],
-			totalCount: count ?? 0,
-		};
+	return {
+		agreements: (data ?? []) as ServiceAgreementRecord[],
+		totalCount: count ?? 0,
+	};
 }

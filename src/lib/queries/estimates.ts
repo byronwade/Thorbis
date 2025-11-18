@@ -50,32 +50,32 @@ export type EstimatesPageResult = {
 };
 
 export async function getEstimatesPageData(
-		page: number,
-		pageSize: number = ESTIMATES_PAGE_SIZE,
-	) : Promise<EstimatesPageResult> {
+	page: number,
+	pageSize: number = ESTIMATES_PAGE_SIZE,
+): Promise<EstimatesPageResult> {
 	"use cache";
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			return { estimates: [], totalCount: 0 };
-		}
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return { estimates: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("estimates")
-			.select(ESTIMATE_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("estimates")
+		.select(ESTIMATE_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to load estimates: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load estimates: ${error.message}`);
+	}
 
-		return {
-			estimates: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		estimates: data ?? [],
+		totalCount: count ?? 0,
+	};
 }

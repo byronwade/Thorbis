@@ -8,7 +8,11 @@ import { validateCallConfig, validateSmsConfig } from "./config-validator";
 import { verifyConnection } from "./connection-setup";
 import { getDefaultMessagingProfile } from "./messaging-profile-fetcher";
 import { verifyMessagingProfile } from "./messaging-profile-setup";
-import { verifyPhoneNumber, verifySmsCapability, verifyVoiceCapability } from "./phone-number-setup";
+import {
+	verifyPhoneNumber,
+	verifySmsCapability,
+	verifyVoiceCapability,
+} from "./phone-number-setup";
 import { checkWebhookHealth } from "./webhook-health";
 
 export type DiagnosticResult = {
@@ -45,23 +49,27 @@ export async function diagnoseSms(
 			"Set TELNYX_API_KEY",
 			"Set NEXT_PUBLIC_SITE_URL to a valid production URL",
 		];
-		
+
 		// If we found a messaging profile, suggest it
 		if (smsConfig.suggestedProfileId) {
 			recs.push(
 				`Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} (found in your Telnyx account)`,
 			);
 		} else {
-			recs.push("Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID or run getDefaultMessagingProfile() to fetch it");
+			recs.push(
+				"Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID or run getDefaultMessagingProfile() to fetch it",
+			);
 		}
-		
+
 		components.push({
 			success: false,
 			component: "SMS Configuration",
 			message: smsConfig.error || "SMS configuration is invalid",
 			recommendations: recs,
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -74,11 +82,11 @@ export async function diagnoseSms(
 	const messagingProfileStatus = await verifyMessagingProfile();
 	if (messagingProfileStatus.needsFix) {
 		// If profile doesn't exist, try to fetch available profiles
-		let profileRecommendations = [
+		const profileRecommendations = [
 			"Run fixMessagingProfile() to auto-fix webhook URLs",
 			"Verify messaging profile is enabled in Telnyx Portal",
 		];
-		
+
 		if (!messagingProfileStatus.exists) {
 			try {
 				const profileResult = await getDefaultMessagingProfile();
@@ -91,7 +99,7 @@ export async function diagnoseSms(
 				// Ignore fetch errors
 			}
 		}
-		
+
 		components.push({
 			success: false,
 			component: "Messaging Profile",
@@ -103,7 +111,9 @@ export async function diagnoseSms(
 			},
 			recommendations: profileRecommendations,
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -129,7 +139,9 @@ export async function diagnoseSms(
 					"Check phone number status in Telnyx Portal",
 				],
 			});
-			recommendations.push(...(components[components.length - 1].recommendations || []));
+			recommendations.push(
+				...(components[components.length - 1].recommendations || []),
+			);
 		} else {
 			components.push({
 				success: true,
@@ -159,7 +171,9 @@ export async function diagnoseSms(
 				"Configure TELNYX_PUBLIC_KEY and TELNYX_WEBHOOK_SECRET",
 			],
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -206,7 +220,9 @@ export async function diagnoseCalls(
 				"Set NEXT_PUBLIC_SITE_URL to a valid production URL",
 			],
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -232,7 +248,9 @@ export async function diagnoseCalls(
 				"Verify connection is active in Telnyx Portal",
 			],
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -258,7 +276,9 @@ export async function diagnoseCalls(
 					"Check phone number status in Telnyx Portal",
 				],
 			});
-			recommendations.push(...(components[components.length - 1].recommendations || []));
+			recommendations.push(
+				...(components[components.length - 1].recommendations || []),
+			);
 		} else {
 			components.push({
 				success: true,
@@ -288,7 +308,9 @@ export async function diagnoseCalls(
 				"Configure TELNYX_PUBLIC_KEY and TELNYX_WEBHOOK_SECRET",
 			],
 		});
-		recommendations.push(...(components[components.length - 1].recommendations || []));
+		recommendations.push(
+			...(components[components.length - 1].recommendations || []),
+		);
 	} else {
 		components.push({
 			success: true,
@@ -316,9 +338,7 @@ export async function diagnoseCalls(
 /**
  * Run full diagnostics (SMS + Calls)
  */
-export async function runFullDiagnostics(
-	phoneNumber?: string,
-): Promise<{
+export async function runFullDiagnostics(phoneNumber?: string): Promise<{
 	sms: DiagnosticsReport;
 	calls: DiagnosticsReport;
 	overall: {
@@ -331,7 +351,8 @@ export async function runFullDiagnostics(
 		diagnoseCalls(phoneNumber),
 	]);
 
-	const overallHealthy = smsReport.overall.healthy && callsReport.overall.healthy;
+	const overallHealthy =
+		smsReport.overall.healthy && callsReport.overall.healthy;
 	const summary = overallHealthy
 		? "All diagnostics passed - System is production ready"
 		: "Some diagnostics failed - Review individual reports";
@@ -345,4 +366,3 @@ export async function runFullDiagnostics(
 		},
 	};
 }
-

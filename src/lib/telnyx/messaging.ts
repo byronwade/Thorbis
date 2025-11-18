@@ -31,6 +31,12 @@ async function telnyxRequest(
 		}
 	}
 
+	console.log("🌐 Telnyx API request:", {
+		method: init?.method || "GET",
+		url: url.toString(),
+		hasApiKey: !!apiKey,
+	});
+
 	const response = await fetch(url, {
 		...init,
 		headers: {
@@ -41,9 +47,18 @@ async function telnyxRequest(
 	});
 
 	const data = await response.json();
+	console.log("🌐 Telnyx API response:", {
+		status: response.status,
+		ok: response.ok,
+		hasData: !!data,
+	});
+
 	if (!response.ok) {
 		const detail = data?.errors?.[0]?.detail || response.statusText;
-		throw new Error(`Telnyx ${response.status}: ${detail}`);
+		const errorMsg = `Telnyx ${response.status}: ${detail}`;
+		console.error("🔴 Telnyx API error:", errorMsg);
+		console.error("🔴 Full error response:", JSON.stringify(data, null, 2));
+		throw new Error(errorMsg);
 	}
 
 	return data;
@@ -86,7 +101,15 @@ export async function sendSMS(params: {
 	messagingProfileId?: string;
 }) {
 	try {
-		const message = await telnyxMessageRequest({
+		console.log("🔵 sendSMS called with:", {
+			to: params.to,
+			from: params.from,
+			messagingProfileId: params.messagingProfileId,
+			webhookUrl: params.webhookUrl,
+			textLength: params.text.length,
+		});
+
+		const requestBody = {
 			to: params.to,
 			from: params.from,
 			text: params.text,
@@ -94,6 +117,14 @@ export async function sendSMS(params: {
 			webhook_url: params.webhookUrl,
 			webhook_failover_url: params.webhookFailoverUrl,
 			use_profile_webhooks: params.useProfileWebhooks ?? true,
+		};
+		console.log("🔵 Telnyx request body:", requestBody);
+
+		const message = await telnyxMessageRequest(requestBody);
+
+		console.log("🟢 Telnyx response:", {
+			messageId: message.data.id,
+			status: message.data.status,
 		});
 
 		return {
@@ -102,6 +133,11 @@ export async function sendSMS(params: {
 			data: message.data,
 		};
 	} catch (error) {
+		console.error("🔴 sendSMS error:", error);
+		console.error("🔴 Error details:", {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		});
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send SMS",

@@ -14,13 +14,11 @@ import { PurchaseOrdersData } from "@/components/work/purchase-orders/purchase-o
 import { PurchaseOrdersSkeleton } from "@/components/work/purchase-orders/purchase-orders-skeleton";
 import { PurchaseOrdersStats } from "@/components/work/purchase-orders/purchase-orders-stats";
 
-
 export default async function PurchaseOrdersPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 
 	return (

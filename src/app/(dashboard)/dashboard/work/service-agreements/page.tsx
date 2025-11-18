@@ -12,13 +12,11 @@ import { Suspense } from "react";
 import { ServiceAgreementsData } from "@/components/work/service-agreements/service-agreements-data";
 import { ServiceAgreementsSkeleton } from "@/components/work/service-agreements/service-agreements-skeleton";
 
-
 export default async function ServiceAgreementsPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 
 	return (

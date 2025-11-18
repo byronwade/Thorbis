@@ -19,7 +19,6 @@ export default async function EstimatesPage({
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 	return (
 		<>

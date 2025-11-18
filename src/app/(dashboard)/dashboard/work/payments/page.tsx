@@ -14,13 +14,11 @@ import { UpaymentsData } from "@/components/work/payments/payments-data";
 import PaymentsSkeleton from "@/components/work/payments/payments-skeleton";
 import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 
-
 export default async function UpaymentsPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
-
 	const params = await searchParams;
 	return (
 		<>

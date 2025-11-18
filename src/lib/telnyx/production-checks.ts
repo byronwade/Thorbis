@@ -119,7 +119,9 @@ export async function checkProductionReadiness(): Promise<ProductionReadinessSta
 			);
 		}
 	} else {
-		status.messagingProfile.issues.push("Messaging profile ID is not configured");
+		status.messagingProfile.issues.push(
+			"Messaging profile ID is not configured",
+		);
 	}
 
 	// Check phone numbers
@@ -195,7 +197,10 @@ export async function checkProductionReadiness(): Promise<ProductionReadinessSta
 		);
 	}
 
-	if (!status.messagingProfile.configured || !status.messagingProfile.verified) {
+	if (
+		!status.messagingProfile.configured ||
+		!status.messagingProfile.verified
+	) {
 		recommendations.push(
 			"Configure and verify messaging profile in Telnyx Portal → Messaging → Profiles",
 		);
@@ -311,4 +316,3 @@ export function getProductionReadinessSummary(
 
 	return lines.join("\n");
 }
-

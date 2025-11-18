@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
 import { telnyxClient } from "./client";
 import { purchaseNumber, searchAvailableNumbers } from "./numbers";
 import type { NumberFeature } from "./phone-number-setup";
-import type { Database } from "@/types/supabase";
 
 export type CompanyTelnyxSettingsRow = {
 	company_id: string;
@@ -58,7 +58,9 @@ async function getBaseAppUrl(): Promise<string | undefined> {
 	return undefined;
 }
 
-async function buildCompanyWebhookUrl(companyId: string): Promise<string | undefined> {
+async function buildCompanyWebhookUrl(
+	companyId: string,
+): Promise<string | undefined> {
 	const base = await getBaseAppUrl();
 	if (!base) {
 		return undefined;
@@ -131,20 +133,14 @@ async function ensurePhoneNumbersInserted(
 			.maybeSingle();
 
 		if (existing?.id) {
-			await supabase
-				.from("phone_numbers")
-				.update(row)
-				.eq("id", existing.id);
+			await supabase.from("phone_numbers").update(row).eq("id", existing.id);
 		} else {
 			await supabase.from("phone_numbers").insert(row);
 		}
 	}
 }
 
-async function createMessagingProfile(
-	companyName: string,
-	webhookUrl: string,
-) {
+async function createMessagingProfile(companyName: string, webhookUrl: string) {
 	const response = await telnyxClient.messagingProfiles.create({
 		name: `${companyName} - Thorbis`,
 		enabled: true,
@@ -176,7 +172,13 @@ async function purchaseNumbers(
 		messagingProfileId: string;
 		connectionId: string;
 	},
-): Promise<Array<{ phoneNumber: string; telnyxPhoneNumberId?: string; areaCode?: string }>> {
+): Promise<
+	Array<{
+		phoneNumber: string;
+		telnyxPhoneNumberId?: string;
+		areaCode?: string;
+	}>
+> {
 	const search = await searchAvailableNumbers({
 		areaCode: options.areaCode,
 		features: options.features || DEFAULT_FEATURES,
@@ -187,7 +189,11 @@ async function purchaseNumbers(
 		throw new Error("No available phone numbers found for requested criteria");
 	}
 
-	const purchased: Array<{ phoneNumber: string; telnyxPhoneNumberId?: string; areaCode?: string }> = [];
+	const purchased: Array<{
+		phoneNumber: string;
+		telnyxPhoneNumberId?: string;
+		areaCode?: string;
+	}> = [];
 	const candidates = search.data as any[];
 
 	for (const candidate of candidates) {
@@ -241,11 +247,14 @@ async function purchaseNumbers(
 						body: JSON.stringify({
 							messaging_profile_id: options.messagingProfileId,
 						}),
-					}
+					},
 				);
 			} catch (error) {
 				// Log but don't fail - messaging can be enabled later
-				console.warn(`Failed to enable messaging on ${number.phoneNumber}:`, error);
+				console.warn(
+					`Failed to enable messaging on ${number.phoneNumber}:`,
+					error,
+				);
 			}
 		}
 	}
@@ -266,12 +275,19 @@ export async function fetchCompanyTelnyxSettings(
 	return (data as CompanyTelnyxSettingsRow | null) ?? null;
 }
 
-export async function ensureCompanyTelnyxSetup(options: ProvisionOptions): Promise<ProvisionResult> {
+export async function ensureCompanyTelnyxSetup(
+	options: ProvisionOptions,
+): Promise<ProvisionResult> {
 	const { supabase, companyId } = options;
 	const log: string[] = [];
 
 	const existing = await fetchCompanyTelnyxSettings(supabase, companyId);
-	if (existing && existing.status === "ready" && existing.messaging_profile_id && existing.call_control_application_id) {
+	if (
+		existing &&
+		existing.status === "ready" &&
+		existing.messaging_profile_id &&
+		existing.call_control_application_id
+	) {
 		log.push("Existing Telnyx configuration found");
 		return { success: true, settings: existing, log };
 	}
@@ -294,22 +310,31 @@ export async function ensureCompanyTelnyxSetup(options: ProvisionOptions): Promi
 	if (!webhookUrl) {
 		return {
 			success: false,
-			error: "NEXT_PUBLIC_SITE_URL must be configured with a public URL to provision Telnyx resources",
+			error:
+				"NEXT_PUBLIC_SITE_URL must be configured with a public URL to provision Telnyx resources",
 			log,
 		};
 	}
 
 	try {
 		log.push("Creating messaging profile");
-		const messagingProfile = await createMessagingProfile(company.name || "Company", webhookUrl);
+		const messagingProfile = await createMessagingProfile(
+			company.name || "Company",
+			webhookUrl,
+		);
 		const messagingProfileId = messagingProfile?.id as string;
 
 		log.push("Creating call control application");
-		const callApplication = await createCallControlApplication(company.name || "Company", webhookUrl);
+		const callApplication = await createCallControlApplication(
+			company.name || "Company",
+			webhookUrl,
+		);
 		const connectionId = callApplication?.id as string;
 
 		if (!messagingProfileId || !connectionId) {
-			throw new Error("Failed to provision messaging profile or call control application");
+			throw new Error(
+				"Failed to provision messaging profile or call control application",
+			);
 		}
 
 		log.push("Purchasing phone numbers");
@@ -321,12 +346,10 @@ export async function ensureCompanyTelnyxSetup(options: ProvisionOptions): Promi
 			connectionId,
 		});
 
-		await ensurePhoneNumbersInserted(
-			supabase,
-			companyId,
-			purchasedNumbers,
-			{ messagingProfileId, connectionId },
-		);
+		await ensurePhoneNumbersInserted(supabase, companyId, purchasedNumbers, {
+			messagingProfileId,
+			connectionId,
+		});
 
 		const defaultNumber = purchasedNumbers[0];
 
@@ -339,7 +362,8 @@ export async function ensureCompanyTelnyxSetup(options: ProvisionOptions): Promi
 					messaging_profile_id: messagingProfileId,
 					call_control_application_id: connectionId,
 					default_outbound_number: defaultNumber?.phoneNumber || null,
-					default_outbound_phone_number_id: defaultNumber?.telnyxPhoneNumberId || null,
+					default_outbound_phone_number_id:
+						defaultNumber?.telnyxPhoneNumberId || null,
 					metadata: {
 						log,
 						purchased_numbers: purchasedNumbers.map((n) => n.phoneNumber),
@@ -359,21 +383,32 @@ export async function ensureCompanyTelnyxSetup(options: ProvisionOptions): Promi
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to provision Telnyx resources",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to provision Telnyx resources",
 			log,
 		};
 	}
 }
 
-export async function purchaseAdditionalNumbers(options: ProvisionOptions & { quantity: number; }): Promise<ProvisionResult> {
+export async function purchaseAdditionalNumbers(
+	options: ProvisionOptions & { quantity: number },
+): Promise<ProvisionResult> {
 	const { supabase, companyId, quantity } = options;
 	const log: string[] = [];
 
 	const settings = await fetchCompanyTelnyxSettings(supabase, companyId);
-	if (!settings || settings.status !== "ready" || !settings.messaging_profile_id || !settings.call_control_application_id) {
+	if (
+		!settings ||
+		settings.status !== "ready" ||
+		!settings.messaging_profile_id ||
+		!settings.call_control_application_id
+	) {
 		return {
 			success: false,
-			error: "Company Telnyx configuration is not ready. Run ensureCompanyTelnyxSetup first.",
+			error:
+				"Company Telnyx configuration is not ready. Run ensureCompanyTelnyxSetup first.",
 			log,
 		};
 	}
@@ -388,15 +423,10 @@ export async function purchaseAdditionalNumbers(options: ProvisionOptions & { qu
 			connectionId: settings.call_control_application_id,
 		});
 
-		await ensurePhoneNumbersInserted(
-			supabase,
-			companyId,
-			purchasedNumbers,
-			{
-				messagingProfileId: settings.messaging_profile_id,
-				connectionId: settings.call_control_application_id,
-			},
-		);
+		await ensurePhoneNumbersInserted(supabase, companyId, purchasedNumbers, {
+			messagingProfileId: settings.messaging_profile_id,
+			connectionId: settings.call_control_application_id,
+		});
 
 		return {
 			success: true,
@@ -406,7 +436,10 @@ export async function purchaseAdditionalNumbers(options: ProvisionOptions & { qu
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to purchase phone numbers",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to purchase phone numbers",
 			log,
 		};
 	}

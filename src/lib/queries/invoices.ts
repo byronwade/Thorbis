@@ -52,32 +52,32 @@ export type InvoicesPageResult = {
 };
 
 export async function getInvoicesPageData(
-		page: number,
-		pageSize: number = INVOICES_PAGE_SIZE,
-	) : Promise<InvoicesPageResult> {
+	page: number,
+	pageSize: number = INVOICES_PAGE_SIZE,
+): Promise<InvoicesPageResult> {
 	"use cache";
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			return { invoices: [], totalCount: 0 };
-		}
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return { invoices: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("invoices")
-			.select(INVOICE_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("invoices")
+		.select(INVOICE_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to load invoices: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to load invoices: ${error.message}`);
+	}
 
-		return {
-			invoices: data ?? [],
-			totalCount: count ?? 0,
-		};
+	return {
+		invoices: data ?? [],
+		totalCount: count ?? 0,
+	};
 }

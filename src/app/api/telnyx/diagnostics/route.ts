@@ -5,13 +5,13 @@
  * Requires authentication via CRON_SECRET or admin access.
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { checkProductionReadiness } from "@/lib/telnyx/production-checks";
+import { type NextRequest, NextResponse } from "next/server";
 import {
 	diagnoseCalls,
 	diagnoseSms,
 	runFullDiagnostics,
 } from "@/lib/telnyx/diagnostics";
+import { checkProductionReadiness } from "@/lib/telnyx/production-checks";
 
 /**
  * GET /api/telnyx/diagnostics
@@ -34,10 +34,7 @@ export async function GET(request: NextRequest) {
 			process.env.NODE_ENV === "development";
 
 		if (!isAuthorized) {
-			return NextResponse.json(
-				{ error: "Unauthorized" },
-				{ status: 401 },
-			);
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
 		// Get query parameters
@@ -101,10 +98,7 @@ export async function POST(request: NextRequest) {
 			process.env.NODE_ENV === "development";
 
 		if (!isAuthorized) {
-			return NextResponse.json(
-				{ error: "Unauthorized" },
-				{ status: 401 },
-			);
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
 		const body = await request.json();
@@ -146,4 +140,3 @@ export async function POST(request: NextRequest) {
 		);
 	}
 }
-

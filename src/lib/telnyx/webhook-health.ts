@@ -5,7 +5,7 @@
  */
 
 import { TELNYX_CONFIG } from "./client";
-import { verifyWebhookSignature, isWebhookTimestampValid } from "./webhooks";
+import { isWebhookTimestampValid, verifyWebhookSignature } from "./webhooks";
 
 export type WebhookHealthStatus = {
 	urlAccessible: boolean;
@@ -57,7 +57,10 @@ function testSignatureVerification(): {
 		};
 	}
 
-	if (!TELNYX_CONFIG.webhookSecret || TELNYX_CONFIG.webhookSecret.trim() === "") {
+	if (
+		!TELNYX_CONFIG.webhookSecret ||
+		TELNYX_CONFIG.webhookSecret.trim() === ""
+	) {
 		return {
 			works: false,
 			error: "TELNYX_WEBHOOK_SECRET is not configured",
@@ -83,7 +86,10 @@ function testSignatureVerification(): {
 	} catch (error) {
 		return {
 			works: false,
-			error: error instanceof Error ? error.message : "Signature verification failed",
+			error:
+				error instanceof Error
+					? error.message
+					: "Signature verification failed",
 		};
 	}
 }
@@ -116,7 +122,8 @@ function testTimestampValidation(): {
 	} catch (error) {
 		return {
 			works: false,
-			error: error instanceof Error ? error.message : "Timestamp validation failed",
+			error:
+				error instanceof Error ? error.message : "Timestamp validation failed",
 		};
 	}
 }
@@ -212,9 +219,7 @@ export async function checkWebhookHealth(): Promise<WebhookHealthStatus> {
 /**
  * Get webhook health summary
  */
-export function getWebhookHealthSummary(
-	status: WebhookHealthStatus,
-): {
+export function getWebhookHealthSummary(status: WebhookHealthStatus): {
 	healthy: boolean;
 	summary: string;
 	recommendations: string[];
@@ -250,9 +255,7 @@ export function getWebhookHealthSummary(
 	}
 
 	if (status.warnings.length > 0) {
-		recommendations.push(
-			...status.warnings.map((w) => `Warning: ${w}`),
-		);
+		recommendations.push(...status.warnings.map((w) => `Warning: ${w}`));
 	}
 
 	const summary = healthy
@@ -265,4 +268,3 @@ export function getWebhookHealthSummary(
 		recommendations,
 	};
 }
-

@@ -19,7 +19,6 @@ export default async function AppointmentsPage({
 }: {
 	searchParams: Promise<{ page?: string; search?: string }>;
 }) {
-
 	const params = await searchParams;
 	return (
 		<div className="flex h-full flex-col">

@@ -79,9 +79,8 @@ export async function getDefaultMessagingProfile(): Promise<{
 
 	// Prefer enabled profiles
 	const enabledProfiles = result.profiles.filter((p) => p.enabled);
-	const selectedProfile = enabledProfiles.length > 0
-		? enabledProfiles[0]
-		: result.profiles[0];
+	const selectedProfile =
+		enabledProfiles.length > 0 ? enabledProfiles[0] : result.profiles[0];
 
 	let recommendation: string | undefined;
 	if (result.profiles.length > 1) {
@@ -98,9 +97,7 @@ export async function getDefaultMessagingProfile(): Promise<{
 /**
  * Get messaging profile by ID
  */
-export async function getMessagingProfileById(
-	profileId: string,
-): Promise<{
+export async function getMessagingProfileById(profileId: string): Promise<{
 	success: boolean;
 	profile?: MessagingProfile;
 	error?: string;
@@ -136,4 +133,3 @@ export async function getMessagingProfileById(
 		};
 	}
 }
-

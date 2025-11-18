@@ -8,8 +8,8 @@ import { TELNYX_CONFIG } from "./client";
 import {
 	getNumberDetails,
 	listOwnedNumbers,
-	updateNumber,
 	type NumberFeature,
+	updateNumber,
 } from "./numbers";
 
 export type PhoneNumberStatus = {
@@ -79,9 +79,7 @@ async function findPhoneNumberId(
 		return {
 			success: false,
 			error:
-				error instanceof Error
-					? error.message
-					: "Failed to find phone number",
+				error instanceof Error ? error.message : "Failed to find phone number",
 		};
 	}
 }
@@ -132,7 +130,9 @@ export async function verifyPhoneNumber(
 		if (numberData.messaging_profile_id) {
 			status.hasMessagingProfile = true;
 		} else {
-			status.issues.push("Phone number is not associated with a messaging profile");
+			status.issues.push(
+				"Phone number is not associated with a messaging profile",
+			);
 			status.needsFix = true;
 		}
 
@@ -161,12 +161,15 @@ export async function verifyPhoneNumber(
 						headers: {
 							Authorization: `Bearer ${TELNYX_API_KEY}`,
 						},
-					}
+					},
 				);
 				if (messagingResponse.ok) {
 					const messagingData = await messagingResponse.json();
 					const messagingFeatures = messagingData?.data?.features;
-					if (messagingFeatures?.sms?.domestic_two_way || messagingFeatures?.mms?.domestic_two_way) {
+					if (
+						messagingFeatures?.sms?.domestic_two_way ||
+						messagingFeatures?.mms?.domestic_two_way
+					) {
 						messagingEnabled = true;
 					}
 				}
@@ -262,13 +265,10 @@ export async function fixPhoneNumber(
 
 		// Fix connection
 		if (!status.hasConnection) {
-			const connectionId =
-				options?.connectionId || TELNYX_CONFIG.connectionId;
+			const connectionId = options?.connectionId || TELNYX_CONFIG.connectionId;
 			if (connectionId) {
 				updateParams.connectionId = connectionId;
-				changes.push(
-					`Assigned connection ${connectionId} to phone number`,
-				);
+				changes.push(`Assigned connection ${connectionId} to phone number`);
 			} else {
 				return {
 					success: false,
@@ -371,4 +371,3 @@ export async function verifyVoiceCapability(
 
 	return { hasVoice: true };
 }
-
