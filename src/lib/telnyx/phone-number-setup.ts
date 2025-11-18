@@ -144,11 +144,41 @@ export async function verifyPhoneNumber(
 			status.needsFix = true;
 		}
 
-		// Check capabilities
+		// Check capabilities from phone number features
 		const features = (numberData.features || []) as string[];
-		status.capabilities.sms = features.includes("sms");
-		status.capabilities.voice = features.includes("voice");
-		status.capabilities.mms = features.includes("mms");
+		const hasFeaturesSms = features.includes("sms");
+		const hasFeaturesVoice = features.includes("voice");
+		const hasFeaturesMms = features.includes("mms");
+
+		// Also check messaging settings endpoint for SMS/MMS status
+		let messagingEnabled = false;
+		try {
+			const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
+			if (TELNYX_API_KEY) {
+				const messagingResponse = await fetch(
+					`https://api.telnyx.com/v2/phone_numbers/${findResult.phoneNumberId}/messaging`,
+					{
+						headers: {
+							Authorization: `Bearer ${TELNYX_API_KEY}`,
+						},
+					}
+				);
+				if (messagingResponse.ok) {
+					const messagingData = await messagingResponse.json();
+					const messagingFeatures = messagingData?.data?.features;
+					if (messagingFeatures?.sms?.domestic_two_way || messagingFeatures?.mms?.domestic_two_way) {
+						messagingEnabled = true;
+					}
+				}
+			}
+		} catch {
+			// Ignore errors - fall back to features check
+		}
+
+		// Consider SMS enabled if either features include it OR messaging settings confirm it
+		status.capabilities.sms = hasFeaturesSms || messagingEnabled;
+		status.capabilities.voice = hasFeaturesVoice;
+		status.capabilities.mms = hasFeaturesMms || messagingEnabled;
 
 		if (!status.capabilities.sms) {
 			status.issues.push("Phone number does not have SMS capability");
