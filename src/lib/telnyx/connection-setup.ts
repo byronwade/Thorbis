@@ -109,13 +109,22 @@ export async function verifyConnection(
 				"NEXT_PUBLIC_SITE_URL is not set to a valid production URL",
 			);
 			status.needsFix = true;
-		} else if (!status.webhookUrl || status.webhookUrl !== expectedWebhookUrl) {
+		} else if (!status.webhookUrl) {
 			status.issues.push(
-				`Webhook URL is not set correctly. Expected: ${expectedWebhookUrl}, Current: ${status.webhookUrl || "none"}`,
+				`Webhook URL is not set. Expected: ${expectedWebhookUrl} (with optional ?company=... for multi-tenant)`,
 			);
 			status.needsFix = true;
 		} else {
-			status.hasWebhookUrl = true;
+			// Accept both base webhook URL and company-specific URLs (with query params)
+			const baseUrl = status.webhookUrl.split('?')[0];
+			if (baseUrl === expectedWebhookUrl || status.webhookUrl === expectedWebhookUrl) {
+				status.hasWebhookUrl = true;
+			} else {
+				status.issues.push(
+					`Webhook URL base is not set correctly. Expected: ${expectedWebhookUrl}, Current: ${baseUrl}`,
+				);
+				status.needsFix = true;
+			}
 		}
 
 		// Check webhook API version
