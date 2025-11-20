@@ -151,12 +151,22 @@ function SortableSection({
 						data-state={isOpen ? "open" : "closed"}
 						onClick={(e) => {
 							// Prevent browser from auto-scrolling when section opens
-							e.preventDefault();
-							onToggle();
-							// Restore scroll position after a brief delay to prevent jump
+							// Save current scroll position
 							const scrollY = window.scrollY;
+							const scrollX = window.scrollX;
+							
+							// Toggle the section
+							onToggle();
+							
+							// Restore scroll position after DOM updates to prevent unwanted scrolling
+							// Use double RAF to ensure it runs after React's state update and DOM render
 							requestAnimationFrame(() => {
-								window.scrollTo({ top: scrollY, behavior: "instant" });
+								requestAnimationFrame(() => {
+									// Only restore if scroll position changed significantly (more than 10px)
+									if (Math.abs(window.scrollY - scrollY) > 10 || Math.abs(window.scrollX - scrollX) > 10) {
+										window.scrollTo({ top: scrollY, left: scrollX, behavior: "instant" });
+									}
+								});
 							});
 						}}
 						type="button"

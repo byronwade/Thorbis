@@ -3755,7 +3755,6 @@ export function JobPageContent({
 				activities={activities}
 				beforeContent={beforeContent}
 				customSections={sections}
-				defaultOpenSection={null}
 				enableReordering={true}
 				header={headerConfig}
 				notes={jobNotes}

@@ -241,7 +241,7 @@ export function JobTeamMembersTable({
 				emptyIcon={<UserX className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No team members assigned to this job"
 				getItemId={(member) => member.id}
-				noPadding={false}
+				noPadding={true}
 				searchFilter={(member, query) => {
 					const searchLower = query.toLowerCase();
 					const fullName = getFullName(member);
