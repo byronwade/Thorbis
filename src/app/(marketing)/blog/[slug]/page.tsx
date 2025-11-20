@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketingWeekly";
 
 import { Calendar, Clock, Share2, Tag as TagIcon, User } from "lucide-react";
 import Image from "next/image";

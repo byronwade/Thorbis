@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketing";
 
 import Script from "next/script";
 import { Suspense } from "react";

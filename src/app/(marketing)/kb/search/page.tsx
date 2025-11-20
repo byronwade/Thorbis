@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketingWeekly";
 
 /**
  * Knowledge Base Search Page - Server Component

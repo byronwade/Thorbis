@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketingWeekly";
 
 import Script from "next/script";
 

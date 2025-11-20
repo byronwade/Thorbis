@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketing";
 
 import {
 	ArrowLeftRight,

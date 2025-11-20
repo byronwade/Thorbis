@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketing";
 
 import { notFound } from "next/navigation";
 import Script from "next/script";

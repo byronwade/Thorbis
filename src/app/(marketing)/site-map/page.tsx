@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "static";
 
 import Link from "next/link";
 import Script from "next/script";

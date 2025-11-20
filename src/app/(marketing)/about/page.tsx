@@ -1,5 +1,3 @@
-"use cache";
-export const cacheLife = "marketingWeekly";
 
 import Image from "next/image";
 import Link from "next/link";
