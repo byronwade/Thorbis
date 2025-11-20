@@ -373,7 +373,7 @@ const VARIANT_CONFIG = {
 		// Detail view tables - streamlined
 		itemsPerPage: 20,
 		virtualRowHeight: 48,
-		toolbarPadding: "px-3 py-1.5 sm:px-3",
+		toolbarPadding: "px-4 py-3 sm:px-6",
 		headerPadding: "px-3 py-1.5",
 		rowPadding: "px-2 py-1 sm:px-3 sm:py-1.5",
 		cellPadding: "px-1.5",

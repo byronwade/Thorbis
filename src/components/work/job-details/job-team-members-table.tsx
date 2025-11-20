@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,20 @@ export function JobTeamMembersTable({
 	const router = useRouter();
 	const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
 	const [isRemoving, setIsRemoving] = useState(false);
+	
+	// Guard against infinite refresh loops
+	const lastRefreshTimeRef = useRef<number>(0);
+	const REFRESH_COOLDOWN_MS = 1000; // Minimum 1 second between refreshes
+	
+	const safeRefresh = useCallback(() => {
+		const now = Date.now();
+		if (now - lastRefreshTimeRef.current < REFRESH_COOLDOWN_MS) {
+			console.warn("⚠️ Refresh called too frequently, skipping to prevent loop");
+			return;
+		}
+		lastRefreshTimeRef.current = now;
+		router.refresh();
+	}, [router]);
 
 	const handleRemoveMember = useCallback(async () => {
 		if (!removeMemberId || !onRemoveMember) {
@@ -80,8 +94,8 @@ export function JobTeamMembersTable({
 			if (result.success) {
 				toast.success("Team member removed from job");
 				setRemoveMemberId(null);
-				// Refresh to show updated list
-				router.refresh();
+				// Use safe refresh to prevent infinite loops
+				safeRefresh();
 			} else {
 				toast.error(result.error || "Failed to remove team member");
 			}
@@ -90,7 +104,7 @@ export function JobTeamMembersTable({
 		} finally {
 			setIsRemoving(false);
 		}
-	}, [removeMemberId, onRemoveMember, router]);
+	}, [removeMemberId, onRemoveMember, safeRefresh]);
 
 	const getFullName = useCallback((member: TeamMember) => {
 		const user = member.team_member.user;
@@ -227,7 +241,7 @@ export function JobTeamMembersTable({
 				emptyIcon={<UserX className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No team members assigned to this job"
 				getItemId={(member) => member.id}
-				noPadding={true}
+				noPadding={false}
 				searchFilter={(member, query) => {
 					const searchLower = query.toLowerCase();
 					const fullName = getFullName(member);

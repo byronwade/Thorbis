@@ -142,7 +142,7 @@ export async function getJobTeamAssignments(
 		}
 
 		// Get team assignments with member details
-		const { data: assignments, error: assignmentsError } = await serviceSupabase
+		const { data: assignments, error: assignmentsError} = await serviceSupabase
 			.from("job_team_assignments")
 			.select(
 				`
@@ -153,7 +153,7 @@ export async function getJobTeamAssignments(
         assigned_at,
         assigned_by,
         notes,
-        team_members!inner (
+        company_memberships!inner (
           id,
           user_id,
           job_title,
@@ -162,7 +162,7 @@ export async function getJobTeamAssignments(
       `,
 			)
 			.eq("job_id", jobId)
-			.eq("team_members.company_id", companyId)
+			.eq("company_memberships.company_id", companyId)
 			.is("removed_at", null)
 			.order("assigned_at", { ascending: true });
 
@@ -184,7 +184,7 @@ export async function getJobTeamAssignments(
 
 		// Get user details from public.users table
 		const userIds = assignments
-			.map((a: any) => a.team_members?.user_id)
+			.map((a: any) => a.company_memberships?.user_id)
 			.filter(Boolean);
 		const { data: users, error: usersError } = await serviceSupabase
 			.from("profiles")
@@ -208,7 +208,7 @@ export async function getJobTeamAssignments(
 
 		// Transform to expected format
 		const transformed = assignments.map((assignment: any) => {
-			const memberUser = usersMap.get(assignment.team_members?.user_id);
+			const memberUser = usersMap.get(assignment.company_memberships?.user_id);
 
 			return {
 				id: assignment.id,
@@ -219,9 +219,9 @@ export async function getJobTeamAssignments(
 				assignedBy: assignment.assigned_by,
 				notes: assignment.notes,
 				teamMember: {
-					id: assignment.team_members.id,
-					userId: assignment.team_members.user_id,
-					jobTitle: assignment.team_members.job_title,
+					id: assignment.company_memberships.id,
+					userId: assignment.company_memberships.user_id,
+					jobTitle: assignment.company_memberships.job_title,
 					user: memberUser
 						? {
 								id: memberUser.id,
@@ -234,7 +234,7 @@ export async function getJobTeamAssignments(
 							}
 						: {
 								id:
-									assignment.team_members.user_id ?? assignment.team_members.id,
+									assignment.company_memberships.user_id ?? assignment.company_memberships.id,
 								email: "",
 								firstName: null,
 								lastName: null,
@@ -458,16 +458,47 @@ export async function assignTeamMemberToJob(
 		}
 
 		// Verify team member belongs to company
-		const { data: targetMember, error: targetError } = await supabase
+		// Note: job_team_assignments.team_member_id references team_members(id), not company_memberships(id)
+		// So we need to check if the company_memberships.id corresponds to a team_members.id
+		// First, get the company_membership to find the user_id
+		const { data: companyMembership, error: membershipError } = await supabase
 			.from("company_memberships")
-			.select("id")
+			.select("id, user_id")
 			.eq("id", validated.teamMemberId)
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (membershipError) {
+			throw new ActionError(
+				"Failed to load team member",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: membershipError.hint,
+					details: membershipError.details,
+				},
+			);
+		}
+
+		if (!companyMembership) {
+			throw new ActionError(
+				"Team member not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
+		}
+
+		// Now find the corresponding team_members record
+		const { data: targetMember, error: targetError } = await supabase
+			.from("team_members")
+			.select("id")
+			.eq("user_id", companyMembership.user_id)
 			.eq("company_id", companyId)
 			.maybeSingle();
 
 		if (targetError) {
 			throw new ActionError(
-				"Failed to load team member",
+				"Failed to load team member record",
 				ERROR_CODES.DB_QUERY_ERROR,
 				500,
 				{
@@ -479,11 +510,14 @@ export async function assignTeamMemberToJob(
 
 		if (!targetMember) {
 			throw new ActionError(
-				"Team member not found",
+				"Team member record not found. Please ensure the team member has a corresponding team_members record.",
 				ERROR_CODES.DB_RECORD_NOT_FOUND,
 				404,
 			);
 		}
+
+		// Use the team_members.id for the assignment (not company_memberships.id)
+		const actualTeamMemberId = targetMember.id;
 
 		// If assigning as primary, remove other primary assignments
 		if (validated.role === "primary") {
@@ -504,36 +538,76 @@ export async function assignTeamMemberToJob(
 			}
 		}
 
-		// Create assignment (upsert to handle duplicates)
-		const { data: assignment, error } = await supabase
+	// Check if assignment already exists (active or soft-deleted)
+	// Use actualTeamMemberId (team_members.id) not company_memberships.id
+	const { data: existingAssignment } = await supabase
+		.from("job_team_assignments")
+		.select("id, removed_at")
+		.eq("job_id", validated.jobId)
+		.eq("team_member_id", actualTeamMemberId)
+		.maybeSingle();
+
+	let assignment: { id: string } | null = null;
+	let error = null;
+	const isReassignment = !!existingAssignment;
+
+	if (existingAssignment) {
+		// UPDATE existing assignment (handle re-assignments)
+		const result = await supabase
 			.from("job_team_assignments")
-			.upsert(
-				{
-					job_id: validated.jobId,
-					team_member_id: validated.teamMemberId,
-					role: validated.role,
-					assigned_by: user.id,
-					notes: validated.notes || null,
-					removed_at: null,
-				},
-				{
-					onConflict: "job_id,team_member_id",
-				},
-			)
+			.update({
+				role: validated.role,
+				assigned_by: user.id,
+				notes: validated.notes || null,
+				removed_at: null,
+				assigned_at: new Date().toISOString(),
+			})
+			.eq("id", existingAssignment.id)
 			.select("id")
 			.single();
 
-		if (error) {
-			throw new ActionError(
-				"Failed to assign team member",
-				ERROR_CODES.DB_UPDATE_ERROR,
-				500,
-				{
-					hint: error.hint,
-					details: error.details,
-				},
-			);
-		}
+		assignment = result.data;
+		error = result.error;
+	} else {
+		// INSERT new assignment
+		// Use actualTeamMemberId (team_members.id) not company_memberships.id
+		const result = await supabase
+			.from("job_team_assignments")
+			.insert({
+				job_id: validated.jobId,
+				team_member_id: actualTeamMemberId,
+				role: validated.role,
+				assigned_by: user.id,
+				notes: validated.notes || null,
+			})
+			.select("id")
+			.single();
+
+		assignment = result.data;
+		error = result.error;
+	}
+
+	if (error || !assignment) {
+		console.error("Assignment error details:", {
+			error,
+			teamMemberId: validated.teamMemberId,
+			jobId: validated.jobId,
+			role: validated.role,
+			existingAssignment,
+		});
+		throw new ActionError(
+			error?.message || "Failed to assign team member",
+			ERROR_CODES.DB_UPDATE_ERROR,
+			500,
+			{
+				hint: error?.hint,
+				details: error?.details,
+				code: error?.code,
+				message: error?.message,
+			},
+		);
+	}
+
 
 		// NOTE: We do NOT auto-assign to appointments anymore
 		// Job-level assignments are for planning/oversight
@@ -545,7 +619,7 @@ export async function assignTeamMemberToJob(
 		revalidatePath(`/dashboard/work/jobs/${validated.jobId}`);
 		revalidatePath(`/dashboard/work/${validated.jobId}`);
 
-		return { id: assignment.id };
+		return { id: assignment.id, wasReassignment: isReassignment };
 	});
 }
 
@@ -621,7 +695,7 @@ export async function removeTeamMemberFromJob(
 			.eq("team_member_id", validated.teamMemberId)
 			.is("removed_at", null);
 
-		if (error) {
+		if (error || !assignment) {
 			throw new ActionError(
 				"Failed to remove team member",
 				ERROR_CODES.DB_UPDATE_ERROR,
@@ -719,7 +793,7 @@ export async function bulkAssignTeamMembers(
 				onConflict: "job_id,team_member_id",
 			});
 
-		if (error) {
+		if (error || !assignment) {
 			throw new ActionError(
 				"Failed to assign team members",
 				ERROR_CODES.DB_UPDATE_ERROR,
@@ -828,7 +902,7 @@ export async function updateTeamMemberRole(
 			.eq("team_member_id", teamMemberId)
 			.is("removed_at", null);
 
-		if (error) {
+		if (error || !assignment) {
 			throw new ActionError(
 				"Failed to update team member role",
 				ERROR_CODES.DB_UPDATE_ERROR,

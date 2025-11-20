@@ -17,6 +17,7 @@ export function ToastProvider() {
 		<Toaster
 			closeButton
 			expand={false}
+			offset="72px"
 			position="top-right"
 			richColors
 			theme={theme === "dark" ? "dark" : "light"}

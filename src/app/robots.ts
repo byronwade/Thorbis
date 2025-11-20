@@ -18,7 +18,6 @@ export default function robots(): MetadataRoute.Robots {
 				disallow: [
 					"/api/",
 					"/dashboard/",
-					"/admin/",
 					"/_next/",
 					"/static/",
 					"*.json",
@@ -32,7 +31,6 @@ export default function robots(): MetadataRoute.Robots {
 				disallow: [
 					"/api/",
 					"/dashboard/",
-					"/admin/",
 					"/contracts/sign/",
 					"/contracts/download/",
 				],

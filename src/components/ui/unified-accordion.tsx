@@ -130,25 +130,35 @@ function SortableSection({
 			<div>
 				<div
 					className={cn(
-						"flex items-center transition-colors",
+						"flex items-center transition-colors min-h-[3rem]",
 						!isLast && "border-border/60 border-b",
 						isOpen
 							? "bg-muted/60"
 							: "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
 						isLast && !isOpen && "rounded-b-md",
 						isSortableDragging && "ring-primary shadow-lg ring-2",
+						"pr-4",
 					)}
 				>
 					{/* Section Button */}
 					<button
 						className={cn(
-							"focus-visible:ring-ring flex h-12 w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-							section.actions && "pr-2",
+							"focus-visible:ring-ring flex h-12 min-h-[3rem] w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+							section.actions && "pr-0",
 						)}
 						data-accordion-trigger=""
 						data-radix-collection-item=""
 						data-state={isOpen ? "open" : "closed"}
-						onClick={onToggle}
+						onClick={(e) => {
+							// Prevent browser from auto-scrolling when section opens
+							e.preventDefault();
+							onToggle();
+							// Restore scroll position after a brief delay to prevent jump
+							const scrollY = window.scrollY;
+							requestAnimationFrame(() => {
+								window.scrollTo({ top: scrollY, behavior: "instant" });
+							});
+						}}
 						type="button"
 					>
 						<ChevronRight
@@ -181,7 +191,7 @@ function SortableSection({
 					</button>
 					{section.actions && (
 						<div
-							className="flex items-center gap-2 py-2 pr-4"
+							className="flex items-center gap-2 px-6 h-12 min-h-[3rem]"
 							onClick={(event) => event.stopPropagation()}
 							onKeyDown={(event) => event.stopPropagation()}
 						>

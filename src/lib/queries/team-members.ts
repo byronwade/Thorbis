@@ -48,14 +48,7 @@ const TEAM_MEMBERS_SELECT = `
   last_review_date,
   next_review_date,
   notes,
-  archived_at,
-  profiles!company_memberships_user_id_fkey (
-    id,
-    email,
-    full_name,
-    avatar_url,
-    phone
-  )
+  archived_at
 `;
 
 export type TeamMemberRecord = {
@@ -138,18 +131,39 @@ export const getTeamMembersPageData = cache(
 			throw new Error(`Failed to load team members: ${error.message}`);
 		}
 
-		// Profile data is now joined in the query - no secondary query needed!
-		// Supabase returns profiles as an array when joining, so we normalize it
 		const members = data ?? [];
-		const normalizedMembers: TeamMemberRecord[] = members.map(
-			(member: any) => ({
-				...member,
-				user: Array.isArray(member.profiles)
-					? (member.profiles[0] ?? null)
-					: (member.profiles ?? null),
-				profiles: undefined, // Remove the raw profiles field
-			}),
+
+		// Fetch profile data for all user_ids
+		const userIds = members
+			.map((m) => m.user_id)
+			.filter((id): id is string => id !== null);
+
+		if (userIds.length === 0) {
+			return {
+				teamMembers: members.map((m) => ({ ...m, user: null })),
+				totalCount: count ?? 0,
+			};
+		}
+
+		const { data: profiles, error: profilesError } = await supabase
+			.from("profiles")
+			.select("id, email, full_name, avatar_url, phone")
+			.in("id", userIds);
+
+		if (profilesError) {
+			console.error("Failed to fetch profiles:", profilesError);
+		}
+
+		// Create a map of user_id -> profile
+		const profilesMap = new Map(
+			(profiles ?? []).map((p) => [p.id, p]),
 		);
+
+		// Merge profile data with members
+		const normalizedMembers: TeamMemberRecord[] = members.map((member) => ({
+			...member,
+			user: member.user_id ? profilesMap.get(member.user_id) ?? null : null,
+		}));
 
 		return {
 			teamMembers: normalizedMembers,

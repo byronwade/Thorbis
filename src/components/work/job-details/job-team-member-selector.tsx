@@ -116,7 +116,18 @@ export function JobTeamMemberSelector({
 	};
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover 
+			open={open} 
+			onOpenChange={(newOpen) => {
+				setOpen(newOpen);
+				// Reset selection when closing
+				if (!newOpen) {
+					setSelectedMember(null);
+					setSelectedRole("crew");
+					setSearchQuery("");
+				}
+			}}
+		>
 			<PopoverTrigger asChild>
 				{trigger || (
 					<Button variant="outline" size="sm">
@@ -125,7 +136,10 @@ export function JobTeamMemberSelector({
 					</Button>
 				)}
 			</PopoverTrigger>
-			<PopoverContent className="w-[400px] p-0" align="start">
+			<PopoverContent 
+				className="w-[400px] p-0" 
+				align="start"
+			>
 				<Command shouldFilter={false}>
 					<CommandInput
 						placeholder="Search team members..."
@@ -143,11 +157,11 @@ export function JobTeamMemberSelector({
 						{searchResults.length > 0 && (
 							<CommandGroup heading="Available Team Members">
 								{searchResults.map((member) => (
-									<CommandItem
+									<div
 										key={member.id}
-										onSelect={() => setSelectedMember(member)}
+										onClick={() => setSelectedMember(member)}
 										className={cn(
-											"flex items-center justify-between gap-2",
+											"relative flex cursor-pointer select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
 											selectedMember?.id === member.id && "bg-accent",
 										)}
 									>
@@ -169,7 +183,7 @@ export function JobTeamMemberSelector({
 										{selectedMember?.id === member.id && (
 											<Check className="h-4 w-4" />
 										)}
-									</CommandItem>
+									</div>
 								))}
 							</CommandGroup>
 						)}

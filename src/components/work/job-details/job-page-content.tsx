@@ -5,47 +5,6 @@
 
 "use client";
 
-import {
-	Activity,
-	AlertCircle,
-	Building2,
-	Calculator,
-	Calendar,
-	Camera,
-	CheckCircle,
-	ChevronRight,
-	Clock,
-	DollarSign,
-	Download,
-	ExternalLink,
-	Eye,
-	FileText,
-	Globe,
-	Link2,
-	Mail,
-	MapPin,
-	MessageSquare,
-	Package,
-	Phone,
-	Plus,
-	Receipt,
-	Save,
-	ShieldCheck,
-	Sparkles,
-	Star,
-	StickyNote,
-	Tag,
-	Target,
-	Upload,
-	User,
-	Users,
-	Wrench,
-	X,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { type ReactNode, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { updateEntityTags } from "@/actions/entity-tags";
 import {
 	archiveJob,
@@ -80,13 +39,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	Dialog,
 	DialogContent,
@@ -96,7 +52,11 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -133,14 +93,45 @@ import {
 	getCustomerProperties,
 	searchCustomersForJob,
 } from "@/queries/customers-search";
+import {
+	Activity,
+	AlertCircle,
+	Building2,
+	Calendar,
+	Camera,
+	CheckCircle,
+	ChevronRight,
+	DollarSign,
+	Download,
+	ExternalLink,
+	FileText,
+	Globe,
+	Link2,
+	Mail,
+	MapPin,
+	MessageSquare,
+	Package,
+	Phone,
+	Plus,
+	Receipt,
+	Save,
+	ShieldCheck,
+	Sparkles,
+	StickyNote,
+	Tag,
+	Upload,
+	User,
+	Users,
+	Wrench
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { AIJobAssistantHeader } from "./ai-job-assistant-header";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
 import { JobActivityTimeline } from "./job-activity-timeline";
 import { JobAppointmentsExpandable } from "./job-appointments-expandable";
-import { JobAppointmentsTable } from "./job-appointments-table";
-import { JobCostingCard } from "./job-costing-card";
 import { JobCustomerPropertyManager } from "./job-customer-property-manager";
-import { JobEnrichmentInline } from "./job-enrichment-inline";
 import { JobEstimatesTable } from "./job-estimates-table";
 import { JobInvoicesTable } from "./job-invoices-table";
 import { JobNotesTable } from "./job-notes-table";
@@ -152,12 +143,6 @@ import { JobStatusSelector } from "./job-status-selector";
 import { JobTasksTable } from "./job-tasks-table";
 import { JobTeamMemberSelector } from "./job-team-member-selector";
 import { JobTeamMembersTable } from "./job-team-members-table";
-import { LeadAttributionCard } from "./lead-attribution-card";
-import { ReviewTrackingCard } from "./review-tracking-card";
-import { AddTagBadge } from "./tags/add-tag-badge";
-import { TagBadge } from "./tags/tag-badge";
-import { TagManagerDialog } from "./tags/tag-manager-dialog";
-import { TeamMemberSelector } from "./team-member-selector";
 import { TravelTime } from "./travel-time";
 import { PropertyLocationVisual } from "./widgets/property-location-visual";
 
@@ -193,6 +178,24 @@ export function JobPageContent({
 
 	const router = useRouter();
 	const { toast } = useToast();
+	const [isPending, startTransition] = useTransition();
+	
+	// Guard against infinite refresh loops
+	const lastRefreshTimeRef = useRef<number>(0);
+	const REFRESH_COOLDOWN_MS = 1000; // Minimum 1 second between refreshes
+	
+	const safeRefresh = useCallback(() => {
+		const now = Date.now();
+		if (now - lastRefreshTimeRef.current < REFRESH_COOLDOWN_MS) {
+			console.warn("⚠️ Refresh called too frequently, skipping to prevent loop");
+			return;
+		}
+		lastRefreshTimeRef.current = now;
+		startTransition(() => {
+			router.refresh();
+		});
+	}, [router]);
+	
 	const [localJob, setLocalJob] = useState(() => {
 		if (!jobData?.job) {
 			return { priority: "medium" };
@@ -306,13 +309,71 @@ export function JobPageContent({
 	const [jobNotes, setJobNotes] = useState(initialJobNotes);
 
 	// Sync state with props when data changes (e.g., after page navigation or refresh)
+	// Use refs to track previous values and only update if actually changed
+	const prevEstimatesRef = useRef(initialEstimates);
+	const prevInvoicesRef = useRef(initialInvoices);
+	const prevPaymentsRef = useRef(initialPayments);
+	const prevJobEquipmentRef = useRef(initialJobEquipment);
+	const prevTasksRef = useRef(initialTasks);
+	const prevJobNotesRef = useRef(initialJobNotes);
+
 	useEffect(() => {
-		setEstimates(initialEstimates);
-		setInvoices(initialInvoices);
-		setPayments(initialPayments);
-		setJobEquipment(initialJobEquipment);
-		setTasks(initialTasks);
-		setJobNotes(initialJobNotes);
+		// Only update if arrays actually changed (compare lengths and IDs to avoid infinite loops)
+		const estimatesChanged =
+			initialEstimates.length !== prevEstimatesRef.current.length ||
+			initialEstimates.some(
+				(e, i) => e?.id !== prevEstimatesRef.current[i]?.id,
+			);
+		const invoicesChanged =
+			initialInvoices.length !== prevInvoicesRef.current.length ||
+			initialInvoices.some(
+				(inv, i) => inv?.id !== prevInvoicesRef.current[i]?.id,
+			);
+		const paymentsChanged =
+			initialPayments.length !== prevPaymentsRef.current.length ||
+			initialPayments.some(
+				(p, i) => p?.id !== prevPaymentsRef.current[i]?.id,
+			);
+		const equipmentChanged =
+			initialJobEquipment.length !== prevJobEquipmentRef.current.length ||
+			initialJobEquipment.some(
+				(eq, i) => eq?.id !== prevJobEquipmentRef.current[i]?.id,
+			);
+		const tasksChanged =
+			initialTasks.length !== prevTasksRef.current.length ||
+			initialTasks.some(
+				(t, i) => t?.id !== prevTasksRef.current[i]?.id,
+			);
+		const notesChanged =
+			initialJobNotes.length !== prevJobNotesRef.current.length ||
+			initialJobNotes.some(
+				(n, i) => n?.id !== prevJobNotesRef.current[i]?.id,
+			);
+
+		if (estimatesChanged) {
+			setEstimates(initialEstimates);
+			prevEstimatesRef.current = initialEstimates;
+		}
+		if (invoicesChanged) {
+			setInvoices(initialInvoices);
+			prevInvoicesRef.current = initialInvoices;
+		}
+		if (paymentsChanged) {
+			setPayments(initialPayments);
+			prevPaymentsRef.current = initialPayments;
+		}
+		if (equipmentChanged) {
+			setJobEquipment(initialJobEquipment);
+			prevJobEquipmentRef.current = initialJobEquipment;
+		}
+		if (tasksChanged) {
+			setTasks(initialTasks);
+			prevTasksRef.current = initialTasks;
+		}
+		if (notesChanged) {
+			setJobNotes(initialJobNotes);
+			prevJobNotesRef.current = initialJobNotes;
+		}
 	}, [
 		initialEstimates,
 		initialInvoices,
@@ -894,17 +955,20 @@ export function JobPageContent({
 
 			if (result.success) {
 				toast.success("Team member assigned");
-				router.refresh();
+				// Use safe refresh to prevent infinite loops
+				safeRefresh();
 			} else {
+				console.error("Assignment failed:", result.error, result);
 				toast.error(result.error || "Failed to assign team member");
 			}
 		} catch (error) {
 			console.error("Failed to assign team member:", error);
-			toast.error("Failed to assign team member");
+			const errorMessage = error instanceof Error ? error.message : "Failed to assign team member";
+			toast.error(errorMessage);
 		}
 	};
 
-	const handleRemoveTeamMember = async (teamMemberId: string) => {
+	const handleRemoveTeamMember = async (teamMemberId: string): Promise<{ success: boolean; error?: string }> => {
 		try {
 			const result = await removeTeamMemberFromJob({
 				jobId: job.id,
@@ -913,13 +977,18 @@ export function JobPageContent({
 
 			if (result.success) {
 				toast.success("Team member removed");
-				router.refresh();
+				safeRefresh();
+				return { success: true };
 			} else {
-				toast.error(result.error || "Failed to remove team member");
+				const errorMessage = result.error || "Failed to remove team member";
+				toast.error(errorMessage);
+				return { success: false, error: errorMessage };
 			}
 		} catch (error) {
 			console.error("Failed to remove team member:", error);
-			toast.error("Failed to remove team member");
+			const errorMessage = error instanceof Error ? error.message : "Failed to remove team member";
+			toast.error(errorMessage);
+			return { success: false, error: errorMessage };
 		}
 	};
 
@@ -1899,12 +1968,12 @@ export function JobPageContent({
 				property={enrichmentProperty}
 			/> */}
 
-			{/* Comprehensive Job Overview */}
-			<DetailPageSurface padding="lg" variant="default">
-				<div className="space-y-6">
-					{/* Row 1: Status & Workflow */}
-					<StandardFormRow cols={4}>
-						<StandardFormField label="Status">
+			{/* Ultra-Compact Job Overview */}
+			<DetailPageSurface padding="sm" variant="default" className="rounded-xl">
+				<div className="space-y-2">
+					{/* Top Row: Status, Priority, Travel Time - Inline */}
+					<div className="flex items-center gap-3 flex-wrap">
+						<StandardFormField label="Status" className="mb-0 min-w-[140px]">
 							<JobStatusSelector
 								currentStatus={(localJob.status || "quoted") as JobStatus}
 								onStatusChange={(newStatus) =>
@@ -1928,16 +1997,16 @@ export function JobPageContent({
 							/>
 						</StandardFormField>
 
-						<StandardFormField label="Priority">
+						<StandardFormField label="Priority" className="mb-0 min-w-[120px]">
 							<Select
 								onValueChange={(value) => handleFieldChange("priority", value)}
 								value={localJob.priority || undefined}
 							>
-								<SelectTrigger>
+								<SelectTrigger className="h-8">
 									<SelectValue placeholder="Set priority">
-										<div className="flex items-center gap-2">
-											<AlertCircle className="h-4 w-4" />
-											<span className="capitalize">
+										<div className="flex items-center gap-1.5">
+											<AlertCircle className="h-3.5 w-3.5" />
+											<span className="capitalize text-xs">
 												{localJob.priority || "Set priority"}
 											</span>
 										</div>
@@ -1953,393 +2022,385 @@ export function JobPageContent({
 						</StandardFormField>
 
 						{property && (
-							<StandardFormField
-								label="Travel Time"
-								className="sm:col-span-2 lg:col-span-1"
-							>
+							<StandardFormField label="Travel" className="mb-0">
 								<TravelTime property={property} />
 							</StandardFormField>
 						)}
-					</StandardFormRow>
+					</div>
 
-					<Separator />
-
-					{/* Row 2: Customer Quick View */}
-					{customer && (
-						<>
-							<div>
-								<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-									<User className="h-4 w-4" />
-									Customer Information
-								</h3>
-								<StandardFormRow cols={4}>
-									<StandardFormField label="Customer">
-										<Link
-											href={`/dashboard/customers/${customer.id}`}
-											className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-										>
+					{/* Compact Data Grid - All in one row with popovers for details */}
+					<div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+						{/* Customer - Compact with Popover */}
+						{customer && (
+							<Popover>
+								<PopoverTrigger asChild>
+									<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+										<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+											<User className="h-2.5 w-2.5" />
+											Customer
+										</div>
+										<div className="text-xs font-medium truncate">
 											{customer.display_name ||
 												`${customer.first_name} ${customer.last_name}`}
-										</Link>
-									</StandardFormField>
-
-									<StandardFormField label="Phone">
-										{customer.phone ? (
-											<a
-												href={`tel:${customer.phone}`}
-												className="text-sm text-primary hover:underline"
+										</div>
+										<div className="text-[10px] text-muted-foreground truncate">
+											{customer.phone || customer.email || customer.type || ""}
+										</div>
+									</button>
+								</PopoverTrigger>
+								<PopoverContent className="w-64" align="start">
+									<div className="space-y-2">
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Name</div>
+											<Link
+												href={`/dashboard/customers/${customer.id}`}
+												className="text-sm font-medium text-primary hover:underline"
 											>
-												{customer.phone}
-											</a>
-										) : (
-											<span className="text-muted-foreground text-sm">
-												No phone
-											</span>
+												{customer.display_name ||
+													`${customer.first_name} ${customer.last_name}`}
+											</Link>
+										</div>
+										{customer.phone && (
+											<div>
+												<div className="text-xs text-muted-foreground mb-1">Phone</div>
+												<a
+													href={`tel:${customer.phone}`}
+													className="text-sm text-primary hover:underline"
+												>
+													{customer.phone}
+												</a>
+											</div>
 										)}
-									</StandardFormField>
-
-									<StandardFormField label="Email">
-										{customer.email ? (
-											<a
-												href={`mailto:${customer.email}`}
-												className="text-sm text-primary hover:underline truncate"
-											>
-												{customer.email}
-											</a>
-										) : (
-											<span className="text-muted-foreground text-sm">
-												No email
-											</span>
+										{customer.email && (
+											<div>
+												<div className="text-xs text-muted-foreground mb-1">Email</div>
+												<a
+													href={`mailto:${customer.email}`}
+													className="text-sm text-primary hover:underline"
+												>
+													{customer.email}
+												</a>
+											</div>
 										)}
-									</StandardFormField>
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Type</div>
+											<Badge variant="outline" className="text-xs">
+												{customer.type || "residential"}
+											</Badge>
+										</div>
+									</div>
+								</PopoverContent>
+							</Popover>
+						)}
 
-									<StandardFormField label="Customer Type">
-										<Badge variant="outline" className="w-fit">
-											{customer.type || "residential"}
-										</Badge>
-									</StandardFormField>
-								</StandardFormRow>
-							</div>
-
-							<Separator />
-						</>
-					)}
-
-					{/* Row 3: Property & Location */}
-					{property && (
-						<>
-							<div>
-								<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-									<MapPin className="h-4 w-4" />
-									Property & Location
-								</h3>
-								<StandardFormRow cols={4}>
-									<StandardFormField label="Address" className="col-span-2">
-										<div className="flex items-center gap-2">
-											<span className="text-sm">
+						{/* Property - Compact with Popover */}
+						{property && (
+							<Popover>
+								<PopoverTrigger asChild>
+									<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+										<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+											<MapPin className="h-2.5 w-2.5" />
+											Location
+										</div>
+										<div className="text-xs font-medium truncate">
+											{property.address}
+										</div>
+										<div className="text-[10px] text-muted-foreground truncate">
+											{property.city}, {property.state}
+										</div>
+									</button>
+								</PopoverTrigger>
+								<PopoverContent className="w-64" align="start">
+									<div className="space-y-2">
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Address</div>
+											<div className="text-sm">
 												{property.address}
-												{property.address_line2 &&
-													`, ${property.address_line2}`}
+												{property.address_line2 && `, ${property.address_line2}`}
 												<br />
 												{property.city}, {property.state} {property.zip}
-											</span>
+											</div>
 											{property.lat && property.lon && (
 												<a
 													href={`https://www.google.com/maps?q=${property.lat},${property.lon}`}
 													target="_blank"
 													rel="noopener noreferrer"
-													className="text-primary hover:underline"
+													className="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1"
 												>
 													<ExternalLink className="h-3 w-3" />
+													Open in Maps
 												</a>
 											)}
 										</div>
-									</StandardFormField>
-
-									<StandardFormField label="Property Type">
-										<Badge variant="outline" className="w-fit">
-											{property.property_type || "Unknown"}
-										</Badge>
-									</StandardFormField>
-
-									<StandardFormField label="Access Code">
-										{property.access_code ? (
-											<code className="text-sm bg-muted px-2 py-1 rounded">
-												{property.access_code}
-											</code>
-										) : (
-											<span className="text-muted-foreground text-sm">
-												None
-											</span>
-										)}
-									</StandardFormField>
-								</StandardFormRow>
-							</div>
-
-							<Separator />
-						</>
-					)}
-
-					{/* Row 4: Schedule & Team */}
-					<div>
-						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-							<Calendar className="h-4 w-4" />
-							Schedule & Team
-						</h3>
-						<StandardFormRow cols={4}>
-							<StandardFormField label="Scheduled Start">
-								{localJob.scheduled_start ? (
-									<span className="text-sm">
-										{formatDate(localJob.scheduled_start)}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">
-										Not scheduled
-									</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Scheduled End">
-								{localJob.scheduled_end ? (
-									<span className="text-sm">
-										{formatDate(localJob.scheduled_end)}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">
-										Not scheduled
-									</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Assigned Techs" className="col-span-2">
-								{teamAssignments && teamAssignments.length > 0 ? (
-									<div className="flex items-center gap-2">
-										{teamAssignments.slice(0, 3).map((assignment: any) => (
-											<Badge key={assignment.id} variant="secondary">
-												{assignment.user?.name || "Unknown"}
-											</Badge>
-										))}
-										{teamAssignments.length > 3 && (
-											<span className="text-muted-foreground text-xs">
-												+{teamAssignments.length - 3} more
-											</span>
-										)}
+										<div className="grid grid-cols-2 gap-2">
+											<div>
+												<div className="text-xs text-muted-foreground mb-1">Type</div>
+												<Badge variant="outline" className="text-xs">
+													{property.property_type || "Unknown"}
+												</Badge>
+											</div>
+											<div>
+												<div className="text-xs text-muted-foreground mb-1">Access</div>
+												{property.access_code ? (
+													<code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+														{property.access_code}
+													</code>
+												) : (
+													<span className="text-xs text-muted-foreground">None</span>
+												)}
+											</div>
+										</div>
 									</div>
-								) : (
-									<span className="text-muted-foreground text-sm">
-										No techs assigned
-									</span>
-								)}
-							</StandardFormField>
-
-							{timeEntries && timeEntries.length > 0 && (
-								<>
-									<StandardFormField label="Clock In">
-										<span className="text-sm">
-											{formatDate(timeEntries[0]?.clock_in_time)}
-										</span>
-									</StandardFormField>
-
-									<StandardFormField label="Clock Out">
-										{timeEntries[0]?.clock_out_time ? (
-											<span className="text-sm">
-												{formatDate(timeEntries[0]?.clock_out_time)}
-											</span>
-										) : (
-											<Badge variant="secondary">In Progress</Badge>
-										)}
-									</StandardFormField>
-
-									<StandardFormField label="Total Hours" className="col-span-2">
-										<span className="text-sm font-semibold">
-											{timeEntries
-												.reduce(
-													(sum: number, entry: any) =>
-														sum + (entry.total_hours || 0),
-													0,
-												)
-												.toFixed(1)}
-											h
-										</span>
-									</StandardFormField>
-								</>
-							)}
-						</StandardFormRow>
-					</div>
-
-					<Separator />
-
-					{/* Row 5: Financial Snapshot */}
-					<div>
-						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-							<DollarSign className="h-4 w-4" />
-							Financial Overview
-						</h3>
-						<StandardFormRow cols={4}>
-							<StandardFormField label="Job Value">
-								<span className="text-sm font-semibold">
-									{formatCurrency(localJob.total_amount || 0)}
-								</span>
-							</StandardFormField>
-
-							<StandardFormField label="Estimates">
-								{estimates && estimates.length > 0 ? (
-									<div className="flex items-center gap-2">
-										<span className="text-sm">{estimates.length} sent</span>
-										<Badge
-											variant={
-												estimates.some((e: any) => e.status === "accepted")
-													? "default"
-													: "secondary"
-											}
-										>
-											{estimates.find((e: any) => e.status === "accepted")
-												? "Accepted"
-												: "Pending"}
-										</Badge>
-									</div>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Invoices">
-								{invoices && invoices.length > 0 ? (
-									<span className="text-sm">
-										{invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Payments">
-								{payments && payments.length > 0 ? (
-									<div className="flex flex-col gap-1">
-										<span className="text-sm font-semibold text-green-600 dark:text-green-400">
-											{formatCurrency(
-												payments.reduce(
-													(sum: number, p: any) => sum + (p.amount || 0),
-													0,
-												),
-											)}
-										</span>
-										<span className="text-xs text-muted-foreground">
-											{payments.length} payment
-											{payments.length !== 1 ? "s" : ""}
-										</span>
-									</div>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-						</StandardFormRow>
-					</div>
-
-					<Separator />
-
-					{/* Row 6: Activity & Communications */}
-					<div>
-						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-							<MessageSquare className="h-4 w-4" />
-							Recent Activity
-						</h3>
-						<StandardFormRow cols={4}>
-							<StandardFormField label="Communications">
-								{communications && communications.length > 0 ? (
-									<span className="text-sm">
-										{communications.length} message
-										{communications.length !== 1 ? "s" : ""}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Notes">
-								{jobNotes && jobNotes.length > 0 ? (
-									<span className="text-sm">
-										{jobNotes.length} note{jobNotes.length !== 1 ? "s" : ""}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Photos">
-								{photos && photos.length > 0 ? (
-									<span className="text-sm">
-										{photos.length} photo{photos.length !== 1 ? "s" : ""}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-
-							<StandardFormField label="Documents">
-								{documents && documents.length > 0 ? (
-									<span className="text-sm">
-										{documents.length} doc{documents.length !== 1 ? "s" : ""}
-									</span>
-								) : (
-									<span className="text-muted-foreground text-sm">None</span>
-								)}
-							</StandardFormField>
-						</StandardFormRow>
-					</div>
-
-					<Separator />
-
-					{/* Row 7: Service Details */}
-					<div>
-						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-							<Wrench className="h-4 w-4" />
-							Service Details
-						</h3>
-						<StandardFormRow cols={2}>
-							<StandardFormField label="Service Type" htmlFor="service-type">
-								<Input
-									id="service-type"
-									onChange={(e) =>
-										handleFieldChange("service_type", e.target.value)
-									}
-									placeholder="e.g. HVAC Maintenance, Plumbing Repair"
-									value={localJob.service_type || localJob.job_type || ""}
-								/>
-							</StandardFormField>
-
-							<StandardFormField
-								label="Job Description"
-								htmlFor="job-description"
-							>
-								<Textarea
-									id="job-description"
-									onChange={(e) =>
-										handleFieldChange("description", e.target.value)
-									}
-									placeholder="Add context, expectations, or key notes for the crew."
-									value={localJob.description || ""}
-									className="min-h-[120px]"
-								/>
-							</StandardFormField>
-						</StandardFormRow>
-
-						{jobEquipment && jobEquipment.length > 0 && (
-							<StandardFormRow cols={4} className="mt-4">
-								<StandardFormField label="Equipment" className="col-span-4">
-									<div className="flex flex-wrap gap-2">
-										{jobEquipment.map((eq: any) => (
-											<Badge key={eq.id} variant="outline">
-												{eq.equipment?.name || eq.equipment_id}
-											</Badge>
-										))}
-									</div>
-								</StandardFormField>
-							</StandardFormRow>
+								</PopoverContent>
+							</Popover>
 						)}
+
+						{/* Schedule - Compact with Popover */}
+						<Popover>
+							<PopoverTrigger asChild>
+								<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+									<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+										<Calendar className="h-2.5 w-2.5" />
+										Schedule
+									</div>
+									{localJob.scheduled_start ? (
+										<>
+											<div className="text-xs font-medium">
+												{new Date(localJob.scheduled_start).toLocaleTimeString("en-US", {
+													hour: "numeric",
+													minute: "2-digit",
+													hour12: true,
+												})}
+											</div>
+											<div className="text-[10px] text-muted-foreground">
+												{teamAssignments?.length || 0} tech{teamAssignments?.length !== 1 ? "s" : ""}
+											</div>
+										</>
+									) : (
+										<div className="text-xs text-muted-foreground">Not scheduled</div>
+									)}
+								</button>
+							</PopoverTrigger>
+							<PopoverContent className="w-64" align="start">
+								<div className="space-y-2">
+									<div className="grid grid-cols-2 gap-2">
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Start</div>
+											<div className="text-sm">
+												{localJob.scheduled_start
+													? formatDate(localJob.scheduled_start)
+													: "Not set"}
+											</div>
+										</div>
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">End</div>
+											<div className="text-sm">
+												{localJob.scheduled_end
+													? formatDate(localJob.scheduled_end)
+													: "Not set"}
+											</div>
+										</div>
+									</div>
+									{teamAssignments && teamAssignments.length > 0 && (
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Team ({teamAssignments.length})</div>
+											<div className="flex flex-wrap gap-1">
+												{teamAssignments.map((assignment: any) => (
+													<Badge key={assignment.id} variant="secondary" className="text-xs">
+														{assignment.user?.name || "Unknown"}
+													</Badge>
+												))}
+											</div>
+										</div>
+									)}
+								</div>
+							</PopoverContent>
+						</Popover>
+
+						{/* Financial - Compact with Popover */}
+						<Popover>
+							<PopoverTrigger asChild>
+								<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+									<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+										<DollarSign className="h-2.5 w-2.5" />
+										Financial
+									</div>
+									<div className="text-xs font-semibold">
+										{formatCurrency(localJob.total_amount || 0)}
+									</div>
+									<div className="text-[10px] text-muted-foreground">
+										{payments && payments.length > 0
+											? `${formatCurrency(
+													payments.reduce(
+														(sum: number, p: any) => sum + (p.amount || 0),
+														0,
+													),
+												)} paid`
+											: "$0 paid"}
+									</div>
+								</button>
+							</PopoverTrigger>
+							<PopoverContent className="w-64" align="start">
+								<div className="space-y-2">
+									<div>
+										<div className="text-xs text-muted-foreground mb-1">Job Value</div>
+										<div className="text-sm font-semibold">
+											{formatCurrency(localJob.total_amount || 0)}
+										</div>
+									</div>
+									<div className="grid grid-cols-2 gap-2">
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Payments</div>
+											<div className="text-sm font-semibold text-green-600 dark:text-green-400">
+												{payments && payments.length > 0
+													? formatCurrency(
+															payments.reduce(
+																(sum: number, p: any) => sum + (p.amount || 0),
+																0,
+															),
+														)
+													: "$0"}
+											</div>
+											<div className="text-[10px] text-muted-foreground">
+												{payments?.length || 0} payment{payments?.length !== 1 ? "s" : ""}
+											</div>
+										</div>
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Estimates</div>
+											<div className="text-sm">{estimates?.length || 0}</div>
+											{estimates && estimates.length > 0 && (
+												<Badge
+													variant={
+														estimates.some((e: any) => e.status === "accepted")
+															? "default"
+															: "secondary"
+													}
+													className="text-[10px] mt-0.5"
+												>
+													{estimates.find((e: any) => e.status === "accepted")
+														? "Accepted"
+														: "Pending"}
+												</Badge>
+											)}
+										</div>
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Invoices</div>
+											<div className="text-sm">{invoices?.length || 0}</div>
+										</div>
+									</div>
+								</div>
+							</PopoverContent>
+						</Popover>
+
+						{/* Activity - Compact with Popover */}
+						<Popover>
+							<PopoverTrigger asChild>
+								<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+									<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+										<MessageSquare className="h-2.5 w-2.5" />
+										Activity
+									</div>
+									<div className="text-xs font-medium">
+										{(communications?.length || 0) + (jobNotes?.length || 0) + (photos?.length || 0) + (documents?.length || 0)} items
+									</div>
+									<div className="text-[10px] text-muted-foreground">
+										{communications?.length || 0} msg • {jobNotes?.length || 0} notes
+									</div>
+								</button>
+							</PopoverTrigger>
+							<PopoverContent className="w-64" align="start">
+								<div className="grid grid-cols-2 gap-2">
+									<div>
+										<div className="text-xs text-muted-foreground mb-1">Messages</div>
+										<div className="text-sm font-semibold">
+											{communications?.length || 0}
+										</div>
+									</div>
+									<div>
+										<div className="text-xs text-muted-foreground mb-1">Notes</div>
+										<div className="text-sm font-semibold">
+											{jobNotes?.length || 0}
+										</div>
+									</div>
+									<div>
+										<div className="text-xs text-muted-foreground mb-1">Photos</div>
+										<div className="text-sm font-semibold">
+											{photos?.length || 0}
+										</div>
+									</div>
+									<div>
+										<div className="text-xs text-muted-foreground mb-1">Documents</div>
+										<div className="text-sm font-semibold">
+											{documents?.length || 0}
+										</div>
+									</div>
+								</div>
+							</PopoverContent>
+						</Popover>
+
+						{/* Service - Compact with Collapsible */}
+						<Collapsible>
+							<CollapsibleTrigger asChild>
+								<button className="text-left p-2 rounded-md hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50 w-full">
+									<div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+										<Wrench className="h-2.5 w-2.5" />
+										Service
+									</div>
+									<div className="text-xs font-medium truncate">
+										{localJob.service_type || localJob.job_type || "Not set"}
+									</div>
+									<div className="text-[10px] text-muted-foreground">
+										{jobEquipment?.length || 0} equipment
+									</div>
+								</button>
+							</CollapsibleTrigger>
+							<CollapsibleContent className="mt-2">
+								<div className="space-y-2 p-2 bg-muted/30 rounded-md">
+									<StandardFormField label="Service Type" htmlFor="service-type" className="mb-0">
+										<Input
+											id="service-type"
+											onChange={(e) =>
+												handleFieldChange("service_type", e.target.value)
+											}
+											placeholder="e.g. HVAC Maintenance"
+											value={localJob.service_type || localJob.job_type || ""}
+											className="h-8 text-sm"
+										/>
+									</StandardFormField>
+									{jobEquipment && jobEquipment.length > 0 && (
+										<div>
+											<div className="text-xs text-muted-foreground mb-1">Equipment</div>
+											<div className="flex flex-wrap gap-1.5">
+												{jobEquipment.map((eq: any) => (
+													<Badge key={eq.id} variant="outline" className="text-xs">
+														{eq.equipment?.name || eq.equipment_id}
+													</Badge>
+												))}
+											</div>
+										</div>
+									)}
+									<StandardFormField
+										label="Description"
+										htmlFor="job-description"
+										className="mb-0"
+									>
+										<Textarea
+											id="job-description"
+											onChange={(e) =>
+												handleFieldChange("description", e.target.value)
+											}
+											placeholder="Add context, expectations, or key notes for the crew."
+											value={localJob.description || ""}
+											className="min-h-[60px] text-sm"
+										/>
+									</StandardFormField>
+								</div>
+							</CollapsibleContent>
+						</Collapsible>
 					</div>
 
-					<div className="border-border/40 flex justify-end border-t pt-4">
+					{/* Quick Actions Footer */}
+					<div className="flex justify-end pt-2 border-t border-border/40">
 						<JobQuickActions currentStatus={job.status} jobId={job.id} />
 					</div>
 				</div>
@@ -2401,7 +2462,7 @@ export function JobPageContent({
 						setCustomer(selectedCustomer);
 						setProperty(selectedProperty ?? null);
 						toast.success("Customer and property assigned successfully");
-						router.refresh();
+						safeRefresh();
 					} else {
 						toast.error(result.error || "Failed to assign customer");
 					}
@@ -2413,7 +2474,7 @@ export function JobPageContent({
 						setCustomer(null);
 						setProperty(null);
 						toast.success("Customer and property removed successfully");
-						router.refresh();
+						safeRefresh();
 					} else {
 						toast.error(result.error || "Failed to remove customer");
 					}
@@ -2428,7 +2489,7 @@ export function JobPageContent({
 					if (result.success) {
 						setProperty(null);
 						toast.success("Property removed from job");
-						router.refresh();
+						safeRefresh();
 					} else {
 						toast.error(result.error || "Failed to remove property");
 					}
@@ -2773,7 +2834,7 @@ export function JobPageContent({
 										onUpdateTags={async (id, tags) => {
 											const result = await updateEntityTags("job", id, tags);
 											if (result.success) {
-												router.refresh();
+												safeRefresh();
 											}
 										}}
 									/>
@@ -2929,11 +2990,80 @@ export function JobPageContent({
 		),
 	});
 
+	// Transform teamAssignments to match JobTeamMembersTable expected format
+	const transformedTeamMembers = useMemo(() => {
+		if (!Array.isArray(teamAssignments) || teamAssignments.length === 0) {
+			return [];
+		}
+
+		return teamAssignments
+			.map((assignment: any) => {
+				const teamMember = assignment?.team_member || assignment?.teamMember;
+				if (!teamMember) {
+					return null;
+				}
+
+				// Handle both user (single) and users (array) formats
+				const user = teamMember.user || teamMember.users?.[0] || assignment?.user || assignment?.assigned_user;
+				
+				// Get user ID from various possible locations
+				const userId = user?.id || teamMember.user_id || assignment.user_id;
+				if (!userId) {
+					return null;
+				}
+
+				// Build user name from various possible formats
+				let userName: string | null = null;
+				if (user?.name) {
+					userName = user.name;
+				} else if (user?.first_name || user?.last_name) {
+					userName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+				} else if (teamMember.user?.name) {
+					userName = teamMember.user.name;
+				} else if (user?.email) {
+					userName = user.email;
+				}
+
+				return {
+					id: assignment.id || assignment.team_member_id || teamMember.id,
+					user_id: userId,
+					team_member: {
+						job_title: teamMember.job_title || assignment.job_title || undefined,
+						user: {
+							name: userName || undefined,
+							email: user?.email || teamMember.email || undefined,
+							avatar_url: user?.avatar_url || user?.avatar || teamMember.avatar || undefined,
+							first_name: user?.first_name || (userName ? userName.split(" ")[0] : undefined),
+							last_name: user?.last_name || (userName && userName.includes(" ") ? userName.split(" ").slice(1).join(" ") : undefined),
+						},
+					},
+					assigned_at: assignment.assigned_at || assignment.assignedAt || new Date().toISOString(),
+					role: assignment.role || "crew",
+				};
+			})
+			.filter((member) => member !== null) as Array<{
+				id: string;
+				user_id: string;
+				team_member: {
+					job_title?: string;
+					user: {
+						name?: string;
+						email?: string;
+						avatar_url?: string;
+						first_name?: string;
+						last_name?: string;
+					};
+				};
+				assigned_at: string;
+				role?: string;
+			}>;
+	}, [teamAssignments]);
+
 	sections.push({
 		id: "team",
 		title: "Team Members",
 		icon: <Users className="size-4" />,
-		count: teamAssignments.length,
+		count: transformedTeamMembers.length,
 		actions: (
 			<JobTeamMemberSelector
 				availableMembers={availableTeamMembers}
@@ -2943,7 +3073,10 @@ export function JobPageContent({
 		),
 		content: (
 			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
-				<JobTeamMembersTable teamAssignments={teamAssignments} />
+				<JobTeamMembersTable 
+					teamMembers={transformedTeamMembers} 
+					onRemoveMember={handleRemoveTeamMember}
+				/>
 			</UnifiedAccordionContent>
 		),
 	});
@@ -3622,7 +3755,7 @@ export function JobPageContent({
 				activities={activities}
 				beforeContent={beforeContent}
 				customSections={sections}
-				defaultOpenSection="customer"
+				defaultOpenSection={null}
 				enableReordering={true}
 				header={headerConfig}
 				notes={jobNotes}

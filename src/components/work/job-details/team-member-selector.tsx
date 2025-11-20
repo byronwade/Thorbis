@@ -198,7 +198,11 @@ export function TeamMemberSelector({
 			});
 
 			if (result.success) {
+			if (result.data?.wasReassignment) {
+				toast.info("Team member was already assigned - updated assignment");
+			} else {
 				toast.success("Team member assigned");
+			}
 				setShowAll(false);
 				setShowAllEdit(false);
 				// Refresh assignments
