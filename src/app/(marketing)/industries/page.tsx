@@ -80,81 +80,170 @@ export default function IndustriesOverviewPage() {
 				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
-			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-				<header className="mx-auto mb-14 max-w-3xl text-center">
-					<span className="border-border text-secondary mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-						Built for service leaders
-					</span>
-					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-						Industry expertise included with every Thorbis deployment
-					</h1>
-					<p className="text-muted-foreground mt-4 text-lg">
-						Whether you respond to emergency plumbing calls or run recurring
-						landscaping routes, Thorbis adapts to your playbooks with proven
-						workflows, automations, and reporting. Every industry gets the same
-						transparent pricing—$200/month base plus pay-as-you-go usage,
-						unlimited users, and no lock-in contracts.
-					</p>
-					<div className="mt-6 flex flex-wrap justify-center gap-3">
-						<Button asChild>
-							<Link href="/register">Create your account</Link>
-						</Button>
-						<Button asChild variant="outline">
-							<Link href="/case-studies">View customer stories</Link>
-						</Button>
-					</div>
-				</header>
+			<div className="bg-background">
+				<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+					{/* Enhanced Hero Section */}
+					<header className="mx-auto mb-16 max-w-4xl text-center">
+						<Badge className="mb-6 bg-primary/10 text-primary dark:text-primary px-4 py-1.5 font-semibold">
+							Built for Service Leaders
+						</Badge>
+						<h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+							<span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+								Industry Expertise
+							</span>
+							<br />
+							Included with Every Deployment
+						</h1>
+						<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg leading-relaxed">
+							Whether you respond to emergency plumbing calls or run recurring landscaping routes, Thorbis adapts to your playbooks with proven workflows, automations, and reporting. Every industry gets the same transparent pricing—$200/month base plus pay-as-you-go usage.
+						</p>
 
-				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{industries.map((industry) => {
-						const Icon = getMarketingIcon(
-							industry.valueProps[0]?.icon ?? "sparkles",
-						);
-						return (
-							<Card
-								className="flex h-full flex-col justify-between transition-shadow hover:shadow-md"
-								key={industry.slug}
-							>
-								<CardHeader className="space-y-4">
-									<div className="text-secondary flex items-center gap-3">
-										<Icon aria-hidden="true" className="size-8" />
-										<Badge variant="outline">{industry.name}</Badge>
-									</div>
-									<CardTitle className="text-2xl">
-										{industry.heroTitle}
-									</CardTitle>
-									<CardDescription>{industry.summary}</CardDescription>
-								</CardHeader>
-								<CardContent className="flex flex-col gap-4">
-									<div>
-										<p className="text-muted-foreground text-sm font-medium">
-											Specialities we support
-										</p>
-										<div className="mt-2 flex flex-wrap gap-2">
-											{industry.fieldTypes.slice(0, 3).map((type) => (
-												<Badge key={type} variant="secondary">
-													{type}
+						<div className="mb-10 flex flex-wrap items-center justify-center gap-6">
+							<div className="flex items-center gap-2">
+								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
+									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+									</svg>
+								</div>
+								<div className="text-left">
+									<p className="text-foreground text-sm font-semibold">$200/Month Base</p>
+									<p className="text-muted-foreground text-xs">Unlimited users</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2">
+								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
+									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+									</svg>
+								</div>
+								<div className="text-left">
+									<p className="text-foreground text-sm font-semibold">No Lock-In</p>
+									<p className="text-muted-foreground text-xs">Cancel anytime</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2">
+								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
+									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+									</svg>
+								</div>
+								<div className="text-left">
+									<p className="text-foreground text-sm font-semibold">12+ Industries</p>
+									<p className="text-muted-foreground text-xs">Proven playbooks</p>
+								</div>
+							</div>
+						</div>
+
+						<div className="flex flex-wrap justify-center gap-4">
+							<Button asChild className="bg-gradient-to-r from-primary to-primary/80 shadow-lg" size="lg">
+								<Link href="/register">
+									Create Your Account
+									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+									</svg>
+								</Link>
+							</Button>
+							<Button asChild size="lg" variant="outline">
+								<Link href="/case-studies">View Customer Stories</Link>
+							</Button>
+						</div>
+					</header>
+
+					{/* Industry Cards Grid */}
+					<section className="mb-16">
+						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+							{industries.map((industry) => {
+								const Icon = getMarketingIcon(
+									industry.valueProps[0]?.icon ?? "sparkles",
+								);
+								return (
+									<Card
+										className="border-primary/10 group relative flex h-full flex-col justify-between overflow-hidden transition-all hover:shadow-xl hover:border-primary/30"
+										key={industry.slug}
+									>
+										{/* Gradient overlay on hover */}
+										<div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+
+										<CardHeader className="relative space-y-4">
+											<div className="flex items-start justify-between">
+												<div className="bg-primary/10 group-hover:bg-primary/20 flex size-14 items-center justify-center rounded-xl transition-colors">
+													<Icon aria-hidden="true" className="text-primary size-7" />
+												</div>
+												<Badge className="bg-primary/10 text-primary" variant="secondary">
+													{industry.name}
 												</Badge>
-											))}
-										</div>
-									</div>
-									<div>
-										<p className="text-muted-foreground text-sm font-medium">
-											Sample results
-										</p>
-										<p className="text-muted-foreground text-sm">
-											{industry.stats[0]?.label}: {industry.stats[0]?.value}
-										</p>
-									</div>
-									<Button asChild>
-										<Link href={`/industries/${industry.slug}`}>
-											Explore {industry.name}
-										</Link>
-									</Button>
-								</CardContent>
-							</Card>
-						);
-					})}
+											</div>
+											<CardTitle className="text-2xl group-hover:text-primary transition-colors">
+												{industry.heroTitle}
+											</CardTitle>
+											<CardDescription className="line-clamp-2">
+												{industry.summary}
+											</CardDescription>
+										</CardHeader>
+										<CardContent className="relative flex flex-col gap-4">
+											<div>
+												<p className="text-muted-foreground mb-2 text-sm font-semibold">
+													Specialties We Support
+												</p>
+												<div className="flex flex-wrap gap-2">
+													{industry.fieldTypes.slice(0, 3).map((type) => (
+														<Badge key={type} variant="outline" className="text-xs">
+															{type}
+														</Badge>
+													))}
+												</div>
+											</div>
+											<div className="bg-primary/5 rounded-lg border border-primary/10 p-3">
+												<p className="text-foreground text-sm font-semibold">
+													{industry.stats[0]?.label}
+												</p>
+												<p className="text-primary text-2xl font-bold">
+													{industry.stats[0]?.value}
+												</p>
+												<p className="text-muted-foreground text-xs">
+													{industry.stats[0]?.description}
+												</p>
+											</div>
+											<Button asChild className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+												<Link href={`/industries/${industry.slug}`}>
+													Explore {industry.name}
+													<svg className="ml-2 size-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+													</svg>
+												</Link>
+											</Button>
+										</CardContent>
+									</Card>
+								);
+							})}
+						</div>
+					</section>
+
+					{/* Final CTA Section */}
+					<section className="from-primary/10 via-primary/5 to-primary/10 rounded-2xl border bg-gradient-to-r p-10 text-center">
+						<Badge className="mb-4" variant="secondary">
+							Ready to Get Started?
+						</Badge>
+						<h2 className="mb-3 text-3xl font-semibold">
+							Join Field Service Teams Across 12+ Industries
+						</h2>
+						<p className="text-muted-foreground mx-auto mb-6 max-w-2xl text-lg">
+							No matter your industry, Thorbis delivers the tools, automations, and insights you need to grow. Free 30-day trial. No credit card required.
+						</p>
+						<div className="flex flex-wrap justify-center gap-4">
+							<Button asChild size="lg">
+								<Link href="/register">
+									Start Your Free Trial
+									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+									</svg>
+								</Link>
+							</Button>
+							<Button asChild size="lg" variant="outline">
+								<Link href="/contact">Talk to Sales</Link>
+							</Button>
+						</div>
+					</section>
 				</div>
 			</div>
 		</>

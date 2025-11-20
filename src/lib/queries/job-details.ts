@@ -217,7 +217,7 @@ export const getJobActivityLog = cache(
 			.select(
 				`
 			*,
-			user:user_id (
+			user:users!job_activity_log_user_id_fkey (
 				id,
 				raw_user_meta_data
 			)
@@ -306,7 +306,7 @@ export const getEnrichedJobAppointments = cache(
 					id,
 					appointment_id,
 					role,
-					team_member:team_member_id (
+					team_member:team_members!appointment_team_assignments_team_member_id_fkey (
 						id,
 						user_id,
 						role
@@ -322,7 +322,7 @@ export const getEnrichedJobAppointments = cache(
 					id,
 					appointment_id,
 					notes,
-					equipment:equipment_id (
+					equipment:equipment!appointment_equipment_equipment_id_fkey (
 						id,
 						name,
 						serial_number,

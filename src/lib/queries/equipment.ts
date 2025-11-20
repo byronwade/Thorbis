@@ -21,12 +21,12 @@ const EQUIPMENT_SELECT = `
   location,
   archived_at,
   deleted_at,
-  customer:customers!customer_id (
+  customer:customers!equipment_customer_id_customers_id_fk (
     display_name,
     first_name,
     last_name
   ),
-  property:properties!property_id (
+  property:properties!equipment_property_id_properties_id_fk (
     address,
     city,
     state

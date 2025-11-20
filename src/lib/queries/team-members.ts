@@ -49,7 +49,7 @@ const TEAM_MEMBERS_SELECT = `
   next_review_date,
   notes,
   archived_at,
-  profiles:user_id (
+  profiles!company_memberships_user_id_fkey (
     id,
     email,
     full_name,

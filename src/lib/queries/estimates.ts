@@ -14,7 +14,7 @@ const ESTIMATE_SELECT = `
   valid_until,
   archived_at,
   deleted_at,
-  customers:customers!customer_id (
+  customers!estimates_customer_id_customers_id_fk (
     display_name,
     first_name,
     last_name

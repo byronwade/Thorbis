@@ -19,7 +19,7 @@ const PAYMENT_SELECT = `
   invoice_id,
   job_id,
   customer_id,
-  customers:customers!customer_id (
+  customers!payments_customer_id_customers_id_fk (
     display_name,
     first_name,
     last_name

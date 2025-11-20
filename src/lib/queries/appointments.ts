@@ -22,7 +22,7 @@ const APPOINTMENTS_SELECT = `
   type,
   created_at,
   updated_at,
-  customer:customers!customer_id (
+  customer:customers!appointments_customer_id_customers_id_fk (
     id,
     first_name,
     last_name,

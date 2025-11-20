@@ -25,13 +25,13 @@ const JOBS_SELECT = `
   updated_at,
   archived_at,
   deleted_at,
-  customers:customers!customer_id (
+  customers:customers!jobs_customer_id_customers_id_fk (
     first_name,
     last_name,
     email,
     phone
   ),
-  properties:properties!property_id (
+  properties:properties!jobs_property_id_properties_id_fk (
     address,
     city,
     state,

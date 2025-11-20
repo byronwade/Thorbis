@@ -1579,7 +1579,7 @@ export async function searchJobs(
 			"@/lib/search/full-text-search"
 		);
 
-		const jobs = await searchJobsFullText(supabase, companyId, searchTerm, {
+		const jobs = await searchJobsFullText(supabase, teamMember.company_id, searchTerm, {
 			limit: options?.limit || 50,
 			offset: options?.offset || 0,
 		});
@@ -1625,7 +1625,7 @@ export async function searchAll(
 
 		// Use universal search RPC function
 		const { data, error } = await supabase.rpc("search_all_entities", {
-			company_id_param: companyId,
+			company_id_param: teamMember.company_id,
 			search_query: searchTerm,
 			per_entity_limit: 5,
 		});
@@ -1687,7 +1687,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== companyId) {
+		if (job.company_id !== teamMember.company_id) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1788,7 +1788,7 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== companyId) {
+		if (job.company_id !== teamMember.company_id) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,

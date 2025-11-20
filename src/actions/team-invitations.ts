@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import TeamInvitationEmail from "@/emails/templates/team/invitation";
 import { sendPlatformEmail } from "@/lib/email/email-router";
+import { EmailTemplate } from "@/lib/email/email-types";
 import {
 	ActionError,
 	ERROR_CODES,
@@ -164,7 +165,7 @@ export async function sendTeamMemberInvitations(
 						magicLink,
 						expiresInDays: INVITATION_EXPIRY_DAYS,
 					}),
-					templateType: "team-invitation",
+					templateType: EmailTemplate.TEAM_INVITATION,
 				});
 
 				if (emailResult.success) {

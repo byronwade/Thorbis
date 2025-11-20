@@ -15,6 +15,7 @@
 
 import { revalidatePath } from "next/cache";
 import { sendCompanyBrandedEmail } from "@/lib/email/email-router";
+import { EmailTemplate } from "@/lib/email/email-types";
 import {
 	markTokenAsUsed,
 	validatePaymentToken,
@@ -229,7 +230,7 @@ export async function processInvoicePayment(
 							supportEmail: company.email,
 						},
 					}),
-					templateType: "billing-payment-received",
+					templateType: EmailTemplate.PAYMENT_RECEIVED,
 					emailType: "notification",
 					tags: [
 						{ name: "invoice_id", value: invoiceId },
