@@ -376,6 +376,8 @@ export type ReviewAggregateSchemaOptions = {
 		url?: string;
 		image?: string;
 		type?: "Product" | "Service" | "SoftwareApplication";
+		applicationCategory?: string;
+		operatingSystem?: string;
 	};
 	ratingValue: number;
 	reviewCount: number;
@@ -394,6 +396,22 @@ export function createReviewAggregateSchema(
 		worstRating = 1,
 	} = options;
 
+	const itemReviewed: Record<string, unknown> = {
+		"@type": item.type ?? "SoftwareApplication",
+		name: item.name,
+		url: item.url ?? SEO_URLS.site,
+		image: item.image
+			? buildShareImageUrl({ path: item.image })
+			: buildShareImageUrl(),
+	};
+
+	// Add required SoftwareApplication properties if type is SoftwareApplication
+	if (item.type === "SoftwareApplication" || !item.type) {
+		itemReviewed.applicationCategory =
+			item.applicationCategory ?? "BusinessApplication";
+		itemReviewed.operatingSystem = item.operatingSystem ?? "Web";
+	}
+
 	return {
 		"@context": "https://schema.org",
 		"@type": "AggregateRating",
@@ -401,13 +419,6 @@ export function createReviewAggregateSchema(
 		reviewCount: reviewCount.toString(),
 		bestRating: bestRating.toString(),
 		worstRating: worstRating.toString(),
-		itemReviewed: {
-			"@type": item.type ?? "SoftwareApplication",
-			name: item.name,
-			url: item.url ?? SEO_URLS.site,
-			image: item.image
-				? buildShareImageUrl({ path: item.image })
-				: buildShareImageUrl(),
-		},
+		itemReviewed,
 	};
 }

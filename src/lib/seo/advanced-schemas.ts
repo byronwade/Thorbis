@@ -462,6 +462,8 @@ export type EnhancedReviewSchemaOptions = {
 		url?: string;
 		image?: string;
 		type?: "Product" | "Service" | "SoftwareApplication";
+		applicationCategory?: string;
+		operatingSystem?: string;
 	};
 	reviews: IndividualReview[];
 	aggregateRating: {
@@ -477,7 +479,7 @@ export function createEnhancedReviewSchema(
 ) {
 	const { itemReviewed, reviews, aggregateRating } = options;
 
-	return {
+	const schemaBase: Record<string, unknown> = {
 		"@context": "https://schema.org",
 		"@type": itemReviewed.type || "SoftwareApplication",
 		name: itemReviewed.name,
@@ -488,6 +490,20 @@ export function createEnhancedReviewSchema(
 				url: itemReviewed.image,
 			},
 		}),
+	};
+
+	// Add required SoftwareApplication properties if type is SoftwareApplication
+	if (
+		itemReviewed.type === "SoftwareApplication" ||
+		!itemReviewed.type
+	) {
+		schemaBase.applicationCategory =
+			itemReviewed.applicationCategory ?? "BusinessApplication";
+		schemaBase.operatingSystem = itemReviewed.operatingSystem ?? "Web";
+	}
+
+	return {
+		...schemaBase,
 		aggregateRating: {
 			"@type": "AggregateRating",
 			ratingValue: aggregateRating.ratingValue.toFixed(1),
