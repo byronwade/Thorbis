@@ -52,7 +52,7 @@ export async function AppointmentDetailData({
 
 	// Verify user access
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)

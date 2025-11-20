@@ -81,13 +81,15 @@ export const useCommunicationStore = create<CommunicationStore>((set) => ({
 	composer: {
 		type: null,
 	},
-	openComposer: (type, context) =>
+	openComposer: (type, context) => {
+		console.log("🎭 openComposer called:", { type, context });
 		set({
 			composer: {
 				type,
 				context,
 			},
-		}),
+		});
+	},
 	closeComposer: () =>
 		set({
 			composer: {

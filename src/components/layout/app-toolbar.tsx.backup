@@ -1,0 +1,170 @@
+/**
+ * AppToolbar - Unified Page Toolbar
+ *
+ * Ultra-compact single-row design that intelligently merges:
+ * - Navigation (sidebar trigger, back button)
+ * - Context (title, breadcrumbs)
+ * - Data (inline stats)
+ * - Controls (search, filters, pagination)
+ * - Actions (buttons, menus)
+ *
+ * Responsive Strategy:
+ * - Desktop: All elements visible in intelligent groups
+ * - Tablet: Search/filters collapse to dropdown
+ * - Mobile: Only essential elements visible
+ *
+ * Design Philosophy:
+ * - Minimalistic: No wasted space, clean separators
+ * - Flexible: Sections auto-hide when not needed
+ * - Compact: 56px height (h-14) maintains consistency
+ */
+
+import { isValidElement } from "react";
+import { ToolbarClientActions } from "@/components/layout/toolbar-client-actions";
+import { ToolbarClientStats } from "@/components/layout/toolbar-client-stats";
+import { OfflineIndicator } from "@/components/offline/offline-indicator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ToolbarStatsButton } from "@/components/ui/toolbar-stats-button";
+import { ToolbarStatsInline } from "@/components/ui/toolbar-stats-inline";
+import type { ToolbarConfig } from "@/lib/layout/unified-layout-config";
+import type { ReactNode } from "react";
+
+type AppToolbarProps = {
+	pathname?: string;
+	config: ToolbarConfig;
+	showLeftSidebar?: boolean;
+	showRightSidebar?: boolean;
+	scope?: "layout" | "page";
+};
+
+export function AppToolbar({
+	pathname,
+	config,
+	showLeftSidebar = true,
+	showRightSidebar = false,
+	scope = "page",
+}: AppToolbarProps) {
+	const safePathname = pathname || "/dashboard";
+
+	// Check if stats is a ReactNode component or StatCard[] array
+	const isStatsReactNode = config.stats && isValidElement(config.stats);
+	const isStatsArray = config.stats && Array.isArray(config.stats);
+
+	// Determine stats display mode (backward compatible with showInlineStats)
+	const statsMode = config.statsMode || (config.showInlineStats ? "inline" : "hidden");
+
+	// Determine sections presence
+	const hasTitle = Boolean(config.title || config.subtitle);
+	const hasStats = Boolean(config.stats && statsMode !== "hidden");
+	const hasSearch = Boolean(config.search);
+	const hasPagination = Boolean(config.pagination);
+	const hasActions = Boolean(config.actions);
+
+	return (
+		<header
+			className="border-border/50 bg-background/90 sticky top-0 z-40 flex w-full shrink-0 border-b backdrop-blur-md md:rounded-t-2xl"
+			data-app-toolbar
+			data-app-toolbar-scope={scope}
+		>
+			{/* Single intelligent row - all elements auto-adjust */}
+			<div className="flex h-14 w-full items-center gap-2 px-4 md:gap-3 md:px-6">
+
+				{/* Section 1: Navigation (Fixed Left) */}
+				<div className="flex shrink-0 items-center gap-2">
+					{showLeftSidebar && <SidebarTrigger className="-ml-1" />}
+					{config.back && <div className="flex items-center">{config.back}</div>}
+				</div>
+
+				{/* Section 2: Context (Title or Breadcrumbs) - Hide on small screens if search present */}
+				{!config.breadcrumbs && hasTitle && (
+					<div className={`flex min-w-0 shrink-0 flex-col ${hasSearch ? "hidden lg:flex" : "flex"}`}>
+						{config.title && (
+							<div className="flex items-baseline gap-2">
+								{typeof config.title === "string" ? (
+									<h1 className="truncate text-sm font-semibold md:text-base">{config.title}</h1>
+								) : (
+									<div className="text-sm font-semibold md:text-base">{config.title}</div>
+								)}
+							</div>
+						)}
+						{config.subtitle && (
+							<p className="text-muted-foreground hidden truncate text-xs md:block">
+								{config.subtitle}
+							</p>
+						)}
+					</div>
+				)}
+				{config.breadcrumbs && (
+					<div className={`flex min-w-0 items-center ${hasSearch ? "hidden lg:flex" : "flex"}`}>
+						{config.breadcrumbs}
+					</div>
+				)}
+
+				{/* Section 3: Stats - Inline or Button mode */}
+				{hasStats && (
+					<>
+						{/* Inline mode (desktop only) */}
+						{statsMode === "inline" && (
+							<div
+								className="hidden items-center xl:flex"
+								data-toolbar-default-stats={safePathname}
+							>
+								<div className="bg-border/40 mx-3 h-5 w-px" />
+								{isStatsReactNode && config.stats}
+								{isStatsArray && config.stats.length > 0 && (
+									<ToolbarStatsInline stats={config.stats} />
+								)}
+							</div>
+						)}
+
+						{/* Compact button mode with popover */}
+						{statsMode === "button" && (
+							<div className="flex items-center">
+								<div className="bg-border/40 mx-3 h-5 w-px" />
+								{isStatsArray && config.stats.length > 0 && (
+									<ToolbarStatsButton stats={config.stats} />
+								)}
+								{isStatsReactNode && config.stats}
+							</div>
+						)}
+					</>
+				)}
+
+				{/* Section 3b: Dynamic stats provided via ToolbarStatsProvider */}
+				<ToolbarClientStats pathname={safePathname} />
+
+				{/* Section 4: Search - Flex to fill available space */}
+				{hasSearch && (
+					<div className="flex min-w-0 flex-1 items-center">
+						{config.search}
+					</div>
+				)}
+
+				{/* Spacer - only when no search to push actions right */}
+				{!hasSearch && <div className="flex-1" />}
+
+				{/* Section 5: Controls (Pagination, Filters) - Group on right */}
+				{hasPagination && (
+					<div className="hidden items-center gap-2 sm:flex">
+						<div className="bg-border/40 h-5 w-px" />
+						{config.pagination}
+					</div>
+				)}
+
+				{/* Section 6: Actions (Fixed Right) */}
+				<div className="flex shrink-0 items-center gap-1.5">
+					{hasActions && (
+						<>
+							<div className="bg-border/40 hidden h-5 w-px sm:block" />
+							<div data-toolbar-default-actions={safePathname}>
+								{config.actions}
+							</div>
+						</>
+					)}
+					<ToolbarClientActions pathname={safePathname} />
+					<OfflineIndicator />
+				</div>
+			</div>
+		</header>
+	);
+}

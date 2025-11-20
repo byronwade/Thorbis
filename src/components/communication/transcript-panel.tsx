@@ -180,13 +180,13 @@ export function TranscriptPanel() {
 											{entry.isAnalyzing && (
 												<div className="flex items-center gap-1">
 													<div className="bg-warning size-1 animate-pulse rounded-full" />
-													<span className="text-warning text-[10px]">
+													<span className="text-warning text-xxs">
 														AI Analyzing...
 													</span>
 												</div>
 											)}
 										</div>
-										<span className="text-muted-foreground font-mono text-[10px]">
+										<span className="text-muted-foreground font-mono text-xxs">
 											{formatTime(entry.timestamp)}
 										</span>
 									</div>
@@ -202,12 +202,12 @@ export function TranscriptPanel() {
 											{entry.aiExtracted.customerInfo && (
 												<div className="flex flex-wrap gap-1">
 													{entry.aiExtracted.customerInfo.name && (
-														<span className="bg-success/30 text-success rounded px-2 py-0.5 text-[10px]">
+														<span className="bg-success/30 text-success rounded px-2 py-0.5 text-xxs">
 															Name: {entry.aiExtracted.customerInfo.name}
 														</span>
 													)}
 													{entry.aiExtracted.customerInfo.email && (
-														<span className="bg-success/30 text-success rounded px-2 py-0.5 text-[10px]">
+														<span className="bg-success/30 text-success rounded px-2 py-0.5 text-xxs">
 															Email: {entry.aiExtracted.customerInfo.email}
 														</span>
 													)}
@@ -219,7 +219,7 @@ export function TranscriptPanel() {
 														{entry.aiExtracted.issueCategories.map(
 															(category) => (
 																<span
-																	className="bg-warning/30 text-warning rounded px-2 py-0.5 text-[10px]"
+																	className="bg-warning/30 text-warning rounded px-2 py-0.5 text-xxs"
 																	key={category}
 																>
 																	{category}
@@ -231,12 +231,12 @@ export function TranscriptPanel() {
 											{entry.aiExtracted.sentiment && (
 												<div className="flex items-center gap-1">
 													<span
-														className={`rounded px-2 py-0.5 text-[10px] ${entry.aiExtracted.sentiment === "positive" ? "bg-success/30 text-success" : entry.aiExtracted.sentiment === "negative" ? "bg-destructive/30 text-destructive" : "bg-foreground/30 text-muted-foreground"}`}
+														className={`rounded px-2 py-0.5 text-xxs ${entry.aiExtracted.sentiment === "positive" ? "bg-success/30 text-success" : entry.aiExtracted.sentiment === "negative" ? "bg-destructive/30 text-destructive" : "bg-foreground/30 text-muted-foreground"}`}
 													>
 														Sentiment: {entry.aiExtracted.sentiment}
 													</span>
 													{entry.aiExtracted.confidence !== undefined && (
-														<span className="text-muted-foreground font-mono text-[10px]">
+														<span className="text-muted-foreground font-mono text-xxs">
 															{Math.round(entry.aiExtracted.confidence)}%
 														</span>
 													)}

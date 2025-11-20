@@ -205,7 +205,7 @@ export async function PropertyDetailData({
 		// 8. Activity log
 		supabase
 			.from("activity_log")
-			.select("*, user:users(id, name, email, avatar)")
+			.select("*, user:profiles(id, full_name, email, avatar_url)")
 			.eq("entity_type", "property")
 			.eq("entity_id", propertyId)
 			.order("created_at", { ascending: false })
@@ -214,7 +214,7 @@ export async function PropertyDetailData({
 		// 9. Notes
 		supabase
 			.from("notes")
-			.select("*, user:users(id, name, email, avatar)")
+			.select("*, user:profiles(id, full_name, email, avatar_url)")
 			.eq("entity_type", "property")
 			.eq("entity_id", propertyId)
 			.order("created_at", { ascending: false }),

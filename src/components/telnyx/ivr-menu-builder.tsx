@@ -54,6 +54,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
@@ -470,8 +471,7 @@ function NodeEditorDialog({
 				<div className="space-y-6">
 					{/* Basic Info */}
 					<div className="space-y-4">
-						<div className="space-y-2">
-							<Label htmlFor="node-name">Node Name</Label>
+						<StandardFormField label="Node Name" htmlFor="node-name">
 							<Input
 								id="node-name"
 								onChange={(e) =>
@@ -479,10 +479,12 @@ function NodeEditorDialog({
 								}
 								value={editedNode.name}
 							/>
-						</div>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label htmlFor="node-description">Description (Optional)</Label>
+						<StandardFormField
+							label="Description (Optional)"
+							htmlFor="node-description"
+						>
 							<Input
 								id="node-description"
 								onChange={(e) =>
@@ -490,7 +492,7 @@ function NodeEditorDialog({
 								}
 								value={editedNode.description || ""}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 
 					{/* Greeting */}
@@ -723,8 +725,7 @@ function NodeEditorDialog({
 						<Label>Advanced Settings</Label>
 
 						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-2">
-								<Label htmlFor="timeout">Timeout (seconds)</Label>
+							<StandardFormField label="Timeout (seconds)" htmlFor="timeout">
 								<Input
 									id="timeout"
 									max="60"
@@ -738,10 +739,9 @@ function NodeEditorDialog({
 									type="number"
 									value={editedNode.timeout}
 								/>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="maxRetries">Max Retries</Label>
+							<StandardFormField label="Max Retries" htmlFor="maxRetries">
 								<Input
 									id="maxRetries"
 									max="10"
@@ -755,18 +755,17 @@ function NodeEditorDialog({
 									type="number"
 									value={editedNode.maxRetries}
 								/>
-							</div>
+							</StandardFormField>
 						</div>
 
-						<div className="space-y-2">
-							<Label>Timeout Action</Label>
+						<StandardFormField label="Timeout Action" htmlFor="timeoutAction">
 							<Select
 								onValueChange={(value: ActionType) =>
 									setEditedNode({ ...editedNode, timeoutAction: value })
 								}
 								value={editedNode.timeoutAction}
 							>
-								<SelectTrigger>
+								<SelectTrigger id="timeoutAction">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -776,7 +775,7 @@ function NodeEditorDialog({
 									<SelectItem value="hangup">Hang Up</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 					</div>
 				</div>
 

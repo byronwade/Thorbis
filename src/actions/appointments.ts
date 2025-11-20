@@ -49,15 +49,27 @@ const createAppointmentSchema = z.object({
 	assignedTo: z.string().uuid("Invalid user ID").optional(),
 	title: z.string().min(1, "Appointment title is required"),
 	description: z.string().optional(),
+	category: z
+		.enum([
+			"job_appointment",
+			"estimate_appointment",
+			"event",
+			"meeting",
+			"follow_up",
+			"recurring_service",
+		])
+		.default("job_appointment"),
 	type: z
 		.enum([
-			"service",
-			"consultation",
+			"service_call",
+			"installation",
+			"maintenance",
+			"inspection",
+			"repair",
 			"estimate",
 			"follow_up",
-			"maintenance",
+			"winterization",
 			"emergency",
-			"inspection",
 		])
 		.optional(),
 	priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
@@ -249,6 +261,7 @@ export async function createAppointment(
 			assignedTo: (formData.get("assignedTo") as string) || undefined,
 			title: formData.get("title") as string,
 			description: (formData.get("description") as string) || undefined,
+			category: (formData.get("category") as string) || "job_appointment",
 			type: (formData.get("type") as string) || undefined,
 			priority: (formData.get("priority") as string) || "normal",
 			scheduledStart: formData.get("scheduledStart") as string,
@@ -291,6 +304,7 @@ export async function createAppointment(
 				appointment_number: appointmentNumber,
 				title: validatedData.title,
 				description: validatedData.description,
+				category: validatedData.category,
 				type: validatedData.type,
 				priority: validatedData.priority,
 				scheduled_start: validatedData.scheduledStart,

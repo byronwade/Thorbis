@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	Calendar,
 	CheckCircle2,
@@ -13,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,12 +26,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const portalKeywords = generateSemanticKeywords("customer portal");
 
 export const metadata = generateSEOMetadata({
 	title: "Branded Customer Portal - Self-Service Hub | Thorbis",
@@ -42,6 +55,86 @@ export const metadata = generateSEOMetadata({
 		"customer self-service",
 		"online booking portal",
 		"service business portal",
+		...portalKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "What is a customer portal?",
+		answer:
+			"A customer portal is a secure online hub where your customers can access their account 24/7. With Thorbis, customers can book appointments, view job history, pay invoices, save payment methods, track ongoing jobs in real-time, communicate with your team, and download receipts and invoices. The portal is fully branded with your company logo and colors, making you look professional while reducing phone calls to your office.",
+	},
+	{
+		question: "Can customers book appointments through the portal?",
+		answer:
+			"Yes. Customers can book appointments directly through the portal with real-time availability. They select a service, choose an available time slot, provide job details, and receive instant confirmation via email and SMS. The booking integrates with your scheduling system automatically—no manual entry needed. You can set booking rules like lead time requirements, blackout dates, and service area restrictions.",
+	},
+	{
+		question: "How do customers pay invoices in the portal?",
+		answer:
+			"Customers can view all invoices (open and paid) in the portal and pay online instantly. They can pay with credit cards, debit cards, ACH bank transfers, or digital wallets like Apple Pay and Google Pay. Customers can save payment methods for one-click future payments or set up auto-pay for recurring services. All payments are processed with 0% fees and deposit directly to your bank account.",
+	},
+	{
+		question: "Is the customer portal branded with my company logo?",
+		answer:
+			"Yes. The customer portal is fully white-labeled with your company branding. Add your logo, company name, brand colors, and custom domain (e.g., portal.yourcompany.com). Customers see your brand throughout the experience, not Thorbis. You can customize email notifications, welcome messages, and terms of service. The portal looks and feels like a professional, in-house solution.",
+	},
+	{
+		question: "Can customers track job status in real-time?",
+		answer:
+			"Yes. Customers can see job status updates in real-time including scheduled, en route, in progress, and completed. When a technician is en route, customers see estimated arrival time and can track their location on a map. After completion, customers can view before/after photos, work performed, parts used, and time on site. Push notifications and email updates keep them informed throughout the job lifecycle.",
+	},
+	{
+		question: "How does the portal reduce calls to my office?",
+		answer:
+			"The customer portal reduces calls by 40-60% by enabling self-service for common requests. Instead of calling to book appointments, check job status, request invoices, or make payments, customers can do it themselves 24/7. The portal includes a FAQ section, job history, saved payment methods, and messaging system so customers can get answers instantly without waiting on hold or calling during business hours.",
+	},
+]);
+
+// ItemList Schema - Portal features
+const featuresSchema = createItemListSchema({
+	name: "Customer Portal Features",
+	description:
+		"Complete self-service portal with online booking, payments, and job tracking",
+	items: [
+		{
+			name: "Online Appointment Booking",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"24/7 self-service booking with real-time availability, service selection, job details, and instant confirmation via email and SMS.",
+		},
+		{
+			name: "Invoice Payment & History",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"View all invoices, pay online with credit cards or ACH, save payment methods, and set up auto-pay for recurring services.",
+		},
+		{
+			name: "Real-Time Job Tracking",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"Track job status from scheduled to completion, see technician en route with GPS, view before/after photos, and receive push notifications.",
+		},
+		{
+			name: "Full White-Label Branding",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"Custom logo, company colors, and domain (portal.yourcompany.com). Portal looks like your in-house solution, not a third-party tool.",
+		},
+		{
+			name: "Service History & Equipment",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"Complete job history with photos, equipment serviced, maintenance records, warranty info, and service recommendations.",
+		},
+		{
+			name: "Secure Messaging & Support",
+			url: `${siteUrl}/features/customer-portal`,
+			description:
+				"Direct messaging with your office, automated FAQ section, file attachments, and email notifications for new messages.",
+		},
 	],
 });
 
@@ -53,7 +146,7 @@ export default function CustomerPortalPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -81,6 +174,26 @@ export default function CustomerPortalPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="customer-portal-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="customer-portal-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="customer-portal-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -812,6 +925,17 @@ export default function CustomerPortalPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("customer-portal", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

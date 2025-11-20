@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 /**
  * Knowledge Base Article Page - Server Component
  *
@@ -25,6 +28,8 @@ import {
 	generateArticleStructuredData,
 	generateBreadcrumbStructuredData,
 } from "@/lib/kb/metadata";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
 
 const RELATED_ARTICLE_LIMIT = 5;
 

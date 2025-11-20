@@ -381,7 +381,7 @@ const JobCard = memo(function JobCard({
 										const result = await dispatchAppointment(job.id);
 										if (result.success) {
 											toast.success("Appointment marked as dispatched");
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to dispatch");
 										}
@@ -397,7 +397,7 @@ const JobCard = memo(function JobCard({
 										const result = await arriveAppointment(job.id);
 										if (result.success) {
 											toast.success("Arrival recorded");
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to mark arrival");
 										}
@@ -411,7 +411,7 @@ const JobCard = memo(function JobCard({
 										const result = await closeAppointment(job.id);
 										if (result.success) {
 											toast.success("Appointment closed");
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to close");
 										}
@@ -452,7 +452,7 @@ const JobCard = memo(function JobCard({
 											toast.success(
 												"Appointment cancelled - job moved to unscheduled",
 											);
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to cancel");
 										}
@@ -476,7 +476,7 @@ const JobCard = memo(function JobCard({
 										);
 										if (result.success) {
 											toast.success("Job and appointment cancelled");
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to cancel");
 										}
@@ -491,7 +491,7 @@ const JobCard = memo(function JobCard({
 										const result = await archiveAppointment(job.id);
 										if (result.success) {
 											toast.success("Appointment archived");
-											window.location.reload();
+											// Note: Component manages state via useSchedule hook - refresh handled by parent
 										} else {
 											toast.error(result.error || "Failed to archive");
 										}

@@ -161,10 +161,10 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 	// Empty state - no thread selected
 	if (!thread) {
 		return (
-			<div className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30">
-				<MessageCircle className="h-16 w-16 text-muted-foreground/50 mb-4" />
-				<h3 className="font-semibold text-xl mb-2">No conversation selected</h3>
-				<p className="text-sm text-muted-foreground max-w-sm">
+			<div className="bg-muted/30 flex h-full flex-col items-center justify-center p-8 text-center">
+				<MessageCircle className="text-muted-foreground/50 mb-4 h-16 w-16" />
+				<h3 className="mb-2 text-xl font-semibold">No conversation selected</h3>
+				<p className="text-muted-foreground max-w-sm text-sm">
 					Select a conversation from the list to start messaging
 				</p>
 			</div>
@@ -174,16 +174,16 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 	// Loading state
 	if (isLoading) {
 		return (
-			<div className="flex flex-col h-full p-4 gap-4">
+			<div className="flex h-full flex-col gap-4 p-4">
 				{Array.from({ length: 6 }).map((_, i) => (
 					<div
 						key={i}
-						className={`flex gap-3 animate-pulse ${i % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}
+						className={`flex animate-pulse gap-3 ${i % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}
 					>
-						<div className="h-8 w-8 rounded-full bg-muted" />
+						<div className="bg-muted h-8 w-8 rounded-full" />
 						<div className="space-y-2">
 							<div
-								className={`h-16 rounded-2xl bg-muted ${i % 2 === 0 ? "w-64" : "w-48"}`}
+								className={`bg-muted h-16 rounded-2xl ${i % 2 === 0 ? "w-64" : "w-48"}`}
 							/>
 						</div>
 					</div>
@@ -195,10 +195,10 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 	// Empty conversation
 	if (messages.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center h-full p-8 text-center">
-				<MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-4" />
-				<h3 className="font-semibold text-lg mb-1">No messages yet</h3>
-				<p className="text-sm text-muted-foreground">
+			<div className="flex h-full flex-col items-center justify-center p-8 text-center">
+				<MessageCircle className="text-muted-foreground/50 mb-4 h-12 w-12" />
+				<h3 className="mb-1 text-lg font-semibold">No messages yet</h3>
+				<p className="text-muted-foreground text-sm">
 					Start the conversation by sending a message below
 				</p>
 			</div>
@@ -206,7 +206,7 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 	}
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex h-full flex-col">
 			{/* Messages area */}
 			<div
 				ref={parentRef}
@@ -244,13 +244,13 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 								}}
 							>
 								{showDateSeparator && dateSeparatorText && (
-									<div className="flex items-center justify-center py-4 px-4">
-										<div className="flex items-center gap-3 w-full max-w-md">
-											<div className="flex-1 h-px bg-border" />
-											<span className="text-xs font-medium text-muted-foreground px-3 py-1 rounded-full bg-muted">
+									<div className="flex items-center justify-center px-4 py-4">
+										<div className="flex w-full max-w-md items-center gap-3">
+											<div className="bg-border h-px flex-1" />
+											<span className="text-muted-foreground bg-muted rounded-full px-3 py-1 text-xs font-medium">
 												{dateSeparatorText}
 											</span>
-											<div className="flex-1 h-px bg-border" />
+											<div className="bg-border h-px flex-1" />
 										</div>
 									</div>
 								)}
@@ -276,9 +276,9 @@ export function ConversationView({ threadId }: ConversationViewProps) {
 						</Avatar>
 						<div className="bg-muted rounded-2xl px-4 py-2">
 							<div className="flex gap-1">
-								<div className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:-0.3s]" />
-								<div className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:-0.15s]" />
-								<div className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce" />
+								<div className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
+								<div className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
+								<div className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full" />
 							</div>
 						</div>
 					</div>

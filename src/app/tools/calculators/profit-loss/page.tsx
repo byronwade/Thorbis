@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 export default function ProfitLossCalculator() {
 	// Revenue
@@ -149,8 +153,7 @@ export default function ProfitLossCalculator() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className="space-y-2">
-								<Label htmlFor="revenue">Total Revenue ($)</Label>
+							<StandardFormField label="Total Revenue ($)" htmlFor="revenue">
 								<Input
 									id="revenue"
 									onChange={(e) => setRevenue(e.target.value)}
@@ -158,7 +161,7 @@ export default function ProfitLossCalculator() {
 									type="number"
 									value={revenue}
 								/>
-							</div>
+							</StandardFormField>
 						</CardContent>
 					</Card>
 
@@ -173,33 +176,36 @@ export default function ProfitLossCalculator() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="materials">Materials & Supplies ($)</Label>
+							<StandardFormField
+								label="Materials & Supplies ($)"
+								htmlFor="materials"
+							>
 								<Input
 									id="materials"
 									onChange={(e) => setMaterials(e.target.value)}
 									type="number"
 									value={materials}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="labor">Direct Labor Costs ($)</Label>
+							</StandardFormField>
+							<StandardFormField label="Direct Labor Costs ($)" htmlFor="labor">
 								<Input
 									id="labor"
 									onChange={(e) => setDirectLabor(e.target.value)}
 									type="number"
 									value={directLabor}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="equipment">Equipment & Fleet ($)</Label>
+							</StandardFormField>
+							<StandardFormField
+								label="Equipment & Fleet ($)"
+								htmlFor="equipment"
+							>
 								<Input
 									id="equipment"
 									onChange={(e) => setEquipmentCosts(e.target.value)}
 									type="number"
 									value={equipmentCosts}
 								/>
-							</div>
+							</StandardFormField>
 							<div className="flex justify-between border-t pt-2">
 								<span className="text-sm font-semibold">Total COGS:</span>
 								<span className="font-bold">${cogs.toLocaleString()}</span>
@@ -218,96 +224,75 @@ export default function ProfitLossCalculator() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="rent">
-										Rent/Lease ($)
-									</Label>
+							<StandardFormRow cols={2}>
+								<StandardFormField label="Rent/Lease ($)" htmlFor="rent">
 									<Input
 										id="rent"
 										onChange={(e) => setRent(e.target.value)}
 										type="number"
 										value={rent}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="insurance">
-										Insurance ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Insurance ($)" htmlFor="insurance">
 									<Input
 										id="insurance"
 										onChange={(e) => setInsurance(e.target.value)}
 										type="number"
 										value={insurance}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="utilities">
-										Utilities ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Utilities ($)" htmlFor="utilities">
 									<Input
 										id="utilities"
 										onChange={(e) => setUtilities(e.target.value)}
 										type="number"
 										value={utilities}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="marketing">
-										Marketing ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Marketing ($)" htmlFor="marketing">
 									<Input
 										id="marketing"
 										onChange={(e) => setMarketing(e.target.value)}
 										type="number"
 										value={marketing}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="admin">
-										Admin Salaries ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Admin Salaries ($)" htmlFor="admin">
 									<Input
 										id="admin"
 										onChange={(e) => setAdminSalaries(e.target.value)}
 										type="number"
 										value={adminSalaries}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="supplies">
-										Office Supplies ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField
+									label="Office Supplies ($)"
+									htmlFor="supplies"
+								>
 									<Input
 										id="supplies"
 										onChange={(e) => setOfficeSupplies(e.target.value)}
 										type="number"
 										value={officeSupplies}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="vehicle">
-										Vehicle Maint. ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Vehicle Maint. ($)" htmlFor="vehicle">
 									<Input
 										id="vehicle"
 										onChange={(e) => setVehicleMaintenance(e.target.value)}
 										type="number"
 										value={vehicleMaintenance}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label className="text-sm" htmlFor="other">
-										Other Expenses ($)
-									</Label>
+								</StandardFormField>
+								<StandardFormField label="Other Expenses ($)" htmlFor="other">
 									<Input
 										id="other"
 										onChange={(e) => setOtherExpenses(e.target.value)}
 										type="number"
 										value={otherExpenses}
 									/>
-								</div>
-							</div>
+								</StandardFormField>
+							</StandardFormRow>
 							<div className="flex justify-between border-t pt-2">
 								<span className="text-sm font-semibold">
 									Total Operating Expenses:

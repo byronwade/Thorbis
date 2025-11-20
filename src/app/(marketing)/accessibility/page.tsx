@@ -1,20 +1,31 @@
+"use cache";
+export const cacheLife = "static";
+
 import Script from "next/script";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const accessibilityKeywords = generateSemanticKeywords("accessibility");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Accessibility Statement",
 	description:
-		"Learn about Thorbis’ commitment to accessibility and how to report issues or request accommodations.",
+		"Learn about Thorbis' commitment to accessibility and how to report issues or request accommodations.",
 	path: "/accessibility",
 	section: "Legal",
 	keywords: [
 		"thorbis accessibility",
 		"accessible field service software",
 		"thorbis ada compliance",
+		"wcag compliance",
+		"accessibility statement",
+		...accessibilityKeywords.slice(0, 5),
 	],
 });
 

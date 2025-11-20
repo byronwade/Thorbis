@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	Camera,
 	CheckCircle2,
@@ -11,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,12 +24,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const mobileAppKeywords = generateSemanticKeywords("mobile app");
 
 export const metadata = generateSEOMetadata({
 	title: "Mobile Field Service App - Offline-First | Thorbis",
@@ -40,6 +53,86 @@ export const metadata = generateSEOMetadata({
 		"technician mobile software",
 		"field service app",
 		"mobile work orders",
+		...mobileAppKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "Does the Thorbis mobile app work offline?",
+		answer:
+			"Yes. The Thorbis mobile app is designed with offline-first architecture. Technicians can view job details, complete checklists, take photos, collect signatures, capture payment information, and fill out forms without internet connection. All data is stored locally on the device and automatically syncs to the cloud when connectivity is restored. This ensures your team can work anywhere—in basements, remote areas, or locations with poor cell service.",
+	},
+	{
+		question: "What features are available in the mobile app?",
+		answer:
+			"The mobile app includes complete job management capabilities: view scheduled jobs with customer details and job history, GPS navigation to job sites, digital checklists and forms, photo and video capture with automatic job attachment, customer signature collection, accept payments on-site with credit card reader integration, real-time job status updates, time tracking with clock in/out, equipment and material inventory tracking, and instant messaging with office staff.",
+	},
+	{
+		question: "Can technicians accept payments on their phone?",
+		answer:
+			"Yes. Technicians can accept payments directly in the mobile app using credit cards, debit cards, ACH bank transfers, or digital wallets like Apple Pay and Google Pay. The app integrates with Bluetooth card readers for on-site card payments, generates digital receipts instantly, and syncs payment data with invoices automatically. With 0% processing fees, you keep 100% of every payment collected in the field.",
+	},
+	{
+		question: "How does GPS tracking and navigation work?",
+		answer:
+			"The mobile app includes built-in GPS tracking and navigation. Technicians can see optimized routes to job sites with real-time traffic data, clock in when arriving at the job location, and the office can track technician location in real-time on the dispatch board. Customers receive automated notifications when the technician is en route. GPS tracking runs in the background and respects privacy settings—location is only shared during scheduled work hours.",
+	},
+	{
+		question: "Is the mobile app available for both iPhone and Android?",
+		answer:
+			"Yes. The Thorbis mobile app is available for both iOS (iPhone/iPad) and Android devices. Download from the Apple App Store or Google Play Store. The app has feature parity across both platforms and works on phones and tablets. Minimum requirements: iOS 14+ for Apple devices, Android 8+ for Android devices. The app is optimized for both phone and tablet screen sizes.",
+	},
+	{
+		question: "How do photos and documents sync from the mobile app?",
+		answer:
+			"Photos, videos, and documents captured in the mobile app automatically sync to the customer job record in the cloud. When offline, media is stored locally on the device. When internet connection is available, files upload in the background with progress tracking. Photos are automatically compressed for faster upload while maintaining quality. Synced media appears instantly in the office dashboard, customer portal, and can be attached to invoices or estimates.",
+	},
+]);
+
+// ItemList Schema - Mobile app features
+const featuresSchema = createItemListSchema({
+	name: "Mobile Field Service App Features",
+	description:
+		"Complete offline-first mobile app for field technicians with payment processing and GPS tracking",
+	items: [
+		{
+			name: "Offline-First Architecture",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Work anywhere without internet. Complete jobs, capture photos, collect signatures, and take payments offline. Auto-sync when back online.",
+		},
+		{
+			name: "GPS Navigation & Tracking",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Optimized routes to job sites, real-time technician tracking on dispatch board, automated customer en-route notifications.",
+		},
+		{
+			name: "Mobile Payment Processing",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Accept credit cards, ACH, Apple Pay, and Google Pay on-site. Bluetooth card reader integration with 0% processing fees.",
+		},
+		{
+			name: "Photo & Video Capture",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Take job photos and videos that automatically attach to customer records. Works offline with background sync.",
+		},
+		{
+			name: "Digital Signatures & Forms",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Collect customer signatures, complete digital checklists, fill out custom forms, and capture job completion details.",
+		},
+		{
+			name: "Real-Time Job Updates",
+			url: `${siteUrl}/features/mobile-app`,
+			description:
+				"Update job status, clock in/out, track time and materials, and communicate with office staff instantly.",
+		},
 	],
 });
 
@@ -51,7 +144,7 @@ export default function MobileAppPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -79,6 +172,26 @@ export default function MobileAppPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="mobile-app-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="mobile-app-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="mobile-app-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -473,6 +586,17 @@ export default function MobileAppPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("mobile-app", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

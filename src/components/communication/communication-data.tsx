@@ -45,10 +45,11 @@ export async function CommunicationData() {
 		return <CompanyGate context="communications" hasCompanies={true} />;
 	}
 
-	const { data: communications = [] } = await supabase
-		.from("communications")
-		.select(
-			`
+	const { data: communications = [], error: communicationsError } =
+		await supabase
+			.from("communications")
+			.select(
+				`
         id,
         type,
         direction,
@@ -71,18 +72,24 @@ export async function CommunicationData() {
         provider_metadata,
         sent_at,
         delivered_at,
-        failed_at
+        failure_reason
       `,
-		)
-		.eq("company_id", companyId)
-		.is("deleted_at", null)
-		.order("created_at", { ascending: false })
-		.limit(COMMUNICATION_LIMIT);
+			)
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false })
+			.limit(COMMUNICATION_LIMIT);
+
+	// Log any query errors for debugging
+	if (communicationsError) {
+		console.error("❌ Communications query error:", communicationsError);
+	}
 
 	const { data: phoneNumbers = [] } = await supabase
 		.from("phone_numbers")
 		.select("id, phone_number, formatted_number, status")
 		.eq("company_id", companyId)
+		.eq("status", "active")
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false });
 
@@ -107,6 +114,15 @@ export async function CommunicationData() {
 			label: phone.formatted_number || phone.phone_number,
 			status: phone.status ?? "unknown",
 		}));
+
+	// Debug logging
+	console.log("📊 CommunicationData:", {
+		communicationsCount: normalizedCommunications.length,
+		phoneNumbersCount: companyPhones.length,
+		companyId,
+		hasCommunicationsError: !!communicationsError,
+		sampleCommunication: normalizedCommunications[0],
+	});
 
 	return (
 		<CommunicationVerificationGate companyId={companyId}>

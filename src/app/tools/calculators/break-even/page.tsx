@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 export default function BreakEvenCalculator() {
 	const [fixedCosts, setFixedCosts] = useState<string>("60000");
@@ -107,8 +108,10 @@ export default function BreakEvenCalculator() {
 							<CardDescription>Enter your cost structure</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="space-y-2">
-								<Label htmlFor="fixed">Total Fixed Costs per Year ($)</Label>
+							<StandardFormField
+								label="Total Fixed Costs per Year ($)"
+								htmlFor="fixed"
+							>
 								<Input
 									id="fixed"
 									onChange={(e) => setFixedCosts(e.target.value)}
@@ -120,10 +123,12 @@ export default function BreakEvenCalculator() {
 									Rent, insurance, salaries, utilities - costs that stay the
 									same regardless of sales
 								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="variable">Variable Cost per Job ($)</Label>
+							<StandardFormField
+								label="Variable Cost per Job ($)"
+								htmlFor="variable"
+							>
 								<Input
 									id="variable"
 									onChange={(e) => setVariableCostPerUnit(e.target.value)}
@@ -135,10 +140,12 @@ export default function BreakEvenCalculator() {
 									Materials, direct labor, supplies - costs that increase with
 									each job
 								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="price">Average Price per Job ($)</Label>
+							<StandardFormField
+								label="Average Price per Job ($)"
+								htmlFor="price"
+							>
 								<Input
 									id="price"
 									onChange={(e) => setPricePerUnit(e.target.value)}
@@ -149,7 +156,7 @@ export default function BreakEvenCalculator() {
 								<p className="text-muted-foreground text-xs">
 									What you charge customers on average
 								</p>
-							</div>
+							</StandardFormField>
 						</CardContent>
 					</Card>
 
@@ -164,8 +171,10 @@ export default function BreakEvenCalculator() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className="space-y-2">
-								<Label htmlFor="profit">Target Annual Profit ($)</Label>
+							<StandardFormField
+								label="Target Annual Profit ($)"
+								htmlFor="profit"
+							>
 								<Input
 									id="profit"
 									onChange={(e) => setTargetProfit(e.target.value)}
@@ -176,7 +185,7 @@ export default function BreakEvenCalculator() {
 								<p className="text-muted-foreground text-xs">
 									How much profit you want to make beyond covering costs
 								</p>
-							</div>
+							</StandardFormField>
 						</CardContent>
 					</Card>
 

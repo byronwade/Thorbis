@@ -49,7 +49,7 @@ export async function TeamMemberDetailData({
 
 	// Verify user access
 	const { data: currentUserMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id, role")
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)
@@ -60,13 +60,54 @@ export async function TeamMemberDetailData({
 		return notFound();
 	}
 
-	// Fetch team member with user data
+	// Fetch team member with all employee management fields
 	const { data: teamMember, error } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(
 			`
-      *,
-      user:users(*),
+      id,
+      user_id,
+      company_id,
+      role,
+      permissions,
+      department_id,
+      job_title,
+      status,
+      invited_at,
+      accepted_at,
+      created_at,
+      updated_at,
+      emergency_contact_name,
+      emergency_contact_phone,
+      emergency_contact_relationship,
+      employee_id,
+      hire_date,
+      employment_type,
+      work_schedule,
+      work_location,
+      pay_type,
+      hourly_rate,
+      annual_salary,
+      commission_rate,
+      commission_structure,
+      overtime_eligible,
+      street_address,
+      city,
+      state,
+      postal_code,
+      country,
+      skills,
+      certifications,
+      licenses,
+      service_areas,
+      availability_schedule,
+      max_weekly_hours,
+      preferred_job_types,
+      performance_notes,
+      last_review_date,
+      next_review_date,
+      notes,
+      archived_at,
       company:companies(name)
     `,
 		)
@@ -75,7 +116,46 @@ export async function TeamMemberDetailData({
 		.single();
 
 	if (error || !teamMember) {
+		console.error("Team member fetch error:", error);
+		console.error("Error message:", error?.message);
+		console.error("Error code:", error?.code);
+		console.error("Error details:", error?.details);
+		console.error("Team member ID:", teamMemberId);
+		console.error("Active company ID:", activeCompanyId);
+		console.error("Team member data:", teamMember);
+		console.error("Query was:", {
+			table: "company_memberships",
+			filters: {
+				id: teamMemberId,
+				company_id: activeCompanyId,
+			},
+		});
 		return notFound();
+	}
+
+	// Fetch user data separately from public.users table
+	const { data: userData } = await supabase
+		.from("profiles")
+		.select("id, email, full_name, avatar_url, phone")
+		.eq("id", teamMember.user_id)
+		.maybeSingle();
+
+	// Attach user data to team member
+	if (userData) {
+		// Parse name into firstName and lastName
+		const nameParts = userData.full_name?.split(" ") || [];
+		teamMember.user = {
+			id: userData.id,
+			email: userData.email,
+			first_name: nameParts[0] || null,
+			last_name: nameParts.slice(1).join(" ") || null,
+			avatar_url: userData.avatar_url,
+			phone: userData.phone,
+			name: userData.full_name,
+		};
+	} else {
+		// Fallback if user not found
+		teamMember.user = null;
 	}
 
 	// Fetch related data in parallel

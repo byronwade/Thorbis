@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -43,7 +44,8 @@ export async function getMaintenancePlansPageData(
 	pageSize: number = MAINTENANCE_PLANS_PAGE_SIZE,
 	companyIdOverride?: string,
 ): Promise<MaintenancePlansPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { plans: [], totalCount: 0 };
@@ -69,3 +71,28 @@ export async function getMaintenancePlansPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Fetch complete maintenance plan data including customer, property, and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getMaintenancePlanComplete = cache(
+	async (maintenancePlanId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc(
+			"get_maintenance_plan_complete",
+			{
+				p_maintenance_plan_id: maintenancePlanId,
+				p_company_id: companyId,
+			},
+		);
+
+		if (error) {
+			console.error("Error fetching maintenance plan:", error);
+			return null;
+		}
+
+		return data?.[0]?.maintenance_plan_data || null;
+	},
+);

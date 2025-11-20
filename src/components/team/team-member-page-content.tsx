@@ -13,13 +13,17 @@ import {
 	Building2,
 	Calendar,
 	Clock,
+	DollarSign,
 	Download,
+	Home,
 	Mail,
+	MapPin,
 	MoreVertical,
 	Phone,
 	Plus,
 	Printer,
 	Save,
+	Settings,
 	Share2,
 	Shield,
 	TrendingUp,
@@ -55,6 +59,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import {
 	Table,
 	TableBody,
@@ -589,10 +597,9 @@ export function TeamMemberPageContent({
 				content: (
 					<UnifiedAccordionContent>
 						<div className="space-y-6">
-							<div className="grid gap-6 md:grid-cols-2">
+							<StandardFormRow cols={2}>
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="email">Email</Label>
+									<StandardFormField label="Email" htmlFor="email">
 										<div className="flex gap-2">
 											<Input
 												id="email"
@@ -608,9 +615,9 @@ export function TeamMemberPageContent({
 												</Button>
 											)}
 										</div>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="phone">Phone</Label>
+									</StandardFormField>
+
+									<StandardFormField label="Phone" htmlFor="phone">
 										<div className="flex gap-2">
 											<Input
 												id="phone"
@@ -628,11 +635,11 @@ export function TeamMemberPageContent({
 												</Button>
 											)}
 										</div>
-									</div>
+									</StandardFormField>
 								</div>
+
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="job_title">Job Title</Label>
+									<StandardFormField label="Job Title" htmlFor="job_title">
 										<Input
 											id="job_title"
 											onChange={(e) =>
@@ -640,9 +647,9 @@ export function TeamMemberPageContent({
 											}
 											value={localMember.job_title || ""}
 										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="notes">Notes</Label>
+									</StandardFormField>
+
+									<StandardFormField label="Notes" htmlFor="notes">
 										<Textarea
 											id="notes"
 											onChange={(e) =>
@@ -652,9 +659,506 @@ export function TeamMemberPageContent({
 											rows={3}
 											value={localMember.notes || ""}
 										/>
-									</div>
+									</StandardFormField>
 								</div>
-							</div>
+							</StandardFormRow>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "emergency-contact",
+				title: "Emergency Contact",
+				icon: <Phone className="size-4" />,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormRow cols={3}>
+								<StandardFormField
+									label="Contact Name"
+									htmlFor="emergency_contact_name"
+								>
+									<Input
+										id="emergency_contact_name"
+										onChange={(e) =>
+											handleFieldChange(
+												"emergency_contact_name",
+												e.target.value,
+											)
+										}
+										placeholder="Full name"
+										value={localMember.emergency_contact_name || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Contact Phone"
+									htmlFor="emergency_contact_phone"
+								>
+									<Input
+										id="emergency_contact_phone"
+										onChange={(e) =>
+											handleFieldChange(
+												"emergency_contact_phone",
+												e.target.value,
+											)
+										}
+										placeholder="(555) 123-4567"
+										type="tel"
+										value={localMember.emergency_contact_phone || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Relationship"
+									htmlFor="emergency_contact_relationship"
+								>
+									<Input
+										id="emergency_contact_relationship"
+										onChange={(e) =>
+											handleFieldChange(
+												"emergency_contact_relationship",
+												e.target.value,
+											)
+										}
+										placeholder="Spouse, Parent, etc."
+										value={localMember.emergency_contact_relationship || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "employment-details",
+				title: "Employment Details",
+				icon: <Briefcase className="size-4" />,
+				defaultOpen: false,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormRow cols={2}>
+								<StandardFormField label="Employee ID" htmlFor="employee_id">
+									<Input
+										id="employee_id"
+										onChange={(e) =>
+											handleFieldChange("employee_id", e.target.value)
+										}
+										placeholder="EMP-001"
+										value={localMember.employee_id || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField label="Hire Date" htmlFor="hire_date">
+									<Input
+										id="hire_date"
+										onChange={(e) =>
+											handleFieldChange("hire_date", e.target.value)
+										}
+										type="date"
+										value={localMember.hire_date || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormRow cols={2}>
+								<StandardFormField
+									label="Employment Type"
+									htmlFor="employment_type"
+								>
+									<Input
+										id="employment_type"
+										onChange={(e) =>
+											handleFieldChange("employment_type", e.target.value)
+										}
+										placeholder="Full Time, Part Time, Contractor"
+										value={localMember.employment_type || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Work Location"
+									htmlFor="work_location"
+								>
+									<Input
+										id="work_location"
+										onChange={(e) =>
+											handleFieldChange("work_location", e.target.value)
+										}
+										placeholder="Office, Field, Remote"
+										value={localMember.work_location || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormField label="Work Schedule" htmlFor="work_schedule">
+								<Textarea
+									id="work_schedule"
+									onChange={(e) =>
+										handleFieldChange("work_schedule", e.target.value)
+									}
+									placeholder="Mon-Fri 8am-5pm, etc."
+									rows={2}
+									value={localMember.work_schedule || ""}
+								/>
+							</StandardFormField>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "compensation",
+				title: "Compensation",
+				icon: <DollarSign className="size-4" />,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormRow cols={2}>
+								<StandardFormField label="Pay Type" htmlFor="pay_type">
+									<Input
+										id="pay_type"
+										onChange={(e) =>
+											handleFieldChange("pay_type", e.target.value)
+										}
+										placeholder="Hourly, Salary, Commission"
+										value={localMember.pay_type || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField label="Hourly Rate" htmlFor="hourly_rate">
+									<Input
+										id="hourly_rate"
+										onChange={(e) =>
+											handleFieldChange("hourly_rate", e.target.value)
+										}
+										placeholder="25.00"
+										type="number"
+										step="0.01"
+										value={localMember.hourly_rate || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormRow cols={2}>
+								<StandardFormField
+									label="Annual Salary"
+									htmlFor="annual_salary"
+								>
+									<Input
+										id="annual_salary"
+										onChange={(e) =>
+											handleFieldChange("annual_salary", e.target.value)
+										}
+										placeholder="50000.00"
+										type="number"
+										step="0.01"
+										value={localMember.annual_salary || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Commission Rate (%)"
+									htmlFor="commission_rate"
+								>
+									<Input
+										id="commission_rate"
+										onChange={(e) =>
+											handleFieldChange("commission_rate", e.target.value)
+										}
+										placeholder="5.00"
+										type="number"
+										step="0.01"
+										value={localMember.commission_rate || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormField
+								label="Overtime Eligible"
+								htmlFor="overtime_eligible"
+							>
+								<div className="flex items-center gap-2">
+									<input
+										id="overtime_eligible"
+										type="checkbox"
+										checked={localMember.overtime_eligible ?? true}
+										onChange={(e) =>
+											handleFieldChange("overtime_eligible", e.target.checked)
+										}
+										className="h-4 w-4"
+									/>
+									<Label htmlFor="overtime_eligible">
+										Employee is eligible for overtime pay
+									</Label>
+								</div>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Commission Structure (JSON)"
+								htmlFor="commission_structure"
+							>
+								<Textarea
+									id="commission_structure"
+									onChange={(e) =>
+										handleFieldChange("commission_structure", e.target.value)
+									}
+									placeholder='{"tiers": [{"min": 0, "max": 10000, "rate": 5}]}'
+									rows={3}
+									value={
+										localMember.commission_structure
+											? JSON.stringify(
+													localMember.commission_structure,
+													null,
+													2,
+												)
+											: ""
+									}
+								/>
+								<p className="text-muted-foreground mt-1 text-xs">
+									Advanced commission structure in JSON format
+								</p>
+							</StandardFormField>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "address",
+				title: "Address",
+				icon: <MapPin className="size-4" />,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormField
+								label="Street Address"
+								htmlFor="street_address"
+							>
+								<Input
+									id="street_address"
+									onChange={(e) =>
+										handleFieldChange("street_address", e.target.value)
+									}
+									placeholder="123 Main St"
+									value={localMember.street_address || ""}
+								/>
+							</StandardFormField>
+
+							<StandardFormRow cols={3}>
+								<StandardFormField label="City" htmlFor="city">
+									<Input
+										id="city"
+										onChange={(e) => handleFieldChange("city", e.target.value)}
+										placeholder="San Francisco"
+										value={localMember.city || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField label="State" htmlFor="state">
+									<Input
+										id="state"
+										onChange={(e) => handleFieldChange("state", e.target.value)}
+										placeholder="CA"
+										value={localMember.state || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField label="Zip Code" htmlFor="postal_code">
+									<Input
+										id="postal_code"
+										onChange={(e) =>
+											handleFieldChange("postal_code", e.target.value)
+										}
+										placeholder="94102"
+										value={localMember.postal_code || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormField label="Country" htmlFor="country">
+								<Input
+									id="country"
+									onChange={(e) => handleFieldChange("country", e.target.value)}
+									placeholder="US"
+									value={localMember.country || "US"}
+								/>
+							</StandardFormField>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "work-preferences",
+				title: "Work Preferences",
+				icon: <Settings className="size-4" />,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormField label="Skills" htmlFor="skills">
+								<Textarea
+									id="skills"
+									onChange={(e) =>
+										handleFieldChange(
+											"skills",
+											e.target.value.split(",").map((s) => s.trim()),
+										)
+									}
+									placeholder="HVAC, Plumbing, Electrical (comma separated)"
+									rows={2}
+									value={
+										Array.isArray(localMember.skills)
+											? localMember.skills.join(", ")
+											: ""
+									}
+								/>
+								<p className="text-muted-foreground mt-1 text-xs">
+									Enter skills separated by commas
+								</p>
+							</StandardFormField>
+
+							<StandardFormField label="Service Areas" htmlFor="service_areas">
+								<Textarea
+									id="service_areas"
+									onChange={(e) =>
+										handleFieldChange(
+											"service_areas",
+											e.target.value.split(",").map((s) => s.trim()),
+										)
+									}
+									placeholder="San Francisco, Oakland, Berkeley (comma separated)"
+									rows={2}
+									value={
+										Array.isArray(localMember.service_areas)
+											? localMember.service_areas.join(", ")
+											: ""
+									}
+								/>
+								<p className="text-muted-foreground mt-1 text-xs">
+									Enter service areas separated by commas
+								</p>
+							</StandardFormField>
+
+							<StandardFormRow cols={2}>
+								<StandardFormField
+									label="Max Weekly Hours"
+									htmlFor="max_weekly_hours"
+								>
+									<Input
+										id="max_weekly_hours"
+										onChange={(e) =>
+											handleFieldChange("max_weekly_hours", e.target.value)
+										}
+										placeholder="40"
+										type="number"
+										value={localMember.max_weekly_hours || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Preferred Job Types"
+									htmlFor="preferred_job_types"
+								>
+									<Input
+										id="preferred_job_types"
+										onChange={(e) =>
+											handleFieldChange(
+												"preferred_job_types",
+												e.target.value.split(",").map((s) => s.trim()),
+											)
+										}
+										placeholder="Repair, Maintenance, Installation"
+										value={
+											Array.isArray(localMember.preferred_job_types)
+												? localMember.preferred_job_types.join(", ")
+												: ""
+										}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormField
+								label="Availability Schedule (JSON)"
+								htmlFor="availability_schedule"
+							>
+								<Textarea
+									id="availability_schedule"
+									onChange={(e) =>
+										handleFieldChange("availability_schedule", e.target.value)
+									}
+									placeholder='{"monday": {"start": "08:00", "end": "17:00"}}'
+									rows={4}
+									value={
+										localMember.availability_schedule
+											? JSON.stringify(
+													localMember.availability_schedule,
+													null,
+													2,
+												)
+											: ""
+									}
+								/>
+								<p className="text-muted-foreground mt-1 text-xs">
+									Weekly availability in JSON format
+								</p>
+							</StandardFormField>
+						</div>
+					</UnifiedAccordionContent>
+				),
+			},
+			{
+				id: "performance-tracking",
+				title: "Performance Tracking",
+				icon: <TrendingUp className="size-4" />,
+				content: (
+					<UnifiedAccordionContent>
+						<div className="space-y-6">
+							<StandardFormRow cols={2}>
+								<StandardFormField
+									label="Last Review Date"
+									htmlFor="last_review_date"
+								>
+									<Input
+										id="last_review_date"
+										onChange={(e) =>
+											handleFieldChange("last_review_date", e.target.value)
+										}
+										type="date"
+										value={localMember.last_review_date || ""}
+									/>
+								</StandardFormField>
+
+								<StandardFormField
+									label="Next Review Date"
+									htmlFor="next_review_date"
+								>
+									<Input
+										id="next_review_date"
+										onChange={(e) =>
+											handleFieldChange("next_review_date", e.target.value)
+										}
+										type="date"
+										value={localMember.next_review_date || ""}
+									/>
+								</StandardFormField>
+							</StandardFormRow>
+
+							<StandardFormField
+								label="Performance Notes"
+								htmlFor="performance_notes"
+							>
+								<Textarea
+									id="performance_notes"
+									onChange={(e) =>
+										handleFieldChange("performance_notes", e.target.value)
+									}
+									placeholder="Internal performance notes and feedback..."
+									rows={6}
+									value={localMember.performance_notes || ""}
+								/>
+								<p className="text-muted-foreground mt-1 text-xs">
+									Private notes for manager use only
+								</p>
+							</StandardFormField>
 						</div>
 					</UnifiedAccordionContent>
 				),

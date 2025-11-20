@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
@@ -17,6 +20,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const aboutKeywords = generateSemanticKeywords("about");
 
 export const metadata = generateSEOMetadata({
 	title: "About Thorbis",
@@ -29,6 +37,9 @@ export const metadata = generateSEOMetadata({
 		"thorbis leadership",
 		"thorbis mission",
 		"field service software team",
+		"thorbis company",
+		"who is thorbis",
+		...aboutKeywords.slice(0, 5),
 	],
 });
 
@@ -154,7 +165,7 @@ export default function AboutPage() {
 							trades deliver elite customer experiences. From the first phone
 							call to final invoice, we use AI and automation to remove friction
 							and let people focus on what matters— delighting customers.
-							Pricing stays transparent: $100/month base subscription with
+							Pricing stays transparent: $200/month base subscription with
 							pay-as-you-go usage, unlimited users, and zero lock-in.
 						</p>
 						<div className="flex flex-wrap gap-3">

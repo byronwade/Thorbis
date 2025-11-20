@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDialerShortcut } from "@/hooks/use-dialer-shortcut";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { HelpDropdown } from "./help-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
@@ -42,6 +43,9 @@ type AppHeaderClientProps = {
 		number: string;
 		label?: string;
 	}>;
+	hasPhoneNumbers?: boolean;
+	hasPayrixAccount?: boolean;
+	payrixStatus?: string | null;
 };
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -63,7 +67,7 @@ const navigationItems: NavItemWithMobile[] = [
 	{
 		label: "Ask Thorbis",
 		href: "/dashboard/ai",
-		status: "coming-soon",
+		status: "beta",
 		isSpecial: true,
 		mobileIcon: "AI",
 		mobileIconBg: "bg-primary/10",
@@ -93,7 +97,7 @@ const navigationItems: NavItemWithMobile[] = [
 	{
 		label: "Work",
 		href: "/dashboard/work",
-		status: "new",
+		status: "beta",
 		mobileIcon: "W",
 		mobileIconBg: "bg-teal-500/10",
 		mobileIconColor: "text-teal-600",
@@ -208,12 +212,18 @@ export function AppHeaderClient({
 	activeCompanyId,
 	customers = [],
 	companyPhones = [],
+	hasPhoneNumbers = false,
+	hasPayrixAccount = false,
+	payrixStatus = null,
 }: AppHeaderClientProps) {
 	const pathname = usePathname();
 
 	// Hide header completely on TV display route (not settings)
 	// Check this early to avoid hooks issues
 	const isTVRoute = pathname === "/dashboard/tv";
+
+	// Enable global keyboard shortcut for dialer (Ctrl+Shift+D or Cmd+Shift+D)
+	useDialerShortcut();
 
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
@@ -356,7 +366,7 @@ export function AppHeaderClient({
 							ref={mobileMenuRef}
 						>
 							{/* Header with close button */}
-							<div className="flex items-center justify-between border-b p-4">
+							<div className="flex items-center justify-between border-b-hairline border-border-subtle p-4">
 								<h2 className="text-lg font-semibold">Navigation</h2>
 								<button
 									className="touch-target no-select native-transition hover:bg-accent flex items-center justify-center rounded-md active:scale-95"
@@ -480,7 +490,11 @@ export function AppHeaderClient({
 					</Link>
 
 					{/* Notifications */}
-					<NotificationsDropdown />
+					<NotificationsDropdown
+						hasPhoneNumbers={hasPhoneNumbers}
+						hasPayrixAccount={hasPayrixAccount}
+						payrixStatus={payrixStatus}
+					/>
 
 					{/* Help */}
 					<HelpDropdown />

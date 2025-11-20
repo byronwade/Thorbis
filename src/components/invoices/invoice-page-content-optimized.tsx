@@ -27,7 +27,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { updateEntityTags } from "@/actions/entity-tags";
 import {
 	InvoiceCommunicationsWidget,
 	InvoiceJobWidget,
@@ -37,6 +40,7 @@ import {
 	InvoiceWorkflowWidget,
 } from "@/components/invoices/widgets";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -55,8 +59,24 @@ export function InvoicePageContentOptimized({
 	entityData,
 	metrics,
 }: InvoicePageContentOptimizedProps) {
+	const router = useRouter();
 	const { invoice, customer, company, companyId } = entityData;
 	const [localInvoice, setLocalInvoice] = useState(invoice);
+
+	// Extract tags from junction table data
+	const invoiceTags = useMemo(() => {
+		if (!invoice?.invoice_tags) {
+			return [];
+		}
+		return invoice.invoice_tags.map((it: any) => ({
+			id: it.id,
+			name: it.name,
+			slug: it.slug,
+			color: it.color,
+			category: it.category,
+			icon: it.icon,
+		}));
+	}, [invoice?.invoice_tags]);
 
 	// Get status badge color
 	const getStatusColor = (status: string) => {
@@ -246,6 +266,29 @@ export function InvoicePageContentOptimized({
 						</div>
 					</>
 				)}
+
+				{/* Tags Section */}
+				<>
+					<Separator />
+					<div>
+						<h2 className="mb-3 text-lg font-semibold">Tags</h2>
+						<div className="bg-muted/50 rounded-md p-4">
+							<EntityTags
+								entityId={invoice.id}
+								entityType="invoice"
+								onUpdateTags={async (id, tags) => {
+									const result = await updateEntityTags("invoice", id, tags);
+									if (result.success) {
+										router.refresh();
+									} else {
+										toast.error(result.error || "Failed to update tags");
+									}
+								}}
+								tags={invoiceTags}
+							/>
+						</div>
+					</div>
+				</>
 			</div>
 		</DetailPageContentLayout>
 	);

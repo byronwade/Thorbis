@@ -109,7 +109,7 @@ export function PropertyLocationVisual({
 				{/* Address - Shown once at the top */}
 				<div>
 					<div className="mb-2 flex items-center justify-between">
-						<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+						<div className="text-muted-foreground text-xxs font-semibold tracking-wider uppercase">
 							Service Location
 						</div>
 						<Button

@@ -46,6 +46,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
+import {
 	UnifiedAccordionContent,
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
@@ -234,31 +238,30 @@ export function AppointmentPageContent({
 				defaultOpen: true,
 				content: (
 					<UnifiedAccordionContent>
-						<div className="grid gap-4 md:grid-cols-2">
-							<div>
-								<Label>Start Time</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="Start Time" htmlFor="appt-start-time">
 								<Input
+									id="appt-start-time"
 									readOnly
 									type="datetime-local"
 									value={new Date(appointment.start_time)
 										.toISOString()
 										.slice(0, 16)}
 								/>
-							</div>
-							<div>
-								<Label>End Time</Label>
+							</StandardFormField>
+							<StandardFormField label="End Time" htmlFor="appt-end-time">
 								<Input
+									id="appt-end-time"
 									readOnly
 									type="datetime-local"
 									value={new Date(appointment.end_time)
 										.toISOString()
 										.slice(0, 16)}
 								/>
-							</div>
-							<div>
-								<Label>Status</Label>
+							</StandardFormField>
+							<StandardFormField label="Status" htmlFor="appt-status">
 								<Select value={appointment.status}>
-									<SelectTrigger>
+									<SelectTrigger id="appt-status">
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
@@ -269,15 +272,15 @@ export function AppointmentPageContent({
 										<SelectItem value="cancelled">Cancelled</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
-							<div>
-								<Label>Type</Label>
+							</StandardFormField>
+							<StandardFormField label="Type" htmlFor="appt-type">
 								<Input
+									id="appt-type"
 									readOnly
 									value={appointment.appointment_type || "Service"}
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 					</UnifiedAccordionContent>
 				),
 			},

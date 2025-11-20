@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	Bot,
 	Calendar,
@@ -10,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +23,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const aiKeywords = generateSemanticKeywords("ai assistant");
 
 export const metadata = generateSEOMetadata({
 	title: "AI Dispatch Assistant - 24/7 Call Handling | Thorbis",
@@ -39,6 +52,86 @@ export const metadata = generateSEOMetadata({
 		"24/7 dispatch assistant",
 		"automated call handling",
 		"service business automation",
+		...aiKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "How does the Thorbis AI Assistant work?",
+		answer:
+			"The Thorbis AI Assistant uses advanced natural language processing to handle inbound calls 24/7. When a customer calls, the AI answers professionally using your company name, qualifies the caller's needs by asking relevant questions, checks technician availability in real-time, books appointments directly into your schedule, sends confirmation emails/SMS to the customer, and logs all call details in the CRM. The AI sounds natural and can handle complex conversations including emergencies, service history questions, and pricing inquiries.",
+	},
+	{
+		question: "What happens to calls the AI can't handle?",
+		answer:
+			"If the AI encounters a complex question or customer request it can't handle, it seamlessly transfers the call to your team with context about what the customer needs. The AI recognizes situations requiring human judgment—like custom quotes, warranty disputes, or angry customers—and routes them appropriately. You can configure transfer rules by request type (emergency vs. non-emergency) and time of day. All calls are recorded and transcribed for quality assurance.",
+	},
+	{
+		question: "Can the AI book appointments automatically?",
+		answer:
+			"Yes. The AI Assistant books appointments directly into your schedule by checking real-time technician availability, asking the customer about their preferred date and time, confirming the service needed and location, selecting the best-matched technician based on skills and location, and sending instant confirmation via email and SMS with job details. The AI follows your booking rules including lead time requirements, blackout dates, and service area restrictions. Customers can request specific dates or let the AI suggest the next available slot.",
+	},
+	{
+		question: "Is the AI available 24/7 including weekends?",
+		answer:
+			"Yes. The AI Assistant handles calls 24/7/365 including nights, weekends, and holidays. After-hours calls can be configured to book appointments for the next business day, route emergencies to on-call technicians, or collect customer info and create a callback request. You set the rules for what qualifies as an emergency and which technicians are available for after-hours dispatch. The AI never misses a call or takes a vacation.",
+	},
+	{
+		question: "Can customers understand the AI? Does it sound natural?",
+		answer:
+			"Yes. The Thorbis AI uses state-of-the-art voice synthesis that sounds natural and professional. It adapts to conversation flow, handles interruptions, understands regional accents and dialects, clarifies when it doesn't understand, and maintains context throughout the conversation. Customer feedback shows 92% satisfaction with AI interactions. The AI can be customized with your company's tone, greetings, and responses. Customers often don't realize they're speaking with AI until told.",
+	},
+	{
+		question: "How much does the AI Assistant cost?",
+		answer:
+			"The AI Assistant uses pay-as-you-go pricing at $0.50 per minute of call time. Average calls last 2-4 minutes, so typical cost is $1-2 per call. This is 85% cheaper than hiring a receptionist or answering service. If you process 100 calls per month at 3 minutes average, your cost is $150/month versus $2,000+/month for a full-time receptionist. The AI included in the $200/month base fee can be disabled anytime if you don't want to use it.",
+	},
+]);
+
+// ItemList Schema - AI assistant features
+const featuresSchema = createItemListSchema({
+	name: "AI Dispatch Assistant Features",
+	description:
+		"24/7 intelligent call handling with automated booking and lead qualification",
+	items: [
+		{
+			name: "24/7 Call Answering",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"Never miss a call. AI answers every inbound call instantly, day or night, weekends and holidays. Sounds natural and professional.",
+		},
+		{
+			name: "Automated Appointment Booking",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"AI books appointments directly into your schedule with real-time availability checking, technician matching, and instant confirmation via email and SMS.",
+		},
+		{
+			name: "Lead Qualification",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"AI asks qualifying questions to understand customer needs, service history, urgency, and budget. Routes leads to the right team member with full context.",
+		},
+		{
+			name: "Smart Call Routing",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"AI transfers complex calls to your team with context. Configurable routing rules by request type, time of day, and customer priority.",
+		},
+		{
+			name: "Call Recording & Transcription",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"Every call is recorded and transcribed automatically. Review conversations, extract action items, and train your team with real examples.",
+		},
+		{
+			name: "Multi-Language Support",
+			url: `${siteUrl}/features/ai-assistant`,
+			description:
+				"AI converses in 50+ languages including Spanish, French, and Mandarin. Automatically detects customer language and responds fluently.",
+		},
 	],
 });
 
@@ -51,7 +144,7 @@ export default function AIAssistantPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -79,6 +172,26 @@ export default function AIAssistantPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="ai-assistant-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="ai-assistant-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="ai-assistant-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -417,6 +530,121 @@ export default function AIAssistantPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Easy Setup - No Hassle Section */}
+			<section className="border-y bg-gradient-to-b from-primary/5 to-transparent py-20">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="mx-auto max-w-4xl">
+						<div className="mb-12 text-center">
+							<Badge className="mb-4 gap-1.5 px-3 py-1.5" variant="secondary">
+								<Zap className="size-3.5" />
+								Quick Setup, No Commitment
+							</Badge>
+							<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
+								AI That Works for You
+								<br />
+								Not the Other Way Around
+							</h2>
+							<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+								Unlike enterprise AI solutions, Thorbis AI Assistant is ready in
+								5 minutes. No sales demos, no month-long implementations, no
+								pushy upsells.
+							</p>
+						</div>
+
+						<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							<Card className="transition-all hover:border-primary/30">
+								<CardHeader>
+									<div className="bg-primary/10 mb-3 flex size-10 items-center justify-center rounded-lg">
+										<Zap className="text-primary size-5" />
+									</div>
+									<CardTitle className="text-lg">Setup in 5 Minutes</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-muted-foreground text-sm">
+										Simple form, not a sales questionnaire. Just tell us your
+										company name, business hours, and services. AI is ready to
+										take calls immediately.
+									</p>
+								</CardContent>
+							</Card>
+
+							<Card className="transition-all hover:border-primary/30">
+								<CardHeader>
+									<div className="bg-primary/10 mb-3 flex size-10 items-center justify-center rounded-lg">
+										<CheckCircle2 className="text-primary size-5" />
+									</div>
+									<CardTitle className="text-lg">No Contracts</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-muted-foreground text-sm">
+										Pay-as-you-go pricing. Only charged for minutes actually
+										used. Turn it off anytime if it's not working for you—no
+										penalties.
+									</p>
+								</CardContent>
+							</Card>
+
+							<Card className="transition-all hover:border-primary/30">
+								<CardHeader>
+									<div className="bg-primary/10 mb-3 flex size-10 items-center justify-center rounded-lg">
+										<MessageSquare className="text-primary size-5" />
+									</div>
+									<CardTitle className="text-lg">
+										We Fix What Doesn't Work
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<p className="text-muted-foreground text-sm">
+										AI giving wrong answers? Tell us. We'll fix it within 48
+										hours. Your feedback directly improves the product for
+										everyone.
+									</p>
+								</CardContent>
+							</Card>
+						</div>
+
+						<div className="mt-12 rounded-lg border border-primary/30 bg-card p-6 text-center">
+							<div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
+								<Sparkles className="text-primary size-6" />
+							</div>
+							<h3 className="mb-2 text-xl font-semibold">
+								Try It Risk-Free for 14 Days
+							</h3>
+							<p className="text-muted-foreground mx-auto max-w-2xl">
+								No credit card required. Full access to AI Assistant. If it
+								doesn't book more jobs and save you time, we'll refund you 100%.
+								Zero risk.
+							</p>
+							<div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+								<div className="flex items-center gap-2">
+									<CheckCircle2 className="text-primary size-4" />
+									<span>Free migration help</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckCircle2 className="text-primary size-4" />
+									<span>1-on-1 training included</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckCircle2 className="text-primary size-4" />
+									<span>Cancel anytime</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("ai-assistant", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

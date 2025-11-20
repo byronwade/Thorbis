@@ -34,6 +34,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import { Textarea } from "@/components/ui/textarea";
 import {
 	UnifiedAccordion,
@@ -173,27 +177,24 @@ export function CustomerSidebar({
 					<div className="space-y-4">
 						<h4 className="text-sm font-semibold">Basic Information</h4>
 
-						<div className="grid gap-4 sm:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="firstName">First Name</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="First Name" htmlFor="firstName">
 								<Input
 									defaultValue={customer?.first_name || ""}
 									id="firstName"
 									placeholder="Enter first name"
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="lastName">Last Name</Label>
+							</StandardFormField>
+							<StandardFormField label="Last Name" htmlFor="lastName">
 								<Input
 									defaultValue={customer?.last_name || ""}
 									id="lastName"
 									placeholder="Enter last name"
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 
-						<div className="space-y-2">
-							<Label htmlFor="company">Company</Label>
+						<StandardFormField label="Company" htmlFor="company">
 							<div className="relative">
 								<Building2 className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 								<Input
@@ -203,7 +204,7 @@ export function CustomerSidebar({
 									placeholder="Enter company name"
 								/>
 							</div>
-						</div>
+						</StandardFormField>
 					</div>
 
 					{/* Contact Information */}
@@ -295,8 +296,7 @@ export function CustomerSidebar({
 					<div className="space-y-4">
 						<h4 className="text-sm font-semibold">Address</h4>
 
-						<div className="space-y-2">
-							<Label htmlFor="address">Street Address</Label>
+						<StandardFormField label="Street Address" htmlFor="address">
 							<div className="relative">
 								<MapPin className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
 								<Textarea
@@ -306,34 +306,31 @@ export function CustomerSidebar({
 									placeholder="123 Main Street"
 								/>
 							</div>
-						</div>
+						</StandardFormField>
 
-						<div className="grid gap-4 sm:grid-cols-3">
-							<div className="space-y-2">
-								<Label htmlFor="city">City</Label>
+						<StandardFormRow cols={3}>
+							<StandardFormField label="City" htmlFor="city">
 								<Input
 									defaultValue={customer?.city || ""}
 									id="city"
 									placeholder="City"
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="state">State</Label>
+							</StandardFormField>
+							<StandardFormField label="State" htmlFor="state">
 								<Input
 									defaultValue={customer?.state || ""}
 									id="state"
 									placeholder="State"
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="zipCode">ZIP Code</Label>
+							</StandardFormField>
+							<StandardFormField label="ZIP Code" htmlFor="zipCode">
 								<Input
 									defaultValue={customer?.zip_code || ""}
 									id="zipCode"
 									placeholder="12345"
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 					</div>
 
 					{/* Enrichment Data */}
@@ -341,8 +338,7 @@ export function CustomerSidebar({
 						<div className="space-y-4">
 							<h4 className="text-sm font-semibold">Enrichment Data</h4>
 
-							<div className="space-y-2">
-								<Label htmlFor="website">Website</Label>
+							<StandardFormField label="Website" htmlFor="website">
 								<div className="relative">
 									<Globe className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 									<Input
@@ -353,11 +349,10 @@ export function CustomerSidebar({
 										type="url"
 									/>
 								</div>
-							</div>
+							</StandardFormField>
 
-							<div className="grid gap-4 sm:grid-cols-3">
-								<div className="space-y-2">
-									<Label htmlFor="linkedin">LinkedIn</Label>
+							<StandardFormRow cols={3}>
+								<StandardFormField label="LinkedIn" htmlFor="linkedin">
 									<div className="relative">
 										<Linkedin className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
@@ -367,9 +362,8 @@ export function CustomerSidebar({
 											placeholder="Profile URL"
 										/>
 									</div>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="twitter">Twitter</Label>
+								</StandardFormField>
+								<StandardFormField label="Twitter" htmlFor="twitter">
 									<div className="relative">
 										<Twitter className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
@@ -379,9 +373,8 @@ export function CustomerSidebar({
 											placeholder="@username"
 										/>
 									</div>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="facebook">Facebook</Label>
+								</StandardFormField>
+								<StandardFormField label="Facebook" htmlFor="facebook">
 									<div className="relative">
 										<Facebook className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
@@ -391,8 +384,8 @@ export function CustomerSidebar({
 											placeholder="Profile URL"
 										/>
 									</div>
-								</div>
-							</div>
+								</StandardFormField>
+							</StandardFormRow>
 						</div>
 					)}
 				</div>

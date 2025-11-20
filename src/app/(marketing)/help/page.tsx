@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { getKBArticles, getKBCategories } from "@/actions/kb";
@@ -14,6 +17,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const helpKeywords = generateSemanticKeywords("help center");
 
 export const metadata = generateSEOMetadata({
 	title: "Help Center",
@@ -26,6 +34,9 @@ export const metadata = generateSEOMetadata({
 		"thorbis support",
 		"thorbis documentation",
 		"thorbis contact",
+		"field service support",
+		"customer support",
+		...helpKeywords.slice(0, 5),
 	],
 });
 
@@ -118,7 +129,7 @@ export default async function HelpCenterPage() {
 						<p className="text-muted-foreground text-lg">
 							Search our knowledge base, explore upcoming trainings, and reach
 							the support team in one place. Every plan includes Help Center
-							access with the $100/month base subscription, pay-as-you-go usage,
+							access with the $200/month base subscription, pay-as-you-go usage,
 							and no lock-in.
 						</p>
 						<div className="mt-8">

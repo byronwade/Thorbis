@@ -11,12 +11,15 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteName,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import {
 	createArticleSchema,
 	createBreadcrumbSchema,
 	createFAQSchema,
 } from "@/lib/seo/structured-data";
 import type { KBArticleWithRelations } from "./types";
+
+const kbKeywords = generateSemanticKeywords("knowledge base");
 
 /**
  * Generate metadata for an article page
@@ -148,6 +151,9 @@ export function generateKBHomeMetadata(): Metadata {
 			"knowledge base",
 			"how to",
 			"faq",
+			"field service documentation",
+			"thorbis help",
+			...kbKeywords.slice(0, 5),
 		],
 	});
 }

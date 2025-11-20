@@ -1,5 +1,5 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
@@ -59,17 +59,28 @@ export async function GET(request: NextRequest) {
 	if (!company.email && !company.support_email) missing.push("Email");
 	if (!company.phone && !company.support_phone) missing.push("Phone");
 
+	const primaryContactPhone = company.phone || company.support_phone || null;
+	const primaryContactEmail = company.email || company.support_email || null;
+
 	if (missing.length > 0) {
 		return NextResponse.json({
 			valid: false,
 			error: "Company data is incomplete",
 			missing,
-			company,
+			company: {
+				...company,
+				primary_contact_phone: primaryContactPhone,
+				primary_contact_email: primaryContactEmail,
+			},
 		});
 	}
 
 	return NextResponse.json({
 		valid: true,
-		company,
+		company: {
+			...company,
+			primary_contact_phone: primaryContactPhone,
+			primary_contact_email: primaryContactEmail,
+		},
 	});
 }

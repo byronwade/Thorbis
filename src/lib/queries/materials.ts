@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -58,35 +59,38 @@ export type MaterialsPageResult = {
 	totalCount: number;
 };
 
-export async function getMaterialsPageData(
-	page: number,
-	pageSize: number = MATERIALS_PAGE_SIZE,
-	companyIdOverride?: string,
-): Promise<MaterialsPageResult> {
-	"use cache";
-	const companyId = companyIdOverride ?? (await getActiveCompanyId());
-	if (!companyId) {
-		return { materials: [], totalCount: 0 };
-	}
+export const getMaterialsPageData = cache(
+	async (
+		page: number,
+		pageSize: number = MATERIALS_PAGE_SIZE,
+		companyIdOverride?: string,
+	): Promise<MaterialsPageResult> => {
+		// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+		// which uses cookies(). React.cache() provides request-level deduplication.
+		const companyId = companyIdOverride ?? (await getActiveCompanyId());
+		if (!companyId) {
+			return { materials: [], totalCount: 0 };
+		}
 
-	const supabase = await createServiceSupabaseClient();
-	const start = (Math.max(page, 1) - 1) * pageSize;
-	const end = start + pageSize - 1;
+		const supabase = await createServiceSupabaseClient();
+		const start = (Math.max(page, 1) - 1) * pageSize;
+		const end = start + pageSize - 1;
 
-	const { data, error, count } = await supabase
-		.from("inventory")
-		.select(MATERIALS_SELECT, { count: "exact" })
-		.eq("company_id", companyId)
-		.is("deleted_at", null)
-		.order("updated_at", { ascending: false })
-		.range(start, end);
+		const { data, error, count } = await supabase
+			.from("inventory")
+			.select(MATERIALS_SELECT, { count: "exact" })
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.order("updated_at", { ascending: false })
+			.range(start, end);
 
-	if (error) {
-		throw new Error(`Failed to fetch materials: ${error.message}`);
-	}
+		if (error) {
+			throw new Error(`Failed to fetch materials: ${error.message}`);
+		}
 
-	return {
-		materials: data ?? [],
-		totalCount: count ?? 0,
-	};
-}
+		return {
+			materials: data ?? [],
+			totalCount: count ?? 0,
+		};
+	},
+);

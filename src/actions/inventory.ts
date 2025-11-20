@@ -189,7 +189,7 @@ export async function deleteInventory(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -319,7 +319,7 @@ async function getUserCompanyIdOrThrow(
 	assertAuthenticated(user?.id);
 
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", user.id)
 		.single();
@@ -613,7 +613,7 @@ export async function reserveStock(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -714,7 +714,7 @@ export async function releaseReservedStock(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -800,7 +800,7 @@ export async function useReservedStock(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -899,7 +899,7 @@ export async function archiveInventoryItem(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -967,7 +967,7 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1027,7 +1027,7 @@ export async function getItemsNeedingStockCheck(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();

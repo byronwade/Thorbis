@@ -75,9 +75,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { useDialerCustomers } from "@/hooks/use-dialer-customers";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
+import { useDialerStore } from "@/lib/stores/dialer-store";
 import { useUIStore } from "@/lib/stores/ui-store";
 import {
 	fetchWebRTCCredentialsOnce,
@@ -165,12 +167,15 @@ export function PhoneDropdown({
 }: PhoneDropdownProps) {
 	const { toast } = useToast();
 	const [mounted, setMounted] = useState(false);
-	const [open, setOpen] = useState(false);
 	const [isPending, _startTransition] = useTransition();
 
 	// PERFORMANCE: Lazy-load customers only when dropdown opens
 	// Saves 400-800ms per page load by not fetching ALL customers upfront
+	const [open, setOpen] = useState(false);
 	const { customers, isLoading: customersLoading } = useDialerCustomers(open);
+
+	// Dialer store state
+	const dialerStore = useDialerStore();
 
 	// Dialer state
 	const [toNumber, setToNumber] = useState("");
@@ -198,34 +203,48 @@ export function PhoneDropdown({
 
 	// Lazily load WebRTC credentials when dialer opens
 	useEffect(() => {
-		if (!open || webrtcCredentials || isLoadingWebRTC) {
+		if (!open || webrtcCredentials) {
 			return;
 		}
 
 		let cancelled = false;
-		setIsLoadingWebRTC(true);
 
+		// Only set loading if not already set
+		if (!isLoadingWebRTC) {
+			setIsLoadingWebRTC(true);
+		}
+
+		console.log("📡 Starting WebRTC credential fetch...");
 		fetchWebRTCCredentialsOnce()
 			.then((result) => {
+				console.log("📡 Credential fetch result:", result);
 				if (cancelled) {
+					console.log("📡 Fetch cancelled (component unmounted)");
 					return;
 				}
 				if (result.success && result.credential) {
+					console.log("📡 Setting credentials:", {
+						username: result.credential.username,
+						hasPassword: !!result.credential.password,
+					});
 					setWebrtcCredentials({
 						username: result.credential.username,
 						password: result.credential.password,
 					});
 				} else if (result.error) {
+					console.error("📡 WebRTC setup error:", result.error);
 					toast.error(`WebRTC setup failed: ${result.error}`);
 				}
 			})
-			.catch(() => {
+			.catch((error) => {
+				console.error("📡 Credential fetch failed:", error);
 				if (!cancelled) {
 					toast.error("Failed to initialize calling. Please refresh the page.");
 					resetWebRTCCredentialsCache();
 				}
 			})
 			.finally(() => {
+				console.log("📡 Credential fetch complete");
 				if (!cancelled) {
 					setIsLoadingWebRTC(false);
 				}
@@ -234,7 +253,7 @@ export function PhoneDropdown({
 		return () => {
 			cancelled = true;
 		};
-	}, [open, webrtcCredentials, isLoadingWebRTC, toast]);
+	}, [open, webrtcCredentials, toast]);
 
 	// PERFORMANCE: Initialize WebRTC ONLY when dropdown is opened
 	// Prevents creating connections on every page load (was hitting Telnyx 5-connection limit)
@@ -288,15 +307,42 @@ export function PhoneDropdown({
 		setMounted(true);
 	}, []);
 
-	// Reset form when dropdown opens
-	const handleOpenChange = useCallback((newOpen: boolean) => {
-		setOpen(newOpen);
-		if (!newOpen) {
-			// Reset on close
-			setToNumber("");
-			setSelectedCustomer(null);
+	// Sync dialer store state to local state (store → local)
+	// Only update when store changes, not when local state changes
+	useEffect(() => {
+		setOpen(dialerStore.isOpen);
+	}, [dialerStore.isOpen]);
+
+	useEffect(() => {
+		setToNumber(dialerStore.phoneNumber);
+	}, [dialerStore.phoneNumber]);
+
+	// When store provides a customer, find and select them
+	useEffect(() => {
+		if (dialerStore.customerId && customers.length > 0) {
+			const customer = customers.find((c) => c.id === dialerStore.customerId);
+			if (customer && customer.id !== selectedCustomer?.id) {
+				setSelectedCustomer(customer);
+			}
 		}
-	}, []);
+	}, [dialerStore.customerId, customers]);
+
+	// Reset form when dropdown opens
+	const handleOpenChange = useCallback(
+		(newOpen: boolean) => {
+			setOpen(newOpen);
+			// Update store
+			if (newOpen) {
+				dialerStore.openDialer();
+			} else {
+				dialerStore.closeDialer();
+				// Reset on close
+				setToNumber("");
+				setSelectedCustomer(null);
+			}
+		},
+		[dialerStore],
+	);
 
 	// Handle customer selection
 	const handleCustomerSelect = useCallback((customer: Customer | null) => {
@@ -451,6 +497,34 @@ export function PhoneDropdown({
 			!isLoadingWebRTC,
 	);
 
+	// Debug logging
+	useEffect(() => {
+		if (open) {
+			console.log("📞 PhoneDropdown state:", {
+				toNumber: toNumber.trim(),
+				fromNumber,
+				companyPhonesLength: companyPhones.length,
+				webrtcConnected: webrtc.isConnected,
+				webrtcConnecting: webrtc.isConnecting,
+				webrtcError: webrtc.connectionError,
+				isLoadingWebRTC,
+				canCall,
+				webrtcCredentials: !!webrtcCredentials,
+			});
+		}
+	}, [
+		open,
+		toNumber,
+		fromNumber,
+		companyPhones.length,
+		webrtc.isConnected,
+		webrtc.isConnecting,
+		webrtc.connectionError,
+		isLoadingWebRTC,
+		canCall,
+		webrtcCredentials,
+	]);
+
 	// Debug button state - MUST be before any conditional returns
 	useEffect(() => {
 		if (open) {
@@ -574,6 +648,35 @@ export function PhoneDropdown({
 						</>
 					)}
 
+					{/* WebRTC Connection Warning */}
+					{webrtc.connectionError && (
+						<>
+							<div className="rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-950/20">
+								<div className="flex items-start gap-2">
+									<AlertCircle className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+									<div className="flex-1 space-y-1">
+										<p className="text-sm font-semibold text-yellow-900 dark:text-yellow-100">
+											Browser Calling Not Available
+										</p>
+										<p className="text-xs text-yellow-800 dark:text-yellow-200">
+											WebRTC calling requires Level 2 Telnyx verification
+											(identity verification). This is a Telnyx platform
+											requirement for SIP authentication.
+										</p>
+										<p className="text-xs text-yellow-800 dark:text-yellow-200">
+											Alternative: Use the Call Control API to initiate calls,
+											then control them in a popup window.
+										</p>
+										<p className="mt-2 text-xs font-medium text-yellow-700 dark:text-yellow-300">
+											Error: {webrtc.connectionError}
+										</p>
+									</div>
+								</div>
+							</div>
+							<DropdownMenuSeparator />
+						</>
+					)}
+
 					{/* Customer Search */}
 					<div className="space-y-2">
 						<Label className="text-xs">Customer (Optional)</Label>
@@ -595,15 +698,24 @@ export function PhoneDropdown({
 									</span>
 								</Button>
 							</PopoverTrigger>
-							<PopoverContent align="start" className="w-80 p-0">
-								<Command shouldFilter={false}>
+							<PopoverContent
+								align="start"
+								className="w-80 border border-border bg-white p-0 shadow-lg dark:bg-popover"
+							>
+								<Command
+									shouldFilter={false}
+									className="bg-white dark:bg-popover"
+								>
 									<CommandInput
 										onValueChange={setCustomerSearchQuery}
 										placeholder="Search by name, email, phone, or property address..."
 										value={customerSearchQuery}
+										className="border-b border-border"
 									/>
-									<CommandList>
-										<CommandEmpty>No customers found.</CommandEmpty>
+									<CommandList className="max-h-[300px]">
+										<CommandEmpty className="py-6 text-center text-sm text-gray-500 dark:text-muted-foreground">
+											No customers found.
+										</CommandEmpty>
 										<CommandGroup>
 											{displayedCustomers.map((customer) => {
 												const contactLine = getCustomerContactLine(customer);
@@ -622,23 +734,24 @@ export function PhoneDropdown({
 														key={customer.id}
 														onSelect={() => handleCustomerSelect(customer)}
 														value={itemValue}
+														className="cursor-pointer px-4 py-3 hover:bg-gray-100 aria-selected:bg-gray-100 dark:hover:bg-accent dark:aria-selected:bg-accent"
 													>
-														<div className="flex flex-1 flex-col">
-															<span className="text-sm font-medium">
+														<div className="flex flex-1 flex-col gap-1">
+															<span className="text-sm font-medium text-gray-900 dark:text-foreground">
 																{getCustomerFullName(customer)}
 															</span>
 															{customer.company_name && (
-																<span className="text-muted-foreground text-xs">
+																<span className="text-xs text-gray-600 dark:text-muted-foreground">
 																	{customer.company_name}
 																</span>
 															)}
 															{contactLine && (
-																<span className="text-muted-foreground text-xs">
+																<span className="text-xs text-gray-600 dark:text-muted-foreground">
 																	{contactLine}
 																</span>
 															)}
 															{addressLine && (
-																<span className="text-muted-foreground text-xs">
+																<span className="text-xs text-gray-600 dark:text-muted-foreground">
 																	{addressLine}
 																</span>
 															)}
@@ -664,10 +777,7 @@ export function PhoneDropdown({
 					</div>
 
 					{/* To Number */}
-					<div className="space-y-2">
-						<Label className="text-xs" htmlFor="to-number">
-							To
-						</Label>
+					<StandardFormField label="To" htmlFor="to-number">
 						<Input
 							disabled={isPending}
 							id="to-number"
@@ -675,13 +785,10 @@ export function PhoneDropdown({
 							placeholder="+1 (555) 123-4567"
 							value={toNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* From Number */}
-					<div className="space-y-2">
-						<Label className="text-xs" htmlFor="from-number">
-							From (Company Line)
-						</Label>
+					<StandardFormField label="From (Company Line)" htmlFor="from-number">
 						<Select
 							disabled={companyPhones.length === 0 || isPending}
 							onValueChange={setFromNumber}
@@ -703,7 +810,7 @@ export function PhoneDropdown({
 								No company phone numbers configured
 							</p>
 						)}
-					</div>
+					</StandardFormField>
 
 					{/* Call Button */}
 					<Button

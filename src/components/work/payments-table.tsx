@@ -218,7 +218,6 @@ export function PaymentsTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/payments/${payment.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{payment.payment_number}
@@ -307,19 +306,13 @@ export function PaymentsTable({
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link
-									href={`/dashboard/work/payments/${payment.id}`}
-									prefetch={false}
-								>
+								<Link href={`/dashboard/work/payments/${payment.id}`}>
 									<Eye className="mr-2 size-4" />
 									View Details
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
-								<Link
-									href={`/dashboard/work/payments/${payment.id}/edit`}
-									prefetch={false}
-								>
+								<Link href={`/dashboard/work/payments/${payment.id}/edit`}>
 									<Edit className="mr-2 size-4" />
 									Edit Payment
 								</Link>

@@ -13,6 +13,9 @@ import {
 	SEO_URLS,
 } from "./config";
 
+// Re-export advanced schemas for convenience
+export * from "./advanced-schemas";
+
 export type OrganizationSchemaOptions = {
 	name?: string;
 	legalName?: string;
@@ -31,7 +34,13 @@ export function createOrganizationSchema(
 		legalName = SEO_BRAND.company,
 		url = SEO_URLS.site,
 		logoPath = "/logo.png",
-		sameAs = [],
+		sameAs = [
+			SEO_SOCIAL.profiles.facebook,
+			SEO_SOCIAL.profiles.linkedin,
+			SEO_SOCIAL.profiles.youtube,
+			SEO_SOCIAL.profiles.instagram,
+			SEO_SOCIAL.profiles.github,
+		],
 		contactEmail = SEO_URLS.supportEmail,
 		contactPhone,
 	} = options;

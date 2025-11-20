@@ -63,7 +63,7 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
 
 	// Fetch all technicians/team members for the company
 	const { data: technicians, error: techError } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(
 			`
         user_id,

@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "static";
+
 import Script from "next/script";
 
 import { Button } from "@/components/ui/button";
@@ -6,6 +9,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const statusKeywords = generateSemanticKeywords("status");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis System Status",
@@ -13,7 +21,15 @@ export const metadata = generateSEOMetadata({
 		"View real-time uptime information for Thorbis services, APIs, and integrations.",
 	path: "/status",
 	section: "Company",
-	keywords: ["thorbis status", "thorbis uptime", "thorbis service status"],
+	keywords: [
+		"thorbis status",
+		"thorbis uptime",
+		"thorbis service status",
+		"system status",
+		"service uptime",
+		"system health",
+		...statusKeywords.slice(0, 5),
+	],
 });
 
 export default function StatusPage() {

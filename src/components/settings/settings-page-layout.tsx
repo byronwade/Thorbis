@@ -32,6 +32,7 @@
  */
 
 import { Check, HelpCircle, Loader2, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,6 +86,7 @@ export function SettingsPageLayout({
 	saveButtonText = "Save Settings",
 	children,
 }: SettingsPageLayoutProps) {
+	const router = useRouter();
 	// Standard loading state
 	if (isLoading) {
 		return (
@@ -162,7 +164,7 @@ export function SettingsPageLayout({
 					<div className="flex gap-3">
 						<Button
 							disabled={isPending}
-							onClick={onCancel || (() => window.location.reload())}
+							onClick={onCancel || (() => router.refresh())}
 							type="button"
 							variant="outline"
 						>

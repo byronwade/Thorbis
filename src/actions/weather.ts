@@ -39,7 +39,7 @@ export async function getCompanyWeather(): Promise<WeatherActionResult> {
 
 		// Try 1: Get from team_members with maybeSingle
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")

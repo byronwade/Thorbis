@@ -202,7 +202,7 @@ const requireCompanyId = async (
 	userId: string,
 ): Promise<string> => {
 	const { data, error } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", userId)
 		.eq("status", "active")

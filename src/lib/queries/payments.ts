@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -63,7 +64,8 @@ export async function getPaymentsPageData(
 	page: number,
 	pageSize: number = PAYMENTS_PAGE_SIZE,
 ): Promise<PaymentsPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = await getActiveCompanyId();
 	if (!companyId) {
 		return { payments: [], totalCount: 0 };
@@ -90,3 +92,25 @@ export async function getPaymentsPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Fetch complete payment data including customer, invoice, job, and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getPaymentComplete = cache(
+	async (paymentId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_payment_complete", {
+			p_payment_id: paymentId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching payment:", error);
+			return null;
+		}
+
+		return data?.[0]?.payment_data || null;
+	},
+);

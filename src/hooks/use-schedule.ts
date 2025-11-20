@@ -134,7 +134,7 @@ export function useSchedule() {
 
 				if (!companyId) {
 					const { data: membership, error: membershipError } = await supabase
-						.from("team_members")
+						.from("company_memberships")
 						.select("company_id")
 						.eq("user_id", user.id)
 						.eq("status", "active")

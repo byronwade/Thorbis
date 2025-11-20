@@ -9,6 +9,7 @@ import {
 	Send,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { bulkArchive } from "@/actions/archive";
@@ -28,6 +29,7 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type PurchaseOrder = {
@@ -50,6 +52,7 @@ type JobPurchaseOrdersTableProps = {
 export function JobPurchaseOrdersTable({
 	purchaseOrders,
 }: JobPurchaseOrdersTableProps) {
+	const router = useRouter();
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -81,8 +84,8 @@ export function JobPurchaseOrdersTable({
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
-				// Refresh the page to reflect changes
-				window.location.reload();
+				// Soft navigation - Server Component refetches with revalidatePath()
+				router.refresh();
 			} else {
 				toast.error("Failed to archive purchase orders");
 			}
@@ -103,7 +106,7 @@ export function JobPurchaseOrdersTable({
 				render: (po) => (
 					<div className="flex min-w-0 items-center gap-2">
 						<Link
-							className="text-foreground hover:text-primary truncate text-sm font-medium transition-colors hover:underline"
+							className="text-foreground hover:text-primary truncate text-xs font-medium transition-colors hover:underline"
 							href={`/dashboard/work/purchase-orders/${po.id}`}
 							title={po.po_number}
 						>
@@ -128,7 +131,7 @@ export function JobPurchaseOrdersTable({
 						onClick={(e) => e.stopPropagation()}
 						title={po.title || undefined}
 					>
-						<span className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
+						<span className="text-foreground truncate text-xs leading-tight font-medium hover:underline">
 							{po.title || "—"}
 						</span>
 					</Link>
@@ -141,7 +144,7 @@ export function JobPurchaseOrdersTable({
 				shrink: true,
 				render: (po) => (
 					<span
-						className="text-foreground block truncate text-sm"
+						className="text-foreground block truncate text-xs"
 						title={po.vendor}
 					>
 						{po.vendor}
@@ -164,7 +167,7 @@ export function JobPurchaseOrdersTable({
 				shrink: true,
 				align: "right",
 				render: (po) => (
-					<span className="text-sm font-semibold tabular-nums">
+					<span className="text-xs font-semibold tabular-nums">
 						{formatCurrencyCents(po.total_amount)}
 					</span>
 				),
@@ -176,7 +179,7 @@ export function JobPurchaseOrdersTable({
 				shrink: true,
 				hideOnMobile: true,
 				render: (po) => (
-					<span className="text-muted-foreground text-sm tabular-nums">
+					<span className="text-muted-foreground text-xs tabular-nums">
 						{po.expected_delivery
 							? formatDate(po.expected_delivery, "short")
 							: "—"}
@@ -236,13 +239,14 @@ export function JobPurchaseOrdersTable({
 	return (
 		<>
 			<FullWidthDataTable
+				{...TablePresets.compact()}
 				bulkActions={bulkActions}
 				columns={columns}
 				data={purchaseOrders}
 				emptyIcon={<Package className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No purchase orders found for this job"
-				enableSelection={true}
 				getItemId={(po) => po.id}
+				noPadding={true}
 				searchFilter={(po, query) => {
 					const searchLower = query.toLowerCase();
 					return (
@@ -253,7 +257,6 @@ export function JobPurchaseOrdersTable({
 					);
 				}}
 				searchPlaceholder="Search purchase orders..."
-				showPagination={true}
 			/>
 
 			<ArchiveConfirmDialog

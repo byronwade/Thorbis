@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
@@ -11,7 +14,12 @@ import {
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import { createHowToSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const implementationKeywords = generateSemanticKeywords("implementation");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Implementation & Customer Success",
@@ -23,6 +31,10 @@ export const metadata = generateSEOMetadata({
 		"thorbis implementation",
 		"field service onboarding",
 		"customer success program thorbis",
+		"software implementation",
+		"onboarding process",
+		"migration services",
+		...implementationKeywords.slice(0, 5),
 	],
 });
 
@@ -193,7 +205,7 @@ export default function ImplementationPage() {
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Dedicated migration engineers, AI strategists, and customer success
 						coaches guide your team from day-one planning to long-term
-						optimization. Implementation is included in the $100/month base
+						optimization. Implementation is included in the $200/month base
 						subscription with pay-as-you-go usage—no surprise onboarding fees
 						and no lock-in.
 					</p>

@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -17,7 +20,12 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import { createHowToSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const switchKeywords = generateSemanticKeywords("migration");
 
 export const metadata = generateSEOMetadata({
 	title: "Switch to Thorbis Migration Center",
@@ -30,6 +38,9 @@ export const metadata = generateSEOMetadata({
 		"servicetitan migration",
 		"housecall pro upgrade",
 		"jobber alternative",
+		"migrate to thorbis",
+		"switch field service software",
+		...switchKeywords.slice(0, 5),
 	],
 });
 
@@ -126,7 +137,7 @@ export default function SwitchToThorbisPage() {
 						We migrate data, re-engineer workflows, and train your team while
 						you stay focused on customers. Compare migration paths from
 						ServiceTitan, Housecall Pro, Jobber, and more knowing pricing is
-						just $100/month base with pay-as-you-go usage, unlimited users, and
+						just $200/month base with pay-as-you-go usage, unlimited users, and
 						no lock-in.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">

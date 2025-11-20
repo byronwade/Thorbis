@@ -18,7 +18,7 @@ export async function GET() {
 		// Fetch user's companies via team_members join
 		// Exclude archived companies (deleted_at IS NULL)
 		const { data: memberships, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select(
 				`
 				company_id,

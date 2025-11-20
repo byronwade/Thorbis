@@ -32,6 +32,7 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
+import { JobCostingCard } from "./job-costing-card";
 
 type JobStatisticsSheetProps = {
 	open: boolean;
@@ -43,6 +44,7 @@ type JobStatisticsSheetProps = {
 	invoices: any[];
 	payments: any[];
 	jobMaterials: any[];
+	onUpdateCosting?: (data: any) => Promise<void>;
 };
 
 const CENTS_PER_DOLLAR = 100;
@@ -57,6 +59,7 @@ export function JobStatisticsSheet({
 	invoices,
 	payments,
 	jobMaterials,
+	onUpdateCosting,
 }: JobStatisticsSheetProps) {
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-US", {
@@ -273,60 +276,34 @@ export function JobStatisticsSheet({
 						</div>
 					</div>
 
-					{/* JOB COSTING */}
-					<div className="space-y-4">
-						<div className="flex items-center gap-2">
-							<Package className="text-muted-foreground h-5 w-5" />
-							<h3 className="text-lg font-semibold">Job Costing</h3>
-						</div>
-
-						<Card>
-							<CardContent className="space-y-4 p-6">
-								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Labor Cost
-									</span>
-									<span className="font-semibold tabular-nums">
-										{formatCurrency(detailedMetrics.laborCost)}
-									</span>
-								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Materials Cost
-									</span>
-									<span className="font-semibold tabular-nums">
-										{formatCurrency(detailedMetrics.materialsCost)}
-									</span>
-								</div>
-								<Separator />
-								<div className="flex items-center justify-between">
-									<span className="font-semibold">Total Cost</span>
-									<span className="text-lg font-bold tabular-nums">
-										{formatCurrency(detailedMetrics.totalCost)}
-									</span>
-								</div>
-								<div className="flex items-center justify-between">
-									<div className="flex items-center gap-2">
-										{detailedMetrics.profit >= 0 ? (
-											<TrendingUp className="text-success dark:text-success h-4 w-4" />
-										) : (
-											<TrendingDown className="text-destructive dark:text-destructive h-4 w-4" />
-										)}
-										<span className="font-semibold">Net Profit</span>
-									</div>
-									<span
-										className={`text-lg font-bold tabular-nums ${
-											detailedMetrics.profit >= 0
-												? "text-success dark:text-success"
-												: "text-destructive dark:text-destructive"
-										}`}
-									>
-										{formatCurrency(detailedMetrics.profit)}
-									</span>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
+					{/* JOB COSTING - Full interactive component */}
+					<JobCostingCard
+						jobId={job.id}
+						costing={{
+							labor_hours_estimated: job.labor_hours_estimated,
+							labor_hours_actual:
+								job.labor_hours_actual || metrics.totalLaborHours,
+							labor_rate: job.labor_rate,
+							labor_burden_percent: job.labor_burden_percent || 30,
+							labor_cost_total: job.labor_cost_total,
+							materials_cost_actual:
+								job.materials_cost_actual ||
+								detailedMetrics.materialsCost / 100,
+							materials_markup_percent: job.materials_markup_percent || 50,
+							materials_revenue: job.materials_revenue,
+							equipment_cost: job.equipment_cost,
+							subcontractor_cost: job.subcontractor_cost,
+							overhead_allocation: job.overhead_allocation,
+							total_cost_actual:
+								job.total_cost_actual || detailedMetrics.totalCost / 100,
+							total_revenue: job.total_revenue || metrics.totalAmount / 100,
+							profit_margin_actual:
+								job.profit_margin_actual || detailedMetrics.profitMargin,
+							profit_margin_target: job.profit_margin_target || 40,
+						}}
+						editable={true}
+						onSave={onUpdateCosting}
+					/>
 
 					{/* LABOR & TIME TRACKING */}
 					<div className="space-y-4">

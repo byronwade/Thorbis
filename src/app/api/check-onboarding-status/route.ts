@@ -39,7 +39,7 @@ export async function GET() {
 
 		// Check the ACTIVE company's payment status
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select(
 				"company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)",
 			)

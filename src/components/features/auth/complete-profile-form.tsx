@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -153,8 +154,12 @@ export function CompleteProfileForm({
 			>
 				{/* Name Field (if missing) */}
 				{!existingName && (
-					<div className="space-y-1">
-						<Label htmlFor="name">Full name*</Label>
+					<StandardFormField
+						label="Full name"
+						htmlFor="name"
+						description="This will be displayed on your profile and in communications"
+						required
+					>
 						<Input
 							autoComplete="name"
 							autoFocus
@@ -164,16 +169,17 @@ export function CompleteProfileForm({
 							placeholder="Byron Wade"
 							required
 						/>
-						<p className="text-muted-foreground text-xs">
-							This will be displayed on your profile and in communications
-						</p>
-					</div>
+					</StandardFormField>
 				)}
 
 				{/* Phone Field (always shown if missing) */}
 				{!existingPhone && (
-					<div className="space-y-1">
-						<Label htmlFor="phone">Mobile phone*</Label>
+					<StandardFormField
+						label="Mobile phone"
+						htmlFor="phone"
+						description="We'll text urgent dispatch alerts and MFA codes here. Please verify this is a number you can receive texts on."
+						required
+					>
 						<Input
 							autoComplete="tel"
 							disabled={isLoading}
@@ -185,23 +191,23 @@ export function CompleteProfileForm({
 							required
 							type="tel"
 						/>
-						<p className="text-muted-foreground text-xs">
-							We'll text urgent dispatch alerts and MFA codes here. Please
-							verify this is a number you can receive texts on.
-						</p>
-					</div>
+					</StandardFormField>
 				)}
 
 				{/* Profile Image (optional) */}
-				<div className="space-y-2">
-					<Label htmlFor="avatar">
-						Profile image{" "}
-						{existingAvatar && !hasChangedAvatar && (
-							<span className="text-muted-foreground text-xs font-normal">
-								(from Google)
-							</span>
-						)}
-					</Label>
+				<StandardFormField
+					label={
+						<>
+							Profile image{" "}
+							{existingAvatar && !hasChangedAvatar && (
+								<span className="text-muted-foreground text-xs font-normal">
+									(from Google)
+								</span>
+							)}
+						</>
+					}
+					htmlFor="avatar"
+				>
 					<div className="border-border/70 flex flex-col gap-4 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center">
 						<div className="border-border/80 relative size-20 shrink-0 overflow-hidden rounded-full border">
 							{avatarPreview ? (
@@ -241,7 +247,7 @@ export function CompleteProfileForm({
 							)}
 						</div>
 					</div>
-				</div>
+				</StandardFormField>
 
 				{/* Submit Button */}
 				<Button className="w-full" disabled={isLoading} type="submit">

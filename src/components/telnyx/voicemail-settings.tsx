@@ -45,6 +45,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -178,8 +179,7 @@ export function VoicemailSettings() {
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{/* Greeting Type Selection */}
-					<div className="space-y-2">
-						<Label htmlFor="greetingType">Greeting Type</Label>
+					<StandardFormField label="Greeting Type" htmlFor="greetingType">
 						<Select
 							onValueChange={(value: VoicemailGreeting["type"]) =>
 								setGreeting({ ...greeting, type: value })
@@ -210,7 +210,7 @@ export function VoicemailSettings() {
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Default Greeting Info */}
 					{greeting.type === "default" && (
@@ -227,8 +227,11 @@ export function VoicemailSettings() {
 					{/* Text-to-Speech Configuration */}
 					{greeting.type === "text-to-speech" && (
 						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="ttsText">Greeting Text</Label>
+							<StandardFormField
+								label="Greeting Text"
+								htmlFor="ttsText"
+								description="Keep it concise (15-30 seconds when spoken)"
+							>
 								<Textarea
 									id="ttsText"
 									onChange={(e) =>
@@ -238,13 +241,9 @@ export function VoicemailSettings() {
 									rows={4}
 									value={greeting.content || ""}
 								/>
-								<p className="text-muted-foreground text-xs">
-									Keep it concise (15-30 seconds when spoken)
-								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="ttsVoice">Voice</Label>
+							<StandardFormField label="Voice" htmlFor="ttsVoice">
 								<Select
 									onValueChange={(value) =>
 										setGreeting({ ...greeting, voice: value })
@@ -262,7 +261,7 @@ export function VoicemailSettings() {
 										))}
 									</SelectContent>
 								</Select>
-							</div>
+							</StandardFormField>
 
 							{greeting.content && (
 								<Button onClick={togglePlayback} variant="outline">
@@ -414,8 +413,11 @@ export function VoicemailSettings() {
 						</div>
 
 						{notifications.emailEnabled && (
-							<div className="space-y-2">
-								<Label htmlFor="emailAddresses">Email Addresses</Label>
+							<StandardFormField
+								label="Email Addresses"
+								htmlFor="emailAddresses"
+								description="Separate multiple addresses with commas"
+							>
 								<Input
 									id="emailAddresses"
 									onChange={(e) =>
@@ -428,10 +430,7 @@ export function VoicemailSettings() {
 									type="email"
 									value={notifications.emailAddresses[0] || ""}
 								/>
-								<p className="text-muted-foreground text-xs">
-									Separate multiple addresses with commas
-								</p>
-							</div>
+							</StandardFormField>
 						)}
 					</div>
 
@@ -454,8 +453,7 @@ export function VoicemailSettings() {
 						</div>
 
 						{notifications.smsEnabled && (
-							<div className="space-y-2">
-								<Label htmlFor="smsNumbers">Phone Number</Label>
+							<StandardFormField label="Phone Number" htmlFor="smsNumbers">
 								<Input
 									id="smsNumbers"
 									onChange={(e) =>
@@ -468,7 +466,7 @@ export function VoicemailSettings() {
 									type="tel"
 									value={notifications.smsNumbers[0] || ""}
 								/>
-							</div>
+							</StandardFormField>
 						)}
 					</div>
 
@@ -507,8 +505,7 @@ export function VoicemailSettings() {
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
-						<div className="space-y-2">
-							<Label htmlFor="maxLength">Max Message Length</Label>
+						<StandardFormField label="Max Message Length" htmlFor="maxLength">
 							<Select
 								onValueChange={(value) =>
 									setBoxSettings({
@@ -528,10 +525,9 @@ export function VoicemailSettings() {
 									<SelectItem value="300">5 minutes</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label htmlFor="maxMessages">Max Messages</Label>
+						<StandardFormField label="Max Messages" htmlFor="maxMessages">
 							<Select
 								onValueChange={(value) =>
 									setBoxSettings({
@@ -551,10 +547,9 @@ export function VoicemailSettings() {
 									<SelectItem value="500">500 messages</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label htmlFor="deleteAfter">Auto-Delete After</Label>
+						<StandardFormField label="Auto-Delete After" htmlFor="deleteAfter">
 							<Select
 								onValueChange={(value) =>
 									setBoxSettings({
@@ -575,7 +570,7 @@ export function VoicemailSettings() {
 									<SelectItem value="0">Never</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 					</div>
 
 					<div className="flex items-center justify-between">
@@ -595,8 +590,7 @@ export function VoicemailSettings() {
 					</div>
 
 					{boxSettings.requirePin && (
-						<div className="space-y-2">
-							<Label htmlFor="pin">PIN Code</Label>
+						<StandardFormField label="PIN Code" htmlFor="pin">
 							<Input
 								id="pin"
 								maxLength={6}
@@ -607,7 +601,7 @@ export function VoicemailSettings() {
 								type="password"
 								value={boxSettings.pin || ""}
 							/>
-						</div>
+						</StandardFormField>
 					)}
 				</CardContent>
 			</Card>

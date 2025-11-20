@@ -62,6 +62,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	Table,
 	TableBody,
@@ -1176,16 +1177,14 @@ export function PurchaseOrderPageContent({
 								</Badge>
 							</div>
 						</div>
-						<div>
-							<Label htmlFor="status-notes">Notes (Optional)</Label>
+						<StandardFormField label="Notes (Optional)" htmlFor="status-notes">
 							<Textarea
-								className="mt-2"
 								id="status-notes"
 								onChange={(e) => setStatusUpdateNotes(e.target.value)}
 								placeholder="Add any notes about this status change..."
 								value={statusUpdateNotes}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 					<DialogFooter className="flex-col gap-2 sm:flex-row">
 						<Button

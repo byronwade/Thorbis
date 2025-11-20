@@ -1,23 +1,66 @@
 "use client";
 
 /**
- * FullWidthDataTable - Reusable Component
- * Gmail-style full-width table layout for all datatables
+ * FullWidthDataTable - Universal Table Component
+ * Enterprise-grade table with design system variants for consistent UX
  *
- * Features:
+ * DESIGN SYSTEM VARIANTS:
+ * - full: Main list pages (50 items/page, full features, standard padding)
+ * - compact: Detail view tables (20 items/page, streamlined, reduced padding)
+ * - nested: Deeply nested tables (10 items/page, minimal, tight spacing)
+ *
+ * FEATURES:
  * - Full-width responsive layout
  * - Row selection with checkboxes
  * - Bulk actions toolbar
- * - Search filtering
- * - Pagination OR Virtual Scrolling (auto-detected)
+ * - Search filtering (client-side or server-side)
+ * - Pagination with server-side support
+ * - Virtual scrolling for 1,000+ rows (auto-detected)
  * - Unread/status highlighting
- * - Hover effects
+ * - Hover effects and transitions
  * - Custom column rendering
+ * - Column reordering (drag-and-drop)
+ * - Column visibility toggling
+ * - Sortable columns
+ * - Archive status support
  *
  * PERFORMANCE:
  * - Automatically uses virtualization for datasets > 1000 rows
- * - Can be forced on/off with enableVirtualization prop
- * - Virtual scrolling renders only ~20 visible rows for 60fps performance
+ * - React.cache() compatible for query deduplication
+ * - Optimized re-renders with Zustand state management
+ * - 60fps scrolling in virtual mode
+ *
+ * DESIGN SYSTEM:
+ * - Consistent spacing, colors, and typography across variants
+ * - Unified row height, cell padding, and gap sizes
+ * - Standardized hover states and selection highlighting
+ * - Accessibility-first design (ARIA labels, keyboard navigation)
+ *
+ * @example Full variant (main lists)
+ * <FullWidthDataTable
+ *   variant="full"
+ *   data={customers}
+ *   columns={columns}
+ *   getItemId={(c) => c.id}
+ *   entity="customers"
+ * />
+ *
+ * @example Compact variant (detail views)
+ * <FullWidthDataTable
+ *   variant="compact"
+ *   data={jobPayments}
+ *   columns={columns}
+ *   getItemId={(p) => p.id}
+ * />
+ *
+ * @example Nested variant (deeply nested)
+ * <FullWidthDataTable
+ *   variant="nested"
+ *   data={invoiceLineItems}
+ *   columns={columns}
+ *   getItemId={(i) => i.id}
+ *   showPagination={false}
+ * />
  */
 
 import {
@@ -61,7 +104,19 @@ import {
 } from "@/lib/datatable/custom-column-renderer";
 import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 import { useDataTableColumnsStore } from "@/lib/stores/datatable-columns-store";
+import { cn } from "@/lib/utils";
 
+/**
+ * Table display variants for different use cases
+ * - full: Full-featured table for main list pages (default)
+ * - compact: Streamlined table for detail views and nested tables
+ * - nested: Extra compact for deeply nested views (minimal padding)
+ */
+export type TableVariant = "full" | "compact" | "nested";
+
+/**
+ * Column definition for table display
+ */
 export type ColumnDef<T> = {
 	/** Unique identifier for the column */
 	key: string;
@@ -93,7 +148,7 @@ export type BulkAction = {
 	/** Action handler */
 	onClick: (selectedIds: Set<string>) => void;
 	/** Variant style */
-	variant?: "default" | "destructive" | "ghost";
+	variant?: "default" | "destructive" | "outline" | "ghost";
 };
 
 // Sortable Column Header Component
@@ -193,6 +248,9 @@ function SortableColumnHeader<T>({
 	);
 }
 
+/**
+ * Props for FullWidthDataTable component
+ */
 export type FullWidthDataTableProps<T> = {
 	/** Array of data items to display */
 	data: T[];
@@ -200,56 +258,30 @@ export type FullWidthDataTableProps<T> = {
 	columns: ColumnDef<T>[];
 	/** Function to extract unique ID from item */
 	getItemId: (item: T) => string;
+
+	// === DESIGN SYSTEM ===
+	/** Table display variant (full: main lists, compact: detail views, nested: deeply nested) */
+	variant?: TableVariant;
+
+	// === ROW HIGHLIGHTING ===
 	/** Function to determine if row should be highlighted (e.g., unread) */
 	isHighlighted?: (item: T) => boolean;
 	/** Function to get highlight background class */
 	getHighlightClass?: (item: T) => string;
+
+	// === INTERACTIONS ===
 	/** Handler when row is clicked */
 	onRowClick?: (item: T) => void;
 	/** Bulk actions to show when items are selected */
 	bulkActions?: BulkAction[];
+	/** Enable row selection */
+	enableSelection?: boolean;
+
+	// === SEARCH & FILTERING ===
 	/** Search placeholder text */
 	searchPlaceholder?: string;
 	/** Function to filter items based on search query */
 	searchFilter?: (item: T, query: string) => boolean;
-	/** Empty state message */
-	emptyMessage?: string;
-	/** Empty state icon */
-	emptyIcon?: React.ReactNode;
-	/** Empty state action button (e.g., "Add Job") */
-	emptyAction?: React.ReactNode;
-	/** Show refresh button (default: false for automatic updates) */
-	showRefresh?: boolean;
-	/** Refresh handler */
-	onRefresh?: () => void;
-	/** Show pagination */
-	showPagination?: boolean;
-	/** Items per page (default 50) */
-	itemsPerPage?: number;
-	/** Total count from server (for accurate pagination display with server-side pagination) */
-	totalCount?: number;
-	/** Current page (for server-side pagination, passed from URL params) */
-	currentPageFromServer?: number;
-	/** Data is already paginated on the server (skip client-side slicing) */
-	serverPagination?: boolean;
-	/** Custom toolbar actions (rendered on right side) */
-	toolbarActions?: React.ReactNode;
-	/** Enable row selection */
-	enableSelection?: boolean;
-	/** Custom row className */
-	getRowClassName?: (item: T) => string;
-	/** Enable virtual scrolling (auto: true if data.length > 1000, false otherwise) */
-	enableVirtualization?: boolean | "auto";
-	/** Row height for virtualization (default: 60px) */
-	virtualRowHeight?: number;
-	/** Overscan for virtualization (default: 5) */
-	virtualOverscan?: number;
-	/** Entity type for column visibility persistence (e.g., "appointments", "jobs") */
-	entity?: string;
-	/** Show archived items (default: true) */
-	showArchived?: boolean;
-	/** Function to determine if item is archived */
-	isArchived?: (item: T) => boolean;
 	/** Initial search query from server (for server-side search) */
 	initialSearchQuery?: string;
 	/** Enable server-driven search (updates query string instead of client filtering) */
@@ -258,12 +290,130 @@ export type FullWidthDataTableProps<T> = {
 	searchParamKey?: string;
 	/** Debounce (ms) before triggering server search */
 	searchDebounceMs?: number;
+
+	// === EMPTY STATE ===
+	/** Empty state message */
+	emptyMessage?: string;
+	/** Empty state icon */
+	emptyIcon?: React.ReactNode;
+	/** Empty state action button (e.g., "Add Job") */
+	emptyAction?: React.ReactNode;
+
+	// === REFRESH ===
+	/** Show refresh button (default: false for automatic updates) */
+	showRefresh?: boolean;
+	/** Refresh handler */
+	onRefresh?: () => void;
+
+	// === PAGINATION ===
+	/** Show pagination */
+	showPagination?: boolean;
+	/** Items per page (default 50 for full, 20 for compact, 10 for nested) */
+	itemsPerPage?: number;
+	/** Total count from server (for accurate pagination display with server-side pagination) */
+	totalCount?: number;
+	/** Current page (for server-side pagination, passed from URL params) */
+	currentPageFromServer?: number;
+	/** Data is already paginated on the server (skip client-side slicing) */
+	serverPagination?: boolean;
+
+	// === TOOLBAR ===
+	/** Custom toolbar actions (rendered on right side) */
+	toolbarActions?: React.ReactNode;
+	/** Remove padding from toolbar (useful when embedded in accordions) */
+	noPadding?: boolean;
+
+	// === ROW CUSTOMIZATION ===
+	/** Custom row className */
+	getRowClassName?: (item: T) => string;
+
+	// === VIRTUALIZATION ===
+	/** Enable virtual scrolling (auto: true if data.length > 1000, false otherwise) */
+	enableVirtualization?: boolean | "auto";
+	/** Row height for virtualization (auto-calculated based on variant) */
+	virtualRowHeight?: number;
+	/** Overscan for virtualization (default: 5) */
+	virtualOverscan?: number;
+
+	// === COLUMN MANAGEMENT ===
+	/** Entity type for column visibility persistence (e.g., "appointments", "jobs") */
+	entity?: string;
+
+	// === ARCHIVE SUPPORT ===
+	/** Show archived items (default: true) */
+	showArchived?: boolean;
+	/** Function to determine if item is archived */
+	isArchived?: (item: T) => boolean;
 };
 
+/**
+ * Design system configuration for table variants
+ */
+const VARIANT_CONFIG = {
+	full: {
+		// Main list tables - full features
+		itemsPerPage: 50,
+		virtualRowHeight: 60,
+		toolbarPadding: "px-4 py-2 sm:px-4",
+		headerPadding: "px-4 py-2",
+		rowPadding: "px-3 py-1.5 sm:px-4 sm:py-2",
+		cellPadding: "px-2",
+		headerTextSize: "text-xs",
+		cellTextSize: "text-sm",
+		headerBg: "bg-muted dark:bg-muted",
+		rowBg: "bg-card",
+		rowBgAlt: "bg-card/70",
+		rowHover: "table-row-hover", // Use new utility with inset glow
+		borderColor: "border-border-subtle", // Use subtle border color for hairlines
+		gapSize: "gap-4 sm:gap-6",
+		showPagination: true,
+		showSearch: true,
+	},
+	compact: {
+		// Detail view tables - streamlined
+		itemsPerPage: 20,
+		virtualRowHeight: 48,
+		toolbarPadding: "px-3 py-1.5 sm:px-3",
+		headerPadding: "px-3 py-1.5",
+		rowPadding: "px-2 py-1 sm:px-3 sm:py-1.5",
+		cellPadding: "px-1.5",
+		headerTextSize: "text-[11px]",
+		cellTextSize: "text-xs",
+		headerBg: "bg-muted/80 dark:bg-muted/60",
+		rowBg: "bg-background",
+		rowBgAlt: "bg-muted/20 dark:bg-muted/10",
+		rowHover: "table-row-hover", // Use new utility
+		borderColor: "border-border-subtle", // Use subtle border
+		gapSize: "gap-3 sm:gap-4",
+		showPagination: true,
+		showSearch: true,
+	},
+	nested: {
+		// Deeply nested tables - minimal
+		itemsPerPage: 10,
+		virtualRowHeight: 40,
+		toolbarPadding: "px-2 py-1",
+		headerPadding: "px-2 py-1",
+		rowPadding: "px-1.5 py-0.5 sm:px-2 sm:py-1",
+		cellPadding: "px-1",
+		headerTextSize: "text-[10px]",
+		cellTextSize: "text-[11px]",
+		headerBg: "bg-muted/60 dark:bg-muted/40",
+		rowBg: "bg-background",
+		rowBgAlt: "bg-muted/10 dark:bg-muted/5",
+		rowHover: "table-row-hover", // Use new utility
+		borderColor: "border-border-subtle", // Use subtle border
+		gapSize: "gap-2 sm:gap-3",
+		showPagination: false,
+		showSearch: false,
+	},
+} as const;
+
 export function FullWidthDataTable<T>({
-	data,
+	data = [] as T[],
 	columns,
 	getItemId,
+	variant = "full",
 	isHighlighted,
 	getHighlightClass,
 	onRowClick,
@@ -275,8 +425,8 @@ export function FullWidthDataTable<T>({
 	emptyAction,
 	showRefresh = false,
 	onRefresh,
-	showPagination = true,
-	itemsPerPage = 50,
+	showPagination,
+	itemsPerPage,
 	totalCount,
 	currentPageFromServer = 1,
 	serverPagination = false,
@@ -284,7 +434,7 @@ export function FullWidthDataTable<T>({
 	enableSelection = true,
 	getRowClassName,
 	enableVirtualization = "auto",
-	virtualRowHeight = 60,
+	virtualRowHeight,
 	virtualOverscan = 5,
 	entity,
 	showArchived = true,
@@ -293,7 +443,17 @@ export function FullWidthDataTable<T>({
 	serverSearch = false,
 	searchParamKey = "search",
 	searchDebounceMs = 300,
+	noPadding = false,
 }: FullWidthDataTableProps<T>) {
+	// Get variant configuration
+	const config = VARIANT_CONFIG[variant];
+
+	// Apply variant defaults if not explicitly provided
+	const effectiveItemsPerPage = itemsPerPage ?? config.itemsPerPage;
+	const effectiveVirtualRowHeight = virtualRowHeight ?? config.virtualRowHeight;
+	const effectiveShowPagination = showPagination ?? config.showPagination;
+	const effectiveShowSearch =
+		(searchFilter || serverSearch) && config.showSearch;
 	const router = useRouter();
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
@@ -573,7 +733,7 @@ export function FullWidthDataTable<T>({
 	const rowVirtualizer = useVirtualizer({
 		count: useVirtualization ? sortedData.length : 0,
 		getScrollElement: () => scrollContainerRef.current,
-		estimateSize: () => virtualRowHeight,
+		estimateSize: () => effectiveVirtualRowHeight,
 		overscan: virtualOverscan,
 		enabled: useVirtualization,
 	});
@@ -583,18 +743,18 @@ export function FullWidthDataTable<T>({
 		if (useVirtualization) {
 			return sortedData;
 		}
-		if (!showPagination || serverPagination) {
+		if (!effectiveShowPagination || serverPagination) {
 			// Data already represents the correct slice (either virtualized or server-paginated)
 			return sortedData;
 		}
-		const start = (currentPage - 1) * itemsPerPage;
-		const end = start + itemsPerPage;
+		const start = (currentPage - 1) * effectiveItemsPerPage;
+		const end = start + effectiveItemsPerPage;
 		return sortedData.slice(start, end);
 	}, [
 		sortedData,
 		currentPage,
-		itemsPerPage,
-		showPagination,
+		effectiveItemsPerPage,
+		effectiveShowPagination,
 		serverPagination,
 		useVirtualization,
 	]);
@@ -617,7 +777,7 @@ export function FullWidthDataTable<T>({
 
 	// Use totalCount from server if provided, otherwise calculate from client data
 	const totalPages = Math.ceil(
-		(totalCount || sortedData.length) / itemsPerPage,
+		(totalCount || sortedData.length) / effectiveItemsPerPage,
 	);
 
 	// Selection handlers
@@ -776,72 +936,23 @@ export function FullWidthDataTable<T>({
 	};
 
 	return (
-		<div className="bg-background relative flex h-full flex-col overflow-hidden">
+		<div className="bg-background relative flex h-full flex-1 flex-col overflow-hidden">
 			<div
 				className="momentum-scroll flex-1 overflow-auto"
 				ref={scrollContainerRef}
 			>
 				{/* Sticky Top Toolbar */}
 				<div
-					className="border-border/30 bg-background dark:bg-background sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-2 sm:px-4"
+					className={cn(
+						"bg-background dark:bg-background sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b-hairline border-border-subtle sm:gap-2",
+						config.borderColor,
+						noPadding ? "px-0 py-0" : config.toolbarPadding,
+					)}
 					ref={toolbarRef}
 				>
-					{/* Left Section - Selection & Actions */}
+					{/* Left Section - Search */}
 					<div className="flex items-center gap-1.5 sm:gap-2">
-						{enableSelection && (
-							<div className="touch-target flex items-center justify-center">
-								<Checkbox
-									aria-label="Select all"
-									checked={isAllSelected}
-									onCheckedChange={handleSelectAll}
-								/>
-							</div>
-						)}
-
-						{showRefresh && (
-							<Button
-								className="touch-target transition-all duration-200 hover:scale-105 active:scale-95"
-								onClick={onRefresh}
-								size="icon"
-								title="Refresh"
-								variant="ghost"
-							>
-								<RefreshCw className="h-4 w-4" />
-							</Button>
-						)}
-
-						{/* Bulk Actions */}
-						{selectedIds.size > 0 && bulkActions.length > 0 && (
-							<>
-								<div className="bg-border mx-1.5 hidden h-4 w-px md:block" />
-								<div className="flex flex-wrap items-center gap-1.5">
-									{bulkActions.map((action, index) => (
-										<Button
-											className="shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
-											key={index}
-											onClick={() => action.onClick(selectedIds)}
-											size="sm"
-											variant={action.variant || "ghost"}
-										>
-											{action.icon}
-											<span className="ml-2 hidden sm:inline">
-												{action.label}
-											</span>
-										</Button>
-									))}
-									<span className="text-muted-foreground ml-1 text-xs font-medium">
-										{selectedIds.size} selected
-									</span>
-								</div>
-							</>
-						)}
-					</div>
-
-					{/* Right Section - Search & Pagination */}
-					<div className="ml-auto flex flex-wrap items-center gap-2">
-						{toolbarActions}
-
-						{(searchFilter || serverSearch) && (
+						{effectiveShowSearch && (
 							<div className="relative">
 								<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
 								<Input
@@ -855,10 +966,58 @@ export function FullWidthDataTable<T>({
 								/>
 							</div>
 						)}
+					</div>
 
-						{showPagination && !useVirtualization && (
+					{/* Middle Section - Bulk Actions */}
+					{selectedIds.size > 0 && bulkActions.length > 0 && (
+						<>
+							<div className="bg-border/50 mx-2 h-5 w-px" />
+							<div className="flex flex-wrap items-center gap-2">
+								{bulkActions.map((action, index) => (
+									<Button
+										className={cn(
+											"transition-all duration-200 hover:scale-105 active:scale-95",
+											action.variant === "destructive" &&
+												"text-white hover:text-white dark:text-white",
+										)}
+										key={index}
+										onClick={() => action.onClick(selectedIds)}
+										size="sm"
+										variant={action.variant || "outline"}
+									>
+										{action.icon}
+										<span className="ml-2 hidden sm:inline">
+											{action.label}
+										</span>
+									</Button>
+								))}
+								<div className="bg-border/50 mx-1 h-5 w-px" />
+								<span className="text-muted-foreground text-xs font-medium tabular-nums">
+									{selectedIds.size} selected
+								</span>
+							</div>
+						</>
+					)}
+
+					{/* Right Section - Toolbar Actions & Pagination */}
+					<div className="ml-auto flex flex-wrap items-center gap-2">
+						{showRefresh && (
+							<Button
+								className="touch-target transition-all duration-200 hover:scale-105 active:scale-95"
+								onClick={onRefresh}
+								size="icon"
+								title="Refresh"
+								variant="ghost"
+							>
+								<RefreshCw className="h-4 w-4" />
+							</Button>
+						)}
+
+						{toolbarActions}
+
+						{effectiveShowPagination && !useVirtualization && (
 							<>
-								<div className="bg-border hidden h-4 w-px md:block" />
+								<div className="bg-border/50 h-5 w-px" />
 								<div className="flex items-center gap-2">
 									<Button
 										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
@@ -870,9 +1029,9 @@ export function FullWidthDataTable<T>({
 										<ChevronLeft className="h-4 w-4" />
 									</Button>
 									<span className="text-muted-foreground text-xs font-medium text-nowrap tabular-nums">
-										{(currentPage - 1) * itemsPerPage + 1}-
+										{(currentPage - 1) * effectiveItemsPerPage + 1}-
 										{Math.min(
-											currentPage * itemsPerPage,
+											currentPage * effectiveItemsPerPage,
 											totalCount || filteredData.length,
 										)}{" "}
 										of {(totalCount || filteredData.length).toLocaleString()}
@@ -891,7 +1050,7 @@ export function FullWidthDataTable<T>({
 						)}
 						{useVirtualization && (
 							<>
-								<div className="bg-border hidden h-4 w-px md:block" />
+								<div className="bg-border/50 h-5 w-px" />
 								<span className="text-muted-foreground text-xs text-nowrap">
 									{filteredData.length.toLocaleString()} rows (virtualized)
 								</span>
@@ -910,11 +1069,27 @@ export function FullWidthDataTable<T>({
 							sensors={sensors}
 						>
 							<div
-								className="border-border/30 bg-muted text-foreground dark:bg-muted sticky z-20 flex items-center gap-4 border-b px-4 py-2 text-xs font-semibold sm:gap-6 sm:px-4"
+								className={cn(
+									"sticky z-20 flex items-center border-b-hairline border-border-subtle font-semibold",
+									config.headerBg,
+									config.borderColor,
+									config.gapSize,
+									config.headerPadding,
+									config.headerTextSize,
+									"text-foreground",
+								)}
 								style={{ top: `${toolbarHeight}px` }}
 							>
-								{/* Spacer for checkbox */}
-								{enableSelection && <div className="w-8 shrink-0" />}
+								{/* Select All Checkbox */}
+								{enableSelection && (
+									<div className="flex w-8 shrink-0 items-center justify-center">
+										<Checkbox
+											aria-label="Select all"
+											checked={isAllSelected}
+											onCheckedChange={handleSelectAll}
+										/>
+									</div>
+								)}
 
 								{/* Column Headers with Drag & Drop */}
 								<SortableContext
@@ -962,11 +1137,27 @@ export function FullWidthDataTable<T>({
 						</DndContext>
 					) : (
 						<div
-							className="border-border/30 bg-muted text-foreground dark:bg-muted sticky z-20 flex items-center gap-4 border-b px-4 py-2 text-xs font-semibold sm:gap-6 sm:px-4"
+							className={cn(
+								"sticky z-20 flex items-center border-b-hairline border-border-subtle font-semibold",
+								config.headerBg,
+								config.borderColor,
+								config.gapSize,
+								config.headerPadding,
+								config.headerTextSize,
+								"text-foreground",
+							)}
 							style={{ top: `${toolbarHeight}px` }}
 						>
-							{/* Spacer for checkbox */}
-							{enableSelection && <div className="w-8 shrink-0" />}
+							{/* Select All Checkbox */}
+							{enableSelection && (
+								<div className="flex w-8 shrink-0 items-center justify-center">
+									<Checkbox
+										aria-label="Select all"
+										checked={isAllSelected}
+										onCheckedChange={handleSelectAll}
+									/>
+								</div>
+							)}
 
 							{/* Column Headers - Non-draggable */}
 							{visibleColumns.map((column, colIndex) => {
@@ -1079,7 +1270,7 @@ export function FullWidthDataTable<T>({
 								? "bg-background"
 								: "bg-muted/30 dark:bg-muted/20";
 							const selectedClass = isSelected
-								? "bg-blue-50 dark:bg-blue-950/50"
+								? "bg-blue-50 dark:bg-blue-950/50 selected-inset"
 								: "";
 							const archivedClass = archived
 								? "opacity-60 pointer-events-auto cursor-not-allowed bg-muted/40 line-through"
@@ -1087,7 +1278,16 @@ export function FullWidthDataTable<T>({
 
 							return (
 								<div
-									className={`group border-border/50 absolute top-0 left-0 flex w-full items-center gap-4 border-b px-3 py-1.5 transition-all duration-150 sm:gap-6 sm:px-4 sm:py-2 ${archived ? "" : "hover:bg-accent/80 dark:hover:bg-accent/60 cursor-pointer"} ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass} ${archivedClass}`}
+									className={cn(
+										"group border-border-subtle absolute top-0 left-0 flex w-full items-center gap-4 border-b-hairline px-3 py-1.5 transition-smooth sm:gap-6 sm:px-4 sm:py-2",
+										!archived &&
+											"hover:bg-accent/80 dark:hover:bg-accent/60 cursor-pointer",
+										excelRowClass,
+										highlightClass,
+										selectedClass,
+										customRowClass,
+										archivedClass,
+									)}
 									data-index={virtualItem.index}
 									key={`virtual-${itemId}-${virtualItem.index}`}
 									onClick={(e) => handleRowClick(item, e)}
@@ -1176,20 +1376,32 @@ export function FullWidthDataTable<T>({
 							const highlighted = isHighlighted?.(item);
 							const isEvenRow = rowIndex % 2 === 0;
 
-							// Modern clean styling
+							// Modern clean styling with variant support
 							const highlightClass = highlighted
 								? getHighlightClass?.(item) ||
 									"bg-primary/30 dark:bg-primary/10"
 								: "";
 							const customRowClass = getRowClassName?.(item) || "";
-							const excelRowClass = isEvenRow ? "bg-card" : "bg-card/70";
+							const variantRowClass = isEvenRow
+								? config.rowBg
+								: config.rowBgAlt;
 							const selectedClass = isSelected
-								? "bg-blue-50 dark:bg-blue-950/50"
+								? "bg-blue-50 dark:bg-blue-950/50 selected-inset"
 								: "";
 
 							return (
 								<div
-									className={`group border-border/30 hover:bg-muted/25 dark:hover:bg-muted/20 flex cursor-pointer items-center gap-4 border-b px-4 py-2.5 transition-all duration-200 hover:-translate-y-[1px] hover:shadow-sm active:translate-y-0 sm:gap-6 sm:px-4 ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass}`}
+									className={cn(
+										"group flex cursor-pointer items-center border-b-hairline transition-smooth",
+										config.borderColor,
+										config.rowHover,
+										config.gapSize,
+										config.rowPadding,
+										variantRowClass,
+										highlightClass,
+										selectedClass,
+										customRowClass,
+									)}
 									key={itemId}
 									onClick={(e) => handleRowClick(item, e)}
 								>
@@ -1222,13 +1434,21 @@ export function FullWidthDataTable<T>({
 											: "flex";
 										// Subtle cell dividers
 										const cellBorder =
-											colIndex < visibleColumns.length - 1
-												? "border-r border-border/20"
-												: "";
+											colIndex < visibleColumns.length - 1 ? "border-r" : "";
 
 										return (
 											<div
-												className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} ${cellBorder} min-w-0 items-center overflow-hidden px-2 text-sm`}
+												className={cn(
+													"min-w-0 items-center overflow-hidden",
+													hideClass,
+													widthClass,
+													shrinkClass,
+													alignClass,
+													cellBorder,
+													config.borderColor,
+													config.cellPadding,
+													config.cellTextSize,
+												)}
 												key={column.key}
 											>
 												{column.render(item)}

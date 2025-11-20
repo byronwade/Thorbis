@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "static";
+
 import Script from "next/script";
 import {
 	Accordion,
@@ -19,6 +22,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const securityKeywords = generateSemanticKeywords("security");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Security & Trust",
@@ -28,6 +36,10 @@ export const metadata = generateSEOMetadata({
 	section: "Company",
 	keywords: [
 		"thorbis security",
+		"data security",
+		"compliance",
+		"encryption",
+		...securityKeywords.slice(0, 5),
 		"field service security",
 		"thorbis compliance",
 	],

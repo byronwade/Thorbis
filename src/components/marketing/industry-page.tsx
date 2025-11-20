@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { RelatedContent } from "@/components/seo/related-content";
 import {
 	Accordion,
 	AccordionContent,
@@ -9,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { MarketingIndustryContent } from "@/lib/marketing/types";
+import { getRelatedIndustries } from "@/lib/seo/content-recommendations";
 import { getMarketingIcon } from "./marketing-icons";
 
 type IndustryPageProps = {
@@ -165,6 +167,15 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 					</p>
 				</section>
 			) : null}
+
+			{/* Related Industries Section */}
+			<RelatedContent
+				title="Explore Other Industries"
+				description="See how Thorbis serves other service industries"
+				items={getRelatedIndustries(industry.slug, 3)}
+				variant="grid"
+				showDescription={true}
+			/>
 
 			<section className="space-y-4">
 				<h2 className="text-2xl font-semibold">Frequently asked questions</h2>

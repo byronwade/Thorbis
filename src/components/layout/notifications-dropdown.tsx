@@ -17,9 +17,11 @@ import {
 	CheckCheck,
 	CheckCircle2,
 	Clock,
+	CreditCard,
 	DollarSign,
 	Loader2,
 	MessageSquare,
+	Phone,
 	Settings,
 	Trash2,
 	UserPlus,
@@ -126,7 +128,17 @@ function EmptyState() {
 	);
 }
 
-export function NotificationsDropdown() {
+type NotificationsDropdownProps = {
+	hasPhoneNumbers?: boolean;
+	hasPayrixAccount?: boolean;
+	payrixStatus?: string | null;
+};
+
+export function NotificationsDropdown({
+	hasPhoneNumbers = false,
+	hasPayrixAccount = false,
+	payrixStatus = null,
+}: NotificationsDropdownProps = {}) {
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -462,9 +474,107 @@ export function NotificationsDropdown() {
 
 					{/* Notifications List */}
 					<div className="max-h-[450px] overflow-y-auto">
-						{notifications.length === 0 ? (
+						{/* System Notification - Phone Numbers Setup Missing */}
+						{!hasPhoneNumbers && (
+							<div className="border-b">
+								<div className="group bg-warning/10 hover:bg-warning/15 relative px-4 py-3 transition-colors">
+									{/* Warning indicator */}
+									<div className="bg-warning absolute top-0 left-0 h-full w-0.5" />
+
+									<div className="flex gap-3">
+										{/* Icon */}
+										<div className="text-warning mt-0.5 shrink-0">
+											<Phone className="size-4" />
+										</div>
+
+										{/* Content */}
+										<div className="min-w-0 flex-1 space-y-1">
+											<p className="text-sm leading-snug font-medium">
+												Phone System Not Configured
+											</p>
+											<p className="text-muted-foreground text-xs leading-relaxed">
+												You cannot use calling, texting, or communication
+												features without setting up phone numbers. Complete the
+												setup to enable phone system capabilities.
+											</p>
+
+											{/* Footer */}
+											<div className="flex items-center justify-between gap-2 pt-1">
+												<div className="text-muted-foreground flex items-center gap-1 text-xs">
+													<AlertCircle className="size-3" />
+													System Alert
+												</div>
+
+												{/* Actions */}
+												<div className="flex items-center gap-1">
+													<Link
+														className="bg-warning/20 text-warning hover:bg-warning/30 rounded px-2 py-1 text-xs font-medium transition-colors"
+														href="/dashboard/welcome?step=3"
+														onClick={() => setIsOpen(false)}
+													>
+														Complete Setup
+													</Link>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{/* System Notification - Payrix Setup Missing */}
+						{!hasPayrixAccount && (
+							<div className="border-b">
+								<div className="group bg-warning/10 hover:bg-warning/15 relative px-4 py-3 transition-colors">
+									{/* Warning indicator */}
+									<div className="bg-warning absolute top-0 left-0 h-full w-0.5" />
+
+									<div className="flex gap-3">
+										{/* Icon */}
+										<div className="text-warning mt-0.5 shrink-0">
+											<CreditCard className="size-4" />
+										</div>
+
+										{/* Content */}
+										<div className="min-w-0 flex-1 space-y-1">
+											<p className="text-sm leading-snug font-medium">
+												Payment Processing Not Configured
+											</p>
+											<p className="text-muted-foreground text-xs leading-relaxed">
+												You cannot collect payments from customers without
+												setting up your merchant account. Complete the setup to
+												start accepting payments on invoices and estimates.
+											</p>
+
+											{/* Footer */}
+											<div className="flex items-center justify-between gap-2 pt-1">
+												<div className="text-muted-foreground flex items-center gap-1 text-xs">
+													<AlertCircle className="size-3" />
+													System Alert
+												</div>
+
+												{/* Actions */}
+												<div className="flex items-center gap-1">
+													<Link
+														className="bg-warning/20 text-warning hover:bg-warning/30 rounded px-2 py-1 text-xs font-medium transition-colors"
+														href="/dashboard/welcome?step=5"
+														onClick={() => setIsOpen(false)}
+													>
+														Complete Setup
+													</Link>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{notifications.length === 0 &&
+						hasPhoneNumbers &&
+						hasPayrixAccount ? (
 							<EmptyState />
-						) : (
+						) : notifications.length > 0 ? (
 							<div className="divide-y">
 								{notifications.map((notification) => {
 									const Icon = notificationIcons[notification.type];
@@ -548,7 +658,7 @@ export function NotificationsDropdown() {
 									);
 								})}
 							</div>
-						)}
+						) : null}
 					</div>
 
 					{/* Footer */}

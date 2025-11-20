@@ -20,10 +20,22 @@ export type EmailSendResult = {
 	};
 };
 
+// Company branding for tenant emails
+export type CompanyBranding = {
+	companyName: string;
+	logoUrl?: string;
+	primaryColor?: string;
+	supportEmail?: string;
+	supportPhone?: string;
+	websiteUrl?: string;
+	address?: string;
+};
+
 // Base email template props
 export type BaseEmailProps = {
 	previewText?: string;
-	companyName?: string;
+	companyName?: string; // Deprecated - use company.companyName
+	company?: CompanyBranding; // For company-branded emails
 };
 
 // Authentication Email Props

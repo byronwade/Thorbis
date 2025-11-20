@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { ResourceCard } from "@/components/content/resource-card";
@@ -8,6 +11,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const caseStudyKeywords = generateSemanticKeywords("case studies");
 
 export const metadata = generateSEOMetadata({
 	title: "Case Studies",
@@ -19,6 +27,10 @@ export const metadata = generateSEOMetadata({
 		"field service case study",
 		"hvac software success story",
 		"plumbing business automation",
+		"contractor case studies",
+		"field service success stories",
+		"thorbis customer stories",
+		...caseStudyKeywords.slice(0, 5),
 	],
 });
 
@@ -73,7 +85,7 @@ export default async function CaseStudiesPage({
 					<p className="text-muted-foreground text-lg">
 						Discover how high-performing service companies reduce windshield
 						time, improve first-time fix rate, and grow recurring revenue with
-						the Thorbis field management platform—all for a $100/month base
+						the Thorbis field management platform—all for a $200/month base
 						subscription, pay-as-you-go usage, and no lock-in.
 					</p>
 				</header>

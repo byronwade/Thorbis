@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
 		// Verify user has access to company
 		const { data: membership, error: memberError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("id, role")
 			.eq("user_id", user.id)
 			.eq("company_id", companyId)

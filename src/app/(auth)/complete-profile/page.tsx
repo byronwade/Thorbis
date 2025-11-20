@@ -32,8 +32,8 @@ export default async function CompleteProfilePage() {
 
 	// Get user profile to check what's missing
 	const { data: profile } = await supabase
-		.from("users")
-		.select("phone, name, avatar")
+		.from("profiles")
+		.select("phone, full_name, avatar_url")
 		.eq("id", user.id)
 		.single();
 

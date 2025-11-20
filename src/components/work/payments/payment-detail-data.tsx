@@ -61,7 +61,7 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
 
 	// Verify user has access to the active company and get their role
 	const { data: teamMember, error: teamMemberError } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id, role")
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)

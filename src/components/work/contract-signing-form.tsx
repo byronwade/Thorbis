@@ -15,6 +15,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import { SignaturePad } from "@/components/work/signature-pad";
 
 /**
@@ -86,49 +90,59 @@ export function ContractSigningForm({
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<div className="grid gap-4 md:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="signerName">Full Name *</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField
+								label="Full Name"
+								htmlFor="signerName"
+								required
+							>
 								<Input
 									id="signerName"
 									name="signerName"
 									placeholder="John Doe"
-									required
 								/>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="signerEmail">Email Address *</Label>
+							<StandardFormField
+								label="Email Address"
+								htmlFor="signerEmail"
+								required
+							>
 								<Input
 									defaultValue={defaultEmail}
 									id="signerEmail"
 									name="signerEmail"
 									placeholder="john@example.com"
-									required
 									type="email"
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 
-						<div className="grid gap-4 md:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="signerTitle">Job Title (Optional)</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField
+								label="Job Title"
+								htmlFor="signerTitle"
+								description="Optional"
+							>
 								<Input
 									id="signerTitle"
 									name="signerTitle"
 									placeholder="e.g., CEO, Manager"
 								/>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="signerCompany">Company (Optional)</Label>
+							<StandardFormField
+								label="Company"
+								htmlFor="signerCompany"
+								description="Optional"
+							>
 								<Input
 									id="signerCompany"
 									name="signerCompany"
 									placeholder="Company name"
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 					</CardContent>
 				</Card>
 

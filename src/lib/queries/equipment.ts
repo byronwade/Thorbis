@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -63,7 +64,8 @@ export async function getEquipmentPageData(
 	pageSize: number = EQUIPMENT_PAGE_SIZE,
 	companyIdOverride?: string,
 ): Promise<EquipmentPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { equipment: [], totalCount: 0 };
@@ -89,3 +91,27 @@ export async function getEquipmentPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Get complete equipment data with tags from equipment_tags junction table.
+ * Uses React.cache() for request-level deduplication.
+ * Called by multiple components - only executes once per request.
+ */
+export const getEquipmentComplete = cache(
+	async (equipmentId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_equipment_complete", {
+			p_equipment_id: equipmentId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching equipment:", error);
+			return null;
+		}
+
+		// RPC returns array with single row containing equipment_data JSONB
+		return data?.[0]?.equipment_data || null;
+	},
+);

@@ -29,6 +29,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 type AddTagBadgeProps = {
 	customerId?: string;
@@ -192,8 +193,7 @@ export function AddTagBadge({
 					</div>
 
 					{/* Tag Label Input */}
-					<div className="space-y-2">
-						<Label htmlFor="tag-label">Tag Name</Label>
+					<StandardFormField label="Tag Name" htmlFor="tag-label">
 						<Input
 							id="tag-label"
 							onChange={(e) => setTagLabel(e.target.value)}
@@ -205,11 +205,10 @@ export function AddTagBadge({
 							placeholder="e.g., High Priority, VIP, etc."
 							value={tagLabel}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Color Selection */}
-					<div className="space-y-2">
-						<Label htmlFor="tag-color">Color</Label>
+					<StandardFormField label="Color" htmlFor="tag-color">
 						<Select onValueChange={setTagColor} value={tagColor}>
 							<SelectTrigger id="tag-color">
 								<SelectValue>
@@ -234,12 +233,11 @@ export function AddTagBadge({
 								))}
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Tag Type Selection (if both customer and job available) */}
 					{customerId && jobId && (
-						<div className="space-y-2">
-							<Label htmlFor="tag-type">Apply To</Label>
+						<StandardFormField label="Apply To" htmlFor="tag-type">
 							<Select
 								onValueChange={(value) =>
 									setTagType(value as "customer" | "job")
@@ -254,7 +252,7 @@ export function AddTagBadge({
 									<SelectItem value="job">Job (this job only)</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 					)}
 
 					{/* Preview */}

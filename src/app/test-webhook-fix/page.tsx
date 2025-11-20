@@ -42,16 +42,16 @@ export default function TestWebhookFix() {
 
 	return (
 		<div className="p-8">
-			<h1 className="text-2xl font-bold mb-4">
+			<h1 className="mb-4 text-2xl font-bold">
 				Fix Test Company Telnyx Configuration
 			</h1>
 			<p className="mb-4">Company ID: {TEST_COMPANY_ID}</p>
 
-			<div className="space-y-4 mb-6">
+			<div className="mb-6 space-y-4">
 				<button
 					onClick={handleFix}
 					disabled={loading}
-					className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 mr-4"
+					className="mr-4 rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
 				>
 					{loading ? "Fixing..." : "Fix Webhook URLs"}
 				</button>
@@ -59,15 +59,15 @@ export default function TestWebhookFix() {
 				<button
 					onClick={handleEnableMessaging}
 					disabled={messagingLoading}
-					className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+					className="rounded bg-green-600 px-4 py-2 text-white disabled:opacity-50"
 				>
 					{messagingLoading ? "Enabling..." : "Enable SMS/MMS"}
 				</button>
 			</div>
 
 			{result && (
-				<div className="mt-6 p-4 border rounded">
-					<h2 className="font-bold mb-2">
+				<div className="mt-6 rounded border p-4">
+					<h2 className="mb-2 font-bold">
 						Result: {result.success ? "✅ Success" : "❌ Failed"}
 					</h2>
 					{result.error && (
@@ -79,7 +79,7 @@ export default function TestWebhookFix() {
 					{result.changes && result.changes.length > 0 && (
 						<div className="mt-2">
 							<h3 className="font-semibold">Changes:</h3>
-							<ul className="list-disc list-inside">
+							<ul className="list-inside list-disc">
 								{result.changes.map((change: string, i: number) => (
 									<li key={i}>{change}</li>
 								))}
@@ -88,7 +88,7 @@ export default function TestWebhookFix() {
 					)}
 					<details className="mt-4">
 						<summary className="cursor-pointer">Full Response</summary>
-						<pre className="mt-2 p-2 bg-gray-100 rounded overflow-auto text-xs">
+						<pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
 							{JSON.stringify(result, null, 2)}
 						</pre>
 					</details>
@@ -96,8 +96,8 @@ export default function TestWebhookFix() {
 			)}
 
 			{messagingResult && (
-				<div className="mt-6 p-4 border rounded">
-					<h2 className="font-bold mb-2">
+				<div className="mt-6 rounded border p-4">
+					<h2 className="mb-2 font-bold">
 						Messaging Result:{" "}
 						{messagingResult.success ? "✅ Success" : "❌ Failed"}
 					</h2>
@@ -109,7 +109,7 @@ export default function TestWebhookFix() {
 					)}
 					<details className="mt-4">
 						<summary className="cursor-pointer">Full Response</summary>
-						<pre className="mt-2 p-2 bg-gray-100 rounded overflow-auto text-xs">
+						<pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
 							{JSON.stringify(messagingResult, null, 2)}
 						</pre>
 					</details>

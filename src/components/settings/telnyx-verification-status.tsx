@@ -48,7 +48,9 @@ export function TelnyxVerificationStatus() {
 			}
 		} catch (err) {
 			setError(
-				err instanceof Error ? err.message : "Failed to check verification status",
+				err instanceof Error
+					? err.message
+					: "Failed to check verification status",
 			);
 		} finally {
 			setLoading(false);
@@ -248,7 +250,12 @@ export function TelnyxVerificationStatus() {
 								</div>
 								{step.url && (
 									<Button asChild variant="outline" size="sm">
-										<Link href={step.url} target={step.url.startsWith("http") ? "_blank" : undefined}>
+										<Link
+											href={step.url}
+											target={
+												step.url.startsWith("http") ? "_blank" : undefined
+											}
+										>
 											{step.url.startsWith("http") ? "Open Portal" : "Continue"}
 											{step.url.startsWith("http") && (
 												<ExternalLink className="ml-2 size-3" />

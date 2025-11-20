@@ -134,7 +134,6 @@ export function InvoicesTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/invoices/${invoice.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{invoice.invoiceNumber}
@@ -151,7 +150,6 @@ export function InvoicesTable({
 				<Link
 					className="block"
 					href={`/dashboard/work/invoices/${invoice.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<span className="text-foreground text-sm font-medium hover:underline">

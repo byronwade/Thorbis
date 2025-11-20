@@ -12,15 +12,19 @@ import {
 	FileCheck,
 	FileText,
 	Link2Off,
+	Package,
 	Receipt,
 	TrendingUp,
 	User,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { updateEntityTags } from "@/actions/entity-tags";
 import { unlinkJobFromEstimate } from "@/actions/estimates";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +49,7 @@ import {
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 import { WorkflowTimeline } from "@/components/ui/workflow-timeline";
+import { useSectionShortcuts } from "@/hooks/use-section-shortcuts";
 
 export type EstimateData = {
 	estimate: any;
@@ -115,6 +120,7 @@ function getStatusBadge(status: string, key?: string) {
 }
 
 export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
+	const router = useRouter();
 	const [unlinkJobId, setUnlinkJobId] = useState<string | null>(null);
 	const [isUnlinking, setIsUnlinking] = useState(false);
 
@@ -129,6 +135,102 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 		attachments = [],
 	} = entityData;
 
+	// Extract tags from junction table data
+	const estimateTags = useMemo(() => {
+		if (!estimate?.estimate_tags) {
+			return [];
+		}
+		return estimate.estimate_tags.map((et: any) => ({
+			id: et.id,
+			name: et.name,
+			slug: et.slug,
+			color: et.color,
+			category: et.category,
+			icon: et.icon,
+		}));
+	}, [estimate?.estimate_tags]);
+
+	// Keyboard shortcuts for section navigation (Ctrl+1 through Ctrl+9)
+	const sectionShortcuts = useMemo(
+		() => ({
+			"1": () => {
+				// Workflow Timeline (if exists)
+				const element = document.querySelector(
+					'[data-section-id="workflow-timeline"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"2": () => {
+				// Estimate Details
+				const element = document.querySelector(
+					'[data-section-id="estimate-details"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"3": () => {
+				// Line Items
+				const element = document.querySelector(
+					'[data-section-id="line-items"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"4": () => {
+				// Customer
+				const element = document.querySelector('[data-section-id="customer"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"5": () => {
+				// Job
+				const element = document.querySelector('[data-section-id="job"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"9": () => {
+				// Tags
+				const element = document.querySelector('[data-section-id="tags"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+		}),
+		[],
+	);
+
+	useSectionShortcuts(sectionShortcuts);
+
 	const handleUnlinkJob = async () => {
 		if (!unlinkJobId) {
 			return;
@@ -142,7 +244,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 				toast.success("Job unlinked from estimate");
 				setUnlinkJobId(null);
 				// Refresh to show updated data
-				window.location.reload();
+				router.refresh();
 			} else {
 				toast.error(result.error || "Failed to unlink job");
 			}
@@ -564,8 +666,50 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 			});
 		}
 
+		// Tags Section
+		sections.push({
+			id: "tags",
+			title: "Tags",
+			icon: <Package className="size-4" />,
+			content: (
+				<UnifiedAccordionContent>
+					<div className="w-full">
+						<div className="bg-muted/50 rounded-md">
+							<div className="flex flex-col gap-3 p-4">
+								<span className="text-muted-foreground text-xs font-medium">
+									Organize estimates with tags:
+								</span>
+								<EntityTags
+									entityId={estimate.id}
+									entityType="estimate"
+									onUpdateTags={async (id, tags) => {
+										const result = await updateEntityTags("estimate", id, tags);
+										if (result.success) {
+											router.refresh();
+										} else {
+											toast.error(result.error || "Failed to update tags");
+										}
+									}}
+									tags={estimateTags}
+								/>
+							</div>
+						</div>
+					</div>
+				</UnifiedAccordionContent>
+			),
+		});
+
 		return sections;
-	}, [estimate, customer, job, invoice, contract, lineItems]);
+	}, [
+		estimate,
+		customer,
+		job,
+		invoice,
+		contract,
+		lineItems,
+		estimateTags,
+		router,
+	]);
 
 	const relatedItems = useMemo(() => {
 		const items: any[] = [];

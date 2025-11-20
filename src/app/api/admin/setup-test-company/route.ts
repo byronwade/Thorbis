@@ -28,7 +28,7 @@ export async function POST() {
 
 		// Check if user already has a company
 		const { data: existingTeamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, companies(*)")
 			.eq("user_id", user.id)
 			.maybeSingle();
@@ -61,7 +61,7 @@ export async function POST() {
 
 		// Add user as team member
 		const { data: teamMember, error: teamMemberError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.insert({
 				company_id: company.id,
 				user_id: user.id,

@@ -72,7 +72,7 @@ async function createPaymentWithData(
 
 		// Get company owner/managers to notify about payment
 		const { data: companyUsers } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("user_id")
 			.eq("company_id", payment.company_id)
 			.eq("status", "active")

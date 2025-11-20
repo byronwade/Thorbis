@@ -2,24 +2,20 @@
 
 /**
  * CustomersTable Component
- * Full-width Gmail-style table for displaying customers
+ * Standardized full-width table for displaying customers
  *
  * Features:
- * - Full-width responsive layout
+ * - Full-width responsive layout with design system variant
  * - Row selection with bulk actions
  * - Search and filtering
  * - Status badges
  * - Click to view customer details
- * - ✨ Auto-virtualization for >1,000 customers (100x faster!)
- *
- * Performance:
- * - <1,000 customers: Pagination mode (50 per page)
- * - >1,000 customers: Virtual scrolling (60fps smooth)
- * - Automatically switches based on dataset size
+ * - Auto-virtualization for >1,000 customers
  */
 
 import { Archive, Mail, Phone, Trash2, Users } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +24,9 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
-import { CustomerStatusBadge } from "@/components/ui/status-badge";
+import { useCustomerStatusColumn } from "@/lib/datatable/common-columns";
+import { getRowHighlight } from "@/lib/datatable/rowHighlight";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrencyFromDollars } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
@@ -56,6 +54,8 @@ type CustomersTableProps = {
 	totalCount?: number;
 	currentPage?: number;
 	onCustomerClick?: (customer: Customer) => void;
+	enableVirtualization?: boolean | "auto";
+	showRefresh?: boolean;
 };
 
 export function CustomersTable({
@@ -64,22 +64,21 @@ export function CustomersTable({
 	totalCount,
 	currentPage = 1,
 	onCustomerClick,
+	enableVirtualization = "auto",
+	showRefresh = false,
 }: CustomersTableProps) {
-	// Archive filter state
+	const router = useRouter();
 	const archiveFilter = useArchiveStore((state) => state.filters.customers);
 
 	// Filter customers based on archive status
 	const filteredCustomers = customers.filter((customer) => {
 		const isArchived = Boolean(customer.archived_at || customer.deleted_at);
-		if (archiveFilter === "active") {
-			return !isArchived;
-		}
-		if (archiveFilter === "archived") {
-			return isArchived;
-		}
-		return true; // "all"
+		if (archiveFilter === "active") return !isArchived;
+		if (archiveFilter === "archived") return isArchived;
+		return true;
 	});
 
+	// Define columns using standardized hooks and patterns
 	const columns: ColumnDef<Customer>[] = [
 		{
 			key: "customer",
@@ -90,7 +89,6 @@ export function CustomersTable({
 				<Link
 					className="flex items-center gap-3"
 					href={`/dashboard/customers/${customer.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<Avatar className="h-8 w-8">
@@ -104,7 +102,7 @@ export function CustomersTable({
 						</AvatarFallback>
 					</Avatar>
 					<div className="min-w-0">
-						<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
+						<div className="text-foreground truncate font-medium leading-tight hover:underline">
 							{customer.name}
 						</div>
 						<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
@@ -124,13 +122,13 @@ export function CustomersTable({
 			hideable: true,
 			render: (customer) => (
 				<div className="space-y-1">
-					<div className="text-foreground flex items-center gap-1.5 text-sm">
+					<div className="text-foreground flex items-center gap-1.5">
 						<Mail className="text-muted-foreground h-3 w-3" />
-						<span className="truncate">{customer.email}</span>
+						<span className="truncate text-xs">{customer.email}</span>
 					</div>
-					<div className="text-foreground flex items-center gap-1.5 text-sm">
+					<div className="text-foreground flex items-center gap-1.5">
 						<Phone className="text-muted-foreground h-3 w-3" />
-						<span className="tabular-nums">{customer.phone}</span>
+						<span className="text-xs tabular-nums">{customer.phone}</span>
 					</div>
 				</div>
 			),
@@ -145,7 +143,7 @@ export function CustomersTable({
 			render: (customer) => {
 				if (!(customer.address || customer.city || customer.state)) {
 					return (
-						<span className="text-muted-foreground text-sm italic">
+						<span className="text-muted-foreground text-xs italic">
 							No address
 						</span>
 					);
@@ -153,7 +151,7 @@ export function CustomersTable({
 				return (
 					<div className="space-y-1">
 						{customer.address && (
-							<div className="text-foreground truncate text-sm">
+							<div className="text-foreground truncate text-xs">
 								{customer.address}
 							</div>
 						)}
@@ -168,15 +166,15 @@ export function CustomersTable({
 				);
 			},
 		},
-		{
-			key: "status",
-			header: "Status",
-			width: "w-28",
-			shrink: true,
-			sortable: true,
-			hideable: false, // CRITICAL: Status essential for customer management
-			render: (customer) => <CustomerStatusBadge status={customer.status} />,
-		},
+		// Use standardized status column hook
+		useCustomerStatusColumn<Customer>(
+			"status",
+			"Status",
+			(customer) => customer.status,
+			{
+				width: "w-28",
+			},
+		),
 		{
 			key: "service",
 			header: "Service",
@@ -187,13 +185,13 @@ export function CustomersTable({
 			hideable: true,
 			render: (customer) => (
 				<div className="space-y-1">
-					<div className="text-foreground text-sm">
+					<div className="text-foreground text-xs">
 						Last:{" "}
 						<span className="text-muted-foreground">
 							{customer.lastService}
 						</span>
 					</div>
-					<div className="text-foreground text-sm">
+					<div className="text-foreground text-xs">
 						Next:{" "}
 						<span className="text-muted-foreground">
 							{customer.nextService}
@@ -209,7 +207,7 @@ export function CustomersTable({
 			shrink: true,
 			align: "right",
 			render: (customer) => (
-				<span className="font-semibold tabular-nums">
+				<span className="text-xs font-semibold tabular-nums">
 					{formatCurrencyFromDollars(customer.totalValue)}
 				</span>
 			),
@@ -252,7 +250,6 @@ export function CustomersTable({
 		},
 	];
 
-	// Bulk actions
 	const bulkActions: BulkAction[] = [
 		{
 			label: "Export",
@@ -271,7 +268,6 @@ export function CustomersTable({
 		},
 	];
 
-	// Search filter function
 	const searchFilter = (customer: Customer, query: string) => {
 		const searchStr = query.toLowerCase();
 		return (
@@ -297,9 +293,26 @@ export function CustomersTable({
 
 	return (
 		<FullWidthDataTable
-			bulkActions={bulkActions}
-			columns={columns}
+			{...TablePresets.fullList({
+				entity: "customers",
+				enableSelection: true,
+				searchPlaceholder:
+					"Search customers by name, email, phone, address, or status...",
+				itemsPerPage,
+				showRefresh,
+			})}
 			data={filteredCustomers}
+			columns={columns}
+			getItemId={(customer) => customer.id}
+			bulkActions={bulkActions}
+			searchFilter={searchFilter}
+			onRowClick={handleRowClick}
+			totalCount={totalCount ?? filteredCustomers.length}
+			currentPageFromServer={currentPage}
+			serverPagination
+			onRefresh={() => router.refresh()}
+			emptyMessage="No customers found"
+			emptyIcon={<Users className="text-muted-foreground h-8 w-8" />}
 			emptyAction={
 				<Button
 					onClick={() => (window.location.href = "/dashboard/customers/new")}
@@ -309,23 +322,17 @@ export function CustomersTable({
 					Add Customer
 				</Button>
 			}
-			emptyIcon={<Users className="text-muted-foreground h-8 w-8" />}
-			emptyMessage="No customers found"
-			enableSelection={true}
-			entity="customers"
-			getItemId={(customer) => customer.id}
 			isArchived={(customer) =>
 				Boolean(customer.archived_at || customer.deleted_at)
 			}
-			itemsPerPage={itemsPerPage}
-			totalCount={totalCount ?? filteredCustomers.length}
-			currentPageFromServer={currentPage}
-			serverPagination
-			onRefresh={() => window.location.reload()}
-			onRowClick={handleRowClick}
-			searchFilter={searchFilter}
-			searchPlaceholder="Search customers by name, email, phone, address, or status..."
 			showArchived={archiveFilter !== "active"}
+			isHighlighted={(customer) => {
+				const { isHighlighted, highlightClass } = getRowHighlight(customer);
+				if (highlightClass.includes("bg-success")) return false;
+				return isHighlighted;
+			}}
+			getHighlightClass={(customer) => getRowHighlight(customer).highlightClass}
+			enableVirtualization={enableVirtualization}
 		/>
 	);
 }

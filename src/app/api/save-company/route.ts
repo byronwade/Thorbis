@@ -258,12 +258,14 @@ export async function POST(request: NextRequest) {
 			const roleId = ownerRole?.id || null;
 
 			// Add user as team member with Owner role
-			const { error: teamError } = await supabase.from("team_members").insert({
-				company_id: companyId,
-				user_id: user.id,
-				role_id: roleId,
-				status: "active",
-			});
+			const { error: teamError } = await supabase
+				.from("company_memberships")
+				.insert({
+					company_id: companyId,
+					user_id: user.id,
+					role_id: roleId,
+					status: "active",
+				});
 
 			if (teamError) {
 				// Don't fail company creation if team member addition fails

@@ -211,7 +211,7 @@ export function UnassignedPanel({
 							<div className="border-b px-3 py-2">
 								<div className="flex items-center gap-2">
 									<div className="relative flex-1">
-										<Search className="text-muted-foreground absolute left-2 top-1/2 size-4 -translate-y-1/2" />
+										<Search className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2" />
 										<Input
 											className="pl-8 text-sm"
 											placeholder="Search jobs..."

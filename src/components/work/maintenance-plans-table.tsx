@@ -9,6 +9,10 @@ import {
 	Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { archiveMaintenancePlan } from "@/actions/maintenance-plans";
+import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -24,6 +28,8 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { useTableActions } from "@/hooks/use-table-actions";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
@@ -72,10 +78,56 @@ export function MaintenancePlansTable({
 	currentPage?: number;
 	totalCount?: number;
 }) {
+	const router = useRouter();
+
 	// Archive filter state
 	const archiveFilter = useArchiveStore(
 		(state) => state.filters.maintenance_plans,
 	);
+
+	// Table actions hook
+	const { handleRefresh } = useTableActions({
+		entityType: "maintenance_plans",
+	});
+
+	// Archive dialog
+	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
+		onConfirm: async (id) => {
+			const result = await archiveMaintenancePlan(id);
+			if (result.success) {
+				handleRefresh();
+			}
+		},
+		title: "Archive Maintenance Plan?",
+		description:
+			"This maintenance plan will be archived and can be restored within 90 days.",
+	});
+
+	// Bulk archive state
+	const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(
+		new Set(),
+	);
+
+	// Bulk archive dialog
+	const {
+		openArchiveDialog: openBulkArchiveDialog,
+		ArchiveDialogComponent: BulkArchiveDialogComponent,
+	} = useArchiveDialog({
+		onConfirm: async () => {
+			let archived = 0;
+			for (const id of selectedPlanIds) {
+				const result = await archiveMaintenancePlan(id);
+				if (result.success) {
+					archived++;
+				}
+			}
+			if (archived > 0) {
+				handleRefresh();
+			}
+		},
+		title: `Archive ${selectedPlanIds.size} Maintenance Plan(s)?`,
+		description: `${selectedPlanIds.size} maintenance plan(s) will be archived and can be restored within 90 days.`,
+	});
 
 	// Filter plans based on archive status
 	const filteredPlans = plans.filter((plan) => {
@@ -98,7 +150,7 @@ export function MaintenancePlansTable({
 			sortable: true,
 			render: (plan) => (
 				<Link
-					className="text-foreground text-sm leading-tight font-medium hover:underline"
+					className="text-foreground text-xs leading-tight font-medium hover:underline"
 					href={`/dashboard/work/maintenance-plans/${plan.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -117,7 +169,7 @@ export function MaintenancePlansTable({
 					href={`/dashboard/work/maintenance-plans/${plan.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
+					<div className="text-foreground truncate text-xs leading-tight font-medium hover:underline">
 						{plan.customer}
 					</div>
 					<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
@@ -134,7 +186,7 @@ export function MaintenancePlansTable({
 			sortable: true,
 			hideOnMobile: true,
 			render: (plan) => (
-				<span className="text-foreground text-sm">{plan.frequency}</span>
+				<span className="text-foreground text-xs">{plan.frequency}</span>
 			),
 		},
 		{
@@ -145,7 +197,7 @@ export function MaintenancePlansTable({
 			sortable: true,
 			hideOnMobile: true,
 			render: (plan) => (
-				<span className="text-muted-foreground text-sm tabular-nums">
+				<span className="text-muted-foreground text-xs tabular-nums">
 					{plan.nextVisit}
 				</span>
 			),
@@ -202,6 +254,15 @@ export function MaintenancePlansTable({
 								View Contract
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								className="text-destructive"
+								onClick={() => {
+									openArchiveDialog(plan.id);
+								}}
+							>
+								<Archive className="mr-2 size-4" />
+								Archive Plan
+							</DropdownMenuItem>
 							<DropdownMenuItem className="text-destructive">
 								<Trash2 className="mr-2 size-4" />
 								Cancel Plan
@@ -225,10 +286,13 @@ export function MaintenancePlansTable({
 			onClick: (_selectedIds) => {},
 		},
 		{
-			label: "Archive",
+			label: "Archive Selected",
 			icon: <Archive className="h-4 w-4" />,
 			variant: "destructive",
-			onClick: (_selectedIds) => {},
+			onClick: async (selectedIds) => {
+				setSelectedPlanIds(selectedIds);
+				openBulkArchiveDialog("");
+			},
 		},
 		{
 			label: "Cancel",
@@ -250,32 +314,36 @@ export function MaintenancePlansTable({
 	};
 
 	return (
-		<FullWidthDataTable
-			bulkActions={bulkActions}
-			columns={columns}
-			data={filteredPlans}
-			emptyIcon={
-				<Calendar className="text-muted-foreground mx-auto h-12 w-12" />
-			}
-			emptyMessage="No maintenance plans found"
-			enableSelection={true}
-			entity="maintenance_plans"
-			getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
-			getItemId={(plan) => plan.id}
-			isArchived={(plan) => Boolean(plan.archived_at || plan.deleted_at)}
-			isHighlighted={(plan) => plan.status === "active"}
-			itemsPerPage={itemsPerPage}
-			currentPageFromServer={currentPage}
-			serverPagination
-			onRefresh={() => window.location.reload()}
-			onRowClick={(plan) =>
-				(window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)
-			}
-			searchFilter={searchFilter}
-			searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
-			showArchived={archiveFilter !== "active"}
-			showRefresh={false}
-			totalCount={totalCount ?? filteredPlans.length}
-		/>
+		<>
+			<FullWidthDataTable
+				{...TablePresets.fullList()}
+				bulkActions={bulkActions}
+				columns={columns}
+				data={filteredPlans}
+				emptyIcon={
+					<Calendar className="text-muted-foreground mx-auto h-12 w-12" />
+				}
+				emptyMessage="No maintenance plans found"
+				entity="maintenance_plans"
+				getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
+				getItemId={(plan) => plan.id}
+				isArchived={(plan) => Boolean(plan.archived_at || plan.deleted_at)}
+				isHighlighted={(plan) => plan.status === "active"}
+				currentPageFromServer={currentPage}
+				serverPagination
+				onRefresh={handleRefresh}
+				onRowClick={(plan) =>
+					(window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)
+				}
+				searchFilter={searchFilter}
+				searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
+				showArchived={archiveFilter !== "active"}
+				showRefresh={false}
+				totalCount={totalCount ?? filteredPlans.length}
+			/>
+
+			<ArchiveDialogComponent />
+			<BulkArchiveDialogComponent />
+		</>
 	);
 }

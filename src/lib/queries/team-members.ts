@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { ArchiveFilter } from "@/lib/utils/archive";
@@ -8,38 +9,74 @@ const TEAM_MEMBERS_SELECT = `
   id,
   user_id,
   company_id,
-  email,
-  invited_email,
-  invited_name,
-  status,
-  job_title,
-  phone,
-  joined_at,
-  invited_at,
-  last_active_at,
-  archived_at,
   role,
-  department,
+  permissions,
+  department_id,
+  job_title,
+  status,
+  invited_at,
+  accepted_at,
   created_at,
-  updated_at
+  updated_at,
+  emergency_contact_name,
+  emergency_contact_phone,
+  emergency_contact_relationship,
+  employee_id,
+  hire_date,
+  employment_type,
+  work_schedule,
+  work_location,
+  pay_type,
+  hourly_rate,
+  annual_salary,
+  commission_rate,
+  commission_structure,
+  overtime_eligible,
+  street_address,
+  city,
+  state,
+  postal_code,
+  country,
+  skills,
+  certifications,
+  licenses,
+  service_areas,
+  availability_schedule,
+  max_weekly_hours,
+  preferred_job_types,
+  performance_notes,
+  last_review_date,
+  next_review_date,
+  notes,
+  archived_at,
+  profiles:user_id (
+    id,
+    email,
+    full_name,
+    avatar_url,
+    phone
+  )
 `;
 
 export type TeamMemberRecord = {
 	id: string;
 	user_id: string | null;
 	company_id: string;
-	email: string | null;
-	invited_email: string | null;
-	invited_name: string | null;
-	status: string | null;
+	role:
+		| "owner"
+		| "admin"
+		| "manager"
+		| "member"
+		| "technician"
+		| "dispatcher"
+		| "csr"
+		| null;
+	permissions: Record<string, any> | null;
+	department_id: string | null;
 	job_title: string | null;
-	phone: string | null;
-	joined_at: string | null;
+	status: "active" | "invited" | "suspended" | null;
 	invited_at: string | null;
-	last_active_at: string | null;
-	archived_at: string | null;
-	role: string | null;
-	department: string | null;
+	accepted_at: string | null;
 	created_at: string;
 	updated_at: string;
 	user?: {
@@ -47,9 +84,7 @@ export type TeamMemberRecord = {
 		email: string | null;
 		full_name?: string | null;
 		avatar_url?: string | null;
-		raw_user_meta_data?: Record<string, unknown> | null;
-		user_metadata?: Record<string, unknown> | null;
-		last_sign_in_at?: string | null;
+		phone?: string | null;
 	} | null;
 };
 
@@ -58,96 +93,67 @@ export type TeamMembersPageResult = {
 	totalCount: number;
 };
 
-export async function getTeamMembersPageData(
-	page: number,
-	pageSize: number = TEAM_MEMBERS_PAGE_SIZE,
-	searchQuery = "",
-	companyIdOverride?: string,
-	archiveFilter: ArchiveFilter = "active",
-): Promise<TeamMembersPageResult> {
-	"use cache";
-	const companyId = companyIdOverride ?? (await getActiveCompanyId());
-	if (!companyId) {
-		return { teamMembers: [], totalCount: 0 };
-	}
-
-	const supabase = await createServiceSupabaseClient();
-	const start = (Math.max(page, 1) - 1) * pageSize;
-	const end = start + pageSize - 1;
-
-	let query = supabase
-		.from("team_members")
-		.select(TEAM_MEMBERS_SELECT, { count: "exact" })
-		.eq("company_id", companyId)
-		.order("created_at", { ascending: false })
-		.range(start, end);
-
-	if (archiveFilter === "active") {
-		query = query.is("archived_at", null);
-	} else if (archiveFilter === "archived") {
-		query = query.not("archived_at", "is", null);
-	}
-
-	const normalizedSearch = searchQuery.trim();
-	if (normalizedSearch) {
-		const sanitized = normalizedSearch.replace(/,/g, "\\,");
-		const term = `%${sanitized}%`;
-		query = query.or(
-			`invited_name.ilike.${term},email.ilike.${term},invited_email.ilike.${term},job_title.ilike.${term},role.ilike.${term},department.ilike.${term}`,
-		);
-	}
-
-	const { data, error, count } = await query;
-
-	if (error) {
-		throw new Error(`Failed to load team members: ${error.message}`);
-	}
-
-	const members = data ?? [];
-	const uniqueUserIds = Array.from(
-		new Set(
-			members
-				.map((member) => member.user_id)
-				.filter((id): id is string => Boolean(id)),
-		),
-	);
-
-	const usersById = new Map<string, TeamMemberRecord["user"]>();
-	if (uniqueUserIds.length > 0) {
-		const { data: userRows } = await supabase
-			.from("users")
-			.select("id,email,name,avatar,last_login_at")
-			.in("id", uniqueUserIds);
-
-		if (userRows) {
-			for (const user of userRows) {
-				usersById.set(user.id, {
-					id: user.id,
-					email: user.email,
-					full_name: user.name,
-					avatar_url: user.avatar,
-					raw_user_meta_data: {
-						full_name: user.name,
-						avatar_url: user.avatar,
-					},
-					user_metadata: {
-						full_name: user.name,
-						avatar_url: user.avatar,
-					},
-					last_sign_in_at: user.last_login_at,
-				});
-			}
+export const getTeamMembersPageData = cache(
+	async (
+		page: number,
+		pageSize: number = TEAM_MEMBERS_PAGE_SIZE,
+		searchQuery = "",
+		companyIdOverride?: string,
+		archiveFilter: ArchiveFilter = "active",
+	): Promise<TeamMembersPageResult> => {
+		// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+		// which uses cookies(). React.cache() provides request-level deduplication.
+		const companyId = companyIdOverride ?? (await getActiveCompanyId());
+		if (!companyId) {
+			return { teamMembers: [], totalCount: 0 };
 		}
-	}
 
-	const enrichedMembers: TeamMemberRecord[] = members.map((member) =>
-		member.user_id && usersById.has(member.user_id)
-			? { ...member, user: usersById.get(member.user_id) ?? null }
-			: { ...member, user: null },
-	);
+		const supabase = await createServiceSupabaseClient();
+		const start = (Math.max(page, 1) - 1) * pageSize;
+		const end = start + pageSize - 1;
 
-	return {
-		teamMembers: enrichedMembers,
-		totalCount: count ?? 0,
-	};
-}
+		let query = supabase
+			.from("company_memberships")
+			.select(TEAM_MEMBERS_SELECT, { count: "exact" })
+			.eq("company_id", companyId)
+			.order("created_at", { ascending: false })
+			.range(start, end);
+
+		if (archiveFilter === "active") {
+			query = query.eq("status", "active");
+		} else if (archiveFilter === "archived") {
+			query = query.eq("status", "suspended");
+		}
+
+		const normalizedSearch = searchQuery.trim();
+		if (normalizedSearch) {
+			const sanitized = normalizedSearch.replace(/,/g, "\\,");
+			const term = `%${sanitized}%`;
+			query = query.or(`job_title.ilike.${term},role.ilike.${term}`);
+		}
+
+		const { data, error, count } = await query;
+
+		if (error) {
+			throw new Error(`Failed to load team members: ${error.message}`);
+		}
+
+		// Profile data is now joined in the query - no secondary query needed!
+		// Supabase returns profiles as an array when joining, so we normalize it
+		const members = data ?? [];
+		const normalizedMembers: TeamMemberRecord[] = members.map(
+			(member: any) => ({
+				...member,
+				user: Array.isArray(member.profiles)
+					? (member.profiles[0] ?? null)
+					: (member.profiles ?? null),
+				profiles: undefined, // Remove the raw profiles field
+			}),
+		);
+
+		return {
+			teamMembers: normalizedMembers,
+			totalCount: count ?? 0,
+		};
+	},
+);

@@ -1853,7 +1853,7 @@ export function IncomingCallNotification() {
 				}
 
 				const { data, error } = await supabase
-					.from("team_members")
+					.from("company_memberships")
 					.select("company_id")
 					.eq("user_id", user.id)
 					.eq("status", "active")

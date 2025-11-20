@@ -80,6 +80,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	UnifiedAccordionContent,
 	type UnifiedAccordionSection,
@@ -93,6 +94,7 @@ import {
 	TechnicianInfoHoverCard,
 } from "./info-hover-cards";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
+import { RichJobHeader } from "./rich-job-header";
 import {
 	CSRJobInfo,
 	ManagerJobMetrics,
@@ -508,341 +510,44 @@ export function JobPageContentUnified({
 		};
 	}, [assignedTechnicians]);
 
+	// Handler for rich job header updates
+	const handleJobUpdate = useCallback(
+		async (field: string, value: any) => {
+			try {
+				const result = await updateJob(job.id, { [field]: value });
+				if (result.success) {
+					toast.success("Job updated successfully");
+					router.refresh();
+				} else {
+					toast.error(result.error || "Failed to update job");
+				}
+			} catch (error) {
+				toast.error("Failed to update job");
+			}
+		},
+		[job.id, router],
+	);
+
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
-			<div className="bg-muted/50 mx-auto max-w-7xl rounded-md shadow-sm">
-				<div className="flex flex-col gap-4 p-4 sm:p-6">
-					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">
-								{headerBadges}
-							</div>
-							<div className="flex flex-col gap-2">
-								<h1 className="text-2xl font-semibold sm:text-3xl">
-									{job.title || `Job ${job.job_number || ""}`}
-								</h1>
-								<div className="flex flex-wrap items-center gap-2">
-									<EntityTags
-										entityId={job.id}
-										entityType="job"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("job", id, tags)
-										}
-										tags={jobTags}
-									/>
-								</div>
-								{showCreatedDate && (
-									<p className="text-muted-foreground text-sm sm:text-base">
-										{new Date(job.created_at as string).toLocaleDateString(
-											"en-US",
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											},
-										)}
-									</p>
-								)}
-							</div>
-						</div>
-					</div>
-
-					{/* Customer, Property, and Team Quick Access */}
-					<div className="flex flex-wrap items-center gap-2">
-						{customer && <CustomerInfoHoverCard customer={customer} />}
-
-						{property && <PropertyInfoHoverCard property={property} />}
-
-						{(assignedUser || teamAssignments.length > 0) && (
-							<TechnicianInfoHoverCard
-								teamMembers={teamAssignments}
-								technician={assignedUser}
-							/>
-						)}
-					</div>
-
-					{/* Quick Info Badges - Large Elegant Style - FIXED-0-BUG */}
-					<div className="flex flex-wrap items-center gap-2">
-						{/* Property Address Badge */}
-						{property && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<MapPin className="size-4" />
-								{property.city && property.state
-									? `${property.city}, ${property.state}`
-									: property.address || "Location"}
-							</div>
-						)}
-
-						{/* Assigned Technicians */}
-						{technicianBadge && (
-							<div
-								className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex max-w-full items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
-								title={technicianBadge.tooltip}
-							>
-								<Users className="size-4 shrink-0" />
-								<span className="truncate">{technicianBadge.label}</span>
-							</div>
-						)}
-
-						{/* Service Type */}
-						{(job.service_type || job.ai?.service_type) && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Wrench className="size-4" />
-								{job.service_type || job.ai?.service_type}
-							</div>
-						)}
-
-						{/* Scheduled Date */}
-						{job.scheduled_start && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Calendar className="size-4" />
-								{new Date(job.scheduled_start).toLocaleDateString("en-US", {
-									month: "short",
-									day: "numeric",
-								})}
-								{job.scheduled_end &&
-									new Date(job.scheduled_start).toDateString() !==
-										new Date(job.scheduled_end).toDateString() &&
-									` - ${new Date(job.scheduled_end).toLocaleDateString(
-										"en-US",
-										{
-											month: "short",
-											day: "numeric",
-										},
-									)}`}
-							</div>
-						)}
-
-						{/* Job Value */}
-						{(job.financial?.total_amount ?? 0) > 0 && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<DollarSign className="size-4" />
-								{new Intl.NumberFormat("en-US", {
-									style: "currency",
-									currency: "USD",
-									minimumFractionDigits: 0,
-								}).format(job.financial?.total_amount ?? 0)}
-							</div>
-						)}
-
-						{/* Deposit Status */}
-						{(job.financial?.deposit_amount ?? 0) > 0 && (
-							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-									job.financial?.deposit_paid_at
-										? "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
-										: "border-amber-200 bg-amber-50 text-amber-700 hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:border-amber-900/40 dark:hover:bg-amber-900/30"
-								}`}
-							>
-								<DollarSign className="size-4" />
-								Deposit{" "}
-								{job.financial?.deposit_paid_at
-									? "Paid"
-									: `Due: ${new Intl.NumberFormat("en-US", {
-											style: "currency",
-											currency: "USD",
-											minimumFractionDigits: 0,
-										}).format(job.financial?.deposit_amount ?? 0)}`}
-							</div>
-						)}
-
-						{/* Team Size */}
-						{teamAssignments && teamAssignments.length > 1 && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Users className="size-4" />
-								{teamAssignments.length} Team Members
-							</div>
-						)}
-
-						{/* Equipment Count */}
-						{jobEquipment && jobEquipment.length > 0 && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Wrench className="size-4" />
-								{jobEquipment.length} Equipment
-							</div>
-						)}
-
-						{/* Task Completion */}
-						{tasks && tasks.length > 0 && (
-							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-									tasks.every((t: any) => t.status === "completed")
-										? "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
-										: "border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5"
-								}`}
-							>
-								<CheckCircle2 className="size-4" />
-								{tasks.filter((t: any) => t.status === "completed").length}/
-								{tasks.length} Tasks
-							</div>
-						)}
-
-						{/* Time Tracked */}
-						{timeEntries && timeEntries.length > 0 && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Clock className="size-4" />
-								{timeEntries
-									.reduce(
-										(sum: number, t: any) => sum + (t.total_hours || 0),
-										0,
-									)
-									.toFixed(1)}
-								h
-								{job.timeTracking?.estimated_labor_hours &&
-									` / ${job.timeTracking?.estimated_labor_hours}h`}
-							</div>
-						)}
-
-						{/* Invoice Status */}
-						{invoices && invoices.length > 0 && (
-							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-									invoices.some((inv: any) => inv.balance_amount > 0)
-										? "border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30"
-										: "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
-								}`}
-							>
-								<FileText className="size-4" />
-								{invoices.length} Invoice
-								{invoices.length !== 1 ? "s" : ""}
-								{invoices.some((inv: any) => inv.balance_amount > 0) &&
-									" (Due)"}
-							</div>
-						)}
-
-						{/* Photos Count */}
-						{photos && photos.length > 0 && (
-							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
-								<Camera className="size-4" />
-								{photos.length} Photo{photos.length !== 1 ? "s" : ""}
-							</div>
-						)}
-					</div>
-
-					{/* Badges Section */}
-					<div className="flex flex-col gap-3">
-						{/* Role-Based Metrics */}
-						<div className="flex flex-wrap items-center gap-3">
-							{/* Owners and Admins see everything */}
-							{(userRole === "owner" || userRole === "admin") && (
-								<>
-									<ManagerJobMetrics metrics={metrics || {}} />
-									<CSRJobInfo
-										appointmentStatus={metrics?.appointmentStatus}
-										communications={communications}
-										customer={customer}
-										lastContact={metrics?.lastContact}
-										nextAppointment={metrics?.nextAppointment}
-										schedules={schedules}
-									/>
-									<TechJobInfo
-										documents={documents}
-										equipment={equipment}
-										jobEquipment={jobEquipment}
-										materials={jobMaterials}
-										notes={jobNotes}
-										photos={photos}
-										property={property}
-									/>
-								</>
-							)}
-
-							{/* Managers see financial metrics */}
-							{userRole === "manager" && (
-								<ManagerJobMetrics metrics={metrics || {}} />
-							)}
-
-							{/* CSRs and Dispatchers see customer and scheduling info */}
-							{(userRole === "csr" || userRole === "dispatcher") && (
-								<CSRJobInfo
-									appointmentStatus={metrics?.appointmentStatus}
-									communications={communications}
-									customer={customer}
-									lastContact={metrics?.lastContact}
-									nextAppointment={metrics?.nextAppointment}
-									schedules={schedules}
-								/>
-							)}
-
-							{/* Technicians see field work info */}
-							{userRole === "technician" && (
-								<TechJobInfo
-									documents={documents}
-									equipment={equipment}
-									jobEquipment={jobEquipment}
-									materials={jobMaterials}
-									notes={jobNotes}
-									photos={photos}
-									property={property}
-								/>
-							)}
-						</div>
-
-						{/* Common Badges: Tags, Credits, Alerts */}
-						<div className="flex flex-col gap-3">
-							{/* Customer Tags */}
-							{customer?.id && (
-								<div className="flex flex-wrap items-center gap-2">
-									<span className="text-muted-foreground text-xs font-medium">
-										Customer:
-									</span>
-									<EntityTags
-										entityId={customer.id}
-										entityType="customer"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("customer", id, tags)
-										}
-										tags={customer.tags || []}
-									/>
-								</div>
-							)}
-
-							{/* Smart Badges Row */}
-							<div className="flex flex-wrap items-center gap-3">
-								{/* Company Credit */}
-								{customer && (
-									<CompanyCreditBadge
-										customer={{
-											credit_limit: customer.credit_limit,
-											outstanding_balance: customer.outstanding_balance,
-										}}
-									/>
-								)}
-
-								{/* Smart Alerts */}
-								<LinkedDataAlerts
-									estimates={estimates}
-									invoices={invoices}
-									job={{
-										id: job.id,
-										deposit_amount: job.financial?.deposit_amount,
-										deposit_paid_at: job.financial?.deposit_paid_at,
-										scheduled_end: job.scheduled_end,
-										status: job.status,
-									}}
-								/>
-							</div>
-						</div>
-					</div>
-
-					{/* Enrichment Data - Weather, Traffic as Badges */}
-					<JobEnrichmentInline
-						enrichmentData={enrichmentData}
-						jobId={job.id}
-						property={
-							property
-								? {
-										address: property.address ?? undefined,
-										city: property.city ?? undefined,
-										state: property.state ?? undefined,
-										zip_code: property.zip_code ?? undefined,
-										lat: property.lat ?? undefined,
-										lon: property.lon ?? undefined,
-									}
-								: undefined
-						}
-					/>
-				</div>
+			<div className="mx-auto max-w-7xl">
+				<RichJobHeader
+					job={job}
+					customer={customer}
+					property={property}
+					metrics={metrics || {}}
+					teamAssignments={teamAssignments || []}
+					timeEntries={timeEntries || []}
+					invoices={invoices || []}
+					payments={payments || []}
+					estimates={estimates || []}
+					jobEquipment={jobEquipment || []}
+					communications={communications || []}
+					notes={jobNotes || []}
+					photos={photos || []}
+					documents={documents || []}
+					onUpdate={handleJobUpdate}
+				/>
 			</div>
 		</div>
 	);
@@ -1321,8 +1026,10 @@ export function JobPageContentUnified({
 							/>
 						) : (
 							<div className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="property-select">Select Property</Label>
+								<StandardFormField
+									label="Select Property"
+									htmlFor="property-select"
+								>
 									<Select
 										onValueChange={(value) =>
 											setSelectedPropertyId(value || null)
@@ -1346,7 +1053,7 @@ export function JobPageContentUnified({
 											)}
 										</SelectContent>
 									</Select>
-								</div>
+								</StandardFormField>
 								<div className="flex items-center justify-end gap-2">
 									<Button
 										onClick={() => setShowPropertyCreateForm(true)}

@@ -43,6 +43,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import {
 	Tooltip,
@@ -287,15 +288,14 @@ export function AccountingSettingsClient() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-6 sm:grid-cols-2">
-							<div>
-								<Label htmlFor="provider">Accounting Provider</Label>
+							<StandardFormField label="Accounting Provider" htmlFor="provider">
 								<Select
 									onValueChange={(value) =>
 										setFormData({ ...formData, provider: value })
 									}
 									value={formData.provider}
 								>
-									<SelectTrigger className="mt-2">
+									<SelectTrigger id="provider">
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
@@ -309,7 +309,7 @@ export function AccountingSettingsClient() {
 										<SelectItem value="manual">Manual Entry</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
+							</StandardFormField>
 
 							<div className="flex items-end">
 								<div className="flex items-center gap-2">
@@ -336,10 +336,11 @@ export function AccountingSettingsClient() {
 								<div className="space-y-4">
 									<h3 className="text-sm font-medium">API Credentials</h3>
 									<div className="grid gap-4">
-										<div>
-											<Label htmlFor="apiKey">API Key / Client ID</Label>
+										<StandardFormField
+											label="API Key / Client ID"
+											htmlFor="apiKey"
+										>
 											<Input
-												className="mt-2"
 												id="apiKey"
 												onChange={(e) =>
 													setFormData({ ...formData, apiKey: e.target.value })
@@ -348,13 +349,12 @@ export function AccountingSettingsClient() {
 												type="password"
 												value={formData.apiKey}
 											/>
-										</div>
-										<div>
-											<Label htmlFor="apiSecret">
-												API Secret / Client Secret
-											</Label>
+										</StandardFormField>
+										<StandardFormField
+											label="API Secret / Client Secret"
+											htmlFor="apiSecret"
+										>
 											<Input
-												className="mt-2"
 												id="apiSecret"
 												onChange={(e) =>
 													setFormData({
@@ -366,7 +366,7 @@ export function AccountingSettingsClient() {
 												type="password"
 												value={formData.apiSecret}
 											/>
-										</div>
+										</StandardFormField>
 									</div>
 
 									<Button
@@ -442,15 +442,17 @@ export function AccountingSettingsClient() {
 								</div>
 
 								{formData.autoSyncEnabled && (
-									<div>
-										<Label htmlFor="syncFrequency">Sync Frequency</Label>
+									<StandardFormField
+										label="Sync Frequency"
+										htmlFor="syncFrequency"
+									>
 										<Select
 											onValueChange={(value) =>
 												setFormData({ ...formData, syncFrequency: value })
 											}
 											value={formData.syncFrequency}
 										>
-											<SelectTrigger className="mt-2">
+											<SelectTrigger id="syncFrequency">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
@@ -461,7 +463,7 @@ export function AccountingSettingsClient() {
 												<SelectItem value="manual">Manual Only</SelectItem>
 											</SelectContent>
 										</Select>
-									</div>
+									</StandardFormField>
 								)}
 
 								<Separator />
@@ -543,10 +545,11 @@ export function AccountingSettingsClient() {
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div>
-									<Label htmlFor="incomeAccount">Income Account</Label>
+								<StandardFormField
+									label="Income Account"
+									htmlFor="incomeAccount"
+								>
 									<Input
-										className="mt-2"
 										id="incomeAccount"
 										onChange={(e) =>
 											setFormData({
@@ -557,12 +560,13 @@ export function AccountingSettingsClient() {
 										placeholder="e.g., 4000 - Service Revenue"
 										value={formData.incomeAccount}
 									/>
-								</div>
+								</StandardFormField>
 
-								<div>
-									<Label htmlFor="expenseAccount">Expense Account</Label>
+								<StandardFormField
+									label="Expense Account"
+									htmlFor="expenseAccount"
+								>
 									<Input
-										className="mt-2"
 										id="expenseAccount"
 										onChange={(e) =>
 											setFormData({
@@ -573,12 +577,10 @@ export function AccountingSettingsClient() {
 										placeholder="e.g., 5000 - Operating Expenses"
 										value={formData.expenseAccount}
 									/>
-								</div>
+								</StandardFormField>
 
-								<div>
-									<Label htmlFor="assetAccount">Asset Account</Label>
+								<StandardFormField label="Asset Account" htmlFor="assetAccount">
 									<Input
-										className="mt-2"
 										id="assetAccount"
 										onChange={(e) =>
 											setFormData({ ...formData, assetAccount: e.target.value })
@@ -586,12 +588,13 @@ export function AccountingSettingsClient() {
 										placeholder="e.g., 1200 - Accounts Receivable"
 										value={formData.assetAccount}
 									/>
-								</div>
+								</StandardFormField>
 
-								<div>
-									<Label htmlFor="liabilityAccount">Liability Account</Label>
+								<StandardFormField
+									label="Liability Account"
+									htmlFor="liabilityAccount"
+								>
 									<Input
-										className="mt-2"
 										id="liabilityAccount"
 										onChange={(e) =>
 											setFormData({
@@ -602,7 +605,7 @@ export function AccountingSettingsClient() {
 										placeholder="e.g., 2000 - Accounts Payable"
 										value={formData.liabilityAccount}
 									/>
-								</div>
+								</StandardFormField>
 							</CardContent>
 						</Card>
 					</>

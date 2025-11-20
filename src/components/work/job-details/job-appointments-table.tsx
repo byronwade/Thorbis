@@ -1,16 +1,32 @@
 "use client";
 
 import {
+	Archive,
 	Calendar,
 	CheckCircle,
 	Eye,
+	Link2Off,
 	MapPin,
 	MoreHorizontal,
 	X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import {
+	archiveAppointment,
+	unlinkScheduleFromJob,
+} from "@/actions/appointments";
 import { updateSchedule } from "@/actions/schedules";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +42,7 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
+import { TablePresets } from "@/lib/datatable/table-presets";
 
 type Appointment = {
 	id: string;
@@ -68,6 +85,9 @@ export function JobAppointmentsTable({
 	const [loadingAppointmentId, setLoadingAppointmentId] = useState<
 		string | null
 	>(null);
+	const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+	const [unlinkDialogOpen, setUnlinkDialogOpen] = useState(false);
+	const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
 	// Check if appointment is scheduled for today
 	const isToday = useCallback((dateString: string) => {
@@ -250,7 +270,7 @@ export function JobAppointmentsTable({
 				shrink: true,
 				render: (appointment) => (
 					<div className="space-y-1">
-						<div className="text-sm font-medium">
+						<div className="text-xs font-medium">
 							{formatDate(appointment.start_time)}
 						</div>
 						<div className="text-muted-foreground text-xs">
@@ -267,7 +287,7 @@ export function JobAppointmentsTable({
 				shrink: true,
 				hideOnMobile: true,
 				render: (appointment) => (
-					<div className="text-sm">
+					<div className="text-xs">
 						{appointment.dispatch_time ? (
 							<div className="space-y-1">
 								<div>{formatDate(appointment.dispatch_time)}</div>
@@ -290,7 +310,7 @@ export function JobAppointmentsTable({
 				shrink: true,
 				hideOnMobile: true,
 				render: (appointment) => (
-					<div className="text-sm">
+					<div className="text-xs">
 						{appointment.actual_start_time ? (
 							<div className="space-y-1">
 								<div>{formatDate(appointment.actual_start_time)}</div>
@@ -311,7 +331,7 @@ export function JobAppointmentsTable({
 				shrink: true,
 				hideOnMobile: true,
 				render: (appointment) => (
-					<div className="text-sm">
+					<div className="text-xs">
 						{appointment.actual_end_time ? (
 							<div className="space-y-1">
 								<div>{formatDate(appointment.actual_end_time)}</div>
@@ -331,7 +351,7 @@ export function JobAppointmentsTable({
 				width: "w-24",
 				shrink: true,
 				render: (appointment) => (
-					<span className="text-sm">
+					<span className="text-xs">
 						{appointment.actual_duration
 							? formatDuration(appointment.actual_duration)
 							: formatDuration(appointment.duration ?? null)}
@@ -364,12 +384,12 @@ export function JobAppointmentsTable({
 										.slice(0, 2)}
 								</AvatarFallback>
 							</Avatar>
-							<span className="text-sm">
+							<span className="text-xs">
 								{assignedUser.name || "Unassigned"}
 							</span>
 						</div>
 					) : (
-						<span className="text-muted-foreground text-sm">Unassigned</span>
+						<span className="text-muted-foreground text-xs">Unassigned</span>
 					);
 				},
 			},
@@ -508,28 +528,173 @@ export function JobAppointmentsTable({
 		],
 	);
 
+	const handleArchive = useCallback(async () => {
+		if (selectedIds.length === 0) return;
+
+		try {
+			// Archive each appointment
+			const results = await Promise.all(
+				selectedIds.map((id) => archiveAppointment(id)),
+			);
+
+			// Check for failures
+			const failed = results.filter((r) => !r.success);
+			if (failed.length > 0) {
+				toast({
+					variant: "destructive",
+					title: "Some appointments failed to archive",
+					description: failed.map((r) => r.error).join(", "),
+				});
+			} else {
+				toast({
+					title: "Success",
+					description: `${selectedIds.length} appointment(s) archived successfully`,
+				});
+				router.refresh(); // Refresh to show updated data
+			}
+		} catch (error) {
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to archive appointments",
+			});
+		} finally {
+			setArchiveDialogOpen(false);
+			setSelectedIds([]);
+		}
+	}, [selectedIds, toast, router]);
+
+	const handleUnlink = useCallback(async () => {
+		if (selectedIds.length === 0) return;
+
+		try {
+			// Unlink each appointment from the job
+			const results = await Promise.all(
+				selectedIds.map((id) => unlinkScheduleFromJob(id)),
+			);
+
+			// Check for failures
+			const failed = results.filter((r) => !r.success);
+			if (failed.length > 0) {
+				toast({
+					variant: "destructive",
+					title: "Some appointments failed to unlink",
+					description: failed.map((r) => r.error).join(", "),
+				});
+			} else {
+				toast({
+					title: "Success",
+					description: `${selectedIds.length} appointment(s) unlinked from job successfully`,
+				});
+				router.refresh(); // Refresh to show updated data
+			}
+		} catch (error) {
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to unlink appointments",
+			});
+		} finally {
+			setUnlinkDialogOpen(false);
+			setSelectedIds([]);
+		}
+	}, [selectedIds, toast, router]);
+
+	const toolbarActions = useMemo(
+		() =>
+			selectedIds.length > 0
+				? [
+						<Button
+							key="archive"
+							onClick={() => setArchiveDialogOpen(true)}
+							size="sm"
+							variant="outline"
+						>
+							<Archive className="mr-2 size-4" />
+							Archive ({selectedIds.length})
+						</Button>,
+						<Button
+							key="unlink"
+							onClick={() => setUnlinkDialogOpen(true)}
+							size="sm"
+							variant="outline"
+						>
+							<Link2Off className="mr-2 size-4" />
+							Unlink ({selectedIds.length})
+						</Button>,
+					]
+				: [],
+		[selectedIds],
+	);
+
 	return (
-		<FullWidthDataTable
-			columns={columns}
-			data={appointments}
-			emptyIcon={<Calendar className="text-muted-foreground/50 size-12" />}
-			emptyMessage="No appointments scheduled for this job"
-			getItemId={(appointment) => appointment.id}
-			searchFilter={(appointment, query) => {
-				const searchLower = query.toLowerCase();
-				const assignedUserName = Array.isArray(appointment.assigned_user)
-					? appointment.assigned_user[0]?.name || ""
-					: appointment.assigned_user?.name || "";
-				return (
-					(appointment.title || "").toLowerCase().includes(searchLower) ||
-					(appointment.description || "").toLowerCase().includes(searchLower) ||
-					(appointment.status || "").toLowerCase().includes(searchLower) ||
-					(appointment.type || "").toLowerCase().includes(searchLower) ||
-					assignedUserName.toLowerCase().includes(searchLower)
-				);
-			}}
-			searchPlaceholder="Search appointments..."
-			showPagination={true}
-		/>
+		<>
+			<FullWidthDataTable
+				{...TablePresets.compact()}
+				columns={columns}
+				data={appointments}
+				emptyIcon={<Calendar className="text-muted-foreground/50 size-12" />}
+				emptyMessage="No appointments scheduled for this job"
+				getItemId={(appointment) => appointment.id}
+				noPadding={true}
+				onSelectionChange={setSelectedIds}
+				searchFilter={(appointment, query) => {
+					const searchLower = query.toLowerCase();
+					const assignedUserName = Array.isArray(appointment.assigned_user)
+						? appointment.assigned_user[0]?.name || ""
+						: appointment.assigned_user?.name || "";
+					return (
+						(appointment.title || "").toLowerCase().includes(searchLower) ||
+						(appointment.description || "")
+							.toLowerCase()
+							.includes(searchLower) ||
+						(appointment.status || "").toLowerCase().includes(searchLower) ||
+						(appointment.type || "").toLowerCase().includes(searchLower) ||
+						assignedUserName.toLowerCase().includes(searchLower)
+					);
+				}}
+				searchPlaceholder="Search appointments..."
+				showSelection={true}
+				toolbarActions={toolbarActions}
+			/>
+
+			{/* Archive Dialog */}
+			<AlertDialog onOpenChange={setArchiveDialogOpen} open={archiveDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Archive Appointments?</AlertDialogTitle>
+						<AlertDialogDescription>
+							Are you sure you want to archive {selectedIds.length}{" "}
+							appointment(s)? Archived appointments will be hidden from view but
+							can be restored later.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={handleArchive}>
+							Archive
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Unlink Dialog */}
+			<AlertDialog onOpenChange={setUnlinkDialogOpen} open={unlinkDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Unlink Appointments?</AlertDialogTitle>
+						<AlertDialogDescription>
+							Are you sure you want to unlink {selectedIds.length}{" "}
+							appointment(s) from this job? This will remove the association but
+							the appointments will still exist in the schedule.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={handleUnlink}>Unlink</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 }

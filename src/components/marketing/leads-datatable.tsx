@@ -14,6 +14,7 @@ import {
 	UserPlus,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
@@ -160,6 +162,7 @@ export function LeadsDataTable({
 	leads,
 	itemsPerPage = 50,
 }: LeadsDataTableProps) {
+	const router = useRouter();
 	const columns: ColumnDef<Lead>[] = [
 		{
 			key: "name",
@@ -169,7 +172,7 @@ export function LeadsDataTable({
 			render: (lead) => (
 				<div className="min-w-0">
 					<Link
-						className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
+						className="text-foreground hover:text-primary text-xs font-medium transition-colors hover:underline"
 						href={`/dashboard/marketing/leads/${lead.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -337,6 +340,7 @@ export function LeadsDataTable({
 
 	return (
 		<FullWidthDataTable
+			{...TablePresets.fullList()}
 			bulkActions={bulkActions}
 			columns={columns}
 			data={leads}
@@ -344,14 +348,20 @@ export function LeadsDataTable({
 				<UserPlus className="text-muted-foreground mx-auto h-12 w-12" />
 			}
 			emptyMessage="No leads found"
-			enableSelection={true}
 			getItemId={(lead) => lead.id}
-			itemsPerPage={itemsPerPage}
-			onRefresh={() => window.location.reload()}
+			onRefresh={() => router.refresh()}
 			onRowClick={handleRowClick}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search leads by name, email, or phone..."
 			showRefresh={false}
+			isHighlighted={(lead) =>
+				lead.stage === "lost" || lead.stage === "customer"
+			}
+			getHighlightClass={(lead) => {
+				if (lead.stage === "lost") return "bg-destructive/10 text-destructive";
+				if (lead.stage === "customer") return "bg-success/10 text-success";
+				return "";
+			}}
 		/>
 	);
 }

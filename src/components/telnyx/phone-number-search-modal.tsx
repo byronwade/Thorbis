@@ -12,6 +12,7 @@
 "use client";
 
 import { Check, DollarSign, Loader2, Phone, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { purchasePhoneNumber, searchPhoneNumbers } from "@/actions/telnyx";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 type PhoneNumberSearchModalProps = {
 	open: boolean;
@@ -47,6 +52,7 @@ export function PhoneNumberSearchModal({
 	onSuccess,
 	companyId,
 }: PhoneNumberSearchModalProps) {
+	const router = useRouter();
 	const [areaCode, setAreaCode] = useState("831");
 	const [numberType, setNumberType] = useState<"local" | "toll-free">("local");
 	const [voiceEnabled, setVoiceEnabled] = useState(true);
@@ -94,7 +100,7 @@ export function PhoneNumberSearchModal({
 		} else {
 			onOpenChange(false);
 			// Refresh the phone numbers list only if not using callback
-			window.location.reload();
+			router.refresh();
 		}
 	};
 
@@ -110,9 +116,12 @@ export function PhoneNumberSearchModal({
 
 				<div className="space-y-6">
 					{/* Search Form */}
-					<div className="grid gap-4 sm:grid-cols-2">
-						<div className="space-y-2">
-							<Label htmlFor="areaCode">Area Code (Optional)</Label>
+					<StandardFormRow cols={2}>
+						<StandardFormField
+							label="Area Code"
+							htmlFor="areaCode"
+							description="Leave empty to search all area codes"
+						>
 							<Input
 								id="areaCode"
 								maxLength={3}
@@ -120,13 +129,9 @@ export function PhoneNumberSearchModal({
 								placeholder="e.g., 831, 650, 415"
 								value={areaCode}
 							/>
-							<p className="text-muted-foreground text-xs">
-								Leave empty to search all area codes
-							</p>
-						</div>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label htmlFor="numberType">Number Type</Label>
+						<StandardFormField label="Number Type" htmlFor="numberType">
 							<Select
 								onValueChange={(v: any) => setNumberType(v)}
 								value={numberType}
@@ -153,8 +158,8 @@ export function PhoneNumberSearchModal({
 									</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
-					</div>
+						</StandardFormField>
+					</StandardFormRow>
 
 					{/* Feature Filters */}
 					<div className="space-y-2">
@@ -232,15 +237,21 @@ export function PhoneNumberSearchModal({
 													{formatPhoneNumber(number.phone_number)}
 												</div>
 												<div className="flex flex-wrap gap-1.5">
-													{number.features?.map((feature: string) => (
-														<Badge
-															className="text-xs"
-															key={feature}
-															variant="secondary"
-														>
-															{feature.toUpperCase()}
-														</Badge>
-													))}
+													{number.features?.map((feature: any) => {
+														const featureText =
+															typeof feature === "string"
+																? feature
+																: feature?.name || String(feature);
+														return (
+															<Badge
+																className="text-xs"
+																key={featureText}
+																variant="secondary"
+															>
+																{featureText.toUpperCase()}
+															</Badge>
+														);
+													})}
 												</div>
 											</div>
 										</div>

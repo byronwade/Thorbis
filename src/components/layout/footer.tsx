@@ -598,7 +598,7 @@ export function Footer() {
 							</Link>
 							<Link
 								className="text-muted-foreground hover:text-foreground text-xs transition-colors"
-								href="/sitemap"
+								href="/site-map"
 							>
 								Sitemap
 							</Link>

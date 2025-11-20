@@ -83,7 +83,7 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 					<div className="bg-background/60 rounded-xl border p-4 backdrop-blur-sm">
 						<p className="text-sm font-medium">
 							<span className="text-primary">Transparent pricing:</span>{" "}
-							<span className="text-foreground">$100/month base</span> +
+							<span className="text-foreground">$200/month base</span> +
 							pay-as-you-go AI usage. Average customer:{" "}
 							<span className="text-foreground">$350-800/month all-in</span>.
 						</p>

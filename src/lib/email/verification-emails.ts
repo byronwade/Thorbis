@@ -12,12 +12,12 @@
 "use server";
 
 import type { ReactElement } from "react";
+import { createClient } from "@/lib/supabase/server";
 import VerificationCompleteEmail from "../../../emails/templates/onboarding/verification-complete";
 import VerificationSubmittedEmail from "../../../emails/templates/onboarding/verification-submitted";
-import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "./email-sender";
-import { EmailTemplate } from "./email-types";
 import type { EmailSendResult } from "./email-types";
+import { EmailTemplate } from "./email-types";
 import { emailConfig } from "./resend-client";
 
 /**
@@ -57,7 +57,7 @@ export async function sendVerificationSubmittedEmail(
 
 		// Fetch user details (company owner)
 		const { data: owner, error: ownerError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("full_name")
 			.eq("company_id", companyId)
 			.eq("role", "owner")
@@ -134,7 +134,7 @@ export async function sendVerificationCompleteEmail(
 
 		// Fetch user details (company owner)
 		const { data: owner } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("full_name")
 			.eq("company_id", companyId)
 			.eq("role", "owner")

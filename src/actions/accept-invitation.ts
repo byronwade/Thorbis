@@ -230,7 +230,7 @@ async function upsertTeamMember({
 	photoUrl,
 }: UpsertTeamMemberParams) {
 	// TODO: team_members table doesn't exist - create migration
-	// const { error } = await supabase.from("team_members").upsert(
+	// const { error } = await supabase.from("company_memberships").upsert(
 	// 	{
 	// 		user_id: userId,
 	// 		company_id: invitation.company_id,

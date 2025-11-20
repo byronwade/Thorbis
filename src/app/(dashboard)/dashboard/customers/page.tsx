@@ -13,7 +13,6 @@
 import { Suspense } from "react";
 import { CustomersData } from "@/components/customers/customers-data";
 import { CustomersSkeleton } from "@/components/customers/customers-skeleton";
-import { CustomersStats } from "@/components/customers/customers-stats";
 
 export default async function CustomersPage({
 	searchParams,
@@ -23,14 +22,7 @@ export default async function CustomersPage({
 	const params = await searchParams;
 	return (
 		<>
-			{/* Statistics - Streams in first */}
-			<Suspense
-				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-			>
-				<CustomersStats />
-			</Suspense>
-
-			{/* Table/Kanban - Streams in second */}
+			{/* Table/Kanban - Streams in */}
 			<Suspense fallback={<CustomersSkeleton />}>
 				<CustomersData searchParams={params} />
 			</Suspense>

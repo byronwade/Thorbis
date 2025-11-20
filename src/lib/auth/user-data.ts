@@ -18,9 +18,9 @@ export type UserStatus = "online" | "available" | "busy";
 
 export type UserProfile = {
 	id: string;
-	name: string;
+	full_name: string;
 	email: string;
-	avatar: string;
+	avatar_url: string;
 	bio?: string;
 	phone?: string;
 	status?: UserStatus;
@@ -58,7 +58,7 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 
 		// Fetch user profile from public.users table (with RLS)
 		const { data: profile, error } = await supabase
-			.from("users")
+			.from("profiles")
 			.select("*")
 			.eq("id", user.id)
 			.single();
@@ -70,28 +70,28 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 		// Merge auth data with profile data
 		return {
 			id: user.id,
-			name:
-				profile?.name ||
+			full_name:
+				profile?.full_name ||
 				user.user_metadata?.name ||
 				user.email?.split("@")[0] ||
 				"User",
 			email: user.email || profile?.email || "",
-			avatar:
-				profile?.avatar ||
+			avatar_url:
+				profile?.avatar_url ||
 				user.user_metadata?.avatar_url ||
 				generateAvatar(user.email || profile?.email),
 			bio: profile?.bio || undefined,
 			phone: profile?.phone || undefined,
 			status: (profile?.status as UserStatus) || "online",
-			emailVerified: !!user.email_confirmed_at || profile?.emailVerified,
-			createdAt: new Date(profile?.createdAt || user.created_at),
+			emailVerified: !!user.email_confirmed_at,
+			createdAt: new Date(profile?.created_at || user.created_at),
 		};
 	} catch (_error) {
 		return {
 			id: "dev-user-1",
-			name: "Development User",
+			full_name: "Development User",
 			email: "dev@example.com",
-			avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+			avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
 			emailVerified: true,
 			createdAt: new Date(),
 		};
@@ -106,9 +106,9 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 function getUserProfileFromAuth(user: any): UserProfile {
 	return {
 		id: user.id,
-		name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+		full_name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
 		email: user.email || "",
-		avatar: user.user_metadata?.avatar_url || generateAvatar(user.email),
+		avatar_url: user.user_metadata?.avatar_url || generateAvatar(user.email),
 		emailVerified: !!user.email_confirmed_at,
 		createdAt: new Date(user.created_at),
 	};
@@ -200,7 +200,7 @@ export const getUserCompanies = cache(
 			// Fetch user's companies via team_members join
 			// Exclude archived companies (deleted_at IS NULL)
 			const { data: memberships, error } = await supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select(
 					`
         company_id,
@@ -296,7 +296,7 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
 
 		// Get first active company membership
 		const { data: membership, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -321,10 +321,10 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
  */
 export async function updateUserProfile(
 	updates: Partial<{
-		name: string;
+		full_name: string;
 		bio: string;
 		phone: string;
-		avatar: string;
+		avatar_url: string;
 	}>,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -338,12 +338,12 @@ export async function updateUserProfile(
 			return { success: false, error: "Service not available" };
 		}
 
-		// Update public.users table (RLS enforced)
+		// Update profiles table (RLS enforced)
 		const { error } = await supabase
-			.from("users")
+			.from("profiles")
 			.update({
 				...updates,
-				updatedAt: new Date(),
+				updated_at: new Date().toISOString(),
 			})
 			.eq("id", user.id);
 
@@ -351,12 +351,12 @@ export async function updateUserProfile(
 			return { success: false, error: error.message };
 		}
 
-		// If updating name or avatar, also update auth metadata
-		if (updates.name || updates.avatar) {
+		// If updating full_name or avatar_url, also update auth metadata
+		if (updates.full_name || updates.avatar_url) {
 			const { error: authError } = await supabase.auth.updateUser({
 				data: {
-					name: updates.name,
-					avatar_url: updates.avatar,
+					name: updates.full_name,
+					avatar_url: updates.avatar_url,
 				},
 			});
 

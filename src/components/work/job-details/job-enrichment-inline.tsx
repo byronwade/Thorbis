@@ -113,6 +113,8 @@ export function JobEnrichmentInline({
 	const [hasFetched, setHasFetched] = useState(false);
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
+	const [enrichmentError, setEnrichmentError] = useState<string | null>(null);
+	const [travelTimeError, setTravelTimeError] = useState<string | null>(null);
 
 	// Refs to track if we've already fetched data (prevents re-fetching on re-renders)
 	const enrichmentFetchedRef = useRef(false);
@@ -121,6 +123,7 @@ export function JobEnrichmentInline({
 	const fetchEnrichment = useCallback(async () => {
 		if (!(jobId && property?.address && property?.city && property?.state)) {
 			setIsLoading(false);
+			setEnrichmentError("Missing required property information");
 			return;
 		}
 
@@ -130,6 +133,7 @@ export function JobEnrichmentInline({
 		}
 
 		setHasFetched(true);
+		setEnrichmentError(null);
 
 		try {
 			const params = new URLSearchParams({
@@ -145,14 +149,49 @@ export function JobEnrichmentInline({
 				params.set("lon", property.lon.toString());
 			}
 
-			const response = await fetch(`/api/job-enrichment?${params.toString()}`);
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-			if (response.ok) {
+			try {
+				const response = await fetch(
+					`/api/job-enrichment?${params.toString()}`,
+					{
+						signal: controller.signal,
+					},
+				);
+
+				clearTimeout(timeoutId);
+
+				if (!response.ok) {
+					const errorText = await response.text().catch(() => "Unknown error");
+					throw new Error(`API error (${response.status}): ${errorText}`);
+				}
+
 				const data = await response.json();
-				setEnrichmentData(data);
+
+				// Validate response data structure
+				if (data && typeof data === "object") {
+					setEnrichmentData(data);
+					console.log("✅ Job enrichment loaded successfully");
+				} else {
+					throw new Error("Invalid response format from enrichment API");
+				}
+			} catch (fetchError) {
+				clearTimeout(timeoutId);
+				throw fetchError;
 			}
-		} catch (_error) {
-			// Silently fail - enrichment is non-critical
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error
+					? error.name === "AbortError"
+						? "Request timeout - enrichment data took too long to load"
+						: error.message
+					: "Failed to load enrichment data";
+
+			setEnrichmentError(errorMessage);
+			console.warn("⚠️ Job enrichment failed:", errorMessage);
+
+			// Silently fail - enrichment is non-critical, but log for debugging
 		} finally {
 			setIsLoading(false);
 		}
@@ -196,11 +235,14 @@ export function JobEnrichmentInline({
 		const fetchTravelTime = async () => {
 			// Only fetch if we have required address data
 			if (!(property?.address && property?.city && property?.state)) {
+				setTravelTimeError("Missing required property information");
 				return;
 			}
 
 			travelTimeFetchedRef.current = true;
 			setIsLoadingTravel(true);
+			setTravelTimeError(null);
+
 			try {
 				const params = new URLSearchParams();
 				if (property.lat && property.lon) {
@@ -218,12 +260,59 @@ export function JobEnrichmentInline({
 					params.set("destination", destination);
 				}
 
-				const response = await fetch(`/api/travel-time?${params.toString()}`);
-				if (response.ok) {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+				try {
+					const response = await fetch(
+						`/api/travel-time?${params.toString()}`,
+						{
+							signal: controller.signal,
+						},
+					);
+
+					clearTimeout(timeoutId);
+
+					if (!response.ok) {
+						const errorText = await response
+							.text()
+							.catch(() => "Unknown error");
+						throw new Error(`API error (${response.status}): ${errorText}`);
+					}
+
 					const data: TravelTimeData = await response.json();
-					setTravelTime(data);
+
+					// Validate response structure
+					if (
+						data &&
+						typeof data === "object" &&
+						typeof data.duration === "number" &&
+						typeof data.distance === "number"
+					) {
+						setTravelTime(data);
+						console.log(
+							"✅ Travel time loaded successfully:",
+							data.durationText,
+						);
+					} else {
+						throw new Error("Invalid response format from travel time API");
+					}
+				} catch (fetchError) {
+					clearTimeout(timeoutId);
+					throw fetchError;
 				}
-			} catch (_error) {
+			} catch (error) {
+				const errorMessage =
+					error instanceof Error
+						? error.name === "AbortError"
+							? "Request timeout - travel time took too long to calculate"
+							: error.message
+						: "Failed to calculate travel time";
+
+				setTravelTimeError(errorMessage);
+				console.warn("⚠️ Travel time calculation failed:", errorMessage);
+
+				// Silently fail - travel time is non-critical
 			} finally {
 				setIsLoadingTravel(false);
 			}
@@ -239,20 +328,26 @@ export function JobEnrichmentInline({
 		property?.lon,
 	]);
 
+	// Don't render anything while loading or if there's an error
+	if (isLoading) {
+		return null;
+	}
+
+	// Don't render if enrichment failed but don't show error to user
+	// (enrichment is optional/non-critical)
 	if (
-		isLoading ||
+		enrichmentError ||
 		!enrichmentData ||
 		enrichmentData.enrichmentStatus === "failed"
 	) {
+		// Log error for debugging but don't block UI
+		if (enrichmentError) {
+			console.debug("Job enrichment unavailable:", enrichmentError);
+		}
 		return null;
 	}
 
 	const { weather, traffic, recommendations, timeZone } = enrichmentData;
-
-	// Log full data to console for debugging
-	if (enrichmentData) {
-		// TODO: Handle error case
-	}
 
 	const hasWeatherAlerts =
 		weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;

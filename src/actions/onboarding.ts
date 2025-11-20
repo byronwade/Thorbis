@@ -168,7 +168,7 @@ async function ensureActiveMembership(
 ): Promise<void> {
 	// First verify the table exists by checking if we can query it
 	const { error: testError } = await serviceSupabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("id")
 		.limit(1);
 
@@ -186,7 +186,7 @@ async function ensureActiveMembership(
 	}
 
 	const { data: membership, error } = await serviceSupabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("id, status")
 		.eq("company_id", companyId)
 		.eq("user_id", userId)
@@ -198,7 +198,7 @@ async function ensureActiveMembership(
 
 	if (!membership) {
 		const { error: insertError } = await serviceSupabase
-			.from("team_members")
+			.from("company_memberships")
 			.insert({
 				company_id: companyId,
 				user_id: userId,
@@ -217,7 +217,7 @@ async function ensureActiveMembership(
 
 	if (membership.status !== "active") {
 		const { error: updateError } = await serviceSupabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({
 				status: "active",
 				deleted_at: null,
@@ -238,7 +238,7 @@ async function fetchIncompleteCompanyCandidates(
 	userId: string,
 ): Promise<IncompleteCompanyCandidate[]> {
 	const { data, error } = await serviceSupabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(
 			`
         company_id,
@@ -302,7 +302,7 @@ async function validateCompanyForOnboarding(
 	}
 
 	const { data: membership, error: membershipError } = await serviceSupabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("status")
 		.eq("user_id", userId)
 		.eq("company_id", companyId)
@@ -523,7 +523,7 @@ export async function checkDatabaseConnection(): Promise<boolean> {
 		}
 
 		// Simple query to test connection
-		const { error } = await supabase.from("users").select("count").limit(1);
+		const { error } = await supabase.from("profiles").select("count").limit(1);
 		return !error;
 	} catch (_error) {
 		return false;
@@ -1016,7 +1016,7 @@ export async function purchaseOnboardingPhoneNumber(
 
 		// Verify user has access to the active company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("company_id", activeCompanyId)
@@ -1087,7 +1087,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 
 		// Verify user has access to the active company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("company_id", activeCompanyId)
@@ -1334,7 +1334,7 @@ export async function archiveIncompleteCompany(
 		}
 
 		const { error: memberArchiveError } = await serviceSupabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({
 				deleted_at: timestamp,
 				deleted_by: user.id,

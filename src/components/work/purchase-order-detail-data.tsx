@@ -57,7 +57,7 @@ export async function PurchaseOrderDetailData({
 
 	// Verify user access
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)
@@ -140,16 +140,16 @@ export async function PurchaseOrderDetailData({
 
 		po.requested_by
 			? supabase
-					.from("users")
-					.select("id, name, email")
+					.from("profiles")
+					.select("id, full_name, email")
 					.eq("id", po.requested_by)
 					.single()
 			: Promise.resolve({ data: null, error: null }),
 
 		po.approved_by
 			? supabase
-					.from("users")
-					.select("id, name, email")
+					.from("profiles")
+					.select("id, full_name, email")
 					.eq("id", po.approved_by)
 					.single()
 			: Promise.resolve({ data: null, error: null }),

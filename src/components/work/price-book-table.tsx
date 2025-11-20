@@ -34,6 +34,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { archivePriceBookItem } from "@/actions/price-book";
+import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +52,8 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { useTableActions } from "@/hooks/use-table-actions";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency } from "@/lib/formatters";
 import { usePriceBookStore } from "@/lib/stores/pricebook-store";
 import { cn } from "@/lib/utils";
@@ -110,6 +115,46 @@ export function PriceBookTable({
 	const categoryFilter = usePriceBookStore((state) => state.categoryFilter);
 	const getFilterSummary = usePriceBookStore((state) => state.getFilterSummary);
 
+	// Table actions hook
+	const { handleRefresh } = useTableActions({ entityType: "price_book" });
+
+	// Archive dialog
+	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
+		onConfirm: async (id) => {
+			const result = await archivePriceBookItem(id);
+			if (result.success) {
+				handleRefresh();
+			}
+		},
+		title: "Archive Price Book Item?",
+		description:
+			"This item will be archived and can be restored within 90 days.",
+	});
+
+	// Bulk archive state
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+	// Bulk archive dialog
+	const {
+		openArchiveDialog: openBulkArchiveDialog,
+		ArchiveDialogComponent: BulkArchiveDialogComponent,
+	} = useArchiveDialog({
+		onConfirm: async () => {
+			let archived = 0;
+			for (const id of selectedIds) {
+				const result = await archivePriceBookItem(id);
+				if (result.success) {
+					archived++;
+				}
+			}
+			if (archived > 0) {
+				handleRefresh();
+			}
+		},
+		title: `Archive ${selectedIds.size} Item(s)?`,
+		description: `${selectedIds.size} item(s) will be archived and can be restored within 90 days.`,
+	});
+
 	// Apply filters to items
 	const filteredItems = items.filter((item) => {
 		// Item type filter
@@ -167,7 +212,7 @@ export function PriceBookTable({
 				<div className="min-w-0">
 					<div className="flex items-center gap-2">
 						<Link
-							className="text-foreground truncate text-sm leading-tight font-medium hover:underline"
+							className="text-foreground truncate text-xs leading-tight font-medium hover:underline"
 							href={`/dashboard/work/pricebook/${item.id}`}
 							onClick={(e) => e.stopPropagation()}
 						>
@@ -215,7 +260,7 @@ export function PriceBookTable({
 					? `${item.category} › ${item.subcategory}`
 					: item.category;
 				return (
-					<div className="text-muted-foreground truncate text-sm">
+					<div className="text-muted-foreground truncate text-xs">
 						{displayText}
 					</div>
 				);
@@ -231,7 +276,7 @@ export function PriceBookTable({
 			hideOnMobile: true,
 			render: (item) =>
 				item.itemType === "service" && item.laborHours ? (
-					<div className="text-muted-foreground flex items-center gap-1 text-sm">
+					<div className="text-muted-foreground flex items-center gap-1 text-xs">
 						<span className="font-medium">{item.laborHours}</span>
 						<span className="text-xs">hrs</span>
 					</div>
@@ -248,7 +293,7 @@ export function PriceBookTable({
 			align: "right",
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="text-muted-foreground text-sm font-medium">
+				<div className="text-muted-foreground text-xs font-medium">
 					{formatCurrency(item.cost)}
 				</div>
 			),
@@ -262,7 +307,7 @@ export function PriceBookTable({
 			align: "right",
 			render: (item) => (
 				<div>
-					<div className="text-foreground text-sm font-semibold">
+					<div className="text-foreground text-xs font-semibold">
 						{formatCurrency(item.price)}
 					</div>
 					{/* Show unit below price */}
@@ -279,7 +324,7 @@ export function PriceBookTable({
 			align: "right",
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="text-success dark:text-success text-sm font-medium">
+				<div className="text-success dark:text-success text-xs font-medium">
 					{item.markupPercent}%
 				</div>
 			),
@@ -346,9 +391,14 @@ export function PriceBookTable({
 								<Archive className="mr-2 h-4 w-4" />
 								{item.isActive ? "Deactivate" : "Activate"}
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-								<Archive className="mr-2 h-4 w-4" />
-								Archive
+							<DropdownMenuItem
+								className="text-destructive"
+								onClick={() => {
+									openArchiveDialog(item.id);
+								}}
+							>
+								<Archive className="mr-2 size-4" />
+								Archive Item
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -382,10 +432,11 @@ export function PriceBookTable({
 		{
 			label: "Archive Selected",
 			icon: <Archive className="h-4 w-4" />,
-			onClick: () => {
-				/* TODO: implement archive selected */
-			},
 			variant: "destructive",
+			onClick: async (selectedIds) => {
+				setSelectedIds(selectedIds);
+				openBulkArchiveDialog("");
+			},
 		},
 	];
 
@@ -411,42 +462,47 @@ export function PriceBookTable({
 			: "No price book items found";
 
 	return (
-		<div className="flex h-full flex-col">
-			{/* Filter Summary Banner */}
-			{filterSummary !== "All Items" && (
-				<div className="bg-muted/30 shrink-0 border-b px-6 py-3">
-					<div className="flex items-center gap-2">
-						<span className="text-muted-foreground text-sm">Showing:</span>
-						<Badge className="font-medium" variant="secondary">
-							{filterSummary}
-						</Badge>
-						<span className="text-muted-foreground text-sm">
-							({filteredItems.length}{" "}
-							{filteredItems.length === 1 ? "item" : "items"})
-						</span>
+		<>
+			<div className="flex h-full flex-col">
+				{/* Filter Summary Banner */}
+				{filterSummary !== "All Items" && (
+					<div className="bg-muted/30 shrink-0 border-b px-6 py-3">
+						<div className="flex items-center gap-2">
+							<span className="text-muted-foreground text-xs">Showing:</span>
+							<Badge className="font-medium" variant="secondary">
+								{filterSummary}
+							</Badge>
+							<span className="text-muted-foreground text-xs">
+								({filteredItems.length}{" "}
+								{filteredItems.length === 1 ? "item" : "items"})
+							</span>
+						</div>
 					</div>
-				</div>
-			)}
+				)}
 
-			<div className="flex-1 overflow-hidden">
-				<FullWidthDataTable
-					bulkActions={bulkActions}
-					columns={columns}
-					data={filteredItems}
-					emptyIcon={<Box className="text-muted-foreground h-8 w-8" />}
-					emptyMessage={emptyMessage}
-					getItemId={(item) => item.id}
-					itemsPerPage={itemsPerPage}
-					onRefresh={onRefresh}
-					onRowClick={(item) => {
-						window.location.href = `/dashboard/work/pricebook/${item.id}`;
-					}}
-					searchFilter={searchFilter}
-					searchPlaceholder="Search by name, SKU, category, or tags..."
-					showPagination
-					showRefresh
-				/>
+				<div className="flex-1 overflow-hidden">
+					<FullWidthDataTable
+						{...TablePresets.fullList()}
+						bulkActions={bulkActions}
+						columns={columns}
+						data={filteredItems}
+						emptyIcon={<Box className="text-muted-foreground h-8 w-8" />}
+						emptyMessage={emptyMessage}
+						getItemId={(item) => item.id}
+						onRefresh={handleRefresh}
+						onRowClick={(item) => {
+							window.location.href = `/dashboard/work/pricebook/${item.id}`;
+						}}
+						searchFilter={searchFilter}
+						searchPlaceholder="Search by name, SKU, category, or tags..."
+						showPagination
+						showRefresh
+					/>
+				</div>
 			</div>
-		</div>
+
+			<ArchiveDialogComponent />
+			<BulkArchiveDialogComponent />
+		</>
 	);
 }

@@ -170,7 +170,7 @@ export function AIAutofillPreview() {
 						{/* Name */}
 						{(extractedData.customerInfo.name || editedCustomerInfo.name) && (
 							<div>
-								<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+								<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 									Name
 								</label>
 								{editingField === "name" ? (
@@ -209,7 +209,7 @@ export function AIAutofillPreview() {
 						{/* Email */}
 						{(extractedData.customerInfo.email || editedCustomerInfo.email) && (
 							<div>
-								<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+								<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 									Email
 								</label>
 								{editingField === "email" ? (
@@ -248,7 +248,7 @@ export function AIAutofillPreview() {
 						{/* Phone */}
 						{(extractedData.customerInfo.phone || editedCustomerInfo.phone) && (
 							<div>
-								<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+								<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 									Phone
 								</label>
 								{editingField === "phone" ? (
@@ -288,7 +288,7 @@ export function AIAutofillPreview() {
 						{(extractedData.customerInfo.company ||
 							editedCustomerInfo.company) && (
 							<div>
-								<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+								<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 									Company
 								</label>
 								{editingField === "company" ? (
@@ -350,7 +350,7 @@ export function AIAutofillPreview() {
 						<div className="space-y-2">
 							{extractedData.jobDetails.title && (
 								<div>
-									<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+									<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 										Title
 									</label>
 									<p className="text-muted-foreground text-sm">
@@ -360,7 +360,7 @@ export function AIAutofillPreview() {
 							)}
 							{extractedData.jobDetails.description && (
 								<div>
-									<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+									<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 										Description
 									</label>
 									<p className="text-muted-foreground text-sm">
@@ -370,7 +370,7 @@ export function AIAutofillPreview() {
 							)}
 							{extractedData.jobDetails.urgency && (
 								<div>
-									<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+									<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 										Urgency
 									</label>
 									<span
@@ -403,7 +403,7 @@ export function AIAutofillPreview() {
 						<div className="space-y-2">
 							{extractedData.appointmentNeeds.preferredDate && (
 								<div>
-									<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+									<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 										Preferred Date
 									</label>
 									<p className="text-muted-foreground text-sm">
@@ -413,7 +413,7 @@ export function AIAutofillPreview() {
 							)}
 							{extractedData.appointmentNeeds.timePreference && (
 								<div>
-									<label className="text-muted-foreground mb-1 block text-[10px] font-medium">
+									<label className="text-muted-foreground mb-1 block text-xxs font-medium">
 										Time Preference
 									</label>
 									<p className="text-muted-foreground text-sm capitalize">

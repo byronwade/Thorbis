@@ -33,6 +33,7 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { TablePresets } from "@/lib/datatable/table-presets";
 
 type CustomerInvoicesTableProps = {
 	invoices: any[];
@@ -104,7 +105,7 @@ export function CustomerInvoicesTable({
 				shrink: true,
 				render: (invoice) => (
 					<Link
-						className="text-foreground text-sm leading-tight font-medium hover:underline"
+						className="text-foreground text-xs leading-tight font-medium hover:underline"
 						href={`/dashboard/work/invoices/${invoice.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -117,7 +118,7 @@ export function CustomerInvoicesTable({
 				header: "Title",
 				render: (invoice) => (
 					<Link
-						className="text-foreground text-sm leading-tight font-medium hover:underline"
+						className="text-foreground text-xs leading-tight font-medium hover:underline"
 						href={`/dashboard/work/invoices/${invoice.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -157,7 +158,7 @@ export function CustomerInvoicesTable({
 							{formatCurrency(invoice.balance_amount)}
 						</span>
 					) : (
-						<span className="text-muted-foreground text-sm">Paid</span>
+						<span className="text-muted-foreground text-xs">Paid</span>
 					),
 			},
 			{
@@ -167,7 +168,7 @@ export function CustomerInvoicesTable({
 				shrink: true,
 				hideOnMobile: true,
 				render: (invoice) => (
-					<span className="text-sm">
+					<span className="text-xs">
 						{invoice.due_date
 							? new Date(invoice.due_date).toLocaleDateString()
 							: "—"}
@@ -252,6 +253,7 @@ export function CustomerInvoicesTable({
 			)}
 
 			<FullWidthDataTable
+				{...TablePresets.fullList()}
 				columns={columns}
 				data={invoices}
 				emptyIcon={<FileText className="text-muted-foreground/50 size-12" />}
@@ -266,7 +268,6 @@ export function CustomerInvoicesTable({
 					);
 				}}
 				searchPlaceholder="Search invoices..."
-				showPagination={true}
 			/>
 		</>
 	);

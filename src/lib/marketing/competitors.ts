@@ -42,7 +42,7 @@ const COMPETITORS: CompetitorComparison[] = [
 		heroDescription:
 			"Thorbis delivers the enterprise capabilities contractors expect from ServiceTitan, without the hidden costs, shelfware, or multi-year commitments. Real ServiceTitan customers report paying $259/tech/month plus unauthorized charges averaging $5,000+ for features promised as 'free'.",
 		summary:
-			"Switch to Thorbis for a modern platform built around AI-assisted workflows, flexible pricing, and rapid innovation. While ServiceTitan users report annual costs exceeding $353,000 with 31 BBB complaints in 3 years, Thorbis offers transparent pricing starting at $100/month with pay-as-you-go AI features—no multi-year lock-ins, no hidden fees, no surprise charges.",
+			"Switch to Thorbis for a modern platform built around AI-assisted workflows, flexible pricing, and rapid innovation. While ServiceTitan users report annual costs exceeding $353,000 with 31 BBB complaints in 3 years, Thorbis offers transparent pricing starting at $200/month with pay-as-you-go AI features—no multi-year lock-ins, no hidden fees, no surprise charges.",
 		seo: {
 			title:
 				"Thorbis vs ServiceTitan | Modern Field Service Platform Comparison",
@@ -68,7 +68,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				title: "Transparent pricing vs ServiceTitan's hidden costs",
 				description:
-					"Thorbis: $100/month base + pay-as-you-go AI. ServiceTitan reality: $259/tech/month minimum, plus users report unauthorized $5,276 Marketing Pro charges, undisclosed implementation fees, and annual costs reaching $353,000. One ServiceTitan customer stated: 'We were charged thousands of dollars in unauthorized fees... the billing system is unclear and transactions appear without explanation.'",
+					"Thorbis: $200/month base + pay-as-you-go AI. ServiceTitan reality: $259/tech/month minimum, plus users report unauthorized $5,276 Marketing Pro charges, undisclosed implementation fees, and annual costs reaching $353,000. One ServiceTitan customer stated: 'We were charged thousands of dollars in unauthorized fees... the billing system is unclear and transactions appear without explanation.'",
 				icon: "wallet",
 			},
 			{
@@ -100,7 +100,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				category: "Pricing & contracts",
 				thorbis:
-					"Transparent: $100/month base + pay-as-you-go AI. No hidden fees. Annual agreements with monthly payment options. Average customer: $350-800/month all-in.",
+					"Transparent: $200/month base + pay-as-you-go AI. No hidden fees. Annual agreements with monthly payment options. Average customer: $350-800/month all-in.",
 				competitor:
 					"Undisclosed until sales call. Reported costs: $259/tech/month minimum ($3,108/year per tech). Real user complaint: '$353,000 annual cost' and '$5,276 unauthorized Marketing Pro charge'. Multi-year contracts with early termination fees ($23,842 reported). Per-module fees, SMS surcharges, implementation fees not disclosed upfront.",
 			},
@@ -187,7 +187,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 		],
 		pricingNotes: [
-			"Thorbis pricing reality: $100/month base + AI usage. Average customer all-in cost: $350-800/month. ServiceTitan reality: Users report $259/tech/month minimum ($31,080/year for 10 techs), plus unauthorized charges, SMS fees, module add-ons. One customer paid $353,000 annually.",
+			"Thorbis pricing reality: $200/month base + AI usage. Average customer all-in cost: $350-800/month. ServiceTitan reality: Users report $259/tech/month minimum ($31,080/year for 10 techs), plus unauthorized charges, SMS fees, module add-ons. One customer paid $353,000 annually.",
 			"No surprise charges: ServiceTitan users report '$5,276 unauthorized Marketing Pro charge before even launching', 'thousands in unauthorized fees', and 'billing system unclear with unexplained transactions.' Thorbis shows all usage in real-time dashboard.",
 			"No early termination penalties: ServiceTitan customer reported '$23,842 termination fee' after system never worked properly. Thorbis: 30-day out clause after year 1, no penalties.",
 			"Fixed implementation pricing disclosed upfront: ServiceTitan users report 'implementation fees not disclosed until contract signed' and 'third-party fees required'. Thorbis: Fixed engagement, all-inclusive.",
@@ -212,7 +212,7 @@ const COMPETITORS: CompetitorComparison[] = [
 				question:
 					"Will I face the same unauthorized charges and hidden fees with Thorbis?",
 				answer:
-					"No. ServiceTitan users report '$5,276 unauthorized Marketing Pro charges', '$23,842 termination fees', and '$353,000 annual costs' with unclear billing. Thorbis pricing is transparent: $100/month base + pay-as-you-go AI usage. All charges visible in your dashboard before billing. No surprise fees, no unauthorized charges, no hidden costs. Average customer pays $350-800/month all-in—60-70% less than ServiceTitan's reported costs.",
+					"No. ServiceTitan users report '$5,276 unauthorized Marketing Pro charges', '$23,842 termination fees', and '$353,000 annual costs' with unclear billing. Thorbis pricing is transparent: $200/month base + pay-as-you-go AI usage. All charges visible in your dashboard before billing. No surprise fees, no unauthorized charges, no hidden costs. Average customer pays $350-800/month all-in—60-70% less than ServiceTitan's reported costs.",
 			},
 			{
 				question:
@@ -258,7 +258,7 @@ const COMPETITORS: CompetitorComparison[] = [
 		heroEyebrow: "Scaling Up • Workflows • Automation",
 		heroTitle: "Thorbis vs Housecall Pro",
 		heroDescription:
-			"Graduating from Housecall Pro? Thorbis offers advanced scheduling, AI automation, and enterprise reporting built for teams expanding beyond five trucks. While Housecall Pro users report 'occasional bugs and technical issues that disrupt daily operations' and 'relatively high monthly costs' ($169-$499/month), Thorbis delivers enterprise capabilities starting at $100/month with built-in AI.",
+			"Graduating from Housecall Pro? Thorbis offers advanced scheduling, AI automation, and enterprise reporting built for teams expanding beyond five trucks. While Housecall Pro users report 'occasional bugs and technical issues that disrupt daily operations' and 'relatively high monthly costs' ($169-$499/month), Thorbis delivers enterprise capabilities starting at $200/month with built-in AI.",
 		summary:
 			"Thorbis is the natural upgrade for Housecall Pro users who need deeper dispatch controls, multi-location support, and a roadmap aligned with mid-market growth. Housecall Pro is excellent for solo operators and small teams (1-5 techs) but users report hitting limitations as they scale: calendar-based scheduling struggles with complex routing, limited advanced reporting, no true multi-location support, and AI features not native to platform. Thorbis handles 1-500+ technicians with enterprise-grade dispatch, job costing, and AI automation included.",
 		seo: {
@@ -352,7 +352,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				category: "Pricing & value",
 				thorbis:
-					"Transparent: $100/month base + usage. Average customer: $350-800/month with AI, dispatch, inventory, CRM, all included. No per-user fees. Unlimited office users.",
+					"Transparent: $200/month base + usage. Average customer: $350-800/month with AI, dispatch, inventory, CRM, all included. No per-user fees. Unlimited office users.",
 				competitor:
 					"Reported pricing: $169-$499/month depending on features and user count. Per-user pricing limits growth. Users report 'relatively high monthly costs' especially as team grows. Advanced features require higher tiers.",
 			},
@@ -404,7 +404,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 		],
 		pricingNotes: [
-			"Thorbis pricing reality: $100/month base + usage. Average customer: $350-800/month all-in. Housecall Pro pricing: $169-$499/month reported, plus per-user fees. Thorbis often costs less while providing enterprise features Housecall Pro lacks.",
+			"Thorbis pricing reality: $200/month base + usage. Average customer: $350-800/month all-in. Housecall Pro pricing: $169-$499/month reported, plus per-user fees. Thorbis often costs less while providing enterprise features Housecall Pro lacks.",
 			"No per-user fees: Housecall Pro charges per user, limiting growth. Thorbis: unlimited office users, pay only for field technicians using mobile app. Add coordinators, managers, accountants without cost increase.",
 			"AI included: Housecall Pro users report needing third-party tools (Zapier, CallRail, etc.) adding $100-300/month. Thorbis AI (call handling, scheduling, automation) included—no add-ons required.",
 			"Volume-based discounts for teams adding branches or business units. Scale from single-location to multi-franchise without pricing surprises.",
@@ -453,7 +453,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				question: "How does Thorbis pricing compare as we grow?",
 				answer:
-					"Thorbis often costs less than Housecall Pro while providing more features. Housecall Pro: $169-$499/month plus per-user fees. Thorbis: $100/month base + usage, average $350-800/month all-in with unlimited office users. As you grow, Housecall Pro's per-user pricing increases linearly. Thorbis pricing scales more efficiently with volume discounts. Plus, Thorbis includes AI, advanced dispatch, and job costing that Housecall Pro doesn't offer.",
+					"Thorbis often costs less than Housecall Pro while providing more features. Housecall Pro: $169-$499/month plus per-user fees. Thorbis: $200/month base + usage, average $350-800/month all-in with unlimited office users. As you grow, Housecall Pro's per-user pricing increases linearly. Thorbis pricing scales more efficiently with volume discounts. Plus, Thorbis includes AI, advanced dispatch, and job costing that Housecall Pro doesn't offer.",
 			},
 			{
 				question:
@@ -469,7 +469,7 @@ const COMPETITORS: CompetitorComparison[] = [
 		heroEyebrow: "Growing Crews • Recurring Work • Upsells",
 		heroTitle: "Thorbis vs Jobber",
 		heroDescription:
-			"Outgrowing Jobber? Thorbis introduces enterprise-grade scheduling, AI-powered booking, and advanced analytics for teams ready to scale beyond Jobber's limitations. While Jobber users report 'occasional glitches that affect usability' and pricing that's 'expensive for start-ups' ($129-$349/month), Thorbis delivers enterprise capabilities at $100/month base with AI automation Jobber lacks.",
+			"Outgrowing Jobber? Thorbis introduces enterprise-grade scheduling, AI-powered booking, and advanced analytics for teams ready to scale beyond Jobber's limitations. While Jobber users report 'occasional glitches that affect usability' and pricing that's 'expensive for start-ups' ($129-$349/month), Thorbis delivers enterprise capabilities at $200/month base with AI automation Jobber lacks.",
 		summary:
 			"Thorbis is built for service companies expanding beyond Jobber's simple route management. Users report Jobber works well for 1-10 employees but struggles with complex workflows, advanced crew management, and enterprise reporting. Gain control over multi-crew operations, detailed job costing, and AI-powered automation while keeping the user experience modern and friendly. Thorbis handles 1-500+ technicians with capabilities Jobber simply doesn't offer.",
 		seo: {
@@ -556,7 +556,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				category: "Pricing & value",
 				thorbis:
-					"Transparent: $100/month base + usage. Average customer: $350-800/month with AI, advanced routing, job costing included. Unlimited office users.",
+					"Transparent: $200/month base + usage. Average customer: $350-800/month with AI, advanced routing, job costing included. Unlimited office users.",
 				competitor:
 					"Reported pricing: $129-$349/month. Users report 'expensive for start-ups' and pricing increases as teams grow. Advanced features require higher tiers. Per-user pricing limits growth.",
 			},
@@ -601,7 +601,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 		],
 		pricingNotes: [
-			"Thorbis: $100/month base + usage, average $350-800/month. Jobber: $129-$349/month reported, users say 'expensive for start-ups' without advanced features. Better value with Thorbis.",
+			"Thorbis: $200/month base + usage, average $350-800/month. Jobber: $129-$349/month reported, users say 'expensive for start-ups' without advanced features. Better value with Thorbis.",
 			"Thorbis scales with crew count, not per-user charges—keeping predictable margins as you grow. Jobber's per-user pricing increases linearly.",
 			"AI automation included: Jobber users spend $100-300/month on third-party tools (Zapier, CallRail, etc.) to get AI features. Thorbis includes AI call handling, routing, and automation—no add-ons required.",
 			"Route optimization and AI booking included—no need for separate subscriptions. Jobber requires manual routing or third-party route optimization tools.",
@@ -732,7 +732,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			{
 				category: "Pricing & included features",
 				thorbis:
-					"Transparent: $100/month base + usage. AI, marketing automation, modern UI all included. Average customer: $350-800/month all-in.",
+					"Transparent: $200/month base + usage. AI, marketing automation, modern UI all included. Average customer: $350-800/month all-in.",
 				competitor:
 					"Pricing not publicly disclosed. Marketing automation and AI require separate tools ($100-400/month additional). 'Limited marketing functionality' forces third-party purchases.",
 			},
@@ -770,7 +770,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 		],
 		pricingNotes: [
-			"Thorbis $100/month base + usage (avg $350-800/month) includes AI, marketing automation, modern UI. FieldEdge requires separate marketing/AI tools adding $100-400/month.",
+			"Thorbis $200/month base + usage (avg $350-800/month) includes AI, marketing automation, modern UI. FieldEdge requires separate marketing/AI tools adding $100-400/month.",
 			"No desktop software fees: FieldEdge's desktop dependence may require terminal server licenses. Thorbis is 100% web-based—works on any device, any OS.",
 			"Flexible licensing supports seasonal or multi-branch organizations. Scale up/down without penalties.",
 			"Implementation costs offset with data migration credits for FieldEdge customers. We know you've already paid for implementation once.",
@@ -1088,7 +1088,7 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 		],
 		pricingNotes: [
-			"Thorbis: $100/month base + usage, average $350-800/month with AI, inventory, custom reporting included. Workiz pricing varies but users report additional costs for advanced features.",
+			"Thorbis: $200/month base + usage, average $350-800/month with AI, inventory, custom reporting included. Workiz pricing varies but users report additional costs for advanced features.",
 			"No third-party tool costs: Workiz users need CallRail ($50-150/month), Zapier ($20-70/month), advanced reporting tools ($50-200/month) for capabilities Thorbis includes natively. Save $120-420/month.",
 			"Thorbis licenses scale with active technicians; AI usage billed predictably per answered minute. No surprise charges, all usage visible in real-time dashboard.",
 			"Marketing automation, inventory management, and customer portal included—no extra modules required. Workiz charges for advanced features beyond basic plan.",

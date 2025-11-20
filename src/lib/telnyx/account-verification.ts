@@ -89,9 +89,12 @@ export async function checkAccountVerificationStatus(): Promise<{
 
 		// If direct endpoint doesn't exist, try to infer from 10DLC brand creation
 		// This will fail with 403 if not verified
-		const brandTestResult = await telnyxRequest<{ id: string }>("/10dlc/brand", {
-			method: "GET",
-		});
+		const brandTestResult = await telnyxRequest<{ id: string }>(
+			"/10dlc/brand",
+			{
+				method: "GET",
+			},
+		);
 
 		if (brandTestResult.success) {
 			// If we can access brands, Level 2 is complete
@@ -157,9 +160,7 @@ export async function checkAccountVerificationStatus(): Promise<{
 /**
  * Get verification requirements based on current level
  */
-export function getVerificationRequirements(
-	currentLevel: VerificationLevel,
-): {
+export function getVerificationRequirements(currentLevel: VerificationLevel): {
 	level1: { required: boolean; items: string[] };
 	level2: { required: boolean; items: string[] };
 } {

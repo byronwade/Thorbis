@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { archiveAppointment } from "@/actions/appointments";
+
 /**
  * AppointmentsTable Component
  * Full-width Gmail-style table for displaying appointments
@@ -22,16 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +41,8 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { useTableActions } from "@/hooks/use-table-actions";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
@@ -176,22 +172,56 @@ export function AppointmentsTable({
 	currentPage = 1,
 	initialSearchQuery = "",
 }: AppointmentsTableProps) {
+	const router = useRouter();
+
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.appointments);
 
-	// State for archive confirmation dialogs
-	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
-	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
+	// Table actions hook
+	const { handleRefresh } = useTableActions({ entityType: "appointments" });
+
+	// Archive dialog
+	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
+		onConfirm: async (id) => {
+			const result = await archiveAppointment(id);
+			if (result.success) {
+				handleRefresh();
+			}
+		},
+		title: "Archive Appointment?",
+		description:
+			"This appointment will be archived and can be restored within 90 days.",
+	});
+
+	// Bulk archive state
 	const [_isPermanentDeleteOpen, _setIsPermanentDeleteOpen] = useState(false);
-	const [appointmentToArchive, setAppointmentToArchive] = useState<
-		string | null
-	>(null);
 	const [_appointmentToDelete, _setAppointmentToDelete] = useState<
 		string | null
 	>(null);
 	const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
 		Set<string>
 	>(new Set());
+
+	// Bulk archive dialog
+	const {
+		openArchiveDialog: openBulkArchiveDialog,
+		ArchiveDialogComponent: BulkArchiveDialogComponent,
+	} = useArchiveDialog({
+		onConfirm: async () => {
+			let archived = 0;
+			for (const id of selectedAppointmentIds) {
+				const result = await archiveAppointment(id);
+				if (result.success) {
+					archived++;
+				}
+			}
+			if (archived > 0) {
+				handleRefresh();
+			}
+		},
+		title: `Archive ${selectedAppointmentIds.size} Appointment(s)?`,
+		description: `${selectedAppointmentIds.size} appointment(s) will be archived and can be restored within 90 days.`,
+	});
 
 	// Filter appointments based on archive status
 	const filteredAppointments = appointments.filter((apt) => {
@@ -214,10 +244,9 @@ export function AppointmentsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/appointments/${appointment.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate text-sm leading-tight font-medium hover:underline">
+					<div className="truncate text-xs leading-tight font-medium hover:underline">
 						{appointment.title}
 					</div>
 					{appointment.description && (
@@ -236,7 +265,7 @@ export function AppointmentsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (appointment) => (
-				<span className="text-muted-foreground text-sm">
+				<span className="text-muted-foreground text-xs">
 					{getCustomerName(appointment)}
 				</span>
 			),
@@ -275,7 +304,7 @@ export function AppointmentsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (appointment) => (
-				<span className="text-muted-foreground text-sm">
+				<span className="text-muted-foreground text-xs">
 					{appointment.assigned_user?.name || "Unassigned"}
 				</span>
 			),
@@ -298,10 +327,7 @@ export function AppointmentsTable({
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link
-									href={`/dashboard/work/appointments/${appointment.id}`}
-									prefetch={false}
-								>
+								<Link href={`/dashboard/work/appointments/${appointment.id}`}>
 									<Eye className="mr-2 size-4" />
 									View Details
 								</Link>
@@ -309,7 +335,6 @@ export function AppointmentsTable({
 							<DropdownMenuItem asChild>
 								<Link
 									href={`/dashboard/work/appointments/${appointment.id}/edit`}
-									prefetch={false}
 								>
 									<Edit className="mr-2 size-4" />
 									Edit Appointment
@@ -319,8 +344,7 @@ export function AppointmentsTable({
 							<DropdownMenuItem
 								className="text-destructive"
 								onClick={() => {
-									setAppointmentToArchive(appointment.id);
-									setIsSingleArchiveOpen(true);
+									openArchiveDialog(appointment.id);
 								}}
 							>
 								<Archive className="mr-2 size-4" />
@@ -340,7 +364,7 @@ export function AppointmentsTable({
 			icon: <Archive className="h-4 w-4" />,
 			onClick: async (selectedIds) => {
 				setSelectedAppointmentIds(selectedIds);
-				setIsBulkArchiveOpen(true);
+				openBulkArchiveDialog("");
 			},
 			variant: "destructive",
 		},
@@ -354,10 +378,6 @@ export function AppointmentsTable({
 		}
 	};
 
-	const handleRefresh = () => {
-		window.location.reload();
-	};
-
 	const handleAddAppointment = () => {
 		window.location.href = "/dashboard/work/appointments/new";
 	};
@@ -365,99 +385,40 @@ export function AppointmentsTable({
 	return (
 		<>
 			<FullWidthDataTable
-				bulkActions={bulkActions}
-				columns={columns}
-				currentPageFromServer={currentPage}
+				{...TablePresets.fullList({
+					entity: "appointments",
+					enableSelection: true,
+					searchPlaceholder:
+						"Search appointments by title, description, or status...",
+					itemsPerPage,
+					showRefresh,
+				})}
 				data={filteredAppointments}
+				columns={columns}
+				getItemId={(appointment) => appointment.id}
+				bulkActions={bulkActions}
+				onRowClick={handleRowClick}
+				totalCount={totalCount}
+				currentPageFromServer={currentPage}
+				initialSearchQuery={initialSearchQuery}
+				serverPagination
+				serverSearch
+				searchParamKey="search"
+				onRefresh={handleRefresh}
+				emptyMessage="No appointments found"
+				emptyIcon={<Calendar className="text-muted-foreground h-8 w-8" />}
 				emptyAction={
 					<Button onClick={handleAddAppointment} size="sm">
 						<Plus className="mr-2 size-4" />
 						Add Appointment
 					</Button>
 				}
-				emptyIcon={<Calendar className="text-muted-foreground h-8 w-8" />}
-				emptyMessage="No appointments found"
-				enableSelection={true}
-				entity="appointments"
-				getItemId={(appointment) => appointment.id}
 				isArchived={(apt) => Boolean(apt.archived_at || apt.deleted_at)}
-				initialSearchQuery={initialSearchQuery}
-				itemsPerPage={itemsPerPage}
-				serverPagination
-				serverSearch
-				searchParamKey="search"
-				onRefresh={handleRefresh}
-				onRowClick={handleRowClick}
-				totalCount={totalCount}
-				searchPlaceholder="Search appointments by title, description, or status..."
 				showArchived={archiveFilter !== "active"}
-				showRefresh={showRefresh}
 			/>
 
-			{/* Single Appointment Archive Dialog */}
-			<AlertDialog
-				onOpenChange={setIsSingleArchiveOpen}
-				open={isSingleArchiveOpen}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Archive Appointment?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This appointment will be archived and can be restored within 90
-							days. After 90 days, it will be permanently deleted.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={async () => {
-								if (appointmentToArchive) {
-									const { archiveAppointment } = await import(
-										"@/actions/appointments"
-									);
-									await archiveAppointment(appointmentToArchive);
-									window.location.reload();
-								}
-							}}
-						>
-							Archive
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-
-			{/* Bulk Archive Dialog */}
-			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Archive {selectedAppointmentIds.size} Appointment(s)?
-						</AlertDialogTitle>
-						<AlertDialogDescription>
-							These appointments will be archived and can be restored within 90
-							days. After 90 days, they will be permanently deleted.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={async () => {
-								const { archiveAppointment } = await import(
-									"@/actions/appointments"
-								);
-								for (const appointmentId of selectedAppointmentIds) {
-									await archiveAppointment(appointmentId);
-								}
-								window.location.reload();
-							}}
-						>
-							Archive All
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ArchiveDialogComponent />
+			<BulkArchiveDialogComponent />
 		</>
 	);
 }

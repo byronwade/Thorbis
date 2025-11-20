@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -53,7 +54,8 @@ export async function getEstimatesPageData(
 	page: number,
 	pageSize: number = ESTIMATES_PAGE_SIZE,
 ): Promise<EstimatesPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = await getActiveCompanyId();
 	if (!companyId) {
 		return { estimates: [], totalCount: 0 };
@@ -79,3 +81,25 @@ export async function getEstimatesPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Fetch complete estimate data including related entities and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getEstimateComplete = cache(
+	async (estimateId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_estimate_complete", {
+			p_estimate_id: estimateId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching estimate:", error);
+			return null;
+		}
+
+		return data?.[0]?.estimate_data || null;
+	},
+);

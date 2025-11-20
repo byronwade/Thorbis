@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
@@ -16,25 +19,46 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import { createItemListSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+// Semantic keywords for features
+const featureKeywords = generateSemanticKeywords("field service management");
 
 export const metadata = generateSEOMetadata({
-	title: "Thorbis Platform Features",
+	title: "Complete Field Service Features - Scheduling, Invoicing, CRM & More",
 	section: "Platform",
 	description:
-		"Discover every module inside the Thorbis Field Management Platform. From AI-powered call handling to technician mobile apps, Thorbis helps contractors run profitable operations.",
+		"Complete field service management features: AI scheduling, automated invoicing, mobile app, customer portal, CRM, inventory, and equipment tracking. All-in-one platform for service businesses.",
 	path: "/features",
 	keywords: [
 		"field service management features",
-		"thorbis platform",
-		"contractor software modules",
+		"scheduling software",
+		"invoice automation",
+		"mobile field service app",
+		...featureKeywords.slice(0, 8),
 	],
 });
 
 export default function FeaturesOverviewPage() {
 	const features = getAllFeatures();
 
+	// ItemList Schema - All features for AI understanding
+	const featuresListSchema = createItemListSchema({
+		name: "Thorbis Field Service Management Features",
+		description: "Complete list of features in the Thorbis platform",
+		items: features.map((feature) => ({
+			name: feature.name,
+			url: `${siteUrl}/features/${feature.slug}`,
+			description: feature.summary,
+		})),
+	});
+
 	return (
 		<>
+			{/* Breadcrumb Schema */}
 			<Script
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify(
@@ -45,6 +69,15 @@ export default function FeaturesOverviewPage() {
 					),
 				}}
 				id="features-breadcrumb-ld"
+				type="application/ld+json"
+			/>
+
+			{/* ItemList Schema - All features */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresListSchema),
+				}}
+				id="features-list-ld"
 				type="application/ld+json"
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -59,7 +92,7 @@ export default function FeaturesOverviewPage() {
 						Select a module to explore deep-dive pages for dispatching, CRM,
 						inventory, mobile workflows, and more. Build a connected tech stack
 						designed for high-growth field operations with transparent
-						pricing—$100/month base plus pay-as-you-go usage, unlimited users,
+						pricing—$200/month base plus pay-as-you-go usage, unlimited users,
 						and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">

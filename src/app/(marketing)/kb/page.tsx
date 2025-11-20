@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 /**
  * Knowledge Base Homepage - Server Component
  *
@@ -23,6 +26,8 @@ import {
 	createBreadcrumbSchema,
 	createWebsiteSchema,
 } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
 
 export const metadata = generateKBHomeMetadata();
 

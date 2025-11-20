@@ -35,7 +35,7 @@ export function DashboardError({ error, reset }: DashboardErrorProps) {
 			<Card className="w-full max-w-md">
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<AlertCircle className="h-5 w-5 text-destructive" />
+						<AlertCircle className="text-destructive h-5 w-5" />
 						<CardTitle>Something went wrong</CardTitle>
 					</div>
 					<CardDescription>
@@ -45,19 +45,19 @@ export function DashboardError({ error, reset }: DashboardErrorProps) {
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{error.digest && (
-						<div className="rounded-lg bg-muted p-3">
-							<p className="text-xs text-muted-foreground">
+						<div className="bg-muted rounded-lg p-3">
+							<p className="text-muted-foreground text-xs">
 								<span className="font-medium">Error ID:</span> {error.digest}
 							</p>
 						</div>
 					)}
 
 					{process.env.NODE_ENV === "development" && (
-						<details className="rounded-lg bg-muted p-3">
+						<details className="bg-muted rounded-lg p-3">
 							<summary className="cursor-pointer text-sm font-medium">
 								Error Details (Development Only)
 							</summary>
-							<p className="mt-2 text-xs text-muted-foreground font-mono break-all">
+							<p className="text-muted-foreground mt-2 font-mono text-xs break-all">
 								{error.message}
 							</p>
 						</details>

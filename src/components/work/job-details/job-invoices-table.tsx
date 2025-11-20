@@ -10,6 +10,7 @@ import {
 	Send,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { unlinkInvoiceFromJob } from "@/actions/invoices";
@@ -34,6 +35,7 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { InvoiceStatusBadge } from "@/components/ui/status-badge";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type Invoice = {
@@ -53,6 +55,7 @@ type JobInvoicesTableProps = {
 };
 
 export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
+	const router = useRouter();
 	const [unlinkInvoiceId, setUnlinkInvoiceId] = useState<string | null>(null);
 	const [isUnlinking, setIsUnlinking] = useState(false);
 
@@ -77,8 +80,8 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 			if (result.success) {
 				toast.success("Invoice unlinked from job");
 				setUnlinkInvoiceId(null);
-				// Refresh to show updated list
-				window.location.reload();
+				// Soft navigation - Server Component refetches with revalidatePath()
+				router.refresh();
 			} else {
 				toast.error(result.error || "Failed to unlink invoice");
 			}
@@ -87,7 +90,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 		} finally {
 			setIsUnlinking(false);
 		}
-	}, [unlinkInvoiceId]);
+	}, [unlinkInvoiceId, router]);
 
 	const columns: ColumnDef<Invoice>[] = useMemo(
 		() => [
@@ -98,7 +101,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				render: (invoice) => (
 					<Link
-						className="text-foreground text-sm leading-tight font-medium hover:underline"
+						className="text-foreground text-xs leading-tight font-medium hover:underline"
 						href={`/dashboard/work/invoices/${invoice.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -111,7 +114,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				header: "Title",
 				render: (invoice) => (
 					<Link
-						className="text-foreground text-sm leading-tight font-medium hover:underline"
+						className="text-foreground text-xs leading-tight font-medium hover:underline"
 						href={`/dashboard/work/invoices/${invoice.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -153,7 +156,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 							{formatCurrencyCents(balance)}
 						</span>
 					) : (
-						<span className="text-muted-foreground text-sm">Paid</span>
+						<span className="text-muted-foreground text-xs">Paid</span>
 					);
 				},
 			},
@@ -164,7 +167,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				hideOnMobile: true,
 				render: (invoice) => (
-					<span className="text-sm">
+					<span className="text-xs">
 						{formatDate(invoice.due_date, "short")}
 					</span>
 				),
@@ -228,11 +231,13 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 	return (
 		<>
 			<FullWidthDataTable
+				{...TablePresets.compact()}
 				columns={columns}
 				data={invoices}
 				emptyIcon={<FileText className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No invoices found for this job"
 				getItemId={(invoice) => invoice.id}
+				noPadding={true}
 				searchFilter={(invoice, query) => {
 					const searchLower = query.toLowerCase();
 					return (
@@ -242,7 +247,6 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 					);
 				}}
 				searchPlaceholder="Search invoices..."
-				showPagination={true}
 			/>
 
 			{/* Unlink Confirmation Dialog */}

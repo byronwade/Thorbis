@@ -34,6 +34,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
 import {
 	type FieldDefinition,
@@ -128,8 +129,7 @@ export function ColumnBuilderDialog({
 
 				<div className="space-y-4 py-4">
 					{/* Field Selector */}
-					<div className="space-y-2">
-						<Label htmlFor="field">Database Field</Label>
+					<StandardFormField label="Database Field" htmlFor="field">
 						<Select
 							onValueChange={handleFieldSelect}
 							value={selectedField?.path || ""}
@@ -148,22 +148,20 @@ export function ColumnBuilderDialog({
 								))}
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Label Input */}
-					<div className="space-y-2">
-						<Label htmlFor="label">Column Label</Label>
+					<StandardFormField label="Column Label" htmlFor="label">
 						<Input
 							id="label"
 							onChange={(e) => setLabel(e.target.value)}
 							placeholder="Enter column label..."
 							value={label}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Width Select */}
-					<div className="space-y-2">
-						<Label htmlFor="width">Column Width</Label>
+					<StandardFormField label="Column Width" htmlFor="width">
 						<Select onValueChange={setWidth} value={width}>
 							<SelectTrigger id="width">
 								<SelectValue />
@@ -176,11 +174,10 @@ export function ColumnBuilderDialog({
 								<SelectItem value="xl">X-Large (384px)</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Format Select */}
-					<div className="space-y-2">
-						<Label htmlFor="format">Format</Label>
+					<StandardFormField label="Format" htmlFor="format">
 						<Select
 							onValueChange={(value) =>
 								setFormat(value as CustomColumn["format"])
@@ -198,7 +195,7 @@ export function ColumnBuilderDialog({
 								<SelectItem value="badge">Badge</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Sortable Toggle */}
 					<div className="flex items-center space-x-2">

@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	Calendar,
 	CheckCircle2,
@@ -11,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,44 +24,110 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+// Semantic keywords for scheduling
+const schedulingKeywords = generateSemanticKeywords("scheduling");
 
 export const metadata = generateSEOMetadata({
-	title: "Smart Scheduling & Dispatch Software | Thorbis",
+	title: "AI Scheduling & Dispatch Software - Route Optimization",
 	section: "Features",
 	description:
-		"Intelligent scheduling and dispatch that optimizes routes, maximizes technician utilization, and keeps customers happy. Real-time updates, drag-and-drop boards, and automated routing.",
+		"AI-powered scheduling and dispatch with automatic route optimization. Drag-and-drop scheduling, real-time updates, and smart technician allocation. Increase efficiency by 40%.",
 	path: "/features/scheduling",
 	keywords: [
-		"field service scheduling",
-		"dispatch software",
-		"route optimization",
-		"technician scheduling",
-		"service board management",
+		"field service scheduling software",
+		"dispatch automation",
+		"route optimization software",
+		"technician scheduling app",
+		"smart dispatch",
+		...schedulingKeywords.slice(0, 5),
 	],
 });
 
 export default function SchedulingPage() {
 	const serviceStructuredData = generateServiceStructuredData({
-		name: "Scheduling & Dispatch",
+		name: "AI-Powered Scheduling & Dispatch",
 		description:
-			"Smart routing and real-time crew coordination for service businesses",
+			"Intelligent field service scheduling with automatic route optimization, drag-and-drop scheduling boards, real-time GPS tracking, and smart technician allocation. Reduce drive time by 30% and increase daily jobs by 40%.",
 		offers: [
 			{
-				price: "100",
+				price: "200",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis base platform - no additional cost",
+			},
+		],
+	});
+
+	// FAQ Schema for common scheduling questions
+	const faqSchema = createFAQSchema([
+		{
+			question: "How does AI scheduling work?",
+			answer:
+				"Thorbis AI analyzes technician locations, skills, availability, job priorities, and traffic patterns to automatically assign jobs and optimize routes. The system continuously learns from your business patterns to improve scheduling efficiency.",
+		},
+		{
+			question: "Can I manually adjust the schedule?",
+			answer:
+				"Yes, you have full control. Use the drag-and-drop scheduling board to manually adjust appointments, reassign technicians, or override AI suggestions. All changes update in real-time on technician mobile apps.",
+		},
+		{
+			question: "Does scheduling include route optimization?",
+			answer:
+				"Yes, automatic route optimization is included. The system calculates the most efficient routes considering traffic, job priorities, technician locations, and appointment windows. Reduces drive time by an average of 30%.",
+		},
+		{
+			question: "How do technicians receive their schedules?",
+			answer:
+				"Technicians see their schedules instantly on the mobile app with real-time updates. They receive push notifications for new jobs, changes, or cancellations. GPS navigation is integrated for one-tap directions.",
+		},
+	]);
+
+	// ItemList for scheduling features
+	const featuresSchema = createItemListSchema({
+		name: "Scheduling & Dispatch Features",
+		description: "Complete scheduling capabilities",
+		items: [
+			{
+				name: "Drag-and-Drop Scheduling Board",
+				url: `${siteUrl}/features/scheduling#scheduling-board`,
+				description: "Visual scheduling with drag-and-drop job assignment",
+			},
+			{
+				name: "Automatic Route Optimization",
+				url: `${siteUrl}/features/scheduling#route-optimization`,
+				description: "AI-powered route planning to minimize drive time",
+			},
+			{
+				name: "Real-Time GPS Tracking",
+				url: `${siteUrl}/features/scheduling#gps-tracking`,
+				description: "Live technician locations and ETAs",
+			},
+			{
+				name: "Smart Technician Matching",
+				url: `${siteUrl}/features/scheduling#smart-matching`,
+				description:
+					"Auto-assign jobs based on skills, location, and availability",
 			},
 		],
 	});
 
 	return (
 		<>
+			{/* Breadcrumb Schema */}
 			<Script
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify(
@@ -75,11 +144,31 @@ export default function SchedulingPage() {
 				id="scheduling-breadcrumb-ld"
 				type="application/ld+json"
 			/>
+
+			{/* Service Schema */}
 			<Script
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="scheduling-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="scheduling-faq-ld"
+				type="application/ld+json"
+			/>
+
+			{/* ItemList Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="scheduling-features-ld"
 				type="application/ld+json"
 			/>
 
@@ -537,6 +626,17 @@ export default function SchedulingPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("scheduling", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

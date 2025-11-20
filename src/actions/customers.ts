@@ -228,7 +228,7 @@ async function requireCustomerCompanyMembership(
 	userId: string,
 ) {
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", userId)
 		.single();
@@ -1177,7 +1177,7 @@ export async function searchCustomers(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1233,7 +1233,7 @@ export async function getTopCustomers(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1293,7 +1293,7 @@ export async function getCustomersWithBalance(): Promise<
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1468,7 +1468,7 @@ export async function getAllCustomers(): Promise<
 
 		// Verify user has access to the active company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("company_id", activeCompanyId)
@@ -1555,7 +1555,7 @@ export async function updateCustomerPageContent(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();

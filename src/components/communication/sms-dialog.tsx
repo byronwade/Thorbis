@@ -33,6 +33,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -147,10 +148,9 @@ export function SMSDialog({
 
 					{/* From Phone Selection */}
 					{companyPhones.length > 0 ? (
-						<div className="space-y-2">
-							<Label>Send From</Label>
+						<StandardFormField label="Send From" htmlFor="sms-from">
 							<Select onValueChange={setSelectedPhone} value={selectedPhone}>
-								<SelectTrigger>
+								<SelectTrigger id="sms-from">
 									<SelectValue placeholder="Select a phone number" />
 								</SelectTrigger>
 								<SelectContent>
@@ -161,7 +161,7 @@ export function SMSDialog({
 									))}
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 					) : (
 						<div className="border-warning bg-warning dark:border-warning dark:bg-warning rounded-lg border p-4 text-center">
 							<p className="text-warning dark:text-warning text-sm">
@@ -174,9 +174,9 @@ export function SMSDialog({
 					)}
 
 					{/* Message Input */}
-					<div className="space-y-2">
-						<Label>Message</Label>
+					<StandardFormField label="Message" htmlFor="sms-message">
 						<Textarea
+							id="sms-message"
 							className="min-h-[120px] resize-none"
 							maxLength={maxChars}
 							onChange={(e) => setMessage(e.target.value)}
@@ -191,7 +191,7 @@ export function SMSDialog({
 								{segmentCount} SMS segment{segmentCount !== 1 ? "s" : ""}
 							</span>
 						</div>
-					</div>
+					</StandardFormField>
 				</div>
 
 				{/* Actions */}

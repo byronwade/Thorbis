@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -51,7 +52,8 @@ export async function getAppointmentsPageData(
 	searchQuery = "",
 	companyIdOverride?: string,
 ): Promise<AppointmentsPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { appointments: [], totalCount: 0 };
@@ -75,7 +77,7 @@ export async function getAppointmentsPageData(
 		const sanitized = normalizedSearch.replace(/,/g, "\\,");
 		const term = `%${sanitized}%`;
 		query = query.or(
-			`title.ilike.${term},description.ilike.${term},status.ilike.${term},id.ilike.${term}`,
+			`title.ilike.${term},description.ilike.${term},status.ilike.${term}`,
 		);
 	}
 
@@ -92,7 +94,8 @@ export async function getAppointmentsPageData(
 }
 
 export async function getAppointmentStats(companyIdOverride?: string) {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return null;
@@ -129,3 +132,25 @@ export async function getAppointmentStats(companyIdOverride?: string) {
 		cancelled: countByStatus("cancelled"),
 	};
 }
+
+/**
+ * Fetch complete appointment data including customer, property, job, assigned_user, and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getAppointmentComplete = cache(
+	async (appointmentId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_appointment_complete", {
+			p_appointment_id: appointmentId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching appointment:", error);
+			return null;
+		}
+
+		return data?.[0]?.appointment_data || null;
+	},
+);

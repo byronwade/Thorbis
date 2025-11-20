@@ -149,7 +149,7 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
 	const supabase = await createServiceSupabaseClient();
 
 	const { data: memberships } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(
 			`
       company_id,
@@ -157,7 +157,8 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
         id,
         name,
         logo,
-        deleted_at
+        deleted_at,
+        onboarding_completed_at
       )
     `,
 		)
@@ -169,7 +170,20 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
 		return [];
 	}
 
-	return memberships.map((m: any) => ({
+	// Sort companies: prioritize completed onboarding over incomplete
+	const sorted = memberships.sort((a: any, b: any) => {
+		const aCompleted = !!a.companies.onboarding_completed_at;
+		const bCompleted = !!b.companies.onboarding_completed_at;
+
+		// Completed companies first
+		if (aCompleted && !bCompleted) return -1;
+		if (!aCompleted && bCompleted) return 1;
+
+		// Then by name alphabetically
+		return a.companies.name.localeCompare(b.companies.name);
+	});
+
+	return sorted.map((m: any) => ({
 		id: m.companies.id,
 		name: m.companies.name,
 		logo: m.companies.logo,
@@ -208,7 +222,7 @@ const verifyCompanyAccess = cache(
 
 			// Check if user has active membership
 			supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("id")
 				.eq("user_id", user.id)
 				.eq("company_id", companyId)
@@ -283,7 +297,7 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
 
 	// Check the ACTIVE company's payment status
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(
 			"company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)",
 		)

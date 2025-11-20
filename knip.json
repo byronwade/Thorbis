@@ -1,25 +1,8 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"entry": ["src/**/*.{ts,tsx}", "scripts/**/*.js"],
-	"project": ["src/**/*.{ts,tsx}"],
-	"ignore": [
-		"**/*.d.ts",
-		"node_modules/**",
-		"src/components/ui/**",
-		"src/components/schedule/_deprecated/**",
-		"src/components/scheduler/**",
-		"src/lib/ai/examples.tsx",
-		"src/lib/store/examples.tsx",
-		"src/lib/supabase/**"
-	],
-	"ignoreDependencies": ["critters"],
-	"ignoreExportsUsedInFile": true,
-	"next": {
-		"entry": [
-			"src/app/**/*.tsx",
-			"src/app/**/*.ts",
-			"!src/app/**/*.test.{ts,tsx}",
-			"!src/app/**/*.spec.{ts,tsx}"
-		]
-	}
+	"ignore": ["**/job-page-content-unified.tsx", "**/job-page-editor.tsx"],
+	"ignoreDependencies": [],
+	"ignoreBinaries": [],
+	"ignoreWorkspaces": [],
+	"eslint": false
 }

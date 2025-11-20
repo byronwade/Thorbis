@@ -137,7 +137,7 @@ export async function createInvoice(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -250,7 +250,7 @@ export async function updateInvoice(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -384,7 +384,7 @@ export async function sendInvoice(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -515,7 +515,7 @@ export async function recordPayment(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -639,7 +639,7 @@ export async function markInvoiceOverdue(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -726,7 +726,7 @@ export async function cancelInvoice(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1002,7 +1002,7 @@ export async function updateInvoiceContent(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1075,7 +1075,7 @@ export async function getInvoicePayments(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1181,7 +1181,7 @@ export async function generateInvoicePDF(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();

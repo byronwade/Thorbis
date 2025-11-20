@@ -14,7 +14,7 @@ import { MessagesSkeleton } from "@/components/communication/messages/messages-s
  */
 export default function MessagesPage() {
 	return (
-		<div className="h-screen flex flex-col">
+		<div className="flex h-screen flex-col">
 			<Suspense fallback={<MessagesSkeleton />}>
 				<MessagesDataV2 />
 			</Suspense>

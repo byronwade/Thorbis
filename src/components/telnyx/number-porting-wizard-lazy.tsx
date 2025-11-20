@@ -33,7 +33,7 @@ const NumberPortingWizard = dynamic(
 						<DialogTitle>Loading Port Number Wizard...</DialogTitle>
 						<DialogDescription>
 							<div className="flex items-center justify-center py-8">
-								<Loader2 className="size-8 animate-spin text-muted-foreground" />
+								<Loader2 className="text-muted-foreground size-8 animate-spin" />
 							</div>
 						</DialogDescription>
 					</DialogHeader>

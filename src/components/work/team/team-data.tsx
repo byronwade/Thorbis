@@ -234,7 +234,7 @@ function transformMember(member: RawMember): TeamMember {
 	};
 }
 
-export async function UteamData({
+export async function TeamData({
 	searchParams,
 }: {
 	searchParams?: { page?: string; search?: string; filter?: string };

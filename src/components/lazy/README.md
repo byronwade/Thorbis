@@ -5,22 +5,38 @@ This directory contains optimized lazy-loaded wrappers for heavy dependencies to
 ## Components
 
 ### PDF Viewer (`pdf-viewer.tsx`)
-Lazy-loads `@react-pdf/renderer` components.
+Lazy-loads `@react-pdf/renderer` components for invoice PDF generation.
 
 **Savings**: ~200KB initial bundle reduction
 
 **Usage**:
 ```tsx
-import { PDFDownloadLink, PDFViewer } from "@/components/lazy/pdf-viewer";
+import { LazyPDFDocument, LazyPage, LazyText, LazyView } from "@/components/lazy/pdf-viewer";
 
-// Use exactly like the original components
-<PDFDownloadLink document={<MyDocument />} fileName="invoice.pdf">
-  Download PDF
-</PDFDownloadLink>
+const InvoicePDF = () => (
+  <LazyPDFDocument>
+    <LazyPage>
+      <LazyView>
+        <LazyText>Invoice Content</LazyText>
+      </LazyView>
+    </LazyPage>
+  </LazyPDFDocument>
+);
 ```
 
+**Available Components**:
+- `LazyPDFDocument` - Main document wrapper
+- `LazyPage` - Individual pages
+- `LazyText` - Text elements
+- `LazyView` - Layout containers
+- `LazyImage` - Images in PDF
+- `LazyLink` - Hyperlinks
+- `LazySvg` - SVG graphics
+- `renderToBuffer()` - Server-side PDF generation
+- `renderToStream()` - Streaming PDF generation
+
 ### Charts (`chart.tsx`)
-Lazy-loads `recharts` chart components.
+Lazy-loads `recharts` chart components for dashboard analytics.
 
 **Savings**: ~150KB initial bundle reduction
 
@@ -44,29 +60,9 @@ import { LazyLineChart, Line, XAxis, YAxis, ResponsiveContainer } from "@/compon
 - `LazyPieChart`
 - `LazyRadarChart`
 
-### TipTap Editor (`tiptap-editor.tsx`)
-Lazy-loads TipTap editor components.
-
-**Savings**: ~300KB initial bundle reduction
-
-**Usage**:
-```tsx
-import { LazyTipTapEditor, useEditor } from "@/components/lazy/tiptap-editor";
-import StarterKit from "@tiptap/starter-kit";
-
-function MyEditor() {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: "<p>Hello World!</p>",
-  });
-
-  return <LazyTipTapEditor editor={editor} />;
-}
-```
-
 ## Benefits
 
-1. **Smaller Initial Bundle**: Heavy dependencies are only loaded when needed
+1. **Smaller Initial Bundle**: Heavy dependencies are only loaded when needed (~350KB savings)
 2. **Faster Page Loads**: Reduces JavaScript that needs to be parsed and executed
 3. **Better User Experience**: Shows loading skeletons while components load
 4. **Code Splitting**: Next.js automatically creates separate chunks for lazy components
@@ -75,16 +71,14 @@ function MyEditor() {
 
 ### Before (Direct Import):
 ```tsx
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { Document, Page, Text } from "@react-pdf/renderer";
 import { LineChart } from "recharts";
-import { EditorContent } from "@tiptap/react";
 ```
 
 ### After (Lazy Import):
 ```tsx
-import { PDFDownloadLink } from "@/components/lazy/pdf-viewer";
+import { LazyPDFDocument, LazyPage, LazyText } from "@/components/lazy/pdf-viewer";
 import { LazyLineChart } from "@/components/lazy/chart";
-import { LazyTipTapEditor } from "@/components/lazy/tiptap-editor";
 ```
 
 ## When to Use

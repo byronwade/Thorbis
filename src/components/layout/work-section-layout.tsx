@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { SectionLayout } from "@/components/layout/section-layout";
 import { PropertiesToolbarActions } from "@/components/properties/properties-toolbar-actions";
+import { ToolbarPagination } from "@/components/ui/toolbar-pagination";
 import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
 import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
 import { EstimateToolbarActions } from "@/components/work/estimate-toolbar-actions";
@@ -15,6 +16,7 @@ import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-to
 import { ServiceAgreementToolbarActions } from "@/components/work/service-agreement-toolbar-actions";
 import { TeamToolbarActions } from "@/components/work/team-toolbar-actions";
 import { VendorToolbarActions } from "@/components/work/vendor-toolbar-actions";
+import { WorkStatsButtonClient } from "@/components/work/work-stats-button-client";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
@@ -55,6 +57,27 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 			},
 			sidebar: { show: true, variant: "standard" },
 		},
+		"/dashboard/work/jobs": {
+			structure: {
+				maxWidth: "full",
+				padding: "none",
+				gap: "none",
+				fixedHeight: true,
+				variant: "default",
+				background: "default",
+				insetPadding: "none",
+			},
+			header: { show: true },
+			toolbar: {
+				show: true,
+				title: "Jobs",
+				subtitle: "Manage customer jobs and service requests",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="jobs" />,
+				actions: <WorkToolbarActions />,
+			},
+			sidebar: { show: true, variant: "standard" },
+		},
 		"/dashboard/work/invoices": {
 			structure: {
 				maxWidth: "full",
@@ -70,6 +93,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Invoices",
 				subtitle: "Create, track, and manage customer invoices",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="invoices" />,
 				actions: <InvoicesListToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -89,6 +114,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Appointments",
 				subtitle: "Manage customer appointments and schedules",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="appointments" />,
 				actions: <AppointmentsToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -108,6 +135,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Estimates",
 				subtitle: "Create and manage project estimates and quotes",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="estimates" />,
 				actions: <EstimateToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -127,6 +156,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Payments",
 				subtitle: "Track and manage customer payments",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="payments" />,
 				actions: <PaymentsToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -146,6 +177,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Contracts",
 				subtitle: "Create and manage digital contracts and agreements",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="contracts" />,
 				actions: <ContractToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -203,6 +236,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Vendors",
 				subtitle: "Manage suppliers you can assign to purchase orders",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="vendors" />,
 				actions: <VendorToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -241,6 +276,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Team",
 				subtitle: "Manage your team members and permissions",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="team" />,
 				actions: <TeamToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -260,6 +297,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Purchase Orders",
 				subtitle: "Manage purchase orders and inventory",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="purchase-orders" />,
 				actions: <PurchaseOrderToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -298,6 +337,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Materials",
 				subtitle: "Manage materials and supplies",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="materials" />,
 				actions: <WorkToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },
@@ -317,6 +358,8 @@ export function WorkSectionLayout({ children }: WorkSectionLayoutProps) {
 				show: true,
 				title: "Equipment",
 				subtitle: "Manage company equipment and assets",
+				statsMode: "button",
+				stats: <WorkStatsButtonClient page="equipment" />,
 				actions: <WorkToolbarActions />,
 			},
 			sidebar: { show: true, variant: "standard" },

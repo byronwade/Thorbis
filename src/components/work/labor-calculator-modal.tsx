@@ -48,6 +48,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -265,8 +269,7 @@ export function LaborCalculatorModal({
 					{/* Left Column - Inputs */}
 					<div className="space-y-6">
 						{/* Labor Rate Selection */}
-						<div className="space-y-2">
-							<Label htmlFor="laborRate">Labor Rate</Label>
+						<StandardFormField label="Labor Rate" htmlFor="laborRate">
 							<Select onValueChange={setSelectedRateId} value={selectedRateId}>
 								<SelectTrigger id="laborRate">
 									<SelectValue />
@@ -279,18 +282,22 @@ export function LaborCalculatorModal({
 									))}
 								</SelectContent>
 							</Select>
-						</div>
+						</StandardFormField>
 
 						{/* Time Estimation */}
-						<div className="space-y-2">
-							<Label className="flex items-center gap-2">
-								<Clock className="h-4 w-4" />
-								Time Estimate (per worker)
-							</Label>
-							<div className="grid grid-cols-2 gap-2">
-								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">Hours</Label>
+						<StandardFormField
+							label={
+								<span className="flex items-center gap-2">
+									<Clock className="h-4 w-4" />
+									Time Estimate (per worker)
+								</span>
+							}
+							htmlFor="time-estimate-hours"
+						>
+							<StandardFormRow cols={2}>
+								<StandardFormField label="Hours" htmlFor="time-estimate-hours">
 									<Input
+										id="time-estimate-hours"
 										max="24"
 										min="0"
 										onChange={(e) => setHours(e.target.value)}
@@ -298,12 +305,13 @@ export function LaborCalculatorModal({
 										type="number"
 										value={hours}
 									/>
-								</div>
-								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">
-										Minutes
-									</Label>
+								</StandardFormField>
+								<StandardFormField
+									label="Minutes"
+									htmlFor="time-estimate-minutes"
+								>
 									<Input
+										id="time-estimate-minutes"
 										max="59"
 										min="0"
 										onChange={(e) => setMinutes(e.target.value)}
@@ -311,16 +319,20 @@ export function LaborCalculatorModal({
 										type="number"
 										value={minutes}
 									/>
-								</div>
-							</div>
-						</div>
+								</StandardFormField>
+							</StandardFormRow>
+						</StandardFormField>
 
 						{/* Number of Workers */}
-						<div className="space-y-2">
-							<Label className="flex items-center gap-2" htmlFor="numWorkers">
-								<Users className="h-4 w-4" />
-								Number of Workers
-							</Label>
+						<StandardFormField
+							label={
+								<span className="flex items-center gap-2">
+									<Users className="h-4 w-4" />
+									Number of Workers
+								</span>
+							}
+							htmlFor="numWorkers"
+						>
 							<Input
 								id="numWorkers"
 								min="1"
@@ -329,7 +341,7 @@ export function LaborCalculatorModal({
 								type="number"
 								value={numWorkers}
 							/>
-						</div>
+						</StandardFormField>
 
 						{/* Overtime Toggle */}
 						<div className="flex items-center justify-between rounded-lg border p-4">
@@ -348,14 +360,14 @@ export function LaborCalculatorModal({
 						</div>
 
 						{/* Travel Time */}
-						<div className="space-y-2">
-							<Label className="flex items-center gap-2">
-								Travel Time (total)
-							</Label>
-							<div className="grid grid-cols-2 gap-2">
-								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">Hours</Label>
+						<StandardFormField
+							label="Travel Time (total)"
+							htmlFor="travel-time-hours"
+						>
+							<StandardFormRow cols={2}>
+								<StandardFormField label="Hours" htmlFor="travel-time-hours">
 									<Input
+										id="travel-time-hours"
 										max="24"
 										min="0"
 										onChange={(e) => setTravelHours(e.target.value)}
@@ -363,12 +375,13 @@ export function LaborCalculatorModal({
 										type="number"
 										value={travelHours}
 									/>
-								</div>
-								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">
-										Minutes
-									</Label>
+								</StandardFormField>
+								<StandardFormField
+									label="Minutes"
+									htmlFor="travel-time-minutes"
+								>
 									<Input
+										id="travel-time-minutes"
 										max="59"
 										min="0"
 										onChange={(e) => setTravelMinutes(e.target.value)}
@@ -376,13 +389,16 @@ export function LaborCalculatorModal({
 										type="number"
 										value={travelMinutes}
 									/>
-								</div>
-							</div>
-						</div>
+								</StandardFormField>
+							</StandardFormRow>
+						</StandardFormField>
 
 						{/* Advanced Settings */}
-						<div className="space-y-2">
-							<Label htmlFor="overhead">Overhead / Burden (%)</Label>
+						<StandardFormField
+							label="Overhead / Burden (%)"
+							htmlFor="overhead"
+							description="Insurance, benefits, equipment, etc. (typically 25-40%)"
+						>
 							<Input
 								id="overhead"
 								max="100"
@@ -392,13 +408,9 @@ export function LaborCalculatorModal({
 								type="number"
 								value={overheadPercent}
 							/>
-							<p className="text-muted-foreground text-xs">
-								Insurance, benefits, equipment, etc. (typically 25-40%)
-							</p>
-						</div>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label htmlFor="markup">Suggested Markup (%)</Label>
+						<StandardFormField label="Suggested Markup (%)" htmlFor="markup">
 							<Input
 								id="markup"
 								max="200"
@@ -408,18 +420,21 @@ export function LaborCalculatorModal({
 								type="number"
 								value={markupPercent}
 							/>
-						</div>
+						</StandardFormField>
 
 						{/* Description */}
-						<div className="space-y-2">
-							<Label htmlFor="description">Description (optional)</Label>
+						<StandardFormField
+							label="Description"
+							htmlFor="description"
+							description="Optional"
+						>
 							<Input
 								id="description"
 								onChange={(e) => setDescription(e.target.value)}
 								placeholder="e.g., HVAC System Installation Labor"
 								value={description}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 
 					{/* Right Column - Calculations */}

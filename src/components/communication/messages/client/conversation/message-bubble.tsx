@@ -72,7 +72,7 @@ export function MessageBubble({
 			case "delivered":
 				return <CheckCheck className="h-3 w-3" />;
 			case "failed":
-				return <AlertCircle className="h-3 w-3 text-destructive" />;
+				return <AlertCircle className="text-destructive h-3 w-3" />;
 			case "queued":
 				return <Clock className="h-3 w-3" />;
 			default:
@@ -113,13 +113,13 @@ export function MessageBubble({
 			{/* Message content */}
 			<div
 				className={cn(
-					"flex flex-col gap-1 max-w-[70%]",
+					"flex max-w-[70%] flex-col gap-1",
 					isOutbound && "items-end",
 				)}
 			>
 				{/* Sender name (for inbound, if not grouped) */}
 				{!isOutbound && !isGroupedWithPrevious && senderName && (
-					<span className="text-xs font-medium text-muted-foreground px-3">
+					<span className="text-muted-foreground px-3 text-xs font-medium">
 						{senderName}
 					</span>
 				)}
@@ -148,11 +148,11 @@ export function MessageBubble({
 
 								if (isImage) {
 									return (
-										<div key={index} className="rounded-lg overflow-hidden">
+										<div key={index} className="overflow-hidden rounded-lg">
 											<img
 												src={attachment.url}
 												alt={attachment.file_name || "Attachment"}
-												className="max-w-full h-auto rounded-lg"
+												className="h-auto max-w-full rounded-lg"
 											/>
 										</div>
 									);
@@ -163,19 +163,19 @@ export function MessageBubble({
 									<div
 										key={index}
 										className={cn(
-											"flex items-center gap-2 p-2 rounded-lg border",
+											"flex items-center gap-2 rounded-lg border p-2",
 											isOutbound
 												? "bg-primary-foreground/10 border-primary-foreground/20"
 												: "bg-background border-border",
 										)}
 									>
 										<Paperclip className="h-4 w-4 flex-shrink-0" />
-										<div className="flex-1 min-w-0">
-											<p className="text-xs font-medium truncate">
+										<div className="min-w-0 flex-1">
+											<p className="truncate text-xs font-medium">
 												{attachment.file_name || "File"}
 											</p>
 											{attachment.size && (
-												<p className="text-[10px] opacity-70">
+												<p className="text-xxs opacity-70">
 													{(attachment.size / 1024).toFixed(1)} KB
 												</p>
 											)}
@@ -210,7 +210,7 @@ export function MessageBubble({
 					)}
 				>
 					{/* Timestamp */}
-					<span className="text-[11px] text-muted-foreground">
+					<span className="text-muted-foreground text-xs">
 						{(() => {
 							try {
 								const date = new Date(message.created_at);
@@ -229,7 +229,7 @@ export function MessageBubble({
 
 					{/* Read indicator */}
 					{!isOutbound && message.read_at && (
-						<span className="text-[11px] text-muted-foreground">• Read</span>
+						<span className="text-muted-foreground text-xs">• Read</span>
 					)}
 				</div>
 			</div>

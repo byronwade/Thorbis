@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { cn } from "@/lib/utils";
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
@@ -264,8 +265,7 @@ export function RegisterForm() {
 				encType="multipart/form-data"
 				onSubmit={handleSubmit}
 			>
-				<div className="space-y-1">
-					<Label htmlFor="name">Full name*</Label>
+				<StandardFormField label="Full name" htmlFor="name" required>
 					<Input
 						autoComplete="name"
 						disabled={isLoading}
@@ -274,10 +274,13 @@ export function RegisterForm() {
 						placeholder="Byron Wade"
 						required
 					/>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="companyName">Company name (optional)</Label>
+				<StandardFormField
+					label="Company name"
+					htmlFor="companyName"
+					description="Optional"
+				>
 					<Input
 						autoComplete="organization"
 						disabled={isLoading}
@@ -285,10 +288,9 @@ export function RegisterForm() {
 						name="companyName"
 						placeholder="Test Plumbing Co."
 					/>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="email">Work email*</Label>
+				<StandardFormField label="Work email" htmlFor="email" required>
 					<Input
 						autoComplete="email"
 						disabled={isLoading}
@@ -298,10 +300,14 @@ export function RegisterForm() {
 						required
 						type="email"
 					/>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="phone">Mobile phone*</Label>
+				<StandardFormField
+					label="Mobile phone"
+					htmlFor="phone"
+					description="We'll text urgent dispatch alerts and MFA codes here."
+					required
+				>
 					<Input
 						autoComplete="tel"
 						disabled={isLoading}
@@ -313,77 +319,78 @@ export function RegisterForm() {
 						required
 						type="tel"
 					/>
-					<p className="text-muted-foreground text-xs">
-						We’ll text urgent dispatch alerts and MFA codes here.
-					</p>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="password">Password*</Label>
-					<div className="relative">
-						<Input
-							autoComplete="new-password"
-							className="pr-11"
-							disabled={isLoading}
-							id="password"
-							minLength={8}
-							name="password"
-							onChange={(event) => setPassword(event.target.value)}
-							placeholder="••••••••••••••••"
-							required
-							type={showPassword ? "text" : "password"}
-							value={password}
-						/>
-						<Button
-							className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-							disabled={isLoading}
-							onClick={() => setShowPassword((prev) => !prev)}
-							size="sm"
-							type="button"
-							variant="ghost"
-						>
-							{showPassword ? (
-								<EyeOff className="h-4 w-4" />
-							) : (
-								<Eye className="h-4 w-4" />
-							)}
-							<span className="sr-only">
-								{showPassword ? "Hide password" : "Show password"}
+				<StandardFormField label="Password" htmlFor="password" required>
+					<div className="space-y-2">
+						<div className="relative">
+							<Input
+								autoComplete="new-password"
+								className="pr-11"
+								disabled={isLoading}
+								id="password"
+								minLength={8}
+								name="password"
+								onChange={(event) => setPassword(event.target.value)}
+								placeholder="••••••••••••••••"
+								required
+								type={showPassword ? "text" : "password"}
+								value={password}
+							/>
+							<Button
+								className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+								disabled={isLoading}
+								onClick={() => setShowPassword((prev) => !prev)}
+								size="sm"
+								type="button"
+								variant="ghost"
+							>
+								{showPassword ? (
+									<EyeOff className="h-4 w-4" />
+								) : (
+									<Eye className="h-4 w-4" />
+								)}
+								<span className="sr-only">
+									{showPassword ? "Hide password" : "Show password"}
+								</span>
+							</Button>
+						</div>
+						<div className="flex items-center justify-between text-xs">
+							<span className="text-muted-foreground">Password strength</span>
+							<span
+								className={cn(
+									"font-medium",
+									passwordScore >= 80
+										? "text-green-600"
+										: passwordScore >= 60
+											? "text-amber-500"
+											: "text-red-500",
+								)}
+							>
+								{passwordStrengthLabel}
 							</span>
-						</Button>
+						</div>
+						<div className="bg-muted h-1.5 rounded-full">
+							<div
+								className={cn(
+									"h-full rounded-full transition-all",
+									passwordScore >= 80
+										? "bg-green-500"
+										: passwordScore >= 60
+											? "bg-amber-500"
+											: "bg-red-500",
+								)}
+								style={{ width: `${passwordScore}%` }}
+							/>
+						</div>
 					</div>
-					<div className="flex items-center justify-between text-xs">
-						<span className="text-muted-foreground">Password strength</span>
-						<span
-							className={cn(
-								"font-medium",
-								passwordScore >= 80
-									? "text-green-600"
-									: passwordScore >= 60
-										? "text-amber-500"
-										: "text-red-500",
-							)}
-						>
-							{passwordStrengthLabel}
-						</span>
-					</div>
-					<div className="bg-muted h-1.5 rounded-full">
-						<div
-							className={cn(
-								"h-full rounded-full transition-all",
-								passwordScore >= 80
-									? "bg-green-500"
-									: passwordScore >= 60
-										? "bg-amber-500"
-										: "bg-red-500",
-							)}
-							style={{ width: `${passwordScore}%` }}
-						/>
-					</div>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="confirmPassword">Confirm password*</Label>
+				<StandardFormField
+					label="Confirm password"
+					htmlFor="confirmPassword"
+					required
+				>
 					<div className="relative">
 						<Input
 							autoComplete="new-password"
@@ -416,10 +423,14 @@ export function RegisterForm() {
 							</span>
 						</Button>
 					</div>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-2 md:col-span-2">
-					<Label htmlFor="avatar">Profile image (optional)</Label>
+				<StandardFormField
+					label="Profile image"
+					htmlFor="avatar"
+					description="Optional"
+					className="md:col-span-2"
+				>
 					<div className="border-border/70 flex flex-col gap-4 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center">
 						<div className="border-border/80 relative size-20 shrink-0 overflow-hidden rounded-full border">
 							{avatarPreview ? (
@@ -457,7 +468,7 @@ export function RegisterForm() {
 							)}
 						</div>
 					</div>
-				</div>
+				</StandardFormField>
 
 				{/* Terms & Submit */}
 				<div className="space-y-4 md:col-span-2">

@@ -110,6 +110,7 @@ function SortableSection({
 		<div
 			className="group relative"
 			data-orientation="vertical"
+			data-section-id={section.id}
 			data-state={isOpen ? "open" : "closed"}
 			ref={setNodeRef}
 			style={style}
@@ -144,7 +145,9 @@ function SortableSection({
 							"focus-visible:ring-ring flex h-12 w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
 							section.actions && "pr-2",
 						)}
+						data-accordion-trigger=""
 						data-radix-collection-item=""
+						data-state={isOpen ? "open" : "closed"}
 						onClick={onToggle}
 						type="button"
 					>

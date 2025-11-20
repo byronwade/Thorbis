@@ -129,7 +129,6 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 					<Link
 						className="text-muted-foreground hover:text-primary block text-xs font-semibold tracking-wide uppercase"
 						href={`/dashboard/work/payments/${payment.id}`}
-						prefetch={false}
 					>
 						{payment.payment_number}
 					</Link>
@@ -176,10 +175,7 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 					size="sm"
 					variant="ghost"
 				>
-					<Link
-						href={`/dashboard/work/payments/${payment.id}`}
-						prefetch={false}
-					>
+					<Link href={`/dashboard/work/payments/${payment.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
 					</Link>

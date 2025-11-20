@@ -383,7 +383,7 @@ export function TeamMemberSelector({
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
-									<AvatarFallback className="text-[10px]">
+									<AvatarFallback className="text-xxs">
 										{getInitials(
 											assignment.teamMember.user.firstName,
 											assignment.teamMember.user.lastName,
@@ -460,7 +460,7 @@ export function TeamMemberSelector({
 											)}
 											src={assignment.teamMember.user.avatarUrl || undefined}
 										/>
-										<AvatarFallback className="text-[10px]">
+										<AvatarFallback className="text-xxs">
 											{getInitials(
 												assignment.teamMember.user.firstName,
 												assignment.teamMember.user.lastName,
@@ -560,7 +560,7 @@ export function TeamMemberSelector({
 													)}
 													src={member.user.avatarUrl || undefined}
 												/>
-												<AvatarFallback className="text-[10px]">
+												<AvatarFallback className="text-xxs">
 													{getInitials(
 														member.user.firstName,
 														member.user.lastName,

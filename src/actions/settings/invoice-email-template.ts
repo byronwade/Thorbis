@@ -51,7 +51,7 @@ export async function loadInvoiceEmailTemplate(): Promise<
 
 		// Get company ID
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -148,7 +148,7 @@ export async function saveInvoiceEmailTemplate(
 
 		// Get company ID
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")

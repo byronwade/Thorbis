@@ -33,7 +33,9 @@ import {
 	X,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { updateJobData } from "@/actions/jobs";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -141,6 +143,7 @@ export type JobPageEditorProps = {
 	propertyEnrichment: any;
 	assignedUser: any;
 	teamAssignments: any[];
+	availableTeamMembers?: any[];
 	timeEntries: any[];
 	invoices: any[];
 	estimates: any[];
@@ -171,6 +174,7 @@ export function JobPageEditor({
 	propertyEnrichment,
 	assignedUser,
 	teamAssignments,
+	availableTeamMembers = [],
 	timeEntries,
 	invoices,
 	estimates,
@@ -187,6 +191,8 @@ export function JobPageEditor({
 	workflowStages,
 	metrics,
 }: JobPageEditorProps) {
+	const router = useRouter();
+
 	// Zustand store selectors
 	const activeTab = useActiveTab();
 	const setActiveTab = useSetActiveTab();
@@ -197,15 +203,45 @@ export function JobPageEditor({
 	const {
 		saveStatus,
 		setSaveStatus,
+		saveError,
+		setSaveError,
 		isRightSidebarOpen,
 		toggleRightSidebar,
 		setCommandPaletteOpen,
+		editorContent,
+		setEditorContent,
+		originalContent,
+		setOriginalContent,
+		setHasUnsavedChanges,
 	} = useJobEditorStore();
 
 	// Local state for save feedback
 	const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 	const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] =
 		useState(false);
+
+	// Initialize editor content on mount
+	useEffect(() => {
+		if (job && !editorContent) {
+			const initialContent = {
+				...job,
+				// Normalize field names for consistency
+				title: job.title || "",
+				description: job.description || "",
+				status: job.status || "quoted",
+				priority: job.priority || "medium",
+				job_type: job.job_type || job.jobType || "",
+				notes: job.notes || "",
+				scheduled_start: job.scheduled_start || job.scheduledStart || null,
+				scheduled_end: job.scheduled_end || job.scheduledEnd || null,
+				assigned_to: job.assigned_to || job.assignedTo || null,
+				customer_id: job.customer_id || job.customerId || null,
+				property_id: job.property_id || job.propertyId || null,
+			};
+			setEditorContent(initialContent);
+			setOriginalContent(initialContent);
+		}
+	}, [job, editorContent, setEditorContent, setOriginalContent]);
 
 	// ============================================================================
 	// Keyboard Shortcuts
@@ -245,31 +281,103 @@ export function JobPageEditor({
 	// ============================================================================
 
 	const handleSave = useCallback(async () => {
-		if (!hasUnsavedChanges) {
+		if (!hasUnsavedChanges || !editorContent) {
 			return;
 		}
 
 		setSaveStatus("saving");
 
 		try {
-			// TODO: Implement save logic with Server Actions
-			// await updateJob(job.id, editorContent);
+			// Extract only changed fields from editorContent
+			const changes: any = {};
 
-			// Simulate save delay
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			// Compare editorContent with originalContent to find what changed
+			if (editorContent.title !== originalContent?.title) {
+				changes.title = editorContent.title;
+			}
+			if (editorContent.description !== originalContent?.description) {
+				changes.description = editorContent.description;
+			}
+			if (editorContent.status !== originalContent?.status) {
+				changes.status = editorContent.status;
+			}
+			if (editorContent.priority !== originalContent?.priority) {
+				changes.priority = editorContent.priority;
+			}
+			if (editorContent.job_type !== originalContent?.job_type) {
+				changes.jobType = editorContent.job_type;
+			}
+			if (editorContent.notes !== originalContent?.notes) {
+				changes.notes = editorContent.notes;
+			}
+			if (editorContent.scheduled_start !== originalContent?.scheduled_start) {
+				changes.scheduledStart = editorContent.scheduled_start;
+			}
+			if (editorContent.scheduled_end !== originalContent?.scheduled_end) {
+				changes.scheduledEnd = editorContent.scheduled_end;
+			}
+			if (editorContent.assigned_to !== originalContent?.assigned_to) {
+				changes.assignedTo = editorContent.assigned_to;
+			}
+			if (editorContent.customer_id !== originalContent?.customer_id) {
+				changes.customerId = editorContent.customer_id;
+			}
+			if (editorContent.property_id !== originalContent?.property_id) {
+				changes.propertyId = editorContent.property_id;
+			}
 
-			setSaveStatus("saved");
-			setShowSaveSuccess(true);
+			// Call Server Action with changes
+			const result = await updateJobData(job.id, changes);
 
-			// Reset after 2 seconds
+			if (result.success) {
+				setSaveStatus("saved");
+				setShowSaveSuccess(true);
+				setHasUnsavedChanges(false);
+
+				// Update originalContent to match saved content
+				setOriginalContent(editorContent);
+
+				// Refresh the page data
+				router.refresh();
+
+				// Reset status after 2 seconds
+				setTimeout(() => {
+					setSaveStatus("idle");
+					setShowSaveSuccess(false);
+				}, 2000);
+			} else {
+				setSaveStatus("error");
+				setSaveError(result.error || "Failed to save changes");
+				console.error("Save failed:", result.error);
+
+				// Reset error after 3 seconds
+				setTimeout(() => {
+					setSaveStatus("idle");
+					setSaveError(null);
+				}, 3000);
+			}
+		} catch (error) {
+			setSaveStatus("error");
+			setSaveError(error instanceof Error ? error.message : "Unknown error");
+			console.error("Save error:", error);
+
+			// Reset error after 3 seconds
 			setTimeout(() => {
 				setSaveStatus("idle");
-				setShowSaveSuccess(false);
-			}, 2000);
-		} catch (_error) {
-			setSaveStatus("error");
+				setSaveError(null);
+			}, 3000);
 		}
-	}, [hasUnsavedChanges, setSaveStatus]);
+	}, [
+		hasUnsavedChanges,
+		editorContent,
+		originalContent,
+		job.id,
+		setSaveStatus,
+		setHasUnsavedChanges,
+		setOriginalContent,
+		setSaveError,
+		router,
+	]);
 
 	// ============================================================================
 	// Tab Configuration
@@ -423,11 +531,13 @@ export function JobPageEditor({
 				<div className="flex-1 overflow-auto">
 					<TabsContent className="m-0 h-full p-6" value="overview">
 						<OverviewTab
+							availableTeamMembers={availableTeamMembers}
 							customer={customer}
 							customers={customers}
 							isEditMode={isEditMode}
 							job={job}
 							properties={properties}
+							teamAssignments={teamAssignments}
 							property={property}
 							propertyEnrichment={propertyEnrichment}
 						/>

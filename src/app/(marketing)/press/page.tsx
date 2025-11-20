@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +17,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const pressKeywords = generateSemanticKeywords("press");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Newsroom & Press Kit",
@@ -21,7 +29,14 @@ export const metadata = generateSEOMetadata({
 		"Access Thorbis press resources, brand assets, executive bios, and latest announcements. Contact our communications team.",
 	path: "/press",
 	section: "Company",
-	keywords: ["thorbis press", "thorbis newsroom", "thorbis brand assets"],
+	keywords: [
+		"thorbis press",
+		"thorbis newsroom",
+		"thorbis brand assets",
+		"thorbis news",
+		"thorbis announcements",
+		...pressKeywords.slice(0, 5),
+	],
 });
 
 const NEWS = [

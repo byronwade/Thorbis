@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
@@ -38,10 +39,7 @@ export async function DashboardAuthWrapper() {
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 
 	// Parallel execution instead of sequential (saves 30-50ms)
-	const [activeCompanyId, { headers: headersImport }] = await Promise.all([
-		getActiveCompanyId(),
-		import("next/headers"),
-	]);
+	const activeCompanyId = await getActiveCompanyId();
 
 	let isCompanyOnboardingComplete = false;
 
@@ -49,7 +47,7 @@ export async function DashboardAuthWrapper() {
 		// Parallel queries instead of sequential JOIN (saves 20-40ms)
 		const [teamMemberResult, companyResult] = await Promise.all([
 			supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("company_id")
 				.eq("user_id", user.id)
 				.eq("company_id", activeCompanyId)
@@ -78,32 +76,42 @@ export async function DashboardAuthWrapper() {
 			completedAt: company?.onboarding_completed_at ?? null,
 		});
 
+		// Company is fully onboarded if:
+		// 1. User is a team member AND
+		// 2. (Subscription is active AND onboarding is finished) OR in development mode
 		isCompanyOnboardingComplete =
-			!!teamMember &&
-			((subscriptionActive && onboardingFinished) ||
-				process.env.NODE_ENV === "development");
+			!!teamMember && subscriptionActive && onboardingFinished;
 	}
 
 	// If no active company or onboarding not complete, redirect to welcome
-	// Note: We can't check the current pathname reliably in server component
-	// The welcome page itself should not trigger this redirect
 	if (!isCompanyOnboardingComplete) {
-		// Use already imported headers (parallelized earlier)
-		const headersList = await headersImport();
-		const referer = headersList.get("referer") || "";
-		const pathname =
-			headersList.get("x-invoke-path") || headersList.get("x-pathname") || "";
+		const headerList = await headers();
 
-		// More reliable check: look in both referer and pathname headers
-		const currentPath = pathname || referer;
-		const isOnWelcomePage =
-			currentPath.includes("/welcome") || currentPath.endsWith("/welcome");
+		const possiblePaths = [
+			headerList.get("x-pathname"),
+			headerList.get("x-url"),
+			headerList.get("next-url"),
+			headerList.get("x-invoke-path"),
+			headerList.get("x-matched-path"),
+			headerList.get("x-original-uri"),
+		].filter(Boolean) as string[];
 
-		// Only redirect if definitely NOT on welcome page
-		if (!isOnWelcomePage && currentPath) {
+		const referer = headerList.get("referer");
+		if (referer) {
+			try {
+				possiblePaths.push(new URL(referer).pathname);
+			} catch {
+				possiblePaths.push(referer);
+			}
+		}
+
+		const isOnWelcomePage = possiblePaths.some((path) =>
+			path?.startsWith("/dashboard/welcome"),
+		);
+
+		if (!isOnWelcomePage) {
 			redirect("/dashboard/welcome");
 		}
-		// If we can't determine the path, don't redirect (prevents loops)
 	}
 
 	// This component renders nothing - it only performs auth checks and redirects

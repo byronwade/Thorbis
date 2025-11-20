@@ -64,6 +64,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
+import {
 	CustomerStatusBadge,
 	InvoiceStatusBadge,
 	JobStatusBadge,
@@ -74,6 +78,7 @@ import {
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 import { JobsTable } from "@/components/work/jobs-table";
+import { useSectionShortcuts } from "@/hooks/use-section-shortcuts";
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 import { useToolbarActionsStore } from "@/lib/stores/toolbar-actions-store";
@@ -114,6 +119,126 @@ export function CustomerPageContent({
 		paymentMethods = [],
 		enrichmentData,
 	} = customerData;
+
+	// Extract customer tags from junction table (now included in RPC response)
+	const customerTags = useMemo(() => {
+		if (!customer?.customer_tags) return [];
+		return customer.customer_tags.map((ct: any) => ({
+			id: ct.id,
+			name: ct.name,
+			slug: ct.slug,
+			color: ct.color,
+			category: ct.category,
+			icon: ct.icon,
+		}));
+	}, [customer?.customer_tags]);
+
+	// Keyboard shortcuts: Ctrl+1 through Ctrl+9 to scroll and expand accordion sections
+	const sectionShortcuts = useMemo(
+		() => ({
+			"1": () => {
+				const element = document.querySelector(
+					'[data-section-id="customer-info"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"2": () => {
+				const element = document.querySelector(
+					'[data-section-id="properties"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"3": () => {
+				const element = document.querySelector('[data-section-id="jobs"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"4": () => {
+				const element = document.querySelector('[data-section-id="invoices"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"5": () => {
+				const element = document.querySelector('[data-section-id="equipment"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"6": () => {
+				const element = document.querySelector(
+					'[data-section-id="payment-methods"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"7": () => {
+				const element = document.querySelector('[data-section-id="estimates"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"8": () => {
+				const element = document.querySelector(
+					'[data-section-id="appointments"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"9": () => {
+				const element = document.querySelector('[data-section-id="contracts"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+		}),
+		[],
+	);
+
+	useSectionShortcuts(sectionShortcuts);
 
 	// Handle field changes
 	const handleFieldChange = (field: string, value: any) => {
@@ -650,10 +775,9 @@ export function CustomerPageContent({
 				content: (
 					<UnifiedAccordionContent>
 						<div className="space-y-6">
-							<div className="grid gap-6 md:grid-cols-2">
+							<StandardFormRow cols={2}>
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="first_name">First Name</Label>
+									<StandardFormField label="First Name" htmlFor="first_name">
 										<Input
 											id="first_name"
 											onChange={(e) =>
@@ -661,9 +785,9 @@ export function CustomerPageContent({
 											}
 											value={localCustomer.first_name || ""}
 										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="last_name">Last Name</Label>
+									</StandardFormField>
+
+									<StandardFormField label="Last Name" htmlFor="last_name">
 										<Input
 											id="last_name"
 											onChange={(e) =>
@@ -671,9 +795,12 @@ export function CustomerPageContent({
 											}
 											value={localCustomer.last_name || ""}
 										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="company_name">Company Name</Label>
+									</StandardFormField>
+
+									<StandardFormField
+										label="Company Name"
+										htmlFor="company_name"
+									>
 										<Input
 											id="company_name"
 											onChange={(e) =>
@@ -681,11 +808,10 @@ export function CustomerPageContent({
 											}
 											value={localCustomer.company_name || ""}
 										/>
-									</div>
+									</StandardFormField>
 								</div>
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="email">Email</Label>
+									<StandardFormField label="Email" htmlFor="email">
 										<div className="flex gap-2">
 											<Input
 												id="email"
@@ -703,9 +829,9 @@ export function CustomerPageContent({
 												</Button>
 											)}
 										</div>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="phone">Phone</Label>
+									</StandardFormField>
+
+									<StandardFormField label="Phone" htmlFor="phone">
 										<div className="flex gap-2">
 											<Input
 												id="phone"
@@ -723,9 +849,12 @@ export function CustomerPageContent({
 												</Button>
 											)}
 										</div>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="mobile_phone">Mobile Phone</Label>
+									</StandardFormField>
+
+									<StandardFormField
+										label="Mobile Phone"
+										htmlFor="mobile_phone"
+									>
 										<div className="flex gap-2">
 											<Input
 												id="mobile_phone"
@@ -743,14 +872,13 @@ export function CustomerPageContent({
 												</Button>
 											)}
 										</div>
-									</div>
+									</StandardFormField>
 								</div>
-							</div>
+							</StandardFormRow>
 
-							<div className="grid gap-6 md:grid-cols-2">
+							<StandardFormRow cols={2}>
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="address">Address</Label>
+									<StandardFormField label="Address" htmlFor="address">
 										<Textarea
 											id="address"
 											onChange={(e) =>
@@ -759,10 +887,10 @@ export function CustomerPageContent({
 											rows={3}
 											value={localCustomer.address || ""}
 										/>
-									</div>
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-2">
-											<Label htmlFor="city">City</Label>
+									</StandardFormField>
+
+									<StandardFormRow cols={2}>
+										<StandardFormField label="City" htmlFor="city">
 											<Input
 												id="city"
 												onChange={(e) =>
@@ -770,9 +898,9 @@ export function CustomerPageContent({
 												}
 												value={localCustomer.city || ""}
 											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="state">State</Label>
+										</StandardFormField>
+
+										<StandardFormField label="State" htmlFor="state">
 											<Input
 												id="state"
 												onChange={(e) =>
@@ -780,9 +908,12 @@ export function CustomerPageContent({
 												}
 												value={localCustomer.state || ""}
 											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="postal_code">Postal Code</Label>
+										</StandardFormField>
+
+										<StandardFormField
+											label="Postal Code"
+											htmlFor="postal_code"
+										>
 											<Input
 												id="postal_code"
 												onChange={(e) =>
@@ -790,9 +921,9 @@ export function CustomerPageContent({
 												}
 												value={localCustomer.postal_code || ""}
 											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="country">Country</Label>
+										</StandardFormField>
+
+										<StandardFormField label="Country" htmlFor="country">
 											<Input
 												id="country"
 												onChange={(e) =>
@@ -800,13 +931,16 @@ export function CustomerPageContent({
 												}
 												value={localCustomer.country || ""}
 											/>
-										</div>
-									</div>
+										</StandardFormField>
+									</StandardFormRow>
 								</div>
 
 								<div className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="tags">Tags</Label>
+									<StandardFormField
+										label="Tags"
+										htmlFor="tags"
+										description="Comma separated tags"
+									>
 										<Input
 											id="tags"
 											onChange={(e) =>
@@ -818,9 +952,13 @@ export function CustomerPageContent({
 											placeholder="Comma separated tags"
 											value={(localCustomer.tags || []).join(", ")}
 										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="notes">Notes</Label>
+									</StandardFormField>
+
+									<StandardFormField
+										label="Notes"
+										htmlFor="notes"
+										description="Internal notes about this customer"
+									>
 										<Textarea
 											id="notes"
 											onChange={(e) =>
@@ -830,9 +968,9 @@ export function CustomerPageContent({
 											rows={4}
 											value={localCustomer.notes || ""}
 										/>
-									</div>
+									</StandardFormField>
 								</div>
-							</div>
+							</StandardFormRow>
 						</div>
 					</UnifiedAccordionContent>
 				),
@@ -1643,8 +1781,13 @@ export function CustomerPageContent({
 					<EntityTags
 						entityId={customer.id}
 						entityType="customer"
-						onUpdateTags={(id, tags) => updateEntityTags("customer", id, tags)}
-						tags={customer.tags || []}
+						onUpdateTags={async (id, tags) => {
+							const result = await updateEntityTags("customer", id, tags);
+							if (result.success) {
+								router.refresh();
+							}
+						}}
+						tags={customerTags}
 					/>
 				</div>
 			</div>

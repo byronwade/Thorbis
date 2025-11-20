@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { BlogCard } from "@/components/content/blog-card";
@@ -13,9 +16,14 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import { cn } from "@/lib/utils";
 
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
 const PAGE_SIZE = 9;
+
+const blogKeywords = generateSemanticKeywords("blog");
 
 export const metadata = generateSEOMetadata({
 	title: "Blog",
@@ -28,6 +36,9 @@ export const metadata = generateSEOMetadata({
 		"operations playbooks",
 		"product updates",
 		"service business growth",
+		"field service tips",
+		"contractor growth strategies",
+		...blogKeywords.slice(0, 5),
 	],
 });
 

@@ -59,6 +59,28 @@ type RoiInputs = {
 	thorbisPlanCost: number;
 };
 
+/**
+ * DEFAULT VALUES - Based on real field service business metrics
+ *
+ * 12 techs × 3 jobs/day × 22 working days = 792 jobs/month
+ *
+ * Realistic Thorbis Cost Breakdown for 12 Techs:
+ * - Base platform: $200/month
+ * - Emails (1,584): $0.48
+ * - SMS (2,376): $57.02
+ * - Incoming calls (2,640 min): $31.68
+ * - Outgoing calls (330 min): $9.90
+ * - AI chat (200): $30.00
+ * - AI phone (400 min): $72.00
+ * - Storage (4 GB): $1.08
+ * - Automation: $22.50
+ * = Total: ~$425/month
+ *
+ * Competitor Costs (per-user pricing):
+ * - ServiceTitan: 12 users × $259 = $3,108/month
+ * - Housecall Pro: 12 users × $169 = $2,028/month
+ * - Jobber: 12 users × $129 = $1,548/month
+ */
 const DEFAULT_VALUES: RoiInputs = {
 	technicianCount: 12,
 	jobsPerTechPerDay: 3,
@@ -66,8 +88,8 @@ const DEFAULT_VALUES: RoiInputs = {
 	closeRateLift: 8,
 	minutesSavedPerJob: 18,
 	hourlyLaborCost: 42,
-	currentSoftwareSpend: 2900,
-	thorbisPlanCost: 3600,
+	currentSoftwareSpend: 2028, // Housecall Pro: 12 users × $169
+	thorbisPlanCost: 450, // Realistic Thorbis cost for 12 techs
 };
 
 export function RoiCalculator() {
@@ -395,7 +417,7 @@ export function RoiCalculator() {
 											<LabelWithTooltip
 												htmlFor="thorbisPlanCost"
 												label="Thorbis plan estimate / month ($)"
-												tooltip="Estimated monthly Thorbis cost based on your team size and usage. Starts at $100/month with pay-as-you-go pricing. No per-user fees."
+												tooltip="Estimated monthly Thorbis cost: $200 base + usage. Examples: 3 techs = $269/mo, 7 techs = $368/mo, 30 techs = $1,063/mo, 100 techs = $3,897/mo. No per-user fees."
 											/>
 											<Input
 												className="bg-input"
@@ -406,6 +428,14 @@ export function RoiCalculator() {
 												type="number"
 												value={inputs.thorbisPlanCost}
 											/>
+											<p className="text-muted-foreground text-xs">
+												<Link
+													href="/pricing"
+													className="text-primary hover:underline"
+												>
+													Use pricing calculator →
+												</Link>
+											</p>
 										</div>
 									</div>
 								</div>

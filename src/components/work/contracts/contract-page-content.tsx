@@ -8,24 +8,30 @@ import {
 	GitBranch,
 	MapPin,
 	NotebookPen,
+	Package,
 	Send,
 	User,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
 	type ElementType,
 	type ReactElement,
 	type ReactNode,
 	useMemo,
 } from "react";
+import { toast } from "sonner";
+import { updateEntityTags } from "@/actions/entity-tags";
 import type { DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import {
 	UnifiedAccordionContent,
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
 import { WorkflowTimeline } from "@/components/ui/workflow-timeline";
+import { useSectionShortcuts } from "@/hooks/use-section-shortcuts";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
@@ -143,8 +149,19 @@ type WorkflowStage = {
 	description?: string;
 };
 
+export type Tag = {
+	id: string;
+	name: string;
+	slug: string;
+	color: string | null;
+	category: string | null;
+	icon: string | null;
+};
+
 export type ContractPageEntityData = {
-	contract: ContractRecord;
+	contract: ContractRecord & {
+		contract_tags?: Tag[];
+	};
 	customer?: CustomerRecord | null;
 	property?: PropertyRecord | null;
 	estimate?: RelatedEstimate | null;
@@ -254,6 +271,7 @@ function buildHeaderConfig(
 }
 
 export function ContractPageContent({ entityData }: ContractPageContentProps) {
+	const router = useRouter();
 	const {
 		contract,
 		customer,
@@ -277,6 +295,56 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 	) : null;
 
 	const headerConfig = buildHeaderConfig(contract, customerName, statusBadge);
+
+	// Extract tags from junction table data
+	const contractTags = useMemo(() => {
+		if (!contract?.contract_tags) return [];
+		return contract.contract_tags.map((ct: Tag) => ({
+			id: ct.id,
+			name: ct.name,
+			slug: ct.slug,
+			color: ct.color,
+			category: ct.category,
+			icon: ct.icon,
+		}));
+	}, [contract?.contract_tags]);
+
+	// Keyboard shortcuts (Ctrl+1-9)
+	const sectionShortcuts = useMemo(
+		() => ({
+			"1": () => {
+				document
+					.getElementById("contract-overview")
+					?.scrollIntoView({ behavior: "smooth" });
+			},
+			"2": () => {
+				document
+					.getElementById("contract-terms")
+					?.scrollIntoView({ behavior: "smooth" });
+			},
+			"3": () => {
+				document
+					.getElementById("signature")
+					?.scrollIntoView({ behavior: "smooth" });
+			},
+			"4": () => {
+				document
+					.getElementById("engagement-history")
+					?.scrollIntoView({ behavior: "smooth" });
+			},
+			"5": () => {
+				document
+					.getElementById("appointments")
+					?.scrollIntoView({ behavior: "smooth" });
+			},
+			"9": () => {
+				document.getElementById("tags")?.scrollIntoView({ behavior: "smooth" });
+			},
+		}),
+		[],
+	);
+
+	useSectionShortcuts(sectionShortcuts);
 
 	const quickInfo = useMemo(() => {
 		const items: {
@@ -748,6 +816,32 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 		};
 	}, [contract.notes]);
 
+	const tagsSection = useMemo<UnifiedAccordionSection>(
+		() => ({
+			id: "tags",
+			title: "Tags",
+			icon: <Package className="size-4" />,
+			content: (
+				<UnifiedAccordionContent>
+					<EntityTags
+						entityId={contract.id}
+						entityType="contract"
+						onUpdateTags={async (id, tags) => {
+							const result = await updateEntityTags("contract", id, tags);
+							if (result.success) {
+								router.refresh();
+							} else {
+								toast.error(result.error || "Failed to update tags");
+							}
+						}}
+						tags={contractTags}
+					/>
+				</UnifiedAccordionContent>
+			),
+		}),
+		[contract.id, contractTags, router],
+	);
+
 	const customSections = useMemo<UnifiedAccordionSection[]>(
 		() =>
 			[
@@ -758,6 +852,7 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				appointmentsSection,
 				additionalTermsSection,
 				internalNotesSection,
+				tagsSection,
 			].filter(Boolean) as UnifiedAccordionSection[],
 		[
 			additionalTermsSection,
@@ -767,6 +862,7 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			signerSection,
 			termsSection,
 			internalNotesSection,
+			tagsSection,
 		],
 	);
 

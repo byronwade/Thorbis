@@ -23,7 +23,7 @@ export default function DashboardLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<>
+		<div data-dashboard-layout className="flex h-full flex-col overflow-hidden">
 			{/* Header with company context - wrapped in Suspense for PPR */}
 			<Suspense fallback={<HeaderSkeleton />}>
 				<AppHeader />
@@ -41,8 +41,8 @@ export default function DashboardLayout({
 			</Suspense>
 
 			{/* Page content - each page has its own Suspense boundaries */}
-			{children}
-		</>
+			<main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+		</div>
 	);
 }
 

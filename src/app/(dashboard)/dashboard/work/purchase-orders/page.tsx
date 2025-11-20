@@ -1,18 +1,18 @@
 /**
- * Purchase Orders Page - PPR Enabled
+ * Purchase Orders Page - PPR Enabled with Inline Stats
  *
  * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
- * - Stats stream in first (100-200ms)
- * - Data streams in second (200-500ms)
+ * - Stats stream in toolbar (100-200ms)
+ * - Data streams in main content (200-500ms)
  *
  * Performance: 10-40x faster than traditional SSR
+ * Clean design: Stats integrated directly into toolbar
  */
 
 import { Suspense } from "react";
 import { PurchaseOrdersData } from "@/components/work/purchase-orders/purchase-orders-data";
 import { PurchaseOrdersSkeleton } from "@/components/work/purchase-orders/purchase-orders-skeleton";
-import { PurchaseOrdersStats } from "@/components/work/purchase-orders/purchase-orders-stats";
 
 export default async function PurchaseOrdersPage({
 	searchParams,
@@ -22,18 +22,15 @@ export default async function PurchaseOrdersPage({
 	const params = await searchParams;
 
 	return (
-		<>
-			{/* Stats - Streams in first */}
-			<Suspense
-				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-			>
-				<PurchaseOrdersStats />
-			</Suspense>
+		<div className="flex h-full flex-col">
+			{/* Stats now shown in toolbar - see layout.tsx */}
 
-			{/* Table/Kanban - Streams in second */}
-			<Suspense fallback={<PurchaseOrdersSkeleton />}>
-				<PurchaseOrdersData searchParams={params} />
-			</Suspense>
-		</>
+			{/* Table - Main content */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<PurchaseOrdersSkeleton />}>
+					<PurchaseOrdersData searchParams={params} />
+				</Suspense>
+			</div>
+		</div>
 	);
 }

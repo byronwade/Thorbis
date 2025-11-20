@@ -35,6 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type InvoiceFilters,
 	useInvoiceFiltersStore,
@@ -138,8 +139,10 @@ export function InvoicesFilterDropdown({
 
 				<div className="space-y-4 p-3">
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Archive Status</Label>
+					<StandardFormField
+						label="Archive Status"
+						htmlFor="filter-invoices-archive-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								handleLocalChange(
@@ -149,7 +152,10 @@ export function InvoicesFilterDropdown({
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-invoices-archive-status"
+								className="h-9"
+							>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -165,18 +171,17 @@ export function InvoicesFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-invoices-status">
 						<Select
 							onValueChange={(value) => handleLocalChange("status", value)}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-invoices-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -187,16 +192,19 @@ export function InvoicesFilterDropdown({
 								<SelectItem value="overdue">Overdue</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Amount Range */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Amount Range</Label>
+					<StandardFormField
+						label="Amount Range"
+						htmlFor="filter-invoices-amount-min"
+					>
 						<div className="grid grid-cols-2 gap-2">
 							<div>
 								<Input
+									id="filter-invoices-amount-min"
 									className="h-9"
 									onChange={(e) =>
 										handleLocalChange("amountMin", e.target.value)
@@ -208,6 +216,7 @@ export function InvoicesFilterDropdown({
 							</div>
 							<div>
 								<Input
+									id="filter-invoices-amount-max"
 									className="h-9"
 									onChange={(e) =>
 										handleLocalChange("amountMax", e.target.value)
@@ -218,14 +227,17 @@ export function InvoicesFilterDropdown({
 								/>
 							</div>
 						</div>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Customer</Label>
+					<StandardFormField
+						label="Customer"
+						htmlFor="filter-invoices-customer-name"
+					>
 						<Input
+							id="filter-invoices-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("customerName", e.target.value)
@@ -234,14 +246,17 @@ export function InvoicesFilterDropdown({
 							type="text"
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Invoice Number */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Invoice Number</Label>
+					<StandardFormField
+						label="Invoice Number"
+						htmlFor="filter-invoices-invoice-number"
+					>
 						<Input
+							id="filter-invoices-invoice-number"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("invoiceNumber", e.target.value)
@@ -250,7 +265,7 @@ export function InvoicesFilterDropdown({
 							type="text"
 							value={localFilters.invoiceNumber}
 						/>
-					</div>
+					</StandardFormField>
 				</div>
 
 				<DropdownMenuSeparator />

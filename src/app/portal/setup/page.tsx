@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { createClient } from "@/lib/supabase/server";
 
 type PageProps = {
@@ -189,8 +190,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 				<CardContent>
 					<form action={handleSetup} className="space-y-6">
 						{/* Display customer email */}
-						<div className="space-y-2">
-							<Label htmlFor="email">Email Address</Label>
+						<StandardFormField label="Email Address" htmlFor="email">
 							<div className="relative">
 								<Mail className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
@@ -205,11 +205,10 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 							<p className="text-muted-foreground text-xs">
 								You'll use this email to sign in to your portal
 							</p>
-						</div>
+						</StandardFormField>
 
 						{/* Display customer name */}
-						<div className="space-y-2">
-							<Label htmlFor="name">Full Name</Label>
+						<StandardFormField label="Full Name" htmlFor="name">
 							<div className="relative">
 								<User className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
@@ -221,13 +220,14 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 									value={customer.display_name}
 								/>
 							</div>
-						</div>
+						</StandardFormField>
 
 						{/* Password input */}
-						<div className="space-y-2">
-							<Label htmlFor="password">
-								Create Password <span className="text-destructive">*</span>
-							</Label>
+						<StandardFormField
+							label="Create Password"
+							htmlFor="password"
+							required
+						>
 							<div className="relative">
 								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
@@ -243,13 +243,14 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 							<p className="text-muted-foreground text-xs">
 								Must be at least 8 characters
 							</p>
-						</div>
+						</StandardFormField>
 
 						{/* Confirm password */}
-						<div className="space-y-2">
-							<Label htmlFor="confirmPassword">
-								Confirm Password <span className="text-destructive">*</span>
-							</Label>
+						<StandardFormField
+							label="Confirm Password"
+							htmlFor="confirmPassword"
+							required
+						>
 							<div className="relative">
 								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
@@ -262,7 +263,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 									type="password"
 								/>
 							</div>
-						</div>
+						</StandardFormField>
 
 						{/* Security notice */}
 						<div className="border-primary/20 bg-primary/5 rounded-lg border p-4">

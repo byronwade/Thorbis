@@ -24,6 +24,7 @@ import {
 	User,
 	Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
 	getTechnicianSchedules,
@@ -50,6 +51,7 @@ export function CSRScheduleView({
 	className,
 	companyId,
 }: CSRScheduleViewProps) {
+	const router = useRouter();
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [selectedTechFilter, setSelectedTechFilter] = useState<string | null>(
 		null,
@@ -114,7 +116,7 @@ export function CSRScheduleView({
 					<p className="text-sm font-medium">{error}</p>
 					<Button
 						className="mt-4"
-						onClick={() => window.location.reload()}
+						onClick={() => router.refresh()}
 						size="sm"
 						variant="outline"
 					>

@@ -35,6 +35,11 @@ export async function telnyxRequest<TResponse>(
 				? `${TELNYX_PUBLIC_BASE_URL}${normalizedPath}`
 				: `${TELNYX_BASE_URL}${normalizedPath}`;
 
+		console.log("🔵 Telnyx request:", {
+			method,
+			url: requestUrl,
+			body: body ? JSON.stringify(body, null, 2) : undefined,
+		});
 		const response = await fetch(requestUrl, {
 			method,
 			headers: {
@@ -45,21 +50,82 @@ export async function telnyxRequest<TResponse>(
 		});
 
 		const payload = (await response.json().catch(() => {})) as
-			| { data?: TResponse; errors?: Array<{ detail?: string }> }
+			| {
+					data?: TResponse;
+					errors?: Array<{ detail?: string } | string>;
+			  }
 			| undefined;
 
 		if (!response.ok) {
-			const message =
-				payload?.errors?.[0]?.detail ||
-				payload?.errors?.[0] ||
-				response.statusText;
+			let message = response.statusText;
+
+			// Log the FULL error details for debugging
+			console.error(
+				"🔴 Telnyx error response (FULL):",
+				JSON.stringify(
+					{
+						status: response.status,
+						url: requestUrl,
+						payload,
+						rawErrors: payload?.errors,
+					},
+					null,
+					2,
+				),
+			);
+
+			if (payload?.errors && Array.isArray(payload.errors)) {
+				const formatted = payload.errors
+					.map(
+						(
+							err:
+								| { detail?: string; code?: string; source?: unknown }
+								| string,
+						) => {
+							if (typeof err === "string") {
+								return err;
+							}
+							if (err.detail) {
+								// Include error code and source if available
+								const parts = [err.detail];
+								if (err.code) parts.push(`[code: ${err.code}]`);
+								if (err.source)
+									parts.push(`[source: ${JSON.stringify(err.source)}]`);
+								return parts.join(" ");
+							}
+							try {
+								return JSON.stringify(err);
+							} catch {
+								return String(err);
+							}
+						},
+					)
+					.filter(Boolean);
+				if (formatted.length > 0) {
+					message = formatted.join("; ");
+				}
+			} else if (payload?.errors?.[0]) {
+				message =
+					payload.errors[0].detail || String(payload.errors[0]) || message;
+			}
+
 			return {
 				success: false,
 				error: `Telnyx ${response.status}: ${message}`,
 			};
 		}
 
-		return { success: true, data: payload?.data };
+		console.log("🟢 Telnyx response:", {
+			status: response.status,
+			url: requestUrl,
+			payload: JSON.stringify(payload, null, 2),
+		});
+
+		// Telnyx API sometimes wraps response in "data", sometimes returns directly
+		// Handle both formats
+		const responseData = payload?.data || payload;
+
+		return { success: true, data: responseData as TResponse };
 	} catch (error) {
 		return {
 			success: false,

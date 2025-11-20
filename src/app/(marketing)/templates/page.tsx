@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { ResourceCard } from "@/components/content/resource-card";
@@ -8,6 +11,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const templateKeywords = generateSemanticKeywords("templates");
 
 export const metadata = generateSEOMetadata({
 	title: "Templates & Playbooks",
@@ -19,6 +27,10 @@ export const metadata = generateSEOMetadata({
 		"service business templates",
 		"field service checklists",
 		"proposal templates for contractors",
+		"contractor playbooks",
+		"field service templates",
+		"business templates",
+		...templateKeywords.slice(0, 5),
 	],
 });
 

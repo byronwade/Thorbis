@@ -1,24 +1,18 @@
 /**
- * Invoices Page - PPR Enabled
+ * Invoices Page - PPR Enabled with Inline Stats
  *
  * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
- * - Stats stream in first (100-200ms)
- * - Table streams in second (200-500ms)
+ * - Stats stream in toolbar (100-200ms)
+ * - Table streams in main content (200-500ms)
  *
  * Performance: 60-1340x faster than traditional SSR
+ * Clean design: Stats integrated directly into toolbar
  */
 
 import { Suspense } from "react";
 import { InvoicesData } from "@/components/work/invoices/invoices-data";
 import { InvoicesSkeleton } from "@/components/work/invoices/invoices-skeleton";
-import { InvoicesStats } from "@/components/work/invoices/invoices-stats";
-import { WorkPageLayout } from "@/components/work/work-page-layout";
-
-// Enable Partial Prerendering for this page (Next.js 16+)
-// PPR is now enabled globally via cacheComponents in next.config.ts
-// This export is no longer needed but kept for documentation
-// export const experimental_ppr = true;
 
 export default async function InvoicesPage({
 	searchParams,
@@ -27,18 +21,15 @@ export default async function InvoicesPage({
 }) {
 	const params = await searchParams;
 	return (
-		<WorkPageLayout
-			stats={
-				<Suspense
-					fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-				>
-					<InvoicesStats />
+		<div className="flex h-full flex-col">
+			{/* Stats now shown in toolbar - see layout.tsx */}
+
+			{/* Table - Main content */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<InvoicesSkeleton />}>
+					<InvoicesData searchParams={params} />
 				</Suspense>
-			}
-		>
-			<Suspense fallback={<InvoicesSkeleton />}>
-				<InvoicesData searchParams={params} />
-			</Suspense>
-		</WorkPageLayout>
+			</div>
+		</div>
 	);
 }

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -33,7 +34,8 @@ export async function getPurchaseOrdersPageData(
 	pageSize: number = PURCHASE_ORDERS_PAGE_SIZE,
 	companyIdOverride?: string,
 ): Promise<PurchaseOrdersPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { purchaseOrders: [], totalCount: 0 };
@@ -59,3 +61,25 @@ export async function getPurchaseOrdersPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Fetch complete purchase order data including vendor, job, and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getPurchaseOrderComplete = cache(
+	async (purchaseOrderId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_purchase_order_complete", {
+			p_purchase_order_id: purchaseOrderId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching purchase order:", error);
+			return null;
+		}
+
+		return data?.[0]?.purchase_order_data || null;
+	},
+);

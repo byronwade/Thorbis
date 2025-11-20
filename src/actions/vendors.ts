@@ -79,7 +79,7 @@ export async function createVendor(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -219,7 +219,7 @@ export async function updateVendor(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -395,7 +395,7 @@ export async function deleteVendor(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -466,7 +466,7 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -524,7 +524,7 @@ export async function listVendors(options?: {
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -593,7 +593,7 @@ export async function searchVendors(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -651,7 +651,7 @@ export async function linkPurchaseOrderToVendor(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -719,4 +719,41 @@ export async function linkPurchaseOrderToVendor(
 		revalidatePath("/dashboard/work/purchase-orders");
 		revalidatePath(`/dashboard/work/purchase-orders/${purchaseOrderId}`);
 	});
+}
+
+/**
+ * Archive a vendor (soft delete)
+ */
+export async function archiveVendor(
+	vendorId: string,
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Database connection not available" };
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, error: "Unauthorized" };
+		}
+
+		const { error } = await supabase
+			.from("vendors")
+			.update({
+				deleted_at: new Date().toISOString(),
+			})
+			.eq("id", vendorId);
+
+		if (error) {
+			return { success: false, error: error.message };
+		}
+
+		revalidatePath("/dashboard/work/vendors");
+		return { success: true };
+	} catch (_error) {
+		return { success: false, error: "Failed to archive vendor" };
+	}
 }

@@ -67,10 +67,10 @@ export function ConversationHeader({
 	const initials = getInitials(thread.remoteName, thread.remotePhoneNumber);
 
 	return (
-		<div className="border-b bg-background px-4 py-3">
+		<div className="bg-background border-b px-4 py-3">
 			<div className="flex items-center justify-between gap-4">
 				{/* Customer info */}
-				<div className="flex items-center gap-3 min-w-0">
+				<div className="flex min-w-0 items-center gap-3">
 					<Avatar className="h-10 w-10 flex-shrink-0">
 						<AvatarImage src={undefined} />
 						<AvatarFallback className="bg-primary/10 text-primary font-medium">
@@ -80,7 +80,7 @@ export function ConversationHeader({
 
 					<div className="min-w-0">
 						<div className="flex items-center gap-2">
-							<h2 className="font-semibold text-base truncate">
+							<h2 className="truncate text-base font-semibold">
 								{thread.remoteName || thread.remotePhoneNumber}
 							</h2>
 
@@ -109,7 +109,7 @@ export function ConversationHeader({
 						</div>
 
 						{thread.remoteName && (
-							<p className="text-sm text-muted-foreground truncate">
+							<p className="text-muted-foreground truncate text-sm">
 								{thread.remotePhoneNumber}
 							</p>
 						)}
@@ -117,7 +117,7 @@ export function ConversationHeader({
 				</div>
 
 				{/* Actions */}
-				<div className="flex items-center gap-2 flex-shrink-0">
+				<div className="flex flex-shrink-0 items-center gap-2">
 					{/* Quick actions */}
 					<Button variant="ghost" size="sm" className="h-8 gap-1.5">
 						<Phone className="h-4 w-4" />
@@ -180,7 +180,7 @@ export function ConversationHeader({
 								Normal
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => onPriorityChange("low")}>
-								<Flag className="mr-2 h-4 w-4 text-muted-foreground" />
+								<Flag className="text-muted-foreground mr-2 h-4 w-4" />
 								Low
 							</DropdownMenuItem>
 

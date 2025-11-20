@@ -253,7 +253,7 @@ export async function updateTeamMemberRole(
 
 		// Get current role for audit log
 		const { data: currentMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("role")
 			.eq("id", validated.teamMemberId)
 			.eq("company_id", companyId)
@@ -265,7 +265,7 @@ export async function updateTeamMemberRole(
 
 		// Update role
 		const { data: updatedMember, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ role: validated.newRole })
 			.eq("id", validated.teamMemberId)
 			.eq("company_id", companyId)
@@ -345,7 +345,7 @@ export async function updateTeamMemberPermissions(
 
 		// Update permissions
 		const { data: updatedMember, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ permissions: validated.permissions })
 			.eq("id", validated.teamMemberId)
 			.eq("company_id", companyId)
@@ -381,7 +381,7 @@ export async function getTeamMembersWithRoles() {
 		}
 
 		const { data, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select(
 				`
         *,
@@ -566,7 +566,7 @@ export async function canDeleteTeamMember(teamMemberId: string) {
 
 		// Get team member details
 		const { data: teamMember, error } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("user_id, role")
 			.eq("id", teamMemberId)
 			.eq("company_id", companyId)

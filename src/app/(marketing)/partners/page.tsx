@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +17,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const partnersKeywords = generateSemanticKeywords("partners");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Partner Program",
@@ -25,6 +33,9 @@ export const metadata = generateSEOMetadata({
 		"thorbis partners",
 		"thorbis integrations",
 		"service software partner program",
+		"thorbis api partners",
+		"become a thorbis partner",
+		...partnersKeywords.slice(0, 5),
 	],
 });
 

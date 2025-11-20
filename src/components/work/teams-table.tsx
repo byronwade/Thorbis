@@ -229,7 +229,6 @@ export function TeamsTable({
 				<Link
 					className="flex items-center gap-3"
 					href={`/dashboard/work/team/${member.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<Avatar className="size-8">

@@ -28,7 +28,7 @@ export async function POST() {
 
 		// Get user's company (try any status first)
 		const { data: teamMembers } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, status, role")
 			.eq("user_id", user.id);
 

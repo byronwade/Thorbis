@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 type TransferCallModalProps = {
 	open: boolean;
@@ -104,8 +105,11 @@ export function TransferCallModal({
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
-					<div className="space-y-2">
-						<Label htmlFor="destination">Destination Phone Number</Label>
+					<StandardFormField
+						label="Destination Phone Number"
+						htmlFor="destination"
+						description="Enter number with country code (e.g., +1 for US)"
+					>
 						<div className="relative">
 							<Phone className="text-muted-foreground absolute top-3 left-3 size-4" />
 							<Input
@@ -119,10 +123,7 @@ export function TransferCallModal({
 								value={destinationNumber}
 							/>
 						</div>
-						<p className="text-muted-foreground text-xs">
-							Enter number with country code (e.g., +1 for US)
-						</p>
-					</div>
+					</StandardFormField>
 
 					{error && (
 						<div className="border-destructive bg-destructive/10 text-destructive rounded-lg border p-3 text-sm">

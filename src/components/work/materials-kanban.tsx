@@ -141,10 +141,7 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 				size="sm"
 				variant="ghost"
 			>
-				<Link
-					href={`/dashboard/work/materials/${material.id}`}
-					prefetch={false}
-				>
+				<Link href={`/dashboard/work/materials/${material.id}`}>
 					Manage inventory
 					<ArrowUpRight className="size-3.5" />
 				</Link>

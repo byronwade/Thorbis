@@ -95,7 +95,6 @@ export function JobsTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/${job.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{job.jobNumber ?? "—"}
@@ -110,7 +109,6 @@ export function JobsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/${job.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="truncate text-sm leading-tight font-medium hover:underline">

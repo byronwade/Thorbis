@@ -35,8 +35,8 @@ export default function VerificationCompleteEmail({
 
 			<Text style={paragraph}>
 				Excellent news! Your business messaging verification for{" "}
-				<strong>{companyName}</strong> has been approved. You can now send
-				SMS and MMS messages to your customers.
+				<strong>{companyName}</strong> has been approved. You can now send SMS
+				and MMS messages to your customers.
 			</Text>
 
 			{/* Success Card */}
@@ -109,8 +109,8 @@ export default function VerificationCompleteEmail({
 				<Text style={stepText}>
 					<strong>2. Configure Notifications</strong>
 					<br />
-					Enable automatic text notifications for job updates, invoice
-					payments, and more.
+					Enable automatic text notifications for job updates, invoice payments,
+					and more.
 				</Text>
 
 				<Text style={stepText}>

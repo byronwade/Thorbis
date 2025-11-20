@@ -51,6 +51,17 @@ export const SEO_LOCALES = {
 
 export const SEO_SOCIAL = {
 	twitterHandle: "@thorbis",
+	/**
+	 * Social media profile URLs for Organization schema (Knowledge Graph).
+	 * Used in structured data to help search engines understand brand presence.
+	 */
+	profiles: {
+		facebook: "https://facebook.com/thorbis",
+		linkedin: "https://linkedin.com/company/thorbis",
+		youtube: "https://youtube.com/@thorbis",
+		instagram: "https://instagram.com/thorbis",
+		github: "https://github.com/thorbis",
+	},
 } as const;
 
 export const SEO_KEYWORDS = [

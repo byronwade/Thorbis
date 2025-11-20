@@ -210,10 +210,10 @@ export function MessagesLayout({
 	// Mobile layout
 	if (isMobile) {
 		return (
-			<div className="flex flex-col h-full bg-background">
+			<div className="bg-background flex h-full flex-col">
 				{/* Mobile header */}
 				{mobileView !== "list" && (
-					<div className="border-b px-4 py-3 flex items-center gap-3">
+					<div className="flex items-center gap-3 border-b px-4 py-3">
 						<Button
 							variant="ghost"
 							size="sm"
@@ -275,9 +275,9 @@ export function MessagesLayout({
 
 	// Desktop layout (3-column)
 	return (
-		<div className="flex h-full bg-background">
+		<div className="bg-background flex h-full">
 			{/* Left sidebar - Thread list */}
-			<div className="w-[280px] border-r flex flex-col flex-shrink-0">
+			<div className="flex w-[280px] flex-shrink-0 flex-col border-r">
 				<ThreadHeader
 					activeView={activeView}
 					onViewChange={setActiveView}
@@ -293,7 +293,7 @@ export function MessagesLayout({
 			</div>
 
 			{/* Center - Conversation */}
-			<div className="flex-1 flex flex-col min-w-0">
+			<div className="flex min-w-0 flex-1 flex-col">
 				{selectedThread ? (
 					<>
 						<ConversationHeader
@@ -314,9 +314,9 @@ export function MessagesLayout({
 						/>
 					</>
 				) : (
-					<div className="flex-1 flex items-center justify-center text-center p-8">
+					<div className="flex flex-1 items-center justify-center p-8 text-center">
 						<div>
-							<h2 className="text-2xl font-semibold mb-2">
+							<h2 className="mb-2 text-2xl font-semibold">
 								Select a conversation
 							</h2>
 							<p className="text-muted-foreground">
@@ -329,8 +329,8 @@ export function MessagesLayout({
 
 			{/* Right sidebar - Customer panel (toggleable) */}
 			{isCustomerPanelOpen && selectedThread && (
-				<div className="w-[320px] border-l flex flex-col flex-shrink-0">
-					<div className="border-b px-4 py-3 flex items-center justify-between">
+				<div className="flex w-[320px] flex-shrink-0 flex-col border-l">
+					<div className="flex items-center justify-between border-b px-4 py-3">
 						<h3 className="font-semibold">Customer Info</h3>
 						<Button
 							variant="ghost"
@@ -345,27 +345,27 @@ export function MessagesLayout({
 					<div className="flex-1 overflow-y-auto p-4">
 						<div className="space-y-4">
 							<div>
-								<p className="text-sm font-medium mb-1">Phone</p>
-								<p className="text-sm text-muted-foreground">
+								<p className="mb-1 text-sm font-medium">Phone</p>
+								<p className="text-muted-foreground text-sm">
 									{selectedThread.remotePhoneNumber}
 								</p>
 							</div>
 							<div>
-								<p className="text-sm font-medium mb-1">Status</p>
-								<p className="text-sm text-muted-foreground capitalize">
+								<p className="mb-1 text-sm font-medium">Status</p>
+								<p className="text-muted-foreground text-sm capitalize">
 									{selectedThread.status}
 								</p>
 							</div>
 							<div>
-								<p className="text-sm font-medium mb-1">Priority</p>
-								<p className="text-sm text-muted-foreground capitalize">
+								<p className="mb-1 text-sm font-medium">Priority</p>
+								<p className="text-muted-foreground text-sm capitalize">
 									{selectedThread.priority}
 								</p>
 							</div>
 							{selectedThread.assignedToName && (
 								<div>
-									<p className="text-sm font-medium mb-1">Assigned to</p>
-									<p className="text-sm text-muted-foreground">
+									<p className="mb-1 text-sm font-medium">Assigned to</p>
+									<p className="text-muted-foreground text-sm">
 										{selectedThread.assignedToName}
 									</p>
 								</div>
@@ -377,7 +377,7 @@ export function MessagesLayout({
 
 			{/* Toggle panel button (when closed) */}
 			{!isCustomerPanelOpen && selectedThread && (
-				<div className="border-l w-12 flex items-center justify-center">
+				<div className="flex w-12 items-center justify-center border-l">
 					<Button
 						variant="ghost"
 						size="sm"

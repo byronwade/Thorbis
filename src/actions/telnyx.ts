@@ -73,6 +73,8 @@ const DEFAULT_MESSAGING_PROFILE_ID =
 	process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
 	"";
 
+const DEFAULT_PHONE_NUMBER_FEATURES: Json = ["voice", "sms", "mms"];
+
 function formatDisplayPhoneNumber(phoneNumber: string): string {
 	const digits = phoneNumber.replace(/\D/g, "");
 	if (digits.length === 11 && digits.startsWith("1")) {
@@ -219,6 +221,39 @@ async function getPhoneNumberId(
 		.maybeSingle();
 
 	return data?.id ?? null;
+}
+
+async function ensurePhoneNumberRecordExists(
+	supabase: TypedSupabaseClient,
+	companyId: string,
+	phoneNumber: string | null,
+): Promise<void> {
+	if (!phoneNumber) {
+		return;
+	}
+
+	const normalized = normalizePhoneNumber(phoneNumber);
+	const { data } = await supabase
+		.from("phone_numbers")
+		.select("id")
+		.eq("company_id", companyId)
+		.eq("phone_number", normalized)
+		.limit(1);
+
+	if (data && data.length > 0) {
+		return;
+	}
+
+	await supabase.from("phone_numbers").insert({
+		company_id: companyId,
+		phone_number: normalized,
+		formatted_number: formatDisplayPhoneNumber(normalized),
+		country_code: "US",
+		area_code: extractAreaCode(normalized),
+		number_type: "local",
+		status: "active",
+		features: DEFAULT_PHONE_NUMBER_FEATURES,
+	});
 }
 
 async function resolveOutboundPhoneNumber(
@@ -579,7 +614,10 @@ export async function makeCall(params: {
 	estimateId?: string;
 }) {
 	try {
+		console.log("📞 makeCall called with params:", params);
+
 		const callConfig = validateCallConfig();
+		console.log("🔍 Call config validation:", callConfig);
 		if (!callConfig.valid) {
 			return {
 				success: false,
@@ -597,50 +635,60 @@ export async function makeCall(params: {
 			params.companyId,
 		);
 
-	const connectionOverride =
-		companySettings?.call_control_application_id || TELNYX_CONFIG.connectionId;
-	const fromAddress = await resolveOutboundPhoneNumber(
-		supabase,
-		params.companyId,
-		params.from,
-		companySettings?.default_outbound_number || null,
-	);
+		await ensurePhoneNumberRecordExists(
+			supabase,
+			params.companyId,
+			companySettings?.default_outbound_number || null,
+		);
 
-	if (!connectionOverride) {
-		return {
-			success: false,
-			error: "No Telnyx connection configured for this company.",
-		};
-	}
+		const connectionOverride =
+			companySettings?.call_control_application_id ||
+			TELNYX_CONFIG.connectionId;
+		const fromAddress = await resolveOutboundPhoneNumber(
+			supabase,
+			params.companyId,
+			params.from,
+			companySettings?.default_outbound_number || null,
+		);
 
-	if (!fromAddress) {
-		return {
-			success: false,
-			error:
-				"Company does not have a default outbound phone number configured. Please provision numbers first.",
-		};
-	}
-
-		const connectionStatus = await verifyConnection(connectionOverride);
-		if (connectionStatus.needsFix) {
+		if (!connectionOverride) {
 			return {
 				success: false,
-				error: `Connection configuration issue: ${connectionStatus.issues.join(", ")}. Run fixConnection() to auto-fix.`,
+				error: "No Telnyx connection configured for this company.",
 			};
 		}
 
-	const toAddress = normalizePhoneNumber(params.to);
-
-		const voiceCapability = await verifyVoiceCapability(fromAddress);
-		if (!voiceCapability.hasVoice) {
+		if (!fromAddress) {
 			return {
 				success: false,
 				error:
-					voiceCapability.error || "Phone number does not support voice calls",
+					"Company does not have a default outbound phone number configured. Please provision numbers first.",
 			};
 		}
 
+		// TEMP: Skip connection verification - Level 2 required for API access
+		// const connectionStatus = await verifyConnection(connectionOverride);
+		// if (connectionStatus.needsFix) {
+		// 	return {
+		// 		success: false,
+		// 		error: `Connection configuration issue: ${connectionStatus.issues.join(", ")}. Run fixConnection() to auto-fix.`,
+		// 	};
+		// }
+
+		const toAddress = normalizePhoneNumber(params.to);
+
+		// TEMP: Skip voice capability check - Level 2 required for API access
+		// const voiceCapability = await verifyVoiceCapability(fromAddress);
+		// if (!voiceCapability.hasVoice) {
+		// 	return {
+		// 		success: false,
+		// 		error:
+		// 			voiceCapability.error || "Phone number does not support voice calls",
+		// 	};
+		// }
+
 		const telnyxWebhookUrl = await getTelnyxWebhookUrl(params.companyId);
+		console.log("🔗 Webhook URL:", telnyxWebhookUrl);
 		if (!telnyxWebhookUrl) {
 			return {
 				success: false,
@@ -649,6 +697,13 @@ export async function makeCall(params: {
 			};
 		}
 
+		console.log("📤 Initiating call:", {
+			to: toAddress,
+			from: fromAddress,
+			connectionId: connectionOverride,
+			webhookUrl: telnyxWebhookUrl,
+		});
+
 		const result = await initiateCall({
 			to: toAddress,
 			from: fromAddress,
@@ -656,6 +711,8 @@ export async function makeCall(params: {
 			webhookUrl: telnyxWebhookUrl,
 			answeringMachineDetection: "premium",
 		});
+
+		console.log("📥 Telnyx API response:", result);
 
 		if (!result.success) {
 			return result;
@@ -694,12 +751,22 @@ export async function makeCall(params: {
 			throw error;
 		}
 
+		console.log("✅ Call created successfully:", {
+			callControlId: result.callControlId,
+			communicationId: data.id,
+		});
+
 		return {
 			success: true,
 			callControlId: result.callControlId,
 			data,
 		};
 	} catch (error) {
+		console.error("❌ makeCall error:", error);
+		console.error("Error details:", {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		});
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to make call",
@@ -914,7 +981,6 @@ export async function sendTextMessage(params: {
 	companyId: string;
 	customerId?: string;
 	jobId?: string;
-	propertyId?: string;
 	invoiceId?: string;
 	estimateId?: string;
 }) {
@@ -948,6 +1014,12 @@ export async function sendTextMessage(params: {
 			messagingProfileId: companySettings.messaging_profile_id,
 			defaultNumber: companySettings.default_outbound_number,
 		});
+
+		await ensurePhoneNumberRecordExists(
+			supabase,
+			params.companyId,
+			companySettings.default_outbound_number,
+		);
 
 		const smsConfig = await validateSmsConfig();
 		if (!smsConfig.valid && !companySettings?.messaging_profile_id) {
@@ -991,21 +1063,21 @@ export async function sendTextMessage(params: {
 			console.log("✅ Messaging profile verified");
 		}
 
-	const fromAddress = await resolveOutboundPhoneNumber(
-		supabase,
-		params.companyId,
-		params.from,
-		companySettings.default_outbound_number,
-	);
-	if (!fromAddress) {
-		console.error("❌ No from number available");
-		return {
-			success: false,
-			error:
-				"Company does not have a default outbound phone number configured. Please provision numbers first.",
-		};
-	}
-	const toAddress = normalizePhoneNumber(params.to);
+		const fromAddress = await resolveOutboundPhoneNumber(
+			supabase,
+			params.companyId,
+			params.from,
+			companySettings.default_outbound_number,
+		);
+		if (!fromAddress) {
+			console.error("❌ No from number available");
+			return {
+				success: false,
+				error:
+					"Company does not have a default outbound phone number configured. Please provision numbers first.",
+			};
+		}
+		const toAddress = normalizePhoneNumber(params.to);
 		console.log("✅ Phone numbers normalized:", {
 			from: fromAddress,
 			to: toAddress,
@@ -1048,17 +1120,24 @@ export async function sendTextMessage(params: {
 			console.error("❌ Telnyx API failed:", result.error);
 
 			// Check if error is 10DLC registration required
-			if (result.error && (
-				result.error.includes("10DLC") ||
-				result.error.includes("Not 10DLC registered") ||
-				result.error.includes("A2P")
-			)) {
-				console.log("🔄 Detected 10DLC registration required, attempting auto-registration...");
+			if (
+				result.error &&
+				(result.error.includes("10DLC") ||
+					result.error.includes("Not 10DLC registered") ||
+					result.error.includes("A2P"))
+			) {
+				console.log(
+					"🔄 Detected 10DLC registration required, attempting auto-registration...",
+				);
 
 				// Import 10DLC registration function
-				const { registerCompanyFor10DLC } = await import("@/actions/ten-dlc-registration");
+				const { registerCompanyFor10DLC } = await import(
+					"@/actions/ten-dlc-registration"
+				);
 
-				const registrationResult = await registerCompanyFor10DLC(params.companyId);
+				const registrationResult = await registerCompanyFor10DLC(
+					params.companyId,
+				);
 
 				if (registrationResult.success) {
 					console.log("✅ 10DLC registration successful, retrying SMS send...");
@@ -1096,6 +1175,7 @@ export async function sendTextMessage(params: {
 		console.log("✅ Telnyx API success:", result.messageId);
 
 		// Create communication record
+		console.log("💾 Creating communication record in database...");
 		const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
 		const { data, error } = await supabase
 			.from("communications")
@@ -1185,6 +1265,12 @@ export async function sendMMSMessage(params: {
 			};
 		}
 
+		await ensurePhoneNumberRecordExists(
+			supabase,
+			params.companyId,
+			companySettings.default_outbound_number,
+		);
+
 		const smsConfig = await validateSmsConfig();
 		if (!smsConfig.valid && !companySettings.messaging_profile_id) {
 			let errorMessage = smsConfig.error || "SMS configuration is invalid";
@@ -1207,19 +1293,19 @@ export async function sendMMSMessage(params: {
 			};
 		}
 
-	const fromAddress = await resolveOutboundPhoneNumber(
-		supabase,
-		params.companyId,
-		params.from,
-		companySettings.default_outbound_number,
-	);
-	if (!fromAddress) {
-		return {
-			success: false,
-			error:
-				"Company does not have a default outbound phone number configured.",
-		};
-	}
+		const fromAddress = await resolveOutboundPhoneNumber(
+			supabase,
+			params.companyId,
+			params.from,
+			companySettings.default_outbound_number,
+		);
+		if (!fromAddress) {
+			return {
+				success: false,
+				error:
+					"Company does not have a default outbound phone number configured.",
+			};
+		}
 		const toAddress = normalizePhoneNumber(params.to);
 
 		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);

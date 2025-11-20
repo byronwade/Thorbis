@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 import { ResourceCard } from "@/components/content/resource-card";
@@ -8,6 +11,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const webinarKeywords = generateSemanticKeywords("webinars");
 
 export const metadata = generateSEOMetadata({
 	title: "Webinars & Events",
@@ -19,6 +27,10 @@ export const metadata = generateSEOMetadata({
 		"field service webinar",
 		"service business events",
 		"thorbis live training",
+		"contractor webinars",
+		"field service events",
+		"online training",
+		...webinarKeywords.slice(0, 5),
 	],
 });
 
@@ -91,7 +103,7 @@ export default async function WebinarsPage({
 					<p className="text-muted-foreground text-lg">
 						Learn proven playbooks from Thorbis strategists and operators. Save
 						your seat for upcoming sessions or catch up with the on-demand
-						library. All sessions are included with the $100/month base
+						library. All sessions are included with the $200/month base
 						subscription and pay-as-you-go usage—no lock-in required.
 					</p>
 				</header>

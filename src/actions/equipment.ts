@@ -122,7 +122,7 @@ export async function createEquipment(formData: FormData) {
 	}
 
 	const { data: userData } = await supabase
-		.from("users")
+		.from("profiles")
 		.select("company_id")
 		.eq("id", user.id)
 		.single();
@@ -212,7 +212,7 @@ export async function addEquipmentToJob(formData: FormData) {
 	}
 
 	const { data: userData } = await supabase
-		.from("users")
+		.from("profiles")
 		.select("company_id")
 		.eq("id", user.id)
 		.single();
@@ -378,7 +378,7 @@ export async function addMaterialToJob(formData: FormData) {
 	}
 
 	const { data: userData } = await supabase
-		.from("users")
+		.from("profiles")
 		.select("company_id")
 		.eq("id", user.id)
 		.single();

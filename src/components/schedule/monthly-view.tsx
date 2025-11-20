@@ -67,6 +67,7 @@ import {
 	Popover as PopoverRoot,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	Tooltip,
 	TooltipContent,
@@ -463,25 +464,23 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 					</div>
 
 					<div className="grid gap-3">
-						<div className="grid gap-2">
-							<Label htmlFor={startInputId}>Start Time</Label>
+						<StandardFormField label="Start Time" htmlFor={startInputId}>
 							<Input
 								id={startInputId}
 								onChange={(e) => setEditStartTime(e.target.value)}
 								type="time"
 								value={editStartTime}
 							/>
-						</div>
+						</StandardFormField>
 
-						<div className="grid gap-2">
-							<Label htmlFor={endInputId}>End Time</Label>
+						<StandardFormField label="End Time" htmlFor={endInputId}>
 							<Input
 								id={endInputId}
 								onChange={(e) => setEditEndTime(e.target.value)}
 								type="time"
 								value={editEndTime}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 
 					<div className="flex gap-2">

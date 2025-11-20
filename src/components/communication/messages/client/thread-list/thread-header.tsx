@@ -72,23 +72,23 @@ export function ThreadHeader({
 	};
 
 	return (
-		<div className="border-b bg-background">
+		<div className="bg-background border-b">
 			{/* Search bar */}
 			<div className="p-3 pb-2">
 				<div className="relative">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+					<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 					<Input
 						placeholder="Search conversations..."
 						value={filters.search}
 						onChange={(e) => handleSearchChange(e.target.value)}
-						className="pl-9 h-9"
+						className="h-9 pl-9"
 						aria-label="Search conversations"
 					/>
 				</div>
 			</div>
 
 			{/* View tabs */}
-			<div className="px-2 pb-2 flex items-center gap-1 overflow-x-auto">
+			<div className="flex items-center gap-1 overflow-x-auto px-2 pb-2">
 				{viewConfig.map(({ value, label, icon: Icon }) => {
 					const isActive = activeView === value;
 
@@ -120,7 +120,7 @@ export function ThreadHeader({
 				{/* Settings */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="sm" className="h-8 w-8 p-0 ml-2">
+						<Button variant="ghost" size="sm" className="ml-2 h-8 w-8 p-0">
 							<Settings2 className="h-3.5 w-3.5" />
 							<span className="sr-only">Settings</span>
 						</Button>
@@ -157,7 +157,7 @@ export function ThreadHeader({
 						<DropdownMenuSeparator />
 
 						{/* Priority filters */}
-						<DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+						<DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
 							Priority
 						</DropdownMenuLabel>
 						<DropdownMenuCheckboxItem

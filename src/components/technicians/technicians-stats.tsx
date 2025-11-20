@@ -14,7 +14,7 @@ export async function TechniciansStats() {
 
 	// Future: Fetch real technician statistics
 	// const { data: stats } = await supabase
-	//   .from("team_members")
+	//   .from("company_memberships")
 	//   .select("*")
 	//   .eq("company_id", companyId)
 	//   .eq("role", "technician");

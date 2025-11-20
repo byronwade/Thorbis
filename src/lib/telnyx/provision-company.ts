@@ -2,10 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 import { telnyxClient } from "./client";
 import {
-	purchaseNumber,
-	searchAvailableNumbers,
 	type NumberFeature,
 	type NumberType,
+	purchaseNumber,
+	searchAvailableNumbers,
 } from "./numbers";
 
 export type CompanyTelnyxSettingsRow = {

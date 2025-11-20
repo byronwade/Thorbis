@@ -217,12 +217,22 @@ export type ToolbarConfig = {
 	breadcrumbs?: ReactNode;
 	/** Back button (React component) - shown before title, no breadcrumb trail */
 	back?: ReactNode;
-	/** Whether to show search bar */
+	/** Whether to show search bar (deprecated - use search instead) */
 	showSearch?: boolean;
-	/** Statistics to display inline in toolbar */
-	stats?: StatCard[];
+	/** Search component (e.g., SearchInput) - renders in center, fills available space */
+	search?: ReactNode;
+	/** Pagination component (e.g., PaginationControls) - renders right of search */
+	pagination?: ReactNode;
+	/** Statistics to display inline in toolbar - can be StatCard[] array or ReactNode component */
+	stats?: StatCard[] | ReactNode;
+	/** Stats display mode: "inline" (default), "button" (compact popover), or "hidden" */
+	statsMode?: "inline" | "button" | "hidden";
 	/** How actions block should align when rendered */
 	actionsJustify?: "flex-end" | "space-between";
+	/** Whether to show inline stats pipeline below toolbar - deprecated, use statsMode instead */
+	showInlineStats?: boolean;
+	/** Inline stats component to render below toolbar (e.g., StatusPipeline) */
+	inlineStats?: ReactNode;
 };
 
 /**

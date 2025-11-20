@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 /**
  * Knowledge Base Category Page - Server Component
  *
@@ -18,6 +21,8 @@ import {
 import { generateCategoryMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
 import { createBreadcrumbSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
 
 type CategoryPageProps = {
 	params: Promise<{ category: string }>;

@@ -162,7 +162,7 @@ export async function ensureMessagingBranding(
 	}
 
 	const { data: ownerContact } = await supabase
-		.from("users")
+		.from("profiles")
 		.select("full_name, email, phone")
 		.eq("id", company.owner_id)
 		.maybeSingle<OwnerContactRow>();

@@ -52,7 +52,7 @@ export async function POST() {
 
 		// Create team member
 		const { data: teamMember, error: teamMemberError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.insert({
 				company_id: company.id,
 				user_id: userId,

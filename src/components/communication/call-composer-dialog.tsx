@@ -24,6 +24,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { useToast } from "@/hooks/use-toast";
 
 type CallComposerDialogProps = {
@@ -60,16 +61,32 @@ export function CallComposerDialog({
 	const [fromNumber, setFromNumber] = useState(companyPhones[0]?.number || "");
 	const [isPending, startTransition] = useTransition();
 
+	// Debug logging
+	console.log("📞 CallComposerDialog render:", {
+		companyPhones,
+		fromNumber,
+		toNumber,
+		companyPhonesCount: companyPhones.length,
+	});
+
 	useEffect(() => {
 		if (contactNumber) {
 			setToNumber(contactNumber);
 		}
 	}, [contactNumber]);
 
-	const canCall = useMemo(
-		() => Boolean(toNumber.trim() && fromNumber && companyPhones.length > 0),
-		[toNumber, fromNumber, companyPhones],
-	);
+	const canCall = useMemo(() => {
+		const result = Boolean(
+			toNumber.trim() && fromNumber && companyPhones.length > 0,
+		);
+		console.log("🔍 canCall check:", {
+			toNumber: toNumber.trim(),
+			fromNumber,
+			companyPhonesLength: companyPhones.length,
+			canCall: result,
+		});
+		return result;
+	}, [toNumber, fromNumber, companyPhones]);
 
 	const handleStartCall = () => {
 		if (!canCall || isPending) {
@@ -133,23 +150,22 @@ export function CallComposerDialog({
 				</DialogHeader>
 
 				<div className="space-y-4 py-2">
-					<div className="space-y-2">
-						<Label>To</Label>
+					<StandardFormField label="To" htmlFor="call-to">
 						<Input
+							id="call-to"
 							onChange={(e) => setToNumber(e.target.value)}
 							placeholder="+1 (555) 123-4567"
 							value={toNumber}
 						/>
-					</div>
+					</StandardFormField>
 
-					<div className="space-y-2">
-						<Label>From</Label>
+					<StandardFormField label="From" htmlFor="call-from">
 						<Select
 							disabled={companyPhones.length === 0}
 							onValueChange={setFromNumber}
 							value={fromNumber}
 						>
-							<SelectTrigger>
+							<SelectTrigger id="call-from">
 								<SelectValue placeholder="Select a company line" />
 							</SelectTrigger>
 							<SelectContent>
@@ -165,7 +181,7 @@ export function CallComposerDialog({
 								Add a company phone number first.
 							</p>
 						)}
-					</div>
+					</StandardFormField>
 				</div>
 
 				<div className="flex justify-end gap-2 pt-2">

@@ -34,6 +34,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -199,9 +200,11 @@ export default function PhoneSettingsClient({
 											Determines how Thorbis assigns inbound calls.
 										</p>
 									</div>
-									<div>
-										<Label className="flex items-center gap-2 text-sm font-medium">
-											Fallback number
+									<StandardFormField
+										label="Fallback number"
+										htmlFor="phone-fallback"
+									>
+										<div className="flex items-center gap-2 mb-2">
 											<Tooltip>
 												<TooltipTrigger asChild>
 													<HelpCircle className="text-muted-foreground size-3" />
@@ -210,9 +213,12 @@ export default function PhoneSettingsClient({
 													Phone number used if no teammates are available.
 												</TooltipContent>
 											</Tooltip>
-										</Label>
+											<span className="text-sm text-muted-foreground">
+												Phone number used if no teammates are available
+											</span>
+										</div>
 										<Input
-											className="mt-2"
+											id="phone-fallback"
 											onChange={(event) =>
 												updateSetting("fallbackNumber", event.target.value)
 											}
@@ -220,10 +226,7 @@ export default function PhoneSettingsClient({
 											type="tel"
 											value={settings.fallbackNumber}
 										/>
-										<p className="text-muted-foreground mt-1 text-xs">
-											Phone number used if no teammates are available.
-										</p>
-									</div>
+									</StandardFormField>
 								</div>
 
 								<Separator />
@@ -278,12 +281,12 @@ export default function PhoneSettingsClient({
 									<>
 										<Separator />
 										<div className="grid gap-4 md:grid-cols-2">
-											<div>
-												<Label className="text-sm font-medium">
-													Greeting URL
-												</Label>
+											<StandardFormField
+												label="Greeting URL"
+												htmlFor="phone-greeting-url"
+											>
 												<Input
-													className="mt-2"
+													id="phone-greeting-url"
 													onChange={(event) =>
 														updateSetting(
 															"voicemailGreetingUrl",
@@ -293,10 +296,10 @@ export default function PhoneSettingsClient({
 													placeholder="https://cdn.yourcompany.com/greetings/vm.mp3"
 													value={settings.voicemailGreetingUrl}
 												/>
-												<p className="text-muted-foreground mt-1 text-xs">
+												<p className="text-muted-foreground text-xs">
 													Provide an MP3/OGG file for your greeting.
 												</p>
-											</div>
+											</StandardFormField>
 											<div>
 												<p className="text-sm font-medium">
 													Email notifications for new voicemail
@@ -374,12 +377,13 @@ export default function PhoneSettingsClient({
 								{settings.recordingEnabled && (
 									<>
 										<Separator />
-										<div>
-											<Label className="text-sm font-medium">
-												Announcement message
-											</Label>
+										<StandardFormField
+											label="Announcement message"
+											htmlFor="phone-recording-announcement"
+										>
 											<Textarea
-												className="mt-2 min-h-[80px] resize-none"
+												id="phone-recording-announcement"
+												className="min-h-[80px] resize-none"
 												onChange={(event) =>
 													updateSetting(
 														"recordingAnnouncement",
@@ -388,7 +392,7 @@ export default function PhoneSettingsClient({
 												}
 												value={settings.recordingAnnouncement}
 											/>
-										</div>
+										</StandardFormField>
 
 										<div className="flex items-center justify-between">
 											<div>
@@ -444,22 +448,23 @@ export default function PhoneSettingsClient({
 								{settings.ivrEnabled && (
 									<>
 										<Separator />
-										<div>
-											<Label className="text-sm font-medium">
-												IVR JSON definition
-											</Label>
+										<StandardFormField
+											label="IVR JSON definition"
+											htmlFor="phone-ivr-menu"
+										>
 											<Textarea
-												className="mt-2 min-h-[160px] font-mono text-sm"
+												id="phone-ivr-menu"
+												className="min-h-[160px] font-mono text-sm"
 												onChange={(event) =>
 													updateSetting("ivrMenu", event.target.value)
 												}
 												value={settings.ivrMenu}
 											/>
-											<p className="text-muted-foreground mt-1 text-xs">
-												Provide call flow definition (we’ll validate JSON on
+											<p className="text-muted-foreground text-xs">
+												Provide call flow definition (we'll validate JSON on
 												save).
 											</p>
-										</div>
+										</StandardFormField>
 									</>
 								)}
 							</CardContent>

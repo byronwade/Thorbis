@@ -377,7 +377,7 @@ const loadActiveTeamMember = async (
 
 	const columns = includeRole ? "company_id, role" : "company_id";
 	const { data } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select(columns)
 		.eq("user_id", userId)
 		.eq("company_id", activeCompanyId)

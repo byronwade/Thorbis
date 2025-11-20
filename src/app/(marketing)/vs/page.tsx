@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +18,12 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import { createItemListSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const comparisonKeywords = generateSemanticKeywords("alternatives");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis vs Legacy Platforms",
@@ -27,11 +36,26 @@ export const metadata = generateSEOMetadata({
 		"housecall pro alternative",
 		"jobber alternative",
 		"fieldedge alternative",
+		"field service management comparison",
+		"best servicetitan alternative",
+		...comparisonKeywords.slice(0, 5),
 	],
 });
 
 export default function CompetitorOverviewPage() {
 	const competitors = getAllCompetitors();
+
+	// ItemList Schema - All competitor comparisons
+	const competitorsListSchema = createItemListSchema({
+		name: "Thorbis Platform Comparisons",
+		description:
+			"Detailed comparisons between Thorbis and popular field service management platforms",
+		items: competitors.map((competitor) => ({
+			name: `Thorbis vs ${competitor.competitorName}`,
+			url: `${siteUrl}/vs/${competitor.slug}`,
+			description: competitor.summary,
+		})),
+	});
 
 	return (
 		<>
@@ -47,6 +71,16 @@ export default function CompetitorOverviewPage() {
 				id="competitor-breadcrumb-ld"
 				type="application/ld+json"
 			/>
+
+			{/* Competitors List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(competitorsListSchema),
+				}}
+				id="competitors-list-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto mb-14 max-w-3xl text-center">
 					<span className="border-border text-primary mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
@@ -59,7 +93,7 @@ export default function CompetitorOverviewPage() {
 						Thorbis delivers AI-powered automation, transparent pricing, and
 						rapid innovation. Explore detailed head-to-head comparisons to
 						decide if now is the right time to upgrade. Switching means a flat
-						$100/month base subscription with pay-as-you-go usage—no per-user
+						$200/month base subscription with pay-as-you-go usage—no per-user
 						fees and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">

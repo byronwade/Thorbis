@@ -1,18 +1,18 @@
 /**
- * Appointments Page - PPR Enabled
+ * Appointments Page - PPR Enabled with Inline Stats
  *
  * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
- * - Stats stream in first (100-200ms)
- * - Table/Kanban streams in second (200-500ms)
+ * - Stats stream in toolbar (100-200ms)
+ * - Table/Kanban streams in main content (200-500ms)
  *
  * Performance: 10-20x faster than traditional SSR
+ * Clean design: Stats integrated directly into toolbar
  */
 
 import { Suspense } from "react";
 import { AppointmentsData } from "@/components/work/appointments/appointments-data";
 import { AppointmentsSkeleton } from "@/components/work/appointments/appointments-skeleton";
-import { AppointmentsStats } from "@/components/work/appointments/appointments-stats";
 
 export default async function AppointmentsPage({
 	searchParams,
@@ -22,14 +22,9 @@ export default async function AppointmentsPage({
 	const params = await searchParams;
 	return (
 		<div className="flex h-full flex-col">
-			{/* Stats - Streams in first */}
-			<Suspense
-				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-			>
-				<AppointmentsStats />
-			</Suspense>
+			{/* Stats now shown in toolbar - see layout.tsx */}
 
-			{/* Table/Kanban - Streams in second */}
+			{/* Table/Kanban - Main content */}
 			<div className="flex-1 overflow-hidden">
 				<Suspense fallback={<AppointmentsSkeleton />}>
 					<AppointmentsData searchParams={params} />

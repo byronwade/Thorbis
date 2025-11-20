@@ -35,6 +35,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import type { ActionResult } from "@/lib/errors/with-error-handling";
 
 export type TagWithColor = {
@@ -273,8 +274,7 @@ export function EntityTags({
 								</div>
 
 								{/* Tag Label Input */}
-								<div className="space-y-2">
-									<Label htmlFor="tag-label">Tag Name</Label>
+								<StandardFormField label="Tag Name" htmlFor="tag-label">
 									<Input
 										id="tag-label"
 										onChange={(e) => setTagLabel(e.target.value)}
@@ -286,11 +286,10 @@ export function EntityTags({
 										placeholder="e.g., High Priority, VIP, etc."
 										value={tagLabel}
 									/>
-								</div>
+								</StandardFormField>
 
 								{/* Color Selection */}
-								<div className="space-y-2">
-									<Label htmlFor="tag-color">Color</Label>
+								<StandardFormField label="Color" htmlFor="tag-color">
 									<Select onValueChange={setTagColor} value={tagColor}>
 										<SelectTrigger id="tag-color">
 											<SelectValue>
@@ -317,7 +316,7 @@ export function EntityTags({
 											))}
 										</SelectContent>
 									</Select>
-								</div>
+								</StandardFormField>
 
 								{/* Preview */}
 								{tagLabel && (

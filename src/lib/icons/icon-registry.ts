@@ -194,3 +194,48 @@ export const GraduationCap = dynamic(() =>
 );
 export const Bug = dynamic(() => import("lucide-react").then((mod) => mod.Bug));
 export const X = dynamic(() => import("lucide-react").then((mod) => mod.X));
+export const Bell = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Bell),
+);
+export const Sliders = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Sliders),
+);
+export const UserCog = dynamic(() =>
+	import("lucide-react").then((mod) => mod.UserCog),
+);
+export const Repeat = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Repeat),
+);
+export const Wallet = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Wallet),
+);
+export const Workflow = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Workflow),
+);
+export const Database = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Database),
+);
+export const Lock = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Lock),
+);
+export const KeyRound = dynamic(() =>
+	import("lucide-react").then((mod) => mod.KeyRound),
+);
+export const Heart = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Heart),
+);
+export const Gift = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Gift),
+);
+export const Folder = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Folder),
+);
+export const Store = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Store),
+);
+export const PiggyBank = dynamic(() =>
+	import("lucide-react").then((mod) => mod.PiggyBank),
+);
+export const Landmark = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Landmark),
+);

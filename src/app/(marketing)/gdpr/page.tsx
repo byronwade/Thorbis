@@ -1,9 +1,17 @@
+"use cache";
+export const cacheLife = "static";
+
 import Script from "next/script";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const gdprKeywords = generateSemanticKeywords("gdpr");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis GDPR Commitment",
@@ -11,7 +19,14 @@ export const metadata = generateSEOMetadata({
 		"Review Thorbis GDPR compliance, data processing agreements, and how we support EU data subjects.",
 	path: "/gdpr",
 	section: "Legal",
-	keywords: ["thorbis gdpr", "thorbis dpa", "thorbis data protection"],
+	keywords: [
+		"thorbis gdpr",
+		"thorbis dpa",
+		"thorbis data protection",
+		"eu compliance",
+		"data processing agreement",
+		...gdprKeywords.slice(0, 5),
+	],
 });
 
 const SECTIONS = [

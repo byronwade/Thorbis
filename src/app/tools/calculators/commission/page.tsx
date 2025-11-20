@@ -27,6 +27,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 export default function CommissionCalculator() {
 	const [calculationType, setCalculationType] = useState<string>("flat");
@@ -173,17 +177,18 @@ export default function CommissionCalculator() {
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="sales">Total Sales Amount ($)</Label>
+								<StandardFormField
+									label="Total Sales Amount ($)"
+									htmlFor="sales"
+								>
 									<Input
 										id="sales"
 										onChange={(e) => setSalesAmount(e.target.value)}
 										type="number"
 										value={salesAmount}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="rate">Commission Rate (%)</Label>
+								</StandardFormField>
+								<StandardFormField label="Commission Rate (%)" htmlFor="rate">
 									<Input
 										id="rate"
 										onChange={(e) => setFlatRate(e.target.value)}
@@ -193,7 +198,7 @@ export default function CommissionCalculator() {
 									<p className="text-muted-foreground text-xs">
 										Typical range: 5-15% for sales, 2-5% for technicians
 									</p>
-								</div>
+								</StandardFormField>
 							</CardContent>
 						</Card>
 					)}
@@ -210,75 +215,83 @@ export default function CommissionCalculator() {
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="sales-tiered">Total Sales Amount ($)</Label>
+								<StandardFormField
+									label="Total Sales Amount ($)"
+									htmlFor="sales-tiered"
+								>
 									<Input
 										id="sales-tiered"
 										onChange={(e) => setSalesAmount(e.target.value)}
 										type="number"
 										value={salesAmount}
 									/>
-								</div>
+								</StandardFormField>
 
 								<div className="space-y-3 rounded-lg border p-3">
 									<h4 className="text-sm font-semibold">Tier 1</h4>
-									<div className="grid grid-cols-2 gap-2">
-										<div className="space-y-1">
-											<Label className="text-xs">Up to ($)</Label>
+									<StandardFormRow cols={2}>
+										<StandardFormField
+											label="Up to ($)"
+											htmlFor="tier1-threshold"
+										>
 											<Input
+												id="tier1-threshold"
 												onChange={(e) => setTier1Threshold(e.target.value)}
 												type="number"
 												value={tier1Threshold}
 											/>
-										</div>
-										<div className="space-y-1">
-											<Label className="text-xs">Rate (%)</Label>
+										</StandardFormField>
+										<StandardFormField label="Rate (%)" htmlFor="tier1-rate">
 											<Input
+												id="tier1-rate"
 												onChange={(e) => setTier1Rate(e.target.value)}
 												type="number"
 												value={tier1Rate}
 											/>
-										</div>
-									</div>
+										</StandardFormField>
+									</StandardFormRow>
 								</div>
 
 								<div className="space-y-3 rounded-lg border p-3">
 									<h4 className="text-sm font-semibold">Tier 2</h4>
-									<div className="grid grid-cols-2 gap-2">
-										<div className="space-y-1">
-											<Label className="text-xs">Up to ($)</Label>
+									<StandardFormRow cols={2}>
+										<StandardFormField
+											label="Up to ($)"
+											htmlFor="tier2-threshold"
+										>
 											<Input
+												id="tier2-threshold"
 												onChange={(e) => setTier2Threshold(e.target.value)}
 												type="number"
 												value={tier2Threshold}
 											/>
-										</div>
-										<div className="space-y-1">
-											<Label className="text-xs">Rate (%)</Label>
+										</StandardFormField>
+										<StandardFormField label="Rate (%)" htmlFor="tier2-rate">
 											<Input
+												id="tier2-rate"
 												onChange={(e) => setTier2Rate(e.target.value)}
 												type="number"
 												value={tier2Rate}
 											/>
-										</div>
-									</div>
+										</StandardFormField>
+									</StandardFormRow>
 								</div>
 
 								<div className="space-y-3 rounded-lg border p-3">
 									<h4 className="text-sm font-semibold">Tier 3</h4>
-									<div className="grid grid-cols-2 gap-2">
-										<div className="space-y-1">
-											<Label className="text-xs">Over ${tier2Threshold}</Label>
+									<StandardFormRow cols={2}>
+										<div className="text-muted-foreground text-sm">
+											Over ${tier2Threshold}
 										</div>
-										<div className="space-y-1">
-											<Label className="text-xs">Rate (%)</Label>
+										<StandardFormField label="Rate (%)" htmlFor="tier3-rate">
 											<Input
+												id="tier3-rate"
 												onChange={(e) => setTier3Rate(e.target.value)}
 												type="number"
 												value={tier3Rate}
 											/>
-										</div>
-									</div>
+										</StandardFormField>
+									</StandardFormRow>
 								</div>
 							</CardContent>
 						</Card>
@@ -296,8 +309,7 @@ export default function CommissionCalculator() {
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="base">Base Hourly Pay ($)</Label>
+								<StandardFormField label="Base Hourly Pay ($)" htmlFor="base">
 									<Input
 										id="base"
 										onChange={(e) => setTechBasePay(e.target.value)}
@@ -307,27 +319,30 @@ export default function CommissionCalculator() {
 									<p className="text-muted-foreground text-xs">
 										Assuming 40 hours/week, 4 weeks/month
 									</p>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="jobs">Jobs Completed (Monthly)</Label>
+								</StandardFormField>
+								<StandardFormField
+									label="Jobs Completed (Monthly)"
+									htmlFor="jobs"
+								>
 									<Input
 										id="jobs"
 										onChange={(e) => setJobsCompleted(e.target.value)}
 										type="number"
 										value={jobsCompleted}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="ticket">Average Ticket Size ($)</Label>
+								</StandardFormField>
+								<StandardFormField
+									label="Average Ticket Size ($)"
+									htmlFor="ticket"
+								>
 									<Input
 										id="ticket"
 										onChange={(e) => setAvgTicket(e.target.value)}
 										type="number"
 										value={avgTicket}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="bonus">Bonus per Job ($)</Label>
+								</StandardFormField>
+								<StandardFormField label="Bonus per Job ($)" htmlFor="bonus">
 									<Input
 										id="bonus"
 										onChange={(e) => setBonusPerJob(e.target.value)}
@@ -337,7 +352,7 @@ export default function CommissionCalculator() {
 									<p className="text-muted-foreground text-xs">
 										Flat bonus paid for each completed job
 									</p>
-								</div>
+								</StandardFormField>
 							</CardContent>
 						</Card>
 					)}

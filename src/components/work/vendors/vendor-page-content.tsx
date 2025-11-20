@@ -52,6 +52,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import { Textarea } from "@/components/ui/textarea";
 import type { UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -281,19 +285,18 @@ export function VendorPageContent({
 			) : undefined,
 			content: (
 				<div className="space-y-6 p-6">
-					<div className="grid gap-6 md:grid-cols-2">
+					<StandardFormRow cols={2}>
 						{/* Basic Info */}
 						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="name">Vendor Name</Label>
+							<StandardFormField label="Vendor Name" htmlFor="name" required>
 								<Input
 									id="name"
 									onChange={(e) => handleFieldChange("name", e.target.value)}
 									value={vendor.name || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="display_name">Display Name</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Display Name" htmlFor="display_name">
 								<Input
 									id="display_name"
 									onChange={(e) =>
@@ -301,9 +304,9 @@ export function VendorPageContent({
 									}
 									value={vendor.display_name || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="category">Category</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Category" htmlFor="category">
 								<Select
 									onValueChange={(value) =>
 										handleFieldChange("category", value)
@@ -323,9 +326,9 @@ export function VendorPageContent({
 										<SelectItem value="other">Other</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="status">Status</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Status" htmlFor="status">
 								<Select
 									onValueChange={(value) => handleFieldChange("status", value)}
 									value={vendor.status || "active"}
@@ -338,31 +341,33 @@ export function VendorPageContent({
 										<SelectItem value="inactive">Inactive</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
+							</StandardFormField>
 						</div>
 
 						{/* Contact Info */}
 						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="email">Email</Label>
+							<StandardFormField label="Email" htmlFor="email">
 								<Input
 									id="email"
 									onChange={(e) => handleFieldChange("email", e.target.value)}
 									type="email"
 									value={vendor.email || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="phone">Phone</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Phone" htmlFor="phone">
 								<Input
 									id="phone"
 									onChange={(e) => handleFieldChange("phone", e.target.value)}
 									type="tel"
 									value={vendor.phone || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="secondary_phone">Secondary Phone</Label>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Secondary Phone"
+								htmlFor="secondary_phone"
+							>
 								<Input
 									id="secondary_phone"
 									onChange={(e) =>
@@ -371,33 +376,32 @@ export function VendorPageContent({
 									type="tel"
 									value={vendor.secondary_phone || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="website">Website</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Website" htmlFor="website">
 								<Input
 									id="website"
 									onChange={(e) => handleFieldChange("website", e.target.value)}
 									type="url"
 									value={vendor.website || ""}
 								/>
-							</div>
+							</StandardFormField>
 						</div>
-					</div>
+					</StandardFormRow>
 
 					{/* Address */}
 					<div className="space-y-4 border-t pt-6">
 						<h3 className="font-medium">Address</h3>
-						<div className="grid gap-4 md:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="address">Street Address</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="Street Address" htmlFor="address">
 								<Input
 									id="address"
 									onChange={(e) => handleFieldChange("address", e.target.value)}
 									value={vendor.address || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="address2">Address Line 2</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Address Line 2" htmlFor="address2">
 								<Input
 									id="address2"
 									onChange={(e) =>
@@ -405,25 +409,25 @@ export function VendorPageContent({
 									}
 									value={vendor.address2 || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="city">City</Label>
+							</StandardFormField>
+
+							<StandardFormField label="City" htmlFor="city">
 								<Input
 									id="city"
 									onChange={(e) => handleFieldChange("city", e.target.value)}
 									value={vendor.city || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="state">State</Label>
+							</StandardFormField>
+
+							<StandardFormField label="State" htmlFor="state">
 								<Input
 									id="state"
 									onChange={(e) => handleFieldChange("state", e.target.value)}
 									value={vendor.state || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="zip_code">ZIP Code</Label>
+							</StandardFormField>
+
+							<StandardFormField label="ZIP Code" htmlFor="zip_code">
 								<Input
 									id="zip_code"
 									onChange={(e) =>
@@ -431,32 +435,31 @@ export function VendorPageContent({
 									}
 									value={vendor.zip_code || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="country">Country</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Country" htmlFor="country">
 								<Input
 									id="country"
 									onChange={(e) => handleFieldChange("country", e.target.value)}
 									value={vendor.country || "USA"}
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 					</div>
 
 					{/* Business Info */}
 					<div className="space-y-4 border-t pt-6">
 						<h3 className="font-medium">Business Information</h3>
-						<div className="grid gap-4 md:grid-cols-2">
-							<div className="space-y-2">
-								<Label htmlFor="tax_id">Tax ID</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="Tax ID" htmlFor="tax_id">
 								<Input
 									id="tax_id"
 									onChange={(e) => handleFieldChange("tax_id", e.target.value)}
 									value={vendor.tax_id || ""}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="payment_terms">Payment Terms</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Payment Terms" htmlFor="payment_terms">
 								<Select
 									onValueChange={(value) =>
 										handleFieldChange("payment_terms", value)
@@ -476,9 +479,9 @@ export function VendorPageContent({
 										<SelectItem value="custom">Custom</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="credit_limit">Credit Limit</Label>
+							</StandardFormField>
+
+							<StandardFormField label="Credit Limit" htmlFor="credit_limit">
 								<Input
 									id="credit_limit"
 									min="0"
@@ -494,11 +497,12 @@ export function VendorPageContent({
 									type="number"
 									value={((vendor.credit_limit || 0) / 100).toFixed(2)}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="preferred_payment_method">
-									Preferred Payment Method
-								</Label>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Preferred Payment Method"
+								htmlFor="preferred_payment_method"
+							>
 								<Select
 									onValueChange={(value) =>
 										handleFieldChange("preferred_payment_method", value)
@@ -515,14 +519,17 @@ export function VendorPageContent({
 										<SelectItem value="wire">Wire Transfer</SelectItem>
 									</SelectContent>
 								</Select>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 					</div>
 
 					{/* Notes */}
 					<div className="space-y-4 border-t pt-6">
-						<div className="space-y-2">
-							<Label htmlFor="notes">Notes</Label>
+						<StandardFormField
+							label="Notes"
+							htmlFor="notes"
+							description="Customer-facing notes"
+						>
 							<Textarea
 								id="notes"
 								onChange={(e) => handleFieldChange("notes", e.target.value)}
@@ -530,9 +537,13 @@ export function VendorPageContent({
 								rows={3}
 								value={vendor.notes || ""}
 							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="internal_notes">Internal Notes</Label>
+						</StandardFormField>
+
+						<StandardFormField
+							label="Internal Notes"
+							htmlFor="internal_notes"
+							description="Private team notes"
+						>
 							<Textarea
 								id="internal_notes"
 								onChange={(e) =>
@@ -542,7 +553,7 @@ export function VendorPageContent({
 								rows={3}
 								value={vendor.internal_notes || ""}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 
 					{/* Save Button */}

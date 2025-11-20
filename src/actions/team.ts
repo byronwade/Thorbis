@@ -57,6 +57,252 @@ const createDepartmentSchema = z.object({
 });
 
 /**
+ * Create team member directly with full employee management data
+ */
+export async function createTeamMemberDirect(
+	formData: FormData,
+): Promise<ActionResult<string>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		// Get current user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		// Get user's company
+		const { data: companyMembership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.single();
+
+		if (!companyMembership?.company_id) {
+			throw new ActionError(
+				"You must be part of a company to create team members",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		const email = formData.get("email") as string;
+		const firstName = formData.get("firstName") as string;
+		const lastName = formData.get("lastName") as string;
+		const role = formData.get("role") as string;
+
+		// Basic validation
+		if (!email || !firstName || !lastName || !role) {
+			throw new ActionError(
+				"Email, first name, last name, and role are required",
+				ERROR_CODES.INVALID_INPUT,
+			);
+		}
+
+		// Create or get user profile
+		let userId: string;
+		const { data: existingProfile } = await supabase
+			.from("profiles")
+			.select("id")
+			.eq("email", email)
+			.single();
+
+		if (existingProfile) {
+			userId = existingProfile.id;
+		} else {
+			// Create Supabase Auth user with temporary password
+			const tempPassword = formData.get("temp_password") as string;
+			if (!tempPassword) {
+				throw new ActionError(
+					"Temporary password is required for direct creation",
+					ERROR_CODES.INVALID_INPUT,
+				);
+			}
+
+			const { data: authUser, error: authError } =
+				await supabase.auth.admin.createUser({
+					email,
+					password: tempPassword,
+					email_confirm: true,
+					user_metadata: {
+						full_name: `${firstName} ${lastName}`,
+					},
+				});
+
+			if (authError || !authUser.user) {
+				throw new ActionError(
+					`Failed to create user: ${authError?.message}`,
+					ERROR_CODES.DB_QUERY_ERROR,
+				);
+			}
+
+			userId = authUser.user.id;
+
+			// Create profile record
+			const { error: profileError } = await supabase.from("profiles").insert({
+				id: userId,
+				email,
+				full_name: `${firstName} ${lastName}`,
+				phone: (formData.get("phone") as string) || null,
+			});
+
+			if (profileError) {
+				throw new ActionError(
+					ERROR_MESSAGES.operationFailed("create profile"),
+					ERROR_CODES.DB_QUERY_ERROR,
+				);
+			}
+		}
+
+		// Parse skills, licenses, service areas (comma-separated)
+		const skills = ((formData.get("skills") as string) || "")
+			.split(",")
+			.map((s) => s.trim())
+			.filter(Boolean);
+		const licenses = ((formData.get("licenses") as string) || "")
+			.split(",")
+			.map((l) => l.trim())
+			.filter(Boolean);
+		const serviceAreas = ((formData.get("service_areas") as string) || "")
+			.split(",")
+			.map((a) => a.trim())
+			.filter(Boolean);
+		const preferredJobTypes = (
+			(formData.get("preferred_job_types") as string) || ""
+		)
+			.split(",")
+			.map((t) => t.trim())
+			.filter(Boolean);
+
+		// Parse certifications (expecting JSON string or comma-separated)
+		let certifications = null;
+		const certificationsInput = formData.get("certifications") as string;
+		if (certificationsInput) {
+			try {
+				certifications = JSON.parse(certificationsInput);
+			} catch {
+				// If not valid JSON, treat as comma-separated list
+				certifications = certificationsInput
+					.split(",")
+					.map((c) => c.trim())
+					.filter(Boolean);
+			}
+		}
+
+		// Create company membership with ALL employee management fields
+		const { data: membership, error: membershipError } = await supabase
+			.from("company_memberships")
+			.insert({
+				company_id: companyMembership.company_id,
+				user_id: userId,
+				role: role as
+					| "owner"
+					| "admin"
+					| "manager"
+					| "member"
+					| "technician"
+					| "dispatcher"
+					| "csr",
+				status: "active",
+				job_title: (formData.get("job_title") as string) || null,
+				department_id: (formData.get("department_id") as string) || null,
+
+				// Emergency Contact
+				emergency_contact_name:
+					(formData.get("emergency_contact_name") as string) || null,
+				emergency_contact_phone:
+					(formData.get("emergency_contact_phone") as string) || null,
+				emergency_contact_relationship:
+					(formData.get("emergency_contact_relationship") as string) || null,
+
+				// Employment Details
+				employee_id: (formData.get("employee_id") as string) || null,
+				hire_date: (formData.get("hire_date") as string) || null,
+				employment_type: (formData.get("employment_type") as string) || null,
+				work_schedule: (formData.get("work_schedule") as string) || null,
+				work_location: (formData.get("work_location") as string) || null,
+
+				// Compensation
+				pay_type: (formData.get("pay_type") as string) || null,
+				hourly_rate: formData.get("hourly_rate")
+					? parseFloat(formData.get("hourly_rate") as string)
+					: null,
+				annual_salary: formData.get("annual_salary")
+					? parseFloat(formData.get("annual_salary") as string)
+					: null,
+				commission_rate: formData.get("commission_rate")
+					? parseFloat(formData.get("commission_rate") as string)
+					: null,
+				commission_structure: null, // TODO: Parse if provided as JSON
+				overtime_eligible: formData.get("overtime_eligible") === "true",
+
+				// Address
+				street_address: (formData.get("street_address") as string) || null,
+				city: (formData.get("city") as string) || null,
+				state: (formData.get("state") as string) || null,
+				postal_code: (formData.get("postal_code") as string) || null,
+				country: (formData.get("country") as string) || "US",
+
+				// Skills & Certifications
+				skills: skills.length > 0 ? skills : null,
+				certifications: certifications,
+				licenses: licenses.length > 0 ? licenses : null,
+
+				// Work Preferences
+				service_areas: serviceAreas.length > 0 ? serviceAreas : null,
+				availability_schedule: null, // TODO: Parse if provided as JSON
+				max_weekly_hours: formData.get("max_weekly_hours")
+					? parseInt(formData.get("max_weekly_hours") as string)
+					: null,
+				preferred_job_types:
+					preferredJobTypes.length > 0 ? preferredJobTypes : null,
+
+				// Performance
+				performance_notes:
+					(formData.get("performance_notes") as string) || null,
+				last_review_date: (formData.get("last_review_date") as string) || null,
+				next_review_date: (formData.get("next_review_date") as string) || null,
+
+				// Notes
+				notes: (formData.get("notes") as string) || null,
+
+				// Timestamps
+				invited_at: new Date().toISOString(),
+				accepted_at: new Date().toISOString(),
+			})
+			.select("id")
+			.single();
+
+		if (membershipError) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create team member"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Send welcome email if requested
+		const sendWelcomeEmail = formData.get("send_welcome_email") === "true";
+		if (sendWelcomeEmail) {
+			try {
+				// TODO: Send welcome email with login instructions
+			} catch (_error) {
+				// Don't fail the whole operation if email fails
+			}
+		}
+
+		revalidatePath("/dashboard/settings/team");
+		revalidatePath("/dashboard/work/team");
+		return membership.id;
+	});
+}
+
+/**
  * Invite team member
  */
 export async function inviteTeamMember(
@@ -78,13 +324,13 @@ export async function inviteTeamMember(
 		assertAuthenticated(user?.id);
 
 		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
+		const { data: companyMembership } = await supabase
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
 
-		if (!teamMember?.company_id) {
+		if (!companyMembership?.company_id) {
 			throw new ActionError(
 				"You must be part of a company to invite team members",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -100,37 +346,35 @@ export async function inviteTeamMember(
 			department: formData.get("department") || undefined,
 		});
 
-		// Check if user already exists
+		// Check if user already exists in profiles
 		let userId: string;
-		const { data: existingUser } = await supabase
-			.from("users")
+		const { data: existingProfile } = await supabase
+			.from("profiles")
 			.select("id")
 			.eq("email", data.email)
 			.single();
 
-		if (existingUser) {
-			userId = existingUser.id;
+		if (existingProfile) {
+			userId = existingProfile.id;
 		} else {
-			// Create user record (they'll complete registration via invitation link)
-			const { data: newUser, error: userError } = await supabase
-				.from("users")
+			// Create profile record (they'll complete registration via invitation link)
+			const { data: newProfile, error: profileError } = await supabase
+				.from("profiles")
 				.insert({
 					email: data.email,
-					name: `${data.firstName} ${data.lastName}`,
-					email_verified: false,
-					is_active: true,
+					full_name: `${data.firstName} ${data.lastName}`,
 				})
 				.select("id")
 				.single();
 
-			if (userError) {
+			if (profileError) {
 				throw new ActionError(
-					ERROR_MESSAGES.operationFailed("create user"),
+					ERROR_MESSAGES.operationFailed("create profile"),
 					ERROR_CODES.DB_QUERY_ERROR,
 				);
 			}
 
-			userId = newUser.id;
+			userId = newProfile.id;
 		}
 
 		// Get role ID if role is specified
@@ -140,7 +384,7 @@ export async function inviteTeamMember(
 				.from("custom_roles")
 				.select("id")
 				.eq("name", data.role)
-				.eq("company_id", teamMember.company_id)
+				.eq("company_id", companyMembership.company_id)
 				.single();
 
 			roleId = role?.id;
@@ -153,22 +397,28 @@ export async function inviteTeamMember(
 				.from("departments")
 				.select("id")
 				.eq("id", data.department)
-				.eq("company_id", teamMember.company_id)
+				.eq("company_id", companyMembership.company_id)
 				.single();
 
 			departmentId = dept?.id;
 		}
 
-		// Create team member invitation
+		// Create company membership invitation
 		const { data: invitation, error: inviteError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.insert({
-				company_id: teamMember.company_id,
+				company_id: companyMembership.company_id,
 				user_id: userId,
-				role_id: roleId,
+				role: data.role as
+					| "owner"
+					| "admin"
+					| "manager"
+					| "member"
+					| "technician"
+					| "dispatcher"
+					| "csr",
 				department_id: departmentId,
 				status: "invited",
-				invited_by: user.id,
 				invited_at: new Date().toISOString(),
 			})
 			.select("id")
@@ -242,13 +492,13 @@ export async function updateTeamMember(
 		assertAuthenticated(user?.id);
 
 		// Get user's company to verify permissions
-		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+		const { data: currentUserMembership } = await supabase
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
 
-		if (!currentUserTeam?.company_id) {
+		if (!currentUserMembership?.company_id) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -257,15 +507,15 @@ export async function updateTeamMember(
 		}
 
 		// Verify team member belongs to same company
-		const { data: targetMember } = await supabase
-			.from("team_members")
+		const { data: targetMembership } = await supabase
+			.from("company_memberships")
 			.select("company_id, user_id")
 			.eq("id", memberId)
 			.single();
 
-		assertExists(targetMember, "Team member");
+		assertExists(targetMembership, "Team member");
 
-		if (targetMember.company_id !== currentUserTeam.company_id) {
+		if (targetMembership.company_id !== currentUserMembership.company_id) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team member"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -273,19 +523,8 @@ export async function updateTeamMember(
 			);
 		}
 
-		// Get role ID if role is specified
-		let roleId: string | null = null;
+		// Get role if specified (now stored directly in company_memberships.role)
 		const roleInput = formData.get("role") as string;
-		if (roleInput) {
-			const { data: role } = await supabase
-				.from("custom_roles")
-				.select("id")
-				.eq("id", roleInput)
-				.eq("company_id", currentUserTeam.company_id)
-				.single();
-
-			roleId = role?.id || null;
-		}
 
 		// Get department ID if department is specified
 		let departmentId: string | null = null;
@@ -295,7 +534,7 @@ export async function updateTeamMember(
 				.from("departments")
 				.select("id")
 				.eq("id", departmentInput)
-				.eq("company_id", currentUserTeam.company_id)
+				.eq("company_id", currentUserMembership.company_id)
 				.single();
 
 			departmentId = dept?.id || null;
@@ -308,10 +547,10 @@ export async function updateTeamMember(
 			const { data: company } = await supabase
 				.from("companies")
 				.select("owner_id")
-				.eq("id", currentUserTeam.company_id)
+				.eq("id", currentUserMembership.company_id)
 				.single();
 
-			if (company && company.owner_id === targetMember.user_id) {
+			if (company && company.owner_id === targetMembership.user_id) {
 				throw new ActionError(
 					"Cannot archive or deactivate company owner. Transfer ownership first.",
 					ERROR_CODES.BUSINESS_RULE_VIOLATION,
@@ -320,15 +559,22 @@ export async function updateTeamMember(
 		}
 
 		const updateData: any = {
-			role_id: roleId,
+			role: roleInput as
+				| "owner"
+				| "admin"
+				| "manager"
+				| "member"
+				| "technician"
+				| "dispatcher"
+				| "csr",
 			department_id: departmentId,
-			status: newStatus,
+			status: newStatus as "active" | "invited" | "suspended",
 			job_title: formData.get("jobTitle") as string,
 		};
 
-		// Update team member
+		// Update company membership
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update(updateData)
 			.eq("id", memberId);
 
@@ -367,7 +613,7 @@ export async function removeTeamMember(
 
 		// Get user's company to verify permissions
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -382,7 +628,7 @@ export async function removeTeamMember(
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, user_id")
 			.eq("id", memberId)
 			.single();
@@ -422,7 +668,7 @@ export async function removeTeamMember(
 
 		// Soft delete: set status to 'suspended'
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ status: "suspended" })
 			.eq("id", memberId);
 
@@ -472,7 +718,7 @@ export async function suspendTeamMember(
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, user_id, status")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -513,7 +759,7 @@ export async function suspendTeamMember(
 
 		// Update status to suspended
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ status: "suspended" })
 			.eq("id", memberId);
 
@@ -564,7 +810,7 @@ export async function activateTeamMember(
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, status")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -582,7 +828,7 @@ export async function activateTeamMember(
 
 		// Update status to active
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ status: "active" })
 			.eq("id", memberId);
 
@@ -633,7 +879,7 @@ export async function archiveTeamMember(
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, user_id")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -666,7 +912,7 @@ export async function archiveTeamMember(
 
 		// Soft delete the team member record (set archived_at timestamp)
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ archived_at: new Date().toISOString() })
 			.eq("id", memberId);
 
@@ -688,11 +934,11 @@ export async function archiveTeamMember(
 				archived_by_name:
 					(
 						await supabase
-							.from("users")
-							.select("name")
+							.from("profiles")
+							.select("full_name")
 							.eq("id", user.id)
 							.single()
-					).data?.name || "Unknown",
+					).data?.full_name || "Unknown",
 			},
 		});
 
@@ -747,7 +993,7 @@ export async function restoreTeamMember(
 
 		// Verify team member belongs to same company and is archived
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, user_id, archived_at")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -764,7 +1010,7 @@ export async function restoreTeamMember(
 
 		// Restore the team member (clear archived_at timestamp)
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ archived_at: null })
 			.eq("id", memberId);
 
@@ -786,7 +1032,7 @@ export async function restoreTeamMember(
 				restored_by_name:
 					(
 						await supabase
-							.from("users")
+							.from("profiles")
 							.select("name")
 							.eq("id", user.id)
 							.single()
@@ -846,7 +1092,7 @@ export async function sendPasswordResetEmail(
 
 		// Fetch team member details
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("user_id, company_id")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -856,14 +1102,14 @@ export async function sendPasswordResetEmail(
 
 		// Get user details for email
 		const { data: userData } = await supabase
-			.from("users")
-			.select("name, email")
+			.from("profiles")
+			.select("full_name, email")
 			.eq("id", targetMember.user_id)
 			.single();
 
 		const { data: currentUserData } = await supabase
-			.from("users")
-			.select("name")
+			.from("profiles")
+			.select("full_name")
 			.eq("id", user.id)
 			.single();
 
@@ -899,8 +1145,8 @@ export async function sendPasswordResetEmail(
 			to: userData.email,
 			subject: `Password Reset - ${companyData?.name || "Your Account"}`,
 			template: PasswordResetTemplate({
-				teamMemberName: userData.name || "Team Member",
-				resetByName: currentUserData?.name || "Your Manager",
+				teamMemberName: userData.full_name || "Team Member",
+				resetByName: currentUserData?.full_name || "Your Manager",
 				resetLink: resetData.properties.action_link,
 				companyName: companyData?.name || "Your Company",
 				expiresInHours: 24,
@@ -1015,24 +1261,17 @@ export async function getTeamMemberPermissions(memberId: string): Promise<
 
 		// Fetch team member details
 		const { data: targetMember } = await supabase
-			.from("team_members")
-			.select("role_id, company_id")
+			.from("company_memberships")
+			.select("role, permissions, company_id")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
 			.single();
 
 		assertExists(targetMember, "Team member");
 
-		// Get role details
-		const { data: roleData } = await supabase
-			.from("custom_roles")
-			.select("name, permissions")
-			.eq("id", targetMember.role_id)
-			.single();
-
 		return {
-			role: roleData?.name || "unknown",
-			permissions: (roleData?.permissions as Record<string, boolean>) || {},
+			role: targetMember.role || "unknown",
+			permissions: (targetMember.permissions as Record<string, boolean>) || {},
 			canManage,
 		};
 	});
@@ -1087,7 +1326,7 @@ export async function updateTeamMemberPermissions(
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, user_id")
 			.eq("id", memberId)
 			.eq("company_id", companyId)
@@ -1120,7 +1359,7 @@ export async function updateTeamMemberPermissions(
 
 		// Update team member role
 		const { error: updateError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.update({ role_id: roleData.id })
 			.eq("id", memberId);
 
@@ -1173,7 +1412,7 @@ export async function createRole(
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1261,7 +1500,7 @@ export async function updateRole(
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1352,7 +1591,7 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1391,7 +1630,7 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 
 		// Check if role is in use by any team members
 		const { data: teamMembersWithRole, error: checkError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("id")
 			.eq("role_id", roleId)
 			.limit(1);
@@ -1453,7 +1692,7 @@ export async function createDepartment(
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1534,7 +1773,7 @@ export async function updateDepartment(
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1613,7 +1852,7 @@ export async function deleteDepartment(
 
 		// Get user's company
 		const { data: currentUserTeam } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1645,7 +1884,7 @@ export async function deleteDepartment(
 
 		// Check if department has members
 		const { data: teamMembersInDept, error: checkError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("id")
 			.eq("department_id", departmentId)
 			.limit(1);
@@ -1754,7 +1993,7 @@ export async function getTeamMembers() {
 
 		// Fetch all team members for the company (including archived)
 		const { data: members, error: membersError } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select(
 				`
         id,
@@ -1801,12 +2040,12 @@ export async function getTeamMembers() {
 		];
 		const roleIds = [...new Set(members.map((m) => m.role_id).filter(Boolean))];
 
-		// Fetch user details from public.users
+		// Fetch user details from profiles
 		const { data: users } =
 			userIds.length > 0
 				? await supabase
-						.from("users")
-						.select("id, name, email, avatar")
+						.from("profiles")
+						.select("id, full_name, email, avatar_url")
 						.in("id", userIds)
 				: { data: [] };
 
@@ -1827,43 +2066,20 @@ export async function getTeamMembers() {
 					? usersMap.get(member.user_id)
 					: null;
 
-			const fallbackName =
-				member.invited_name ||
-				member.email ||
-				member.invited_email ||
-				"Pending team member";
-
-			const fallbackEmail = member.email || member.invited_email || "";
-
 			return {
 				id: member.id,
 				user_id: member.user_id,
 				company_id: member.company_id,
-				role_id: member.role_id,
+				role: member.role,
 				department_id: member.department_id,
 				status: member.status,
 				job_title: member.job_title,
-				phone: member.phone,
-				email: member.email,
-				invited_name: member.invited_name,
-				invited_email: member.invited_email,
 				invited_at: member.invited_at,
-				joined_at: member.joined_at,
-				last_active_at: member.last_active_at,
+				accepted_at: member.accepted_at,
 				created_at: member.created_at,
-				archived_at: member.archived_at,
-				user:
-					resolvedUser ||
-					(fallbackEmail || fallbackName
-						? {
-								id: member.user_id ?? member.id,
-								name: fallbackName,
-								email: fallbackEmail,
-								avatar: null,
-							}
-						: null),
-				role: rolesMap.get(member.role_id) || null,
-				department: null, // Department FK constraint doesn't exist yet
+				updated_at: member.updated_at,
+				user: resolvedUser || null,
+				department: null, // Department FK will be resolved when departments table is linked
 			};
 		});
 
@@ -1903,7 +2119,7 @@ export async function getRoles(): Promise<
 
 		// Get user's company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1937,7 +2153,7 @@ export async function getRoles(): Promise<
 
 		// Single query to get all role_id counts
 		const { data: roleCounts } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("role_id")
 			.eq("company_id", teamMember.company_id)
 			.not("role_id", "is", null);
@@ -2019,7 +2235,7 @@ export async function getRoleDetails(roleId: string): Promise<
 		}
 
 		const { count } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("*", { count: "exact", head: true })
 			.eq("role_id", roleId)
 			.eq("company_id", companyId);
@@ -2068,7 +2284,7 @@ export async function getDepartments(): Promise<
 
 		// Get user's company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -2102,7 +2318,7 @@ export async function getDepartments(): Promise<
 
 		// Single query to get all department_id counts
 		const { data: deptCounts } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("department_id")
 			.eq("company_id", teamMember.company_id)
 			.not("department_id", "is", null);
@@ -2177,7 +2393,7 @@ export async function getTeamOverview(): Promise<
 
 		const [membersResult, rolesResult, departmentsResult] = await Promise.all([
 			supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("status, invited_at, joined_at, department_id")
 				.eq("company_id", companyId),
 			supabase

@@ -8,7 +8,7 @@ import {
 	PAYMENTS_PAGE_SIZE,
 } from "@/lib/queries/payments";
 
-export async function UpaymentsData({
+export async function PaymentsData({
 	searchParams,
 }: {
 	searchParams?: { page?: string };
@@ -31,7 +31,7 @@ export async function UpaymentsData({
 	// Transform data for components
 	const payments = paymentsRaw.map((payment) => ({
 		id: payment.id,
-		payment_number: payment.payment_number,
+		payment_number: payment.payment_number || "",
 		amount: payment.amount ?? 0,
 		payment_method: payment.payment_method || "other",
 		status: payment.status || "pending",
@@ -54,14 +54,12 @@ export async function UpaymentsData({
 			kanban={<PaymentsKanban payments={payments} />}
 			section="payments"
 			table={
-				<div>
-					<PaymentsTable
-						currentPage={currentPage}
-						itemsPerPage={PAYMENTS_PAGE_SIZE}
-						payments={payments}
-						totalCount={totalCount}
-					/>
-				</div>
+				<PaymentsTable
+					currentPage={currentPage}
+					itemsPerPage={PAYMENTS_PAGE_SIZE}
+					payments={payments}
+					totalCount={totalCount}
+				/>
 			}
 		/>
 	);

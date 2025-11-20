@@ -162,7 +162,7 @@ function CallWindowContent() {
 							// TODO: Handle error case
 						} else if (user) {
 							const { data: teamMembers, error: teamError } = await supabase
-								.from("team_members")
+								.from("company_memberships")
 								.select("company_id, status, joined_at")
 								.eq("user_id", user.id)
 								.eq("status", "active")

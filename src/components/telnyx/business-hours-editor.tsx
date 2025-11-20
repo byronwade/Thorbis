@@ -38,6 +38,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
@@ -303,11 +304,13 @@ export function BusinessHoursEditor() {
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{/* Timezone Selection */}
-					<div className="space-y-2">
-						<Label className="flex items-center gap-2" htmlFor="timezone">
-							<Globe className="size-4" />
-							Timezone
-						</Label>
+					<StandardFormField label="Timezone" htmlFor="timezone">
+						<div className="flex items-center gap-2 mb-2">
+							<Globe className="size-4 text-muted-foreground" />
+							<span className="text-sm text-muted-foreground">
+								Select your business timezone
+							</span>
+						</div>
 						<Select
 							onValueChange={(value) =>
 								setBusinessHours((prev) => ({ ...prev, timezone: value }))
@@ -325,7 +328,7 @@ export function BusinessHoursEditor() {
 								))}
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Quick Presets */}
 					<div className="space-y-2">

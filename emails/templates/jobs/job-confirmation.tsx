@@ -1,19 +1,18 @@
 /**
  * Job Confirmation Email Template - Sent when job is scheduled
  *
- * Features:
- * - Confirms job details
- * - Technician information
- * - Date, time, and address
- * - Link to view job details
+ * Design:
+ * - Company-branded layout (company logo, colors, contact info)
+ * - Clean job details
+ * - Full-width sections (no cards)
+ * - Professional confirmation
  */
 
 import { Text } from "@react-email/components";
 import type { JobConfirmationProps } from "../../../src/lib/email/email-types";
 import { Button } from "../../components/button";
-import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
-import { BaseLayout } from "../../layouts/base-layout";
+import { CompanyLayout } from "../../layouts/company-layout";
 
 export default function JobConfirmationEmail({
 	customerName,
@@ -24,11 +23,21 @@ export default function JobConfirmationEmail({
 	address,
 	jobNumber,
 	viewJobUrl,
-	previewText = `Your ${jobType} appointment is confirmed`,
+	previewText,
+	company,
 }: JobConfirmationProps) {
+	const companyBranding = company || {
+		companyName: "Your Company",
+		supportEmail: "support@yourcompany.com",
+		supportPhone: "(555) 123-4567",
+	};
+
+	const defaultPreviewText =
+		previewText || `Your ${jobType} appointment is confirmed`;
+
 	return (
-		<BaseLayout previewText={previewText}>
-			<Heading level={1}>Your Service Appointment is Confirmed</Heading>
+		<CompanyLayout company={companyBranding} previewText={defaultPreviewText}>
+			<Heading level={1}>Service Appointment Confirmed ✅</Heading>
 
 			<Text style={paragraph}>Hi {customerName},</Text>
 
@@ -37,35 +46,37 @@ export default function JobConfirmationEmail({
 				details:
 			</Text>
 
-			<Card style={detailsCard}>
+			{/* Job Details */}
+			<div style={detailsSection}>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Job Number:</Text>
+					<Text style={detailLabel}>📋 Job Number:</Text>
 					<Text style={detailValue}>#{jobNumber}</Text>
 				</div>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Service Type:</Text>
+					<Text style={detailLabel}>🔧 Service Type:</Text>
 					<Text style={detailValue}>{jobType}</Text>
 				</div>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Date:</Text>
+					<Text style={detailLabel}>📅 Date:</Text>
 					<Text style={detailValue}>{jobDate}</Text>
 				</div>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Time:</Text>
+					<Text style={detailLabel}>🕐 Time:</Text>
 					<Text style={detailValue}>{jobTime}</Text>
 				</div>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Technician:</Text>
+					<Text style={detailLabel}>👷 Technician:</Text>
 					<Text style={detailValue}>{technicianName}</Text>
 				</div>
 				<div style={detailRow}>
-					<Text style={detailLabel}>Location:</Text>
+					<Text style={detailLabel}>📍 Location:</Text>
 					<Text style={detailValue}>{address}</Text>
 				</div>
-			</Card>
+			</div>
 
-			<Card style={infoCard}>
-				<Heading level={3}>What to expect</Heading>
+			{/* What to Expect */}
+			<div style={infoSection}>
+				<Heading level={3}>What to Expect</Heading>
 				<ul style={list}>
 					<li style={listItem}>
 						We'll send you a reminder 24 hours before your appointment
@@ -77,7 +88,7 @@ export default function JobConfirmationEmail({
 						Our technician will arrive during the scheduled time window
 					</li>
 				</ul>
-			</Card>
+			</div>
 
 			<div style={buttonContainer}>
 				<Button href={viewJobUrl}>View Job Details</Button>
@@ -85,33 +96,40 @@ export default function JobConfirmationEmail({
 
 			<Text style={footerNote}>
 				Need to reschedule? Contact us at{" "}
-				<a href="tel:+1234567890" style={link}>
-					(123) 456-7890
+				<a
+					href={`tel:${companyBranding.supportPhone?.replace(/\s/g, "")}`}
+					style={link}
+				>
+					{companyBranding.supportPhone}
 				</a>{" "}
 				or reply to this email.
 			</Text>
-		</BaseLayout>
+		</CompanyLayout>
 	);
 }
 
 const paragraph = {
 	color: "#374151",
 	fontSize: "16px",
-	lineHeight: "24px",
-	margin: "0 0 16px 0",
+	lineHeight: "26px",
+	margin: "0 0 20px 0",
 };
 
-const detailsCard = {
-	backgroundColor: "#f9fafb",
-	border: "1px solid #e5e7eb",
+const detailsSection = {
+	backgroundColor: "#f0f9ff",
+	borderLeft: "4px solid #3b82f6",
 	padding: "24px",
 	margin: "24px 0",
+	borderRadius: "4px",
 };
 
 const detailRow = {
 	display: "flex" as const,
 	justifyContent: "space-between",
-	marginBottom: "12px",
+	alignItems: "center",
+	marginBottom: "16px",
+	paddingBottom: "16px",
+	borderBottom: "1px solid rgba(59, 130, 246, 0.1)",
 };
 
 const detailLabel = {
@@ -123,44 +141,47 @@ const detailLabel = {
 
 const detailValue = {
 	color: "#111827",
-	fontSize: "14px",
+	fontSize: "15px",
 	fontWeight: "600",
 	margin: "0",
 	textAlign: "right" as const,
 };
 
-const infoCard = {
-	backgroundColor: "#eff6ff",
-	border: "1px solid #bfdbfe",
+const infoSection = {
+	backgroundColor: "#ecfdf5",
+	borderLeft: "4px solid #10b981",
+	padding: "24px",
 	margin: "24px 0",
+	borderRadius: "4px",
 };
 
 const list = {
-	color: "#1e40af",
-	fontSize: "14px",
-	lineHeight: "20px",
-	margin: "12px 0 0 20px",
+	color: "#166534",
+	fontSize: "15px",
+	lineHeight: "24px",
+	margin: "12px 0 0 24px",
 	padding: "0",
 };
 
 const listItem = {
-	margin: "0 0 8px 0",
+	margin: "0 0 12px 0",
 };
 
 const buttonContainer = {
-	margin: "32px 0",
+	margin: "40px 0",
 	textAlign: "center" as const,
 };
 
 const footerNote = {
 	color: "#6b7280",
 	fontSize: "14px",
-	lineHeight: "20px",
+	lineHeight: "22px",
 	margin: "32px 0 0 0",
 	textAlign: "center" as const,
 };
 
 const link = {
-	color: "hsl(217 91% 60%)",
+	color: "#3b82f6",
 	textDecoration: "underline",
+	fontWeight: "500",
 };

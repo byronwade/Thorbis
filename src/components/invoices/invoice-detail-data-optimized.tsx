@@ -18,6 +18,7 @@ import {
 	getActiveCompanyId,
 	isActiveCompanyOnboardingComplete,
 } from "@/lib/auth/company-context";
+import { getInvoiceComplete } from "@/lib/queries/invoices";
 import { generateInvoiceStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -57,52 +58,24 @@ export async function InvoiceDetailDataOptimized({
 		redirect("/dashboard/welcome");
 	}
 
-	// ✅ OPTIMIZATION: Load ONLY critical data initially (3 queries)
-	const [
-		{ data: invoice, error: invoiceError },
-		{ data: customer },
-		{ data: company },
-	] = await Promise.all([
-		// Query 1: Invoice data (required for page)
-		supabase
-			.from("invoices")
-			.select("*")
-			.eq("id", invoiceId)
-			.single(),
+	// ✅ OPTIMIZATION: Load invoice with tags via single RPC call
+	const invoiceData = await getInvoiceComplete(invoiceId, activeCompanyId);
 
-		// Query 2: Customer data (needed for invoice header)
-		supabase
-			.from("invoices")
-			.select("customer_id")
-			.eq("id", invoiceId)
-			.single()
-			.then(async ({ data: invoiceData }) => {
-				if (invoiceData?.customer_id) {
-					return supabase
-						.from("customers")
-						.select("*")
-						.eq("id", invoiceData.customer_id)
-						.single();
-				}
-				return { data: null, error: null };
-			}),
-
-		// Query 3: Company data (needed for branding/logo)
-		supabase
-			.from("companies")
-			.select("*")
-			.eq("id", activeCompanyId)
-			.single(),
-	]);
-
-	if (invoiceError || !invoice) {
+	if (!invoiceData) {
 		return notFound();
 	}
 
-	// Verify company access
-	if (invoice.company_id !== activeCompanyId) {
-		return notFound();
-	}
+	// Extract data from RPC response
+	const invoice = invoiceData;
+	const customer = invoiceData.customer;
+	const job = invoiceData.job;
+
+	// Fetch company data separately (not in RPC yet)
+	const { data: company } = await supabase
+		.from("companies")
+		.select("*")
+		.eq("id", activeCompanyId)
+		.single();
 
 	// Calculate metrics for stats bar (using invoice data only)
 	const metrics = {
@@ -118,13 +91,13 @@ export async function InvoiceDetailDataOptimized({
 	const stats = generateInvoiceStats(metrics);
 
 	// Pass minimal data - widgets will load their own data on-demand
-	const invoiceData = {
+	const completeInvoiceData = {
 		invoice,
 		customer,
+		job,
 		company,
 		companyId: activeCompanyId,
 		// All other data will be fetched on-demand by widgets:
-		// - job → InvoiceJobWidget
 		// - property → InvoicePropertyWidget
 		// - estimate → InvoiceWorkflowWidget
 		// - contract → InvoiceWorkflowWidget
@@ -141,7 +114,7 @@ export async function InvoiceDetailDataOptimized({
 			<div className="flex h-full w-full flex-col overflow-auto">
 				<div className="mx-auto w-full max-w-7xl">
 					<InvoicePageContentOptimized
-						entityData={invoiceData}
+						entityData={completeInvoiceData}
 						metrics={metrics}
 					/>
 				</div>

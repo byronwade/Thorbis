@@ -122,7 +122,6 @@ export function EquipmentTable({
 				<Link
 					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`/dashboard/work/equipment/${item.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{item.assetId}
@@ -138,7 +137,6 @@ export function EquipmentTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/equipment/${item.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">

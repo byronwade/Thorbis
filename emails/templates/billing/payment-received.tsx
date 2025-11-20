@@ -13,7 +13,7 @@ import type { PaymentReceivedProps } from "../../../src/lib/email/email-types";
 import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
-import { BaseLayout } from "../../layouts/base-layout";
+import { CompanyLayout } from "../../layouts/company-layout";
 import { EMAIL_COLORS } from "../../theme";
 
 export default function PaymentReceivedEmail({
@@ -23,10 +23,11 @@ export default function PaymentReceivedEmail({
 	paymentMethod,
 	paymentDate,
 	receiptUrl,
+	company,
 	previewText = `Payment received - ${paymentAmount}`,
 }: PaymentReceivedProps) {
 	return (
-		<BaseLayout previewText={previewText}>
+		<CompanyLayout company={company} previewText={previewText}>
 			<Heading level={1}>Payment Received - Thank You!</Heading>
 
 			<Text style={paragraph}>Hi {customerName},</Text>
@@ -75,11 +76,14 @@ export default function PaymentReceivedEmail({
 
 			<Text style={footerNote}>
 				Need help? Contact us at{" "}
-				<a href="mailto:billing@thorbis.com" style={link}>
-					billing@thorbis.com
+				<a
+					href={`mailto:${company.supportEmail || company.websiteUrl}`}
+					style={link}
+				>
+					{company.supportEmail || "our support team"}
 				</a>
 			</Text>
-		</BaseLayout>
+		</CompanyLayout>
 	);
 }
 

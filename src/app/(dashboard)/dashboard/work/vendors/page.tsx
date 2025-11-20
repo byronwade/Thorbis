@@ -1,33 +1,30 @@
 /**
- * Vendors Page - PPR Enabled
+ * Vendors Page - PPR Enabled with Inline Stats
  *
  * Uses Suspense for streaming:
  * - Static shell renders instantly (5-20ms)
- * - Stats stream in first (100-200ms)
- * - Data streams in second (200-500ms)
+ * - Stats stream in toolbar (100-200ms)
+ * - Data streams in main content (200-500ms)
  *
  * Performance: 10-40x faster than traditional SSR
+ * Clean design: Stats integrated directly into toolbar
  */
 
 import { Suspense } from "react";
 import { VendorsData } from "@/components/work/vendors/vendors-data";
 import { VendorsSkeleton } from "@/components/work/vendors/vendors-skeleton";
-import { VendorsStats } from "@/components/work/vendors/vendors-stats";
 
 export default async function WorkVendorsPage() {
 	return (
-		<>
-			{/* Stats - Streams in first */}
-			<Suspense
-				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-			>
-				<VendorsStats />
-			</Suspense>
+		<div className="flex h-full flex-col">
+			{/* Stats now shown in toolbar - see layout.tsx */}
 
-			{/* Table/Kanban - Streams in second */}
-			<Suspense fallback={<VendorsSkeleton />}>
-				<VendorsData />
-			</Suspense>
-		</>
+			{/* Table - Main content */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<VendorsSkeleton />}>
+					<VendorsData />
+				</Suspense>
+			</div>
+		</div>
 	);
 }

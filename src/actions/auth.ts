@@ -392,10 +392,10 @@ const syncSignUpProfile = async ({
 		};
 
 		if (avatarUrl) {
-			updatePayload.avatar = avatarUrl;
+			updatePayload.avatar_url = avatarUrl;
 		}
 
-		await adminClient.from("users").update(updatePayload).eq("id", userId);
+		await adminClient.from("profiles").update(updatePayload).eq("id", userId);
 	} catch (profileUpdateError) {
 		reportAuthIssue("Failed to update user profile", profileUpdateError);
 	}
@@ -588,10 +588,13 @@ const updateUserTableRecord = async ({
 
 	try {
 		const adminClient = await ensureServiceSupabase();
-		// @ts-expect-error - Database schema may be out of sync with types
 		const { error } = await adminClient
-			.from("users")
-			.update(updatePayload)
+			.from("profiles")
+			.update({
+				full_name: name || undefined,
+				phone: normalizedPhone || undefined,
+				avatar_url: avatarUrl || undefined,
+			})
 			.eq("id", userId);
 
 		if (error) {
@@ -707,7 +710,7 @@ const resolveProfileRedirectPath = async ({
 }: ResolveProfileRedirectParams): Promise<string> => {
 	const adminClient = await ensureServiceSupabase();
 	const { data: hasCompany } = await adminClient
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", userId)
 		.eq("status", "active")
@@ -1391,22 +1394,10 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 
 		// Update Supabase user to mark email as verified
 		if (tokenRecord.userId) {
-			// Mark email as verified in local users table
-			const { error: updateError } = await supabase
-				.from("users")
-				.update({ email_verified: true })
-				.eq("id", tokenRecord.userId);
-
-			if (updateError) {
-				reportAuthIssue(
-					"Failed to update email verification status",
-					updateError,
-				);
-				return {
-					success: false,
-					error: "Failed to verify email. Please contact support.",
-				};
-			}
+			// Note: profiles table doesn't have email_verified field
+			// Email verification is handled through auth.users.email_confirmed_at
+			// which is set automatically by Supabase Auth
+			// We don't need to manually update profiles table
 
 			// Send welcome email after successful verification
 			const welcomeResult = await sendWelcomeEmail(tokenRecord.email, {
@@ -1461,8 +1452,8 @@ export async function resendVerificationEmail(
 
 		// Check if user exists
 		const { data: userData } = await supabase
-			.from("users")
-			.select("id, name, email")
+			.from("profiles")
+			.select("id, full_name, email")
 			.eq("email", email)
 			.single();
 
@@ -1488,7 +1479,7 @@ export async function resendVerificationEmail(
 		const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
 
 		const emailResult = await sendEmailVerification(email, {
-			name: userData.name || "User",
+			name: userData.full_name || "User",
 			verificationUrl,
 		});
 

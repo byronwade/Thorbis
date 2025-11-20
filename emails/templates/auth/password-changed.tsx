@@ -1,7 +1,9 @@
 /**
  * Password Changed Email Template - Confirmation after password change
  *
- * Features:
+ * Design:
+ * - Clean, full-width layout (no cards)
+ * - Thorbis-branded with logo from BaseLayout
  * - Confirms password was changed
  * - Provides security contact info
  * - Shows timestamp of change
@@ -9,7 +11,6 @@
 
 import { Text } from "@react-email/components";
 import type { PasswordChangedProps } from "../../../src/lib/email/email-types";
-import { Card } from "../../components/card";
 import { Heading } from "../../components/heading";
 import { BaseLayout } from "../../layouts/base-layout";
 
@@ -25,7 +26,8 @@ export default function PasswordChangedEmail({
 
 	return (
 		<BaseLayout previewText={previewText}>
-			<Heading level={1}>Password Changed Successfully</Heading>
+			{/* Main Heading */}
+			<Heading level={1}>Password Changed Successfully ✅</Heading>
 
 			<Text style={paragraph}>Hi {name},</Text>
 
@@ -34,13 +36,15 @@ export default function PasswordChangedEmail({
 				changed successfully.
 			</Text>
 
-			<Card style={infoCard}>
-				<Text style={infoLabel}>Change Date & Time:</Text>
+			{/* Change Timestamp */}
+			<div style={infoSection}>
+				<Text style={infoLabel}>🕒 Change Date & Time:</Text>
 				<Text style={infoValue}>{formattedDate}</Text>
-			</Card>
+			</div>
 
-			<Card style={securityCard}>
-				<Heading level={3}>Didn't make this change?</Heading>
+			{/* Security Warning */}
+			<div style={securitySection}>
+				<Heading level={3}>⚠️ Didn't Make This Change?</Heading>
 				<Text style={securityText}>
 					If you didn't change your password, someone may have unauthorized
 					access to your account. Please take the following steps immediately:
@@ -56,67 +60,77 @@ export default function PasswordChangedEmail({
 					</li>
 					<li style={listItem}>Review your recent account activity</li>
 				</ul>
-			</Card>
+			</div>
 
 			<Text style={footerNote}>
 				This is an automated security notification. If you made this change, you
 				can safely ignore this email.
 			</Text>
+
+			<Text style={closingText}>
+				Stay secure,
+				<br />
+				<strong>The Thorbis Team</strong>
+			</Text>
 		</BaseLayout>
 	);
 }
 
+// Styles - Clean, full-width design (no cards)
 const paragraph = {
 	color: "#374151",
 	fontSize: "16px",
-	lineHeight: "24px",
-	margin: "0 0 16px 0",
+	lineHeight: "26px",
+	margin: "0 0 20px 0",
 };
 
-const infoCard = {
+const infoSection = {
 	backgroundColor: "#f0fdf4",
-	border: "1px solid #bbf7d0",
-	borderRadius: "8px",
-	padding: "20px",
+	borderLeft: "4px solid #22c55e",
+	padding: "20px 24px",
 	margin: "24px 0",
+	borderRadius: "4px",
 };
 
 const infoLabel = {
 	color: "#166534",
 	fontSize: "14px",
 	fontWeight: "600",
-	margin: "0 0 4px 0",
+	margin: "0 0 8px 0",
 };
 
 const infoValue = {
 	color: "#166534",
-	fontSize: "16px",
+	fontSize: "17px",
+	fontWeight: "500",
 	margin: "0",
 };
 
-const securityCard = {
+const securitySection = {
 	backgroundColor: "#fef2f2",
-	border: "1px solid #fecaca",
+	borderLeft: "4px solid #ef4444",
+	padding: "24px",
 	margin: "32px 0",
+	borderRadius: "4px",
 };
 
 const securityText = {
 	color: "#991b1b",
-	fontSize: "14px",
-	lineHeight: "20px",
-	margin: "8px 0 12px 0",
+	fontSize: "15px",
+	lineHeight: "24px",
+	margin: "8px 0 16px 0",
 };
 
 const list = {
 	color: "#991b1b",
-	fontSize: "14px",
-	lineHeight: "20px",
-	margin: "0 0 0 20px",
+	fontSize: "15px",
+	lineHeight: "24px",
+	margin: "0 0 0 24px",
 	padding: "0",
 };
 
 const listItem = {
-	margin: "0 0 8px 0",
+	margin: "0 0 12px 0",
 };
 
 const link = {
@@ -128,7 +142,15 @@ const link = {
 const footerNote = {
 	color: "#6b7280",
 	fontSize: "14px",
-	lineHeight: "20px",
+	lineHeight: "22px",
 	margin: "32px 0 0 0",
 	textAlign: "center" as const,
+	fontStyle: "italic",
+};
+
+const closingText = {
+	color: "#374151",
+	fontSize: "16px",
+	lineHeight: "26px",
+	margin: "24px 0 0 0",
 };

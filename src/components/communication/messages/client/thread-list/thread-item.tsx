@@ -70,8 +70,8 @@ export function ThreadItem({
 		<button
 			onClick={onClick}
 			className={cn(
-				"w-full px-3 py-2.5 text-left transition-colors hover:bg-accent/50",
-				"border-l-2 border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+				"hover:bg-accent/50 w-full px-3 py-2.5 text-left transition-colors",
+				"focus-visible:ring-ring border-l-2 border-transparent focus-visible:ring-2 focus-visible:outline-none",
 				isSelected && "bg-accent border-l-primary",
 				thread.unreadCount > 0 && !isSelected && "bg-accent/30",
 			)}
@@ -92,8 +92,8 @@ export function ThreadItem({
 					</Avatar>
 					{/* Unread indicator */}
 					{thread.unreadCount > 0 && (
-						<div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-							<span className="text-[10px] font-bold text-primary-foreground">
+						<div className="bg-primary absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full">
+							<span className="text-primary-foreground text-xxs font-bold">
 								{thread.unreadCount > 9 ? "9+" : thread.unreadCount}
 							</span>
 						</div>
@@ -101,13 +101,13 @@ export function ThreadItem({
 				</div>
 
 				{/* Content */}
-				<div className="flex-1 min-w-0">
+				<div className="min-w-0 flex-1">
 					{/* Header row */}
-					<div className="flex items-center justify-between gap-2 mb-0.5">
-						<div className="flex items-center gap-1.5 min-w-0">
+					<div className="mb-0.5 flex items-center justify-between gap-2">
+						<div className="flex min-w-0 items-center gap-1.5">
 							<span
 								className={cn(
-									"font-medium text-sm truncate",
+									"truncate text-sm font-medium",
 									thread.unreadCount > 0 && "font-semibold",
 								)}
 							>
@@ -117,7 +117,7 @@ export function ThreadItem({
 							{/* Assignment indicator */}
 							{isAssignedToMe && (
 								<UserCheck
-									className="h-3.5 w-3.5 text-primary flex-shrink-0"
+									className="text-primary h-3.5 w-3.5 flex-shrink-0"
 									aria-label="Assigned to you"
 								/>
 							)}
@@ -127,7 +127,7 @@ export function ThreadItem({
 						</div>
 
 						{/* Timestamp */}
-						<span className="text-xs text-muted-foreground flex-shrink-0">
+						<span className="text-muted-foreground flex-shrink-0 text-xs">
 							{(() => {
 								try {
 									const date =
@@ -147,7 +147,7 @@ export function ThreadItem({
 
 					{/* Phone number (if name exists) */}
 					{thread.remoteName && (
-						<div className="text-xs text-muted-foreground mb-1">
+						<div className="text-muted-foreground mb-1 text-xs">
 							{thread.remotePhoneNumber}
 						</div>
 					)}
@@ -155,7 +155,7 @@ export function ThreadItem({
 					{/* Last message preview */}
 					<p
 						className={cn(
-							"text-sm text-muted-foreground line-clamp-1",
+							"text-muted-foreground line-clamp-1 text-sm",
 							thread.unreadCount > 0 && "text-foreground font-medium",
 						)}
 					>
@@ -166,10 +166,10 @@ export function ThreadItem({
 					</p>
 
 					{/* Badges row */}
-					<div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+					<div className="mt-1.5 flex flex-wrap items-center gap-1.5">
 						{/* Priority badge */}
 						{(thread.priority === "high" || thread.priority === "urgent") && (
-							<Badge variant="destructive" className="h-5 text-[10px] px-1.5">
+							<Badge variant="destructive" className="h-5 px-1.5 text-xxs">
 								{thread.priority === "urgent" ? "URGENT" : "High"}
 							</Badge>
 						)}
@@ -178,7 +178,7 @@ export function ThreadItem({
 						{isUnassigned && (
 							<Badge
 								variant="outline"
-								className="h-5 text-[10px] px-1.5 border-orange-600 text-orange-600"
+								className="h-5 border-orange-600 px-1.5 text-xxs text-orange-600"
 							>
 								Unassigned
 							</Badge>
@@ -186,7 +186,7 @@ export function ThreadItem({
 
 						{/* Assigned to name */}
 						{thread.assignedToName && !isAssignedToMe && (
-							<Badge variant="secondary" className="h-5 text-[10px] px-1.5">
+							<Badge variant="secondary" className="h-5 px-1.5 text-xxs">
 								{thread.assignedToName}
 							</Badge>
 						)}
@@ -195,7 +195,7 @@ export function ThreadItem({
 						{thread.status === "resolved" && (
 							<Badge
 								variant="outline"
-								className="h-5 text-[10px] px-1.5 border-green-600 text-green-600"
+								className="h-5 border-green-600 px-1.5 text-xxs text-green-600"
 							>
 								Resolved
 							</Badge>
@@ -204,7 +204,7 @@ export function ThreadItem({
 						{thread.status === "snoozed" && thread.snoozedUntil && (
 							<Badge
 								variant="outline"
-								className="h-5 text-[10px] px-1.5 border-orange-600 text-orange-600"
+								className="h-5 border-orange-600 px-1.5 text-xxs text-orange-600"
 							>
 								Snoozed
 							</Badge>

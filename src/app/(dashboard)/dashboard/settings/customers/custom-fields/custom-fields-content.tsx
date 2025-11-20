@@ -36,6 +36,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import {
 	Tooltip,
@@ -231,12 +232,12 @@ export function CustomFieldsContent({ initialFields }: Props) {
 									<div className="flex items-start justify-between">
 										<div className="flex-1 space-y-4">
 											<div className="grid gap-4 sm:grid-cols-2">
-												<div>
-													<Label className="text-sm font-medium">
-														Field Name
-													</Label>
+												<StandardFormField
+													label="Field Name"
+													htmlFor={`field-name-${field.id}`}
+												>
 													<Input
-														className="mt-2"
+														id={`field-name-${field.id}`}
 														disabled={isPending}
 														onChange={(e) =>
 															updateField(
@@ -248,11 +249,16 @@ export function CustomFieldsContent({ initialFields }: Props) {
 														placeholder="e.g., Gate Code"
 														value={field.field_name}
 													/>
-												</div>
+												</StandardFormField>
 
-												<div>
-													<Label className="flex items-center gap-2 text-sm font-medium">
-														Field Type
+												<StandardFormField
+													label="Field Type"
+													htmlFor={`field-type-${field.id}`}
+												>
+													<div className="flex items-center gap-2 mb-2">
+														<span className="text-sm text-muted-foreground">
+															Type of input for this field
+														</span>
 														<Tooltip>
 															<TooltipTrigger>
 																<HelpCircle className="text-muted-foreground h-3 w-3" />
@@ -263,7 +269,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 																</p>
 															</TooltipContent>
 														</Tooltip>
-													</Label>
+													</div>
 													<Select
 														disabled={isPending}
 														onValueChange={(value) =>
@@ -275,7 +281,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 														}
 														value={field.field_type}
 													>
-														<SelectTrigger className="mt-2">
+														<SelectTrigger id={`field-type-${field.id}`}>
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
@@ -292,14 +298,19 @@ export function CustomFieldsContent({ initialFields }: Props) {
 															</SelectItem>
 														</SelectContent>
 													</Select>
-												</div>
+												</StandardFormField>
 											</div>
 
 											{(field.field_type === "select" ||
 												field.field_type === "multi_select") && (
-												<div>
-													<Label className="flex items-center gap-2 text-sm">
-														Options (comma-separated)
+												<StandardFormField
+													label="Options (comma-separated)"
+													htmlFor={`field-options-${field.id}`}
+												>
+													<div className="flex items-center gap-2 mb-2">
+														<span className="text-sm text-muted-foreground">
+															Separate options with commas
+														</span>
 														<Tooltip>
 															<TooltipTrigger>
 																<HelpCircle className="text-muted-foreground h-3 w-3" />
@@ -310,9 +321,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 																</p>
 															</TooltipContent>
 														</Tooltip>
-													</Label>
+													</div>
 													<Input
-														className="mt-2"
+														id={`field-options-${field.id}`}
 														disabled={isPending}
 														onChange={(e) =>
 															updateField(
@@ -331,7 +342,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 															</Badge>
 														))}
 													</div>
-												</div>
+												</StandardFormField>
 											)}
 
 											<Separator />

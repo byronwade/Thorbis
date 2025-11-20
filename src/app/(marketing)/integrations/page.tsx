@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Script from "next/script";
 import { Suspense } from "react";
 
@@ -9,6 +12,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const integrationKeywords = generateSemanticKeywords("integrations");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Integrations Directory",
@@ -20,6 +28,10 @@ export const metadata = generateSEOMetadata({
 		"thorbis integrations",
 		"field service integrations",
 		"quickbooks field service integration",
+		"software integrations",
+		"api integrations",
+		"third-party integrations",
+		...integrationKeywords.slice(0, 5),
 	],
 });
 
@@ -52,7 +64,7 @@ export default async function IntegrationsPage() {
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Thorbis integrates with leading accounting, payments, marketing, and
 						automation platforms. Browse verified integrations and discover new
-						ways to streamline back-office work—all included in the $100/month
+						ways to streamline back-office work—all included in the $200/month
 						base subscription with pay-as-you-go usage and no lock-in.
 					</p>
 				</header>

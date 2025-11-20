@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -7,18 +8,17 @@ export const SERVICE_AGREEMENTS_PAGE_SIZE = 50;
 const SERVICE_AGREEMENTS_SELECT = `
   id,
   company_id,
-  agreement_number,
   plan_number,
   name,
-  plan_type,
   type,
+  frequency,
   start_date,
   end_date,
   status,
-  value,
+  price,
   archived_at,
   deleted_at,
-  customer:customers!service_plans_customer_id_fkey (
+  customer:customers!service_plans_customer_id_customers_id_fk (
     id,
     display_name,
     first_name,
@@ -48,7 +48,8 @@ export async function getServiceAgreementsPageData(
 	pageSize: number = SERVICE_AGREEMENTS_PAGE_SIZE,
 	companyIdOverride?: string,
 ): Promise<ServiceAgreementsPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { agreements: [], totalCount: 0 };
@@ -75,3 +76,28 @@ export async function getServiceAgreementsPageData(
 		totalCount: count ?? 0,
 	};
 }
+
+/**
+ * Fetch complete service agreement data including customer, property, and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getServiceAgreementComplete = cache(
+	async (serviceAgreementId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc(
+			"get_service_agreement_complete",
+			{
+				p_service_agreement_id: serviceAgreementId,
+				p_company_id: companyId,
+			},
+		);
+
+		if (error) {
+			console.error("Error fetching service agreement:", error);
+			return null;
+		}
+
+		return data?.[0]?.service_agreement_data || null;
+	},
+);

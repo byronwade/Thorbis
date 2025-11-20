@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -108,7 +109,8 @@ export async function getContractsPageData(
 	pageSize: number = CONTRACTS_PAGE_SIZE,
 	companyIdOverride?: string,
 ): Promise<ContractsPageResult> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return { contracts: [], totalCount: 0 };
@@ -143,7 +145,8 @@ type ContractStatusRow = Pick<
 export async function getContractsStatusSummary(
 	companyIdOverride?: string,
 ): Promise<ContractStatusRow[]> {
-	"use cache";
+	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
+	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return [];
@@ -161,3 +164,25 @@ export async function getContractsStatusSummary(
 
 	return (data ?? []) as ContractStatusRow[];
 }
+
+/**
+ * Fetch complete contract data including related entities and tags
+ * Uses React.cache() for request-level deduplication
+ */
+export const getContractComplete = cache(
+	async (contractId: string, companyId: string) => {
+		const supabase = await createServiceSupabaseClient();
+
+		const { data, error } = await supabase.rpc("get_contract_complete", {
+			p_contract_id: contractId,
+			p_company_id: companyId,
+		});
+
+		if (error) {
+			console.error("Error fetching contract:", error);
+			return null;
+		}
+
+		return data?.[0]?.contract_data || null;
+	},
+);

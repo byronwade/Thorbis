@@ -288,6 +288,31 @@ async function getCompanyEmailIdentity(
 	supabase: SupabaseClient<Database>,
 	companyId: string,
 ) {
+	// Get company name first
+	const { data: company } = await supabase
+		.from("companies")
+		.select("name")
+		.eq("id", companyId)
+		.single();
+
+	const companyName = company?.name || "Notification";
+
+	// Check new company_email_domains table
+	const { data: domain } = await supabase
+		.from("company_email_domains")
+		.select("domain_name, subdomain")
+		.eq("company_id", companyId)
+		.eq("status", "verified")
+		.order("last_verified_at", { ascending: false })
+		.maybeSingle();
+
+	if (domain) {
+		// Construct full domain with subdomain
+		const fullDomain = `${domain.subdomain}.${domain.domain_name}`;
+		return formatFromAddress(companyName, `notifications@${fullDomain}`);
+	}
+
+	// Fallback: Check old communication_email_settings (legacy)
 	const { data: settings } = await supabase
 		.from("communication_email_settings")
 		.select("smtp_from_email, smtp_from_name")
@@ -298,7 +323,8 @@ async function getCompanyEmailIdentity(
 		return formatFromAddress(settings.smtp_from_name, settings.smtp_from_email);
 	}
 
-	const { data: domain } = await supabase
+	// Fallback: Check old communication_email_domains (legacy)
+	const { data: oldDomain } = await supabase
 		.from("communication_email_domains")
 		.select("domain")
 		.eq("company_id", companyId)
@@ -306,8 +332,8 @@ async function getCompanyEmailIdentity(
 		.order("last_verified_at", { ascending: false })
 		.maybeSingle();
 
-	if (domain?.domain) {
-		return formatFromAddress("Notifications", `notifications@${domain.domain}`);
+	if (oldDomain?.domain) {
+		return formatFromAddress(companyName, `notifications@${oldDomain.domain}`);
 	}
 
 	return null;

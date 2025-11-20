@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -136,19 +137,19 @@ export function EmailDialog({
 					</div>
 
 					{/* Subject */}
-					<div className="space-y-2">
-						<Label>Subject</Label>
+					<StandardFormField label="Subject" htmlFor="email-subject">
 						<Input
+							id="email-subject"
 							onChange={(e) => setSubject(e.target.value)}
 							placeholder="Email subject"
 							value={subject}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Message Body */}
-					<div className="space-y-2">
-						<Label>Message</Label>
+					<StandardFormField label="Message" htmlFor="email-message">
 						<Textarea
+							id="email-message"
 							className="min-h-[200px] resize-none"
 							onChange={(e) => setBody(e.target.value)}
 							placeholder="Type your message here..."
@@ -157,7 +158,7 @@ export function EmailDialog({
 						<div className="text-muted-foreground text-xs">
 							{body.length} characters
 						</div>
-					</div>
+					</StandardFormField>
 				</div>
 
 				{/* Actions */}

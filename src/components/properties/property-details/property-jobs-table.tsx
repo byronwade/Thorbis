@@ -16,6 +16,7 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { TablePresets } from "@/lib/datatable/table-presets";
 
 type PropertyJob = {
 	id: string;
@@ -96,7 +97,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				shrink: true,
 				render: (job) => (
 					<Link
-						className="font-mono text-sm font-medium hover:underline"
+						className="font-mono text-xs font-medium hover:underline"
 						href={`/dashboard/work/${job.id}`}
 					>
 						{job.job_number}
@@ -112,7 +113,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 						href={`/dashboard/work/${job.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
-						<span className="text-sm leading-tight font-medium hover:underline">
+						<span className="text-xs leading-tight font-medium hover:underline">
 							{job.title}
 						</span>
 					</Link>
@@ -160,7 +161,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 					return priority ? (
 						<Badge className={getPriorityColor(priority)}>{priority}</Badge>
 					) : (
-						<span className="text-muted-foreground text-sm">-</span>
+						<span className="text-muted-foreground text-xs">-</span>
 					);
 				},
 			},
@@ -172,7 +173,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				align: "right",
 				render: (job) => (
 					<div className="flex flex-col items-end gap-1">
-						<span className="text-sm font-medium">
+						<span className="text-xs font-medium">
 							{formatCurrency(job.financial?.total_amount ?? 0)}
 						</span>
 						{job.financial?.paid_amount && job.financial?.total_amount && (
@@ -191,7 +192,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				render: (job) => {
 					const scheduledStart = job.scheduled_start;
 					return scheduledStart ? (
-						<div className="flex items-center gap-2 text-sm">
+						<div className="flex items-center gap-2 text-xs">
 							<Calendar className="text-muted-foreground size-4" />
 							<span>
 								{new Date(scheduledStart).toLocaleDateString(undefined, {
@@ -202,7 +203,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 							</span>
 						</div>
 					) : (
-						<span className="text-muted-foreground text-sm">Not scheduled</span>
+						<span className="text-muted-foreground text-xs">Not scheduled</span>
 					);
 				},
 			},
@@ -241,6 +242,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 
 	return (
 		<FullWidthDataTable
+			{...TablePresets.compact()}
 			columns={columns}
 			data={jobs}
 			emptyMessage="No jobs found for this property"

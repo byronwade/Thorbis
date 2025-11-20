@@ -58,6 +58,7 @@
 
 @theme inline {
 	--color-background: hsl(var(--background));
+	--color-background-subtle: hsl(var(--background-subtle));
 	--color-foreground: hsl(var(--foreground));
 	--color-white: hsl(var(--surface-light));
 	--color-black: hsl(var(--surface-inverse));
@@ -81,6 +82,8 @@
 	--color-ring: hsl(var(--ring));
 	--color-input: hsl(var(--input));
 	--color-border: hsl(var(--border));
+	--color-border-subtle: hsl(var(--border-subtle));
+	--color-border-strong: hsl(var(--border-strong));
 	--color-destructive: hsl(var(--destructive));
 	--color-destructive-foreground: hsl(var(--destructive-foreground));
 	--color-accent-foreground: hsl(var(--accent-foreground));
@@ -118,7 +121,8 @@
 	/* Shadcn Neutral – clean minimalistic palette with electric blue accent */
 	--header-bg: 0 0% 100%;
 	--toolbar-bg: 0 0% 100%;
-	--background: 0 0% 96%;
+	--background: 0 0% 98%; /* Lighter for more depth */
+	--background-subtle: 0 0% 99%; /* NEW - for subtle variations */
 
 	--foreground: 0 0% 9%;
 	--card: 0 0% 100%;
@@ -135,8 +139,8 @@
 	--muted: 0 0% 98%;
 	--muted-foreground: 0 0% 45%;
 
-	--accent: 0 0% 98%;
-	--accent-foreground: 0 0% 12%;
+	--accent: 0 0% 96%; /* More visible than 98% */
+	--accent-foreground: 0 0% 10%; /* Darker for better contrast */
 
 	--destructive: 0 84.2% 60.2%;
 	--destructive-foreground: 0 0% 100%;
@@ -144,8 +148,10 @@
 	--warning: 47.9 95.8% 53.1%;
 	--info: 221 73% 56%;
 
-	--border: 0 0% 86%;
-	--input: 0 0% 86%;
+	--border: 0 0% 90%; /* Lighter, more subtle */
+	--border-subtle: 0 0% 94%; /* NEW - for hairline borders */
+	--border-strong: 0 0% 80%; /* NEW - for emphasis */
+	--input: 0 0% 90%;
 	--ring: 221 73% 56%;
 
 	--chart-1: 221 73% 56%;
@@ -170,6 +176,7 @@
 	--header-bg: 0 0% 8%;
 	--toolbar-bg: 0 0% 8%;
 	--background: 0 0% 6%;
+	--background-subtle: 0 0% 7%; /* NEW - subtle variation */
 
 	--foreground: 0 0% 95%;
 	--card: 0 0% 10%;
@@ -186,7 +193,7 @@
 	--muted: 0 0% 12%;
 	--muted-foreground: 0 0% 60%;
 
-	--accent: 0 0% 12%;
+	--accent: 0 0% 14%; /* Slightly lighter for visibility */
 	--accent-foreground: 0 0% 95%;
 
 	--destructive: 0 62.8% 30.6%;
@@ -195,8 +202,10 @@
 	--warning: 47.9 95.8% 53.1%;
 	--info: 221 73% 56%;
 
-	--border: 0 0% 24%;
-	--input: 0 0% 24%;
+	--border: 0 0% 20%; /* Darker for subtlety */
+	--border-subtle: 0 0% 16%; /* NEW - for hairline borders */
+	--border-strong: 0 0% 28%; /* NEW - for emphasis */
+	--input: 0 0% 20%;
 	--ring: 221 73% 56%;
 
 	--chart-1: 221 73% 56%;
@@ -222,21 +231,6 @@
 		@apply border-border outline-ring/50;
 	}
 
-	/* Remove all shadows globally */
-	* {
-		box-shadow: none !important;
-	}
-
-	/* Ensure borders are never thicker than 1px */
-	.border-2,
-	.border-4,
-	.border-8,
-	*[class*="border-2"],
-	*[class*="border-4"],
-	*[class*="border-8"] {
-		border-width: 1px !important;
-	}
-
 	html {
 		scroll-behavior: smooth;
 	}
@@ -244,6 +238,10 @@
 	body {
 		background-color: hsl(var(--background));
 		color: hsl(var(--foreground));
+		/* Better text rendering for retina displays */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
 	}
 
 	/* Dashboard-specific fixed layout */
@@ -257,23 +255,90 @@
 }
 
 @layer utilities {
-	/* Remove all shadows globally */
-	.shadow,
-	.shadow-sm,
-	.shadow-md,
-	.shadow-lg,
-	.shadow-xl,
-	.shadow-2xl,
-	.shadow-inner,
-	.shadow-none {
-		box-shadow: none !important;
+	/* Hairline borders for retina displays */
+	@supports (border-width: 0.5px) {
+		@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+			.border-hairline {
+				border-width: 0.5px;
+			}
+
+			.border-t-hairline {
+				border-top-width: 0.5px;
+			}
+
+			.border-b-hairline {
+				border-bottom-width: 0.5px;
+			}
+
+			.border-l-hairline {
+				border-left-width: 0.5px;
+			}
+
+			.border-r-hairline {
+				border-right-width: 0.5px;
+			}
+
+			.divide-hairline > * + * {
+				border-top-width: 0.5px;
+			}
+		}
 	}
 
-	/* Force all borders to be 1px max */
-	.border-2,
-	.border-4,
-	.border-8 {
-		border-width: 1px !important;
+	/* Fallback for non-retina displays */
+	@supports not (border-width: 0.5px) {
+		.border-hairline,
+		.border-t-hairline,
+		.border-b-hairline,
+		.border-l-hairline,
+		.border-r-hairline {
+			border-width: 1px;
+		}
+
+		.divide-hairline > * + * {
+			border-top-width: 1px;
+		}
+	}
+
+	/* Minimal shadow system (for overlays only) */
+	.shadow-overlay-xs {
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	}
+
+	.shadow-overlay-sm {
+		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	}
+
+	.shadow-overlay-md {
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	}
+
+	.shadow-overlay-lg {
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	}
+
+	.shadow-overlay-xl {
+		box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+	}
+
+	/* Dark mode shadow adjustments */
+	.dark .shadow-overlay-xs {
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+	}
+
+	.dark .shadow-overlay-sm {
+		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+	}
+
+	.dark .shadow-overlay-md {
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+	}
+
+	.dark .shadow-overlay-lg {
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+	}
+
+	.dark .shadow-overlay-xl {
+		box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
 	}
 
 	.no-scrollbar::-webkit-scrollbar {
@@ -489,5 +554,58 @@
 		)
 		header[data-app-toolbar][data-app-toolbar-scope="layout"] {
 		display: none;
+	}
+
+	/* Micro-interaction utilities */
+	.interactive-scale:active {
+		transform: scale(0.98);
+		transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.interactive-scale-light:active {
+		transform: scale(0.99);
+		transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	/* Smooth transitions for interactive elements */
+	.transition-smooth {
+		transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.transition-spring {
+		transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	/* Respect user preferences for reduced motion */
+	@media (prefers-reduced-motion: reduce) {
+		.animate-spring-in,
+		.animate-slide-in-bottom,
+		.transition-smooth,
+		.transition-spring,
+		.interactive-scale,
+		.interactive-scale-light {
+			animation: none !important;
+			transition: none !important;
+		}
+	}
+
+	/* Better focus visible states (2px instead of 3px) */
+	.focus-ring {
+		@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2;
+	}
+
+	/* Subtle inset shadow for selected states */
+	.selected-inset {
+		box-shadow: inset 2px 0 0 hsl(var(--primary));
+	}
+
+	/* Table row hover with inset glow */
+	.table-row-hover {
+		transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.table-row-hover:hover {
+		background: hsl(var(--accent) / 0.05);
+		box-shadow: inset 0 0 0 0.5px hsl(var(--primary) / 0.1);
 	}
 }

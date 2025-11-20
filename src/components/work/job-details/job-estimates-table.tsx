@@ -11,6 +11,7 @@ import {
 	Send,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { bulkArchive } from "@/actions/archive";
@@ -38,6 +39,7 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { EstimateStatusBadge } from "@/components/ui/status-badge";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 type Estimate = {
@@ -55,6 +57,7 @@ type JobEstimatesTableProps = {
 };
 
 export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
+	const router = useRouter();
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -85,8 +88,8 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
-				// Refresh the page to reflect changes
-				window.location.reload();
+				// Soft navigation - Server Component refetches with revalidatePath()
+				router.refresh();
 			} else {
 				toast.error("Failed to archive estimates");
 			}
@@ -109,8 +112,8 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 			if (result.success) {
 				toast.success("Estimate unlinked from job");
 				setUnlinkEstimateId(null);
-				// Refresh to show updated list
-				window.location.reload();
+				// Soft navigation - Server Component refetches with revalidatePath()
+				router.refresh();
 			} else {
 				toast.error(result.error || "Failed to unlink estimate");
 			}
@@ -130,7 +133,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				shrink: true,
 				render: (estimate) => (
 					<Link
-						className="text-foreground hover:text-primary truncate text-sm font-medium transition-colors hover:underline"
+						className="text-foreground hover:text-primary truncate text-xs font-medium transition-colors hover:underline"
 						href={`/dashboard/work/estimates/${estimate.id}`}
 						title={estimate.estimate_number}
 					>
@@ -149,7 +152,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 						onClick={(e) => e.stopPropagation()}
 						title={estimate.title || undefined}
 					>
-						<span className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
+						<span className="text-foreground truncate text-xs leading-tight font-medium hover:underline">
 							{estimate.title || "—"}
 						</span>
 					</Link>
@@ -169,7 +172,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				shrink: true,
 				align: "right",
 				render: (estimate) => (
-					<span className="text-sm font-semibold tabular-nums">
+					<span className="text-xs font-semibold tabular-nums">
 						{formatCurrencyCents(estimate.total_amount)}
 					</span>
 				),
@@ -181,7 +184,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				shrink: true,
 				hideOnMobile: true,
 				render: (estimate) => (
-					<span className="text-muted-foreground text-sm tabular-nums">
+					<span className="text-muted-foreground text-xs tabular-nums">
 						{estimate.valid_until
 							? formatDate(estimate.valid_until, "short")
 							: "—"}
@@ -255,13 +258,14 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 	return (
 		<>
 			<FullWidthDataTable
+				{...TablePresets.compact()}
 				bulkActions={bulkActions}
 				columns={columns}
 				data={estimates}
 				emptyIcon={<Receipt className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No estimates found for this job"
-				enableSelection={true}
 				getItemId={(estimate) => estimate.id}
+				noPadding={true}
 				searchFilter={(estimate, query) => {
 					const searchLower = query.toLowerCase();
 					return (
@@ -271,7 +275,6 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 					);
 				}}
 				searchPlaceholder="Search estimates..."
-				showPagination={true}
 			/>
 
 			<ArchiveConfirmDialog

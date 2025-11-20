@@ -178,7 +178,7 @@ export async function getArchivedItems(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -428,7 +428,7 @@ export async function getArchiveStats(): Promise<
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -502,7 +502,7 @@ export async function bulkRestore(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -582,7 +582,7 @@ export async function bulkArchive(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -673,7 +673,7 @@ export async function permanentDelete(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();

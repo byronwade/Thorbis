@@ -49,14 +49,14 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 		<div
 			className={cn(
 				"group hover:bg-muted/10 dark:hover:bg-muted/5 cursor-default transition-all duration-200",
-				compact ? "px-4 py-2" : "px-5 py-3",
+				compact ? "px-3.5 py-2" : "px-5 py-3",
 			)}
 		>
 			<div className="flex items-baseline gap-2">
 				<div
 					className={cn(
 						"text-foreground font-semibold tracking-tight tabular-nums transition-all duration-200",
-						compact ? "text-base leading-tight" : "text-xl leading-tight",
+						compact ? "text-[15px] leading-tight" : "text-xl leading-tight",
 					)}
 				>
 					{formattedValue}
@@ -64,7 +64,7 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 				{change !== null && (
 					<div
 						className={cn(
-							"flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium tabular-nums shadow-sm",
+							"flex items-center gap-0.5 rounded px-1 py-0.5 text-xxs font-medium tabular-nums shadow-sm",
 							isPositive && "bg-success/10 text-success ring-success/20 ring-1",
 							isNegative &&
 								"bg-destructive/10 text-destructive ring-destructive/20 ring-1",
@@ -82,16 +82,16 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 			</div>
 			<div
 				className={cn(
-					"text-muted-foreground/70 font-medium tracking-wide uppercase transition-all duration-200",
+					"text-muted-foreground font-medium tracking-wide transition-all duration-200",
 					compact
-						? "mt-0.5 text-[10px] leading-tight"
+						? "mt-0.5 text-xxs leading-tight"
 						: "mt-1 text-xs leading-tight",
 				)}
 			>
 				{stat.label}
 			</div>
 			{!compact && stat.changeLabel && (
-				<div className="text-muted-foreground/60 mt-0.5 text-[10px] leading-tight">
+				<div className="text-muted-foreground mt-0.5 text-xxs leading-tight">
 					{stat.changeLabel}
 				</div>
 			)}
@@ -134,7 +134,7 @@ export function StatsCards({
 	return (
 		<div className="bg-background w-full border-b">
 			{/* Stats Grid with inline area charts */}
-			<div className={`grid w-full ${gridColsClass} divide-x`}>
+			<div className={cn("grid w-full divide-x", gridColsClass)}>
 				{stats.map((stat) => (
 					<div className="group relative overflow-hidden" key={stat.label}>
 						{/* Content with padding */}

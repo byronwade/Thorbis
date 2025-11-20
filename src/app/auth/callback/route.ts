@@ -54,8 +54,8 @@ export async function GET(request: Request) {
 			if (data.user) {
 				// Check if user profile is complete
 				const { data: profile, error: profileError } = await supabase
-					.from("users")
-					.select("phone, name")
+					.from("profiles")
+					.select("phone, full_name")
 					.eq("id", data.user.id)
 					.single();
 
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
 			// Successfully authenticated with complete profile
 			// Check if user has an active company to determine redirect
 			const { data: hasCompany } = await supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("company_id")
 				.eq("user_id", data.user.id)
 				.eq("status", "active")

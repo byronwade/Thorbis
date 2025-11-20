@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type ContractsFilters,
 	useContractsFiltersStore,
@@ -112,15 +113,14 @@ export function ContractsFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-contracts-status">
 						<Select
 							onValueChange={(value: ContractsFilters["archiveStatus"]) =>
 								setLocalFilters({ ...localFilters, archiveStatus: value })
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-contracts-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -136,18 +136,23 @@ export function ContractsFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Contract Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Contract Status</Label>
+					<StandardFormField
+						label="Contract Status"
+						htmlFor="filter-contracts-contract-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-contracts-contract-status"
+								className="h-9"
+							>
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -158,12 +163,15 @@ export function ContractsFilterDropdown({
 								<SelectItem value="cancelled">Cancelled</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs">Customer Name</Label>
+					<StandardFormField
+						label="Customer Name"
+						htmlFor="filter-contracts-customer-name"
+					>
 						<Input
+							id="filter-contracts-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -174,12 +182,15 @@ export function ContractsFilterDropdown({
 							placeholder="Search by customer..."
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Contract Number */}
-					<div className="space-y-2">
-						<Label className="text-xs">Contract Number</Label>
+					<StandardFormField
+						label="Contract Number"
+						htmlFor="filter-contracts-contract-number"
+					>
 						<Input
+							id="filter-contracts-contract-number"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -190,13 +201,16 @@ export function ContractsFilterDropdown({
 							placeholder="Search by number..."
 							value={localFilters.contractNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Value Range */}
-					<div className="space-y-2">
-						<Label className="text-xs">Value Range</Label>
+					<StandardFormField
+						label="Value Range"
+						htmlFor="filter-contracts-value-min"
+					>
 						<div className="flex gap-2">
 							<Input
+								id="filter-contracts-value-min"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, valueMin: e.target.value })
@@ -206,6 +220,7 @@ export function ContractsFilterDropdown({
 								value={localFilters.valueMin}
 							/>
 							<Input
+								id="filter-contracts-value-max"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, valueMax: e.target.value })
@@ -215,7 +230,7 @@ export function ContractsFilterDropdown({
 								value={localFilters.valueMax}
 							/>
 						</div>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 

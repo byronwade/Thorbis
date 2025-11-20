@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type TeamFilters,
 	useTeamFiltersStore,
@@ -114,15 +115,14 @@ export function TeamFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-team-status">
 						<Select
 							onValueChange={(value: TeamFilters["archiveStatus"]) =>
 								setLocalFilters({ ...localFilters, archiveStatus: value })
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-team-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -138,18 +138,17 @@ export function TeamFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Role */}
-					<div className="space-y-2">
-						<Label className="text-xs">Role</Label>
+					<StandardFormField label="Role" htmlFor="filter-team-role">
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, role: value })
 							}
 							value={localFilters.role}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-team-role" className="h-9">
 								<SelectValue placeholder="All roles" />
 							</SelectTrigger>
 							<SelectContent>
@@ -162,18 +161,20 @@ export function TeamFilterDropdown({
 								<SelectItem value="contractor">Contractor</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Member Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Member Status</Label>
+					<StandardFormField
+						label="Member Status"
+						htmlFor="filter-team-member-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-team-member-status" className="h-9">
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -183,12 +184,15 @@ export function TeamFilterDropdown({
 								<SelectItem value="on_leave">On Leave</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Name Search */}
-					<div className="space-y-2">
-						<Label className="text-xs">Member Name</Label>
+					<StandardFormField
+						label="Member Name"
+						htmlFor="filter-team-member-name"
+					>
 						<Input
+							id="filter-team-member-name"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, name: e.target.value })
@@ -196,12 +200,12 @@ export function TeamFilterDropdown({
 							placeholder="Search by name..."
 							value={localFilters.name}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Email Search */}
-					<div className="space-y-2">
-						<Label className="text-xs">Email</Label>
+					<StandardFormField label="Email" htmlFor="filter-team-email">
 						<Input
+							id="filter-team-email"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, email: e.target.value })
@@ -209,12 +213,15 @@ export function TeamFilterDropdown({
 							placeholder="Search by email..."
 							value={localFilters.email}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Department */}
-					<div className="space-y-2">
-						<Label className="text-xs">Department</Label>
+					<StandardFormField
+						label="Department"
+						htmlFor="filter-team-department"
+					>
 						<Input
+							id="filter-team-department"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, department: e.target.value })
@@ -222,7 +229,7 @@ export function TeamFilterDropdown({
 							placeholder="Filter by department..."
 							value={localFilters.department}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 

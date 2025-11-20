@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	ArrowLeftRight,
 	CheckCircle2,
@@ -10,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +23,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const quickbooksKeywords = generateSemanticKeywords("quickbooks");
 
 export const metadata = generateSEOMetadata({
 	title: "QuickBooks Integration - Bidirectional Sync | Thorbis",
@@ -39,6 +52,86 @@ export const metadata = generateSEOMetadata({
 		"quickbooks sync",
 		"automated bookkeeping",
 		"accounting integration",
+		...quickbooksKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "How does the QuickBooks integration work?",
+		answer:
+			"Thorbis integrates bidirectionally with QuickBooks Online and QuickBooks Desktop via secure OAuth. When you create an invoice, estimate, or payment in Thorbis, it automatically syncs to QuickBooks and vice versa. Customers, jobs, payments, expenses, and chart of accounts sync in real-time. The integration runs automatically every hour or can be triggered manually. No duplicate data entry—changes made in either system reflect in both.",
+	},
+	{
+		question: "What QuickBooks data syncs with Thorbis?",
+		answer:
+			"Thorbis syncs customers, invoices, estimates, payments, expenses, credit memos, chart of accounts, items/products, tax rates, and classes/departments. Customer data syncs including contact info, addresses, and custom fields. Invoices sync with line items, taxes, and payment status. Payments sync with method and deposit account. Expenses sync for job costing and profitability tracking. All data syncs bidirectionally—changes in either system update the other.",
+	},
+	{
+		question: "Can I use QuickBooks Online or QuickBooks Desktop?",
+		answer:
+			"Yes. Thorbis integrates with both QuickBooks Online and QuickBooks Desktop. For QuickBooks Online, the integration is direct via OAuth API—just authorize once and sync starts automatically. For QuickBooks Desktop, you need the Web Connector application running on a Windows computer to sync. Both versions support the same data sync capabilities including invoices, payments, customers, and expenses.",
+	},
+	{
+		question: "Will the integration duplicate my data?",
+		answer:
+			"No. Thorbis uses intelligent matching to prevent duplicates. When syncing customers, it matches by email, phone, and name to find existing records. Invoices match by invoice number. If a match is found, it updates the existing record instead of creating a duplicate. You can review and approve syncs before they happen, map custom fields, and set sync rules to control what data syncs. The system also detects and prevents duplicate payments.",
+	},
+	{
+		question: "How often does data sync between Thorbis and QuickBooks?",
+		answer:
+			"Data syncs automatically every hour between Thorbis and QuickBooks. You can also trigger a manual sync anytime from the settings page. Critical data like new invoices and payments can be configured to sync immediately (within 5 minutes). The sync runs in the background and you receive notifications if errors occur. Sync history shows what data was synced and when, with detailed logs for troubleshooting.",
+	},
+	{
+		question: "What happens if there's a sync error?",
+		answer:
+			"If a sync error occurs, Thorbis pauses the sync and notifies you via email and in-app notification with details about the error. Common issues include missing required fields, invalid tax rates, or deleted items in QuickBooks. The error dashboard shows exactly which records failed and why. You can fix the issue and retry the sync. Failed syncs don't affect other records—successful syncs continue while errors are resolved individually.",
+	},
+]);
+
+// ItemList Schema - QuickBooks integration features
+const featuresSchema = createItemListSchema({
+	name: "QuickBooks Integration Features",
+	description:
+		"Bidirectional accounting sync with QuickBooks Online and Desktop",
+	items: [
+		{
+			name: "Two-Way Sync",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Bidirectional sync of customers, invoices, payments, and expenses. Changes in Thorbis or QuickBooks update both systems automatically.",
+		},
+		{
+			name: "Automatic Invoice Sync",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Invoices created in Thorbis appear in QuickBooks instantly with line items, taxes, and payment status. No manual export required.",
+		},
+		{
+			name: "Payment Reconciliation",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Payments sync with method, deposit account, and date. Automatically marks invoices as paid in both systems with transaction matching.",
+		},
+		{
+			name: "Duplicate Prevention",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Intelligent matching prevents duplicate customers, invoices, and payments. Matches by email, phone, invoice number, and transaction ID.",
+		},
+		{
+			name: "Error Handling & Logs",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Detailed sync history with error notifications, failed record dashboard, and retry options. Fix issues without affecting other syncs.",
+		},
+		{
+			name: "Custom Field Mapping",
+			url: `${siteUrl}/features/quickbooks`,
+			description:
+				"Map Thorbis custom fields to QuickBooks custom fields, classes, and departments. Control what data syncs and where it appears.",
+		},
 	],
 });
 
@@ -51,7 +144,7 @@ export default function QuickBooksPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -79,6 +172,26 @@ export default function QuickBooksPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="quickbooks-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="quickbooks-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="quickbooks-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -733,6 +846,17 @@ export default function QuickBooksPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("quickbooks", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

@@ -23,6 +23,7 @@ import {
 	UserX,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveProperty } from "@/actions/properties";
 import {
@@ -51,6 +52,7 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { JobEnrichmentPanel } from "@/components/work/job-enrichment-panel";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
@@ -128,6 +130,7 @@ export function PropertiesTable({
 	itemsPerPage = 10,
 	customerId,
 }: PropertiesTableProps) {
+	const router = useRouter();
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.properties);
 
@@ -238,7 +241,7 @@ export function PropertiesTable({
 				const baths = property.enrichment?.details?.bathrooms;
 
 				return (
-					<div className="text-sm">
+					<div className="text-xs">
 						<p className="font-medium">{sqFt ? sqFt.toLocaleString() : "—"}</p>
 						{beds && baths && (
 							<p className="text-muted-foreground text-xs">
@@ -270,7 +273,7 @@ export function PropertiesTable({
 				const displayValue = value;
 
 				return (
-					<div className="text-sm">
+					<div className="text-xs">
 						{displayValue ? (
 							<>
 								<p className="text-success dark:text-success font-semibold">
@@ -360,6 +363,7 @@ export function PropertiesTable({
 	return (
 		<>
 			<FullWidthDataTable
+				{...TablePresets.fullList()}
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredProperties}
@@ -376,13 +380,11 @@ export function PropertiesTable({
 				}
 				emptyIcon={<Building2 className="text-muted-foreground h-8 w-8" />}
 				emptyMessage="No properties found"
-				enableSelection={true}
 				entity="properties"
 				getItemId={(property) => property.id}
 				isArchived={(property) =>
 					Boolean(property.archived_at || property.deleted_at)
 				}
-				itemsPerPage={itemsPerPage}
 				searchFilter={searchFilter}
 				searchPlaceholder="Search properties..."
 				showArchived={archiveFilter !== "active"}
@@ -456,7 +458,7 @@ export function PropertiesTable({
 									}
 								}
 								if (archived > 0) {
-									window.location.reload();
+									router.refresh();
 								}
 							}}
 						>

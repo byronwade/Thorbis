@@ -113,7 +113,6 @@ export function MaterialsTable({
 				<Link
 					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`/dashboard/work/materials/${material.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{material.itemCode}
@@ -129,7 +128,6 @@ export function MaterialsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/materials/${material.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">

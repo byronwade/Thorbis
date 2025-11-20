@@ -250,7 +250,7 @@ async function requireEstimateCompanyId(
 	userId: string,
 ): Promise<string> {
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", userId)
 		.single();

@@ -33,6 +33,7 @@ import {
 	ArrowUpFromLine,
 	BadgeCheck,
 	BarChart,
+	Bell,
 	Book,
 	BookOpen,
 	Box,
@@ -46,17 +47,24 @@ import {
 	ClipboardList,
 	Clock,
 	CreditCard,
+	Database,
 	DollarSign,
 	FileEdit,
 	FileSignature,
 	FileSpreadsheet,
 	FileText,
+	Folder,
+	Gift,
 	Globe,
 	GraduationCap,
 	Hash,
+	Heart,
 	Home,
 	Inbox,
+	KeyRound,
+	Landmark,
 	List,
+	Lock,
 	Mail,
 	MailOpen,
 	MapPin,
@@ -66,16 +74,20 @@ import {
 	Palette,
 	Paperclip,
 	Phone,
+	PiggyBank,
 	QrCode,
 	Receipt,
+	Repeat,
 	Search,
 	Settings,
 	Shield,
 	ShieldAlert,
 	ShieldCheck,
 	ShoppingCart,
+	Sliders,
 	Sparkles,
 	Star,
+	Store,
 	Tag,
 	Target,
 	Ticket,
@@ -83,8 +95,11 @@ import {
 	TrendingUp,
 	Trophy,
 	User,
+	UserCog,
 	UserPlus,
 	Users,
+	Wallet,
+	Workflow,
 	Wrench,
 	X,
 	Zap,
@@ -1573,18 +1588,22 @@ const navigationSections = {
 				{
 					title: "Personal Info",
 					url: "/dashboard/settings/profile/personal",
+					icon: User,
 				},
 				{
 					title: "Security",
 					url: "/dashboard/settings/profile/security",
+					icon: Shield,
 				},
 				{
 					title: "Notifications",
 					url: "/dashboard/settings/profile/notifications",
+					icon: Bell,
 				},
 				{
 					title: "Preferences",
 					url: "/dashboard/settings/profile/preferences",
+					icon: Sliders,
 				},
 			],
 		},
@@ -1594,10 +1613,12 @@ const navigationSections = {
 				{
 					title: "Company Profile",
 					url: "/dashboard/settings/company",
+					icon: Building2,
 				},
 				{
 					title: "Billing",
 					url: "/dashboard/settings/billing",
+					icon: CreditCard,
 				},
 			],
 		},
@@ -1607,6 +1628,7 @@ const navigationSections = {
 				{
 					title: "Communications",
 					url: "/dashboard/settings/communications",
+					icon: MessageSquare,
 					items: [
 						{
 							title: "Overview",
@@ -1637,6 +1659,7 @@ const navigationSections = {
 				{
 					title: "Teams & Channels",
 					url: "/dashboard/settings/teams-channels",
+					icon: Users,
 				},
 			],
 		},
@@ -1646,22 +1669,27 @@ const navigationSections = {
 				{
 					title: "Jobs",
 					url: "/dashboard/settings/jobs",
+					icon: Briefcase,
 				},
 				{
 					title: "Customer Intake",
 					url: "/dashboard/settings/customer-intake",
+					icon: ClipboardList,
 				},
 				{
 					title: "Booking",
 					url: "/dashboard/settings/booking",
+					icon: Calendar,
 				},
 				{
 					title: "Checklists",
 					url: "/dashboard/settings/checklists",
+					icon: CheckCircle2,
 				},
 				{
 					title: "Job Fields",
 					url: "/dashboard/settings/job-fields",
+					icon: List,
 				},
 			],
 		},
@@ -1671,6 +1699,7 @@ const navigationSections = {
 				{
 					title: "Schedule Settings",
 					url: "/dashboard/settings/schedule",
+					icon: Calendar,
 					items: [
 						{
 							title: "Overview",
@@ -1706,6 +1735,7 @@ const navigationSections = {
 				{
 					title: "Customer Settings",
 					url: "/dashboard/settings/customers",
+					icon: UserCog,
 					items: [
 						{
 							title: "Overview",
@@ -1736,10 +1766,12 @@ const navigationSections = {
 				{
 					title: "Customer Portal",
 					url: "/dashboard/settings/customer-portal",
+					icon: Globe,
 				},
 				{
 					title: "Tags",
 					url: "/dashboard/settings/tags",
+					icon: Tag,
 				},
 			],
 		},
@@ -1749,22 +1781,27 @@ const navigationSections = {
 				{
 					title: "Invoices",
 					url: "/dashboard/settings/invoices",
+					icon: Receipt,
 				},
 				{
 					title: "Estimates",
 					url: "/dashboard/settings/estimates",
+					icon: FileText,
 				},
 				{
 					title: "Price Book",
 					url: "/dashboard/settings/pricebook",
+					icon: BookOpen,
 				},
 				{
 					title: "Service Plans",
 					url: "/dashboard/settings/service-plans",
+					icon: Repeat,
 				},
 				{
 					title: "Payroll",
 					url: "/dashboard/settings/payroll",
+					icon: Users,
 					items: [
 						{
 							title: "Overview",
@@ -1803,6 +1840,7 @@ const navigationSections = {
 				{
 					title: "Finance",
 					url: "/dashboard/settings/finance",
+					icon: Wallet,
 					items: [
 						{
 							title: "Overview",
@@ -1854,6 +1892,7 @@ const navigationSections = {
 				{
 					title: "Reporting Settings",
 					url: "/dashboard/settings/reporting",
+					icon: BarChart,
 					items: [
 						{
 							title: "Overview",
@@ -1889,10 +1928,12 @@ const navigationSections = {
 				{
 					title: "Marketing Center",
 					url: "/dashboard/settings/marketing",
+					icon: Megaphone,
 				},
 				{
 					title: "Lead Sources",
 					url: "/dashboard/settings/lead-sources",
+					icon: Target,
 				},
 			],
 		},
@@ -1902,6 +1943,7 @@ const navigationSections = {
 				{
 					title: "Automation Settings",
 					url: "/dashboard/settings/automation",
+					icon: Workflow,
 					items: [
 						{
 							title: "Overview",
@@ -1937,14 +1979,17 @@ const navigationSections = {
 				{
 					title: "Data Import/Export",
 					url: "/dashboard/settings/data-import-export",
+					icon: Database,
 				},
 				{
 					title: "Integrations",
 					url: "/dashboard/settings/integrations",
+					icon: Package,
 				},
 				{
 					title: "QuickBooks",
 					url: "/dashboard/settings/quickbooks",
+					icon: BookOpen,
 				},
 			],
 		},

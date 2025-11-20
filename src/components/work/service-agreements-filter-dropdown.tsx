@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type ServiceAgreementsFilters,
 	useServiceAgreementsFiltersStore,
@@ -118,15 +119,20 @@ export function ServiceAgreementsFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField
+						label="Status"
+						htmlFor="filter-service-agreements-status"
+					>
 						<Select
 							onValueChange={(
 								value: ServiceAgreementsFilters["archiveStatus"],
 							) => setLocalFilters({ ...localFilters, archiveStatus: value })}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-service-agreements-status"
+								className="h-9"
+							>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -142,18 +148,23 @@ export function ServiceAgreementsFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Agreement Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Agreement Status</Label>
+					<StandardFormField
+						label="Agreement Status"
+						htmlFor="filter-service-agreements-agreement-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-service-agreements-agreement-status"
+								className="h-9"
+							>
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -164,12 +175,15 @@ export function ServiceAgreementsFilterDropdown({
 								<SelectItem value="cancelled">Cancelled</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs">Customer Name</Label>
+					<StandardFormField
+						label="Customer Name"
+						htmlFor="filter-service-agreements-customer-name"
+					>
 						<Input
+							id="filter-service-agreements-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -180,12 +194,15 @@ export function ServiceAgreementsFilterDropdown({
 							placeholder="Search by customer..."
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Agreement Number */}
-					<div className="space-y-2">
-						<Label className="text-xs">Agreement Number</Label>
+					<StandardFormField
+						label="Agreement Number"
+						htmlFor="filter-service-agreements-agreement-number"
+					>
 						<Input
+							id="filter-service-agreements-agreement-number"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -196,13 +213,16 @@ export function ServiceAgreementsFilterDropdown({
 							placeholder="Search by number..."
 							value={localFilters.agreementNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Value Range */}
-					<div className="space-y-2">
-						<Label className="text-xs">Value Range</Label>
+					<StandardFormField
+						label="Value Range"
+						htmlFor="filter-service-agreements-value-min"
+					>
 						<div className="flex gap-2">
 							<Input
+								id="filter-service-agreements-value-min"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, valueMin: e.target.value })
@@ -212,6 +232,7 @@ export function ServiceAgreementsFilterDropdown({
 								value={localFilters.valueMin}
 							/>
 							<Input
+								id="filter-service-agreements-value-max"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, valueMax: e.target.value })
@@ -221,7 +242,7 @@ export function ServiceAgreementsFilterDropdown({
 								value={localFilters.valueMax}
 							/>
 						</div>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 

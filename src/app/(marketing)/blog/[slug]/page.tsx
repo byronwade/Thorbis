@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import { Calendar, Clock, Share2, Tag as TagIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +18,8 @@ import {
 	siteUrl,
 } from "@/lib/seo/metadata";
 import { createArticleSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
 
 type BlogArticlePageProps = {
 	params: Promise<{ slug: string }>;

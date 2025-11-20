@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
@@ -16,6 +19,12 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import { createItemListSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const industriesKeywords = generateSemanticKeywords("industries");
 
 export const metadata = generateSEOMetadata({
 	title: "Industries Powered by Thorbis",
@@ -27,11 +36,27 @@ export const metadata = generateSEOMetadata({
 		"field service industries",
 		"thorbis industries",
 		"service business software by industry",
+		"hvac software",
+		"plumbing software",
+		"electrical contractor software",
+		...industriesKeywords.slice(0, 5),
 	],
 });
 
 export default function IndustriesOverviewPage() {
 	const industries = getAllIndustries();
+
+	// ItemList Schema - All industries
+	const industriesListSchema = createItemListSchema({
+		name: "Industries Served by Thorbis",
+		description:
+			"Complete list of service industries supported by Thorbis field service management software",
+		items: industries.map((industry) => ({
+			name: industry.name,
+			url: `${siteUrl}/industries/${industry.slug}`,
+			description: industry.summary,
+		})),
+	});
 
 	return (
 		<>
@@ -47,6 +72,16 @@ export default function IndustriesOverviewPage() {
 				id="industries-breadcrumb-ld"
 				type="application/ld+json"
 			/>
+
+			{/* Industries List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(industriesListSchema),
+				}}
+				id="industries-list-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto mb-14 max-w-3xl text-center">
 					<span className="border-border text-secondary mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
@@ -59,7 +94,7 @@ export default function IndustriesOverviewPage() {
 						Whether you respond to emergency plumbing calls or run recurring
 						landscaping routes, Thorbis adapts to your playbooks with proven
 						workflows, automations, and reporting. Every industry gets the same
-						transparent pricing—$100/month base plus pay-as-you-go usage,
+						transparent pricing—$200/month base plus pay-as-you-go usage,
 						unlimited users, and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">

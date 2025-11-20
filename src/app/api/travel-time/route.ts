@@ -66,7 +66,7 @@ async function getUserCompany(
 	userId: string,
 ) {
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", userId)
 		.eq("status", "active")

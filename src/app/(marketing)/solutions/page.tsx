@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -17,6 +20,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const solutionsKeywords = generateSemanticKeywords("solutions");
 
 export const metadata = generateSEOMetadata({
 	title: "Solutions for Service Businesses",
@@ -29,6 +37,9 @@ export const metadata = generateSEOMetadata({
 		"contractor software modules",
 		"thorbis solutions",
 		"service business software",
+		"field service management solutions",
+		"service business tools",
+		...solutionsKeywords.slice(0, 5),
 	],
 });
 
@@ -456,7 +467,7 @@ export default function SolutionsOverviewPage() {
 						Create your account or schedule a working session
 					</h2>
 					<p className="text-muted-foreground mt-3 text-lg">
-						Thorbis is $100/month base plus usage, unlimited users, and data
+						Thorbis is $200/month base plus usage, unlimited users, and data
 						exports whenever you like. No contracts, no surprise add-ons.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">

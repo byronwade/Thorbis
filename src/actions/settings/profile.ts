@@ -294,7 +294,7 @@ export async function updatePersonalInfo(
 
 		// Update users table
 		const { error: userError } = await supabase
-			.from("users")
+			.from("profiles")
 			.update({
 				name: data.name,
 				email: data.email,
@@ -344,8 +344,8 @@ export async function getPersonalInfo(): Promise<ActionResult<any>> {
 		assertAuthenticated(user?.id);
 
 		const { data, error } = await supabase
-			.from("users")
-			.select("id, name, email, phone, avatar")
+			.from("profiles")
+			.select("id, full_name, email, phone, avatar_url")
 			.eq("id", user.id)
 			.single();
 

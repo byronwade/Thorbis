@@ -21,6 +21,7 @@ import { notFound, redirect } from "next/navigation";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { EstimatePageContent } from "@/components/work/estimates/estimate-page-content";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import { getEstimateComplete } from "@/lib/queries/estimates";
 import { generateEstimateStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -61,49 +62,26 @@ export async function EstimateDetailData({
 		redirect("/dashboard/welcome");
 	}
 
-	// First fetch the estimate without joins to check basic access
-	const { data: estimate, error: estimateError } = await supabase
-		.from("estimates")
+	// Fetch complete estimate data with tags via RPC (single optimized query)
+	const estimateData = await getEstimateComplete(estimateId, activeCompanyId);
+
+	if (!estimateData) {
+		return notFound();
+	}
+
+	// Extract data from RPC response
+	const estimate = estimateData;
+	const customer = estimateData.customer;
+	const job = estimateData.job;
+	const property = estimateData.property;
+
+	// Fetch invoice separately (not in RPC yet)
+	const { data: invoice } = await supabase
+		.from("invoices")
 		.select("*")
-		.eq("id", estimateId)
+		.eq("converted_from_estimate_id", estimateId)
 		.is("deleted_at", null)
 		.maybeSingle();
-
-	if (estimateError || !estimate) {
-		return notFound();
-	}
-
-	if (estimate.company_id !== activeCompanyId) {
-		return notFound();
-	}
-
-	// Now fetch related data separately to avoid join issues
-	const [{ data: customer }, { data: job }, { data: invoice }] =
-		await Promise.all([
-			// Fetch customer
-			estimate.customer_id
-				? supabase
-						.from("customers")
-						.select("*")
-						.eq("id", estimate.customer_id)
-						.maybeSingle()
-				: Promise.resolve({ data: null }),
-			// Fetch job
-			estimate.job_id
-				? supabase
-						.from("jobs")
-						.select("*")
-						.eq("id", estimate.job_id)
-						.maybeSingle()
-				: Promise.resolve({ data: null }),
-			// Fetch invoice (if this estimate was converted)
-			supabase
-				.from("invoices")
-				.select("*")
-				.eq("converted_from_estimate_id", estimateId)
-				.is("deleted_at", null)
-				.maybeSingle(),
-		]);
 
 	// Fetch all related data (including contract for workflow timeline)
 	const [
@@ -141,10 +119,11 @@ export async function EstimateDetailData({
 			.order("created_at", { ascending: false }),
 	]);
 
-	const estimateData = {
+	const completeEstimateData = {
 		estimate,
 		customer,
 		job,
+		property,
 		invoice,
 		contract, // for workflow timeline
 		activities: activities || [],
@@ -183,7 +162,10 @@ export async function EstimateDetailData({
 		<ToolbarStatsProvider stats={stats}>
 			<div className="flex h-full w-full flex-col overflow-auto">
 				<div className="mx-auto w-full max-w-7xl">
-					<EstimatePageContent entityData={estimateData} metrics={metrics} />
+					<EstimatePageContent
+						entityData={completeEstimateData}
+						metrics={metrics}
+					/>
 				</div>
 			</div>
 		</ToolbarStatsProvider>

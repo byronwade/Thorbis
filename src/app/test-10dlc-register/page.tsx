@@ -35,7 +35,7 @@ export default function Test10DLCRegister() {
 	};
 
 	return (
-		<div className="min-h-screen overflow-y-auto bg-background p-8">
+		<div className="bg-background min-h-screen overflow-y-auto p-8">
 			<div className="mx-auto max-w-4xl space-y-8">
 				{/* Header */}
 				<div>
@@ -68,11 +68,13 @@ export default function Test10DLCRegister() {
 
 							<div className="my-4 space-y-2">
 								<p className="font-medium">This automated process will:</p>
-								<ul className="ml-6 space-y-2 list-disc">
+								<ul className="ml-6 list-disc space-y-2">
 									<li>
 										<strong>For Regular Numbers (10DLC):</strong>
-										<ul className="ml-6 mt-1 space-y-1 list-circle">
-											<li>Create a verified brand with The Campaign Registry</li>
+										<ul className="list-circle mt-1 ml-6 space-y-1">
+											<li>
+												Create a verified brand with The Campaign Registry
+											</li>
 											<li>Create a messaging campaign</li>
 											<li>Attach all your phone numbers to the campaign</li>
 											<li>
@@ -84,7 +86,7 @@ export default function Test10DLCRegister() {
 									</li>
 									<li>
 										<strong>For Toll-Free Numbers:</strong>
-										<ul className="ml-6 mt-1 space-y-1 list-circle">
+										<ul className="list-circle mt-1 ml-6 space-y-1">
 											<li>Submit toll-free verification request</li>
 											<li>Provide business and use case information</li>
 											<li>
@@ -158,8 +160,12 @@ export default function Test10DLCRegister() {
 						}
 					>
 						<CardHeader>
-							<CardTitle className={result.success ? "text-green-600" : "text-red-600"}>
-								{result.success ? "✅ Registration Successful" : "❌ Registration Failed"}
+							<CardTitle
+								className={result.success ? "text-green-600" : "text-red-600"}
+							>
+								{result.success
+									? "✅ Registration Successful"
+									: "❌ Registration Failed"}
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4">
@@ -184,11 +190,13 @@ export default function Test10DLCRegister() {
 							)}
 
 							{result.tollFreeRequestId && (
-								<div className="rounded-lg border bg-background p-4">
+								<div className="bg-background rounded-lg border p-4">
 									<h3 className="mb-2 font-semibold">
 										Toll-Free Verification Request ID:
 									</h3>
-									<p className="font-mono text-sm">{result.tollFreeRequestId}</p>
+									<p className="font-mono text-sm">
+										{result.tollFreeRequestId}
+									</p>
 									<p className="text-muted-foreground mt-2 text-sm">
 										Approval typically takes 5-7 business days
 									</p>
@@ -196,31 +204,31 @@ export default function Test10DLCRegister() {
 							)}
 
 							{result.brandId && (
-								<div className="rounded-lg border bg-background p-4">
+								<div className="bg-background rounded-lg border p-4">
 									<h3 className="mb-2 font-semibold">10DLC Brand ID:</h3>
 									<p className="font-mono text-sm">{result.brandId}</p>
 								</div>
 							)}
 
 							{result.campaignId && (
-								<div className="rounded-lg border bg-background p-4">
+								<div className="bg-background rounded-lg border p-4">
 									<h3 className="mb-2 font-semibold">10DLC Campaign ID:</h3>
 									<p className="font-mono text-sm">{result.campaignId}</p>
 									<Alert className="mt-4 border-green-500 bg-green-50 dark:bg-green-950">
 										<CheckCircle2 className="size-4 text-green-600" />
 										<AlertDescription className="text-green-600">
-											<strong>10DLC SMS enabled immediately!</strong> You can now
-											send text messages from your regular phone numbers.
+											<strong>10DLC SMS enabled immediately!</strong> You can
+											now send text messages from your regular phone numbers.
 										</AlertDescription>
 									</Alert>
 								</div>
 							)}
 
 							<details className="group">
-								<summary className="cursor-pointer font-semibold transition-colors hover:text-primary">
+								<summary className="hover:text-primary cursor-pointer font-semibold transition-colors">
 									Full Response JSON
 								</summary>
-								<pre className="mt-3 max-h-96 overflow-auto rounded-lg border bg-background p-4 text-xs">
+								<pre className="bg-background mt-3 max-h-96 overflow-auto rounded-lg border p-4 text-xs">
 									{JSON.stringify(result, null, 2)}
 								</pre>
 							</details>
@@ -320,9 +328,10 @@ export default function Test10DLCRegister() {
 					<AlertTitle>Automated During Onboarding</AlertTitle>
 					<AlertDescription>
 						<p className="mt-2">
-							This registration process now happens <strong>automatically</strong> during
-							onboarding (Step 4). Users submit verification with one click using
-							their company information from Step 1.
+							This registration process now happens{" "}
+							<strong>automatically</strong> during onboarding (Step 4). Users
+							submit verification with one click using their company information
+							from Step 1.
 						</p>
 						<p className="mt-2">
 							This test page is for debugging and manual registration only.

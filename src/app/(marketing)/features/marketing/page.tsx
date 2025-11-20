@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	ArrowDown,
 	ArrowRight,
@@ -13,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,12 +26,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const marketingKeywords = generateSemanticKeywords("marketing automation");
 
 export const metadata = generateSEOMetadata({
 	title: "Marketing Automation for Service Businesses | Thorbis",
@@ -42,6 +55,85 @@ export const metadata = generateSEOMetadata({
 		"review generation",
 		"customer lifecycle marketing",
 		"field service marketing",
+		...marketingKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "What marketing automation features does Thorbis include?",
+		answer:
+			"Thorbis includes complete marketing automation for service businesses: automated review requests after job completion, nurture campaigns for leads and estimates, seasonal service reminders (e.g., annual HVAC tune-ups), win-back campaigns for inactive customers, referral request automation, email and SMS drip campaigns, abandoned cart recovery for unpaid estimates, and customer lifecycle segmentation. All campaigns trigger automatically based on customer behavior and job data.",
+	},
+	{
+		question: "How does automated review generation work?",
+		answer:
+			"Thorbis automatically requests reviews from satisfied customers after job completion. The system waits 1-3 days (configurable) after a successful job, then sends an email and/or SMS with a direct link to leave a review on Google, Facebook, or your preferred platform. You can customize the message, timing, and review platform. Only customers with completed jobs and 5-star satisfaction ratings receive requests. Analytics track response rates and average star ratings.",
+	},
+	{
+		question: "Can I automate follow-ups for estimates?",
+		answer:
+			"Yes. Thorbis automatically nurtures leads with unpaid estimates. Create custom follow-up sequences that send reminders via email and SMS at specific intervals (e.g., 3 days, 7 days, 14 days after estimate). Each message can include a payment link, limited-time discount, or seasonal offer. Track open rates, click rates, and conversion rates to optimize timing and messaging. Stop campaigns automatically when the estimate is accepted or marked lost.",
+	},
+	{
+		question: "How do seasonal service reminders work?",
+		answer:
+			"Thorbis tracks equipment and service history to send timely seasonal reminders. For example, HVAC customers receive tune-up reminders before summer and winter. The system knows when the last service was performed and automatically schedules reminders based on your custom intervals (e.g., annual, semi-annual, quarterly). Customers can book directly from the reminder email or SMS. You can create different reminder campaigns for different service types and equipment.",
+	},
+	{
+		question: "Can I create custom email and SMS campaigns?",
+		answer:
+			"Yes. Thorbis includes a drag-and-drop campaign builder for custom email and SMS sequences. Create campaigns for any use case: new customer welcome series, maintenance plan promotions, referral rewards, holiday specials, or customer appreciation messages. Segment customers by service history, equipment type, location, or custom tags. Schedule campaigns or trigger them based on events like job completion, estimate sent, or customer birthday. A/B test subject lines and timing to optimize performance.",
+	},
+	{
+		question: "How does marketing attribution tracking work?",
+		answer:
+			"Thorbis tracks marketing source attribution from lead to revenue. Tag leads by source when they enter the system (Google Ads, Facebook, referral, direct call, website form). Track which sources generate the most leads, highest conversion rates, best customer lifetime value, and lowest acquisition cost. Campaign analytics show email open rates, SMS response rates, booking conversion rates, and ROI. Use this data to allocate budget to the most profitable marketing channels.",
+	},
+]);
+
+// ItemList Schema - Marketing automation features
+const featuresSchema = createItemListSchema({
+	name: "Marketing Automation Features",
+	description: "Complete lifecycle marketing automation for service businesses",
+	items: [
+		{
+			name: "Automated Review Requests",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Automatically request reviews from satisfied customers after job completion. Direct links to Google, Facebook, or your review platform with customizable timing.",
+		},
+		{
+			name: "Lead Nurture Campaigns",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Automated follow-up sequences for estimates and leads. Email and SMS reminders with payment links and limited-time offers to increase conversion.",
+		},
+		{
+			name: "Seasonal Service Reminders",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Smart reminders based on equipment and service history. HVAC tune-ups, filter changes, and maintenance plan renewals sent at optimal times.",
+		},
+		{
+			name: "Win-Back Campaigns",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Re-engage inactive customers with targeted offers. Automatically detect customers who haven't booked in 6-12 months and send win-back promotions.",
+		},
+		{
+			name: "Referral Automation",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Automated referral requests to loyal customers with custom incentives. Track referral sources and reward customers for successful referrals.",
+		},
+		{
+			name: "Marketing Attribution & ROI",
+			url: `${siteUrl}/features/marketing`,
+			description:
+				"Track every marketing channel from lead to revenue. See which sources generate the highest ROI, lifetime value, and conversion rates.",
+		},
 	],
 });
 
@@ -54,7 +146,7 @@ export default function MarketingPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -82,6 +174,26 @@ export default function MarketingPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="marketing-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="marketing-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="marketing-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -1046,6 +1158,17 @@ export default function MarketingPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("marketing", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

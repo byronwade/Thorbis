@@ -9,11 +9,15 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
+	ActionError,
 	type ActionResult,
+	ERROR_CODES,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -77,7 +81,10 @@ export async function getJobTeamAssignments(
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -85,34 +92,57 @@ export async function getJobTeamAssignments(
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
 		}
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
 
-		if (!teamMember) {
-			throw new Error("User is not a team member");
+		const serviceSupabase = await createServiceSupabaseClient();
+		if (!serviceSupabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: job } = await supabase
+		const { data: job, error: jobError } = await serviceSupabase
 			.from("jobs")
 			.select("id")
 			.eq("id", jobId)
-			.eq("company_id", teamMember.company_id)
-			.single();
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.maybeSingle();
+
+		if (jobError) {
+			throw new ActionError(
+				"Failed to load job",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: jobError.hint,
+					details: jobError.details,
+				},
+			);
+		}
 
 		if (!job) {
-			throw new Error("Job not found");
+			throw new ActionError(
+				"Job not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Get team assignments with member details
-		const { data: assignments, error } = await supabase
+		const { data: assignments, error: assignmentsError } = await serviceSupabase
 			.from("job_team_assignments")
 			.select(
 				`
@@ -127,48 +157,93 @@ export async function getJobTeamAssignments(
           id,
           user_id,
           job_title,
-          users!inner (
-            id,
-            email,
-            first_name,
-            last_name,
-            avatar_url,
-            phone
-          )
+          company_id
         )
       `,
 			)
 			.eq("job_id", jobId)
+			.eq("team_members.company_id", companyId)
 			.is("removed_at", null)
 			.order("assigned_at", { ascending: true });
 
-		if (error) {
-			throw error;
+		if (assignmentsError) {
+			throw new ActionError(
+				"Failed to load team assignments",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: assignmentsError.hint,
+					details: assignmentsError.details,
+				},
+			);
 		}
 
-		// Transform to expected format
-		const transformed = (assignments || []).map((assignment: any) => ({
-			id: assignment.id,
-			jobId: assignment.job_id,
-			teamMemberId: assignment.team_member_id,
-			role: assignment.role,
-			assignedAt: assignment.assigned_at,
-			assignedBy: assignment.assigned_by,
-			notes: assignment.notes,
-			teamMember: {
-				id: assignment.team_members.id,
-				userId: assignment.team_members.user_id,
-				jobTitle: assignment.team_members.job_title,
-				user: {
-					id: assignment.team_members.users.id,
-					email: assignment.team_members.users.email,
-					firstName: assignment.team_members.users.first_name,
-					lastName: assignment.team_members.users.last_name,
-					avatarUrl: assignment.team_members.users.avatar_url,
-					phone: assignment.team_members.users.phone,
+		if (!assignments || assignments.length === 0) {
+			return [];
+		}
+
+		// Get user details from public.users table
+		const userIds = assignments
+			.map((a: any) => a.team_members?.user_id)
+			.filter(Boolean);
+		const { data: users, error: usersError } = await serviceSupabase
+			.from("profiles")
+			.select("id, email, full_name, avatar_url, phone")
+			.in("id", userIds);
+
+		if (usersError) {
+			throw new ActionError(
+				"Failed to load user details",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: usersError.hint,
+					details: usersError.details,
 				},
-			},
-		}));
+			);
+		}
+
+		// Create a map of users by ID for quick lookup
+		const usersMap = new Map((users || []).map((user) => [user.id, user]));
+
+		// Transform to expected format
+		const transformed = assignments.map((assignment: any) => {
+			const memberUser = usersMap.get(assignment.team_members?.user_id);
+
+			return {
+				id: assignment.id,
+				jobId: assignment.job_id,
+				teamMemberId: assignment.team_member_id,
+				role: assignment.role,
+				assignedAt: assignment.assigned_at,
+				assignedBy: assignment.assigned_by,
+				notes: assignment.notes,
+				teamMember: {
+					id: assignment.team_members.id,
+					userId: assignment.team_members.user_id,
+					jobTitle: assignment.team_members.job_title,
+					user: memberUser
+						? {
+								id: memberUser.id,
+								email: memberUser.email,
+								firstName: memberUser.full_name?.split(" ")[0] || null,
+								lastName:
+									memberUser.full_name?.split(" ").slice(1).join(" ") || null,
+								avatarUrl: memberUser.avatar_url,
+								phone: memberUser.phone,
+							}
+						: {
+								id:
+									assignment.team_members.user_id ?? assignment.team_members.id,
+								email: "",
+								firstName: null,
+								lastName: null,
+								avatarUrl: null,
+								phone: null,
+							},
+				},
+			};
+		});
 
 		return transformed;
 	});
@@ -198,7 +273,10 @@ export async function getAvailableTeamMembers(): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -206,62 +284,113 @@ export async function getAvailableTeamMembers(): Promise<
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
 		}
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
 
-		if (!teamMember) {
-			throw new Error("User is not a team member");
+		const serviceSupabase = await createServiceSupabaseClient();
+		if (!serviceSupabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get all active team members in company
-		const { data: members, error } = await supabase
-			.from("team_members")
-			.select(
-				`
-        id,
-        user_id,
-        job_title,
-        status,
-        users!inner (
-          id,
-          email,
-          first_name,
-          last_name,
-          avatar_url,
-          phone
-        )
-      `,
-			)
-			.eq("company_id", teamMember.company_id)
-			.eq("status", "active")
-			.order("users(first_name)", { ascending: true });
+		const { data: members, error: membersError } = await serviceSupabase
+			.from("company_memberships")
+			.select("id, user_id, job_title, status, company_id")
+			.eq("company_id", companyId)
+			.eq("status", "active");
 
-		if (error) {
-			throw error;
+		if (membersError) {
+			throw new ActionError(
+				"Failed to load team members",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: membersError.hint,
+					details: membersError.details,
+				},
+			);
 		}
 
+		if (!members || members.length === 0) {
+			return [];
+		}
+
+		// Get user details from public.users table
+		const userIds = members.map((m) => m.user_id).filter(Boolean);
+		const { data: users, error: usersError } = await serviceSupabase
+			.from("profiles")
+			.select("id, email, full_name, avatar_url, phone")
+			.in("id", userIds);
+
+		if (usersError) {
+			throw new ActionError(
+				"Failed to load user details",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: usersError.hint,
+					details: usersError.details,
+				},
+			);
+		}
+
+		// Create a map of users by ID for quick lookup
+		const usersMap = new Map((users || []).map((user) => [user.id, user]));
+
 		// Transform to expected format
-		const transformed = (members || []).map((member: any) => ({
-			id: member.id,
-			userId: member.user_id,
-			jobTitle: member.job_title,
-			status: member.status,
-			user: {
-				id: member.users.id,
-				email: member.users.email,
-				firstName: member.users.first_name,
-				lastName: member.users.last_name,
-				avatarUrl: member.users.avatar_url,
-				phone: member.users.phone,
-			},
-		}));
+		const transformed = members.map((member) => {
+			const memberUser = usersMap.get(member.user_id);
+
+			return {
+				id: member.id,
+				userId: member.user_id,
+				jobTitle: member.job_title,
+				status: member.status,
+				user: memberUser
+					? {
+							id: memberUser.id,
+							email: memberUser.email,
+							firstName: memberUser.full_name?.split(" ")[0] || null,
+							lastName:
+								memberUser.full_name?.split(" ").slice(1).join(" ") || null,
+							avatarUrl: memberUser.avatar_url,
+							phone: memberUser.phone,
+						}
+					: {
+							id: member.user_id ?? member.id,
+							email: "",
+							firstName: null,
+							lastName: null,
+							avatarUrl: null,
+							phone: null,
+						},
+			};
+		});
+
+		// Sort by user name
+		transformed.sort((a, b) => {
+			const nameA = [a.user.firstName, a.user.lastName]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+			const nameB = [b.user.firstName, b.user.lastName]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+			return nameA.localeCompare(nameB);
+		});
 
 		return transformed;
 	});
@@ -277,7 +406,10 @@ export async function assignTeamMemberToJob(
 		const validated = assignTeamMemberSchema.parse(input);
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -285,52 +417,91 @@ export async function assignTeamMemberToJob(
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
 		}
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember) {
-			throw new Error("User is not a team member");
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: job } = await supabase
+		const { data: job, error: jobError } = await supabase
 			.from("jobs")
 			.select("id")
 			.eq("id", validated.jobId)
-			.eq("company_id", teamMember.company_id)
-			.single();
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (jobError) {
+			throw new ActionError(
+				"Failed to load job",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: jobError.hint,
+					details: jobError.details,
+				},
+			);
+		}
 
 		if (!job) {
-			throw new Error("Job not found");
+			throw new ActionError(
+				"Job not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Verify team member belongs to company
-		const { data: targetMember } = await supabase
-			.from("team_members")
+		const { data: targetMember, error: targetError } = await supabase
+			.from("company_memberships")
 			.select("id")
 			.eq("id", validated.teamMemberId)
-			.eq("company_id", teamMember.company_id)
-			.single();
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (targetError) {
+			throw new ActionError(
+				"Failed to load team member",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: targetError.hint,
+					details: targetError.details,
+				},
+			);
+		}
 
 		if (!targetMember) {
-			throw new Error("Team member not found");
+			throw new ActionError(
+				"Team member not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// If assigning as primary, remove other primary assignments
 		if (validated.role === "primary") {
-			await supabase
+			const { error: demoteError } = await supabase
 				.from("job_team_assignments")
 				.update({ role: "crew" })
 				.eq("job_id", validated.jobId)
 				.eq("role", "primary")
 				.is("removed_at", null);
+
+			if (demoteError) {
+				throw new ActionError(
+					"Failed to update primary assignment",
+					ERROR_CODES.DB_UPDATE_ERROR,
+					500,
+					{ hint: demoteError.hint, details: demoteError.details },
+				);
+			}
 		}
 
 		// Create assignment (upsert to handle duplicates)
@@ -353,12 +524,26 @@ export async function assignTeamMemberToJob(
 			.single();
 
 		if (error) {
-			throw error;
+			throw new ActionError(
+				"Failed to assign team member",
+				ERROR_CODES.DB_UPDATE_ERROR,
+				500,
+				{
+					hint: error.hint,
+					details: error.details,
+				},
+			);
 		}
+
+		// NOTE: We do NOT auto-assign to appointments anymore
+		// Job-level assignments are for planning/oversight
+		// Appointment-level assignments are explicit scheduling decisions
+		// The UI will suggest job-level team members when creating appointments
 
 		// Revalidate paths
 		revalidatePath("/dashboard/work");
 		revalidatePath(`/dashboard/work/jobs/${validated.jobId}`);
+		revalidatePath(`/dashboard/work/${validated.jobId}`);
 
 		return { id: assignment.id };
 	});
@@ -374,7 +559,10 @@ export async function removeTeamMemberFromJob(
 		const validated = removeTeamMemberSchema.parse(input);
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -382,18 +570,44 @@ export async function removeTeamMemberFromJob(
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
 		}
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
 
-		if (!teamMember) {
-			throw new Error("User is not a team member");
+		// Verify job belongs to company before removing assignments
+		const { data: job, error: jobError } = await supabase
+			.from("jobs")
+			.select("id")
+			.eq("id", validated.jobId)
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (jobError) {
+			throw new ActionError(
+				"Failed to load job",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: jobError.hint,
+					details: jobError.details,
+				},
+			);
+		}
+
+		if (!job) {
+			throw new ActionError(
+				"Job not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Soft delete the assignment
@@ -408,12 +622,25 @@ export async function removeTeamMemberFromJob(
 			.is("removed_at", null);
 
 		if (error) {
-			throw error;
+			throw new ActionError(
+				"Failed to remove team member",
+				ERROR_CODES.DB_UPDATE_ERROR,
+				500,
+				{
+					hint: error.hint,
+					details: error.details,
+				},
+			);
 		}
+
+		// NOTE: We do NOT remove from appointments when removing from job
+		// Appointment assignments are independent - may want to keep scheduled team member
+		// even if they're no longer on the job-level team
 
 		// Revalidate paths
 		revalidatePath("/dashboard/work");
 		revalidatePath(`/dashboard/work/jobs/${validated.jobId}`);
+		revalidatePath(`/dashboard/work/${validated.jobId}`);
 	});
 }
 
@@ -427,7 +654,10 @@ export async function bulkAssignTeamMembers(
 		const validated = bulkAssignTeamMembersSchema.parse(input);
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -435,30 +665,44 @@ export async function bulkAssignTeamMembers(
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
 		}
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember) {
-			throw new Error("User is not a team member");
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: job } = await supabase
+		const { data: job, error: jobError } = await supabase
 			.from("jobs")
 			.select("id")
 			.eq("id", validated.jobId)
-			.eq("company_id", teamMember.company_id)
-			.single();
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (jobError) {
+			throw new ActionError(
+				"Failed to load job",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: jobError.hint,
+					details: jobError.details,
+				},
+			);
+		}
 
 		if (!job) {
-			throw new Error("Job not found");
+			throw new ActionError(
+				"Job not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Create assignments in bulk
@@ -476,7 +720,15 @@ export async function bulkAssignTeamMembers(
 			});
 
 		if (error) {
-			throw error;
+			throw new ActionError(
+				"Failed to assign team members",
+				ERROR_CODES.DB_UPDATE_ERROR,
+				500,
+				{
+					hint: error.hint,
+					details: error.details,
+				},
+			);
 		}
 
 		// Revalidate paths
@@ -498,7 +750,10 @@ export async function updateTeamMemberRole(
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new Error("Server configuration error");
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify user authentication
@@ -506,17 +761,63 @@ export async function updateTeamMemberRole(
 			data: { user },
 		} = await supabase.auth.getUser();
 		if (!user) {
-			throw new Error("Unauthorized");
+			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
+		}
+
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"No active company selected",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify job belongs to company
+		const { data: job, error: jobError } = await supabase
+			.from("jobs")
+			.select("id")
+			.eq("id", jobId)
+			.eq("company_id", companyId)
+			.maybeSingle();
+
+		if (jobError) {
+			throw new ActionError(
+				"Failed to load job",
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+				{
+					hint: jobError.hint,
+					details: jobError.details,
+				},
+			);
+		}
+
+		if (!job) {
+			throw new ActionError(
+				"Job not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// If updating to primary, remove other primary assignments first
 		if (newRole === "primary") {
-			await supabase
+			const { error: demoteError } = await supabase
 				.from("job_team_assignments")
 				.update({ role: "crew" })
 				.eq("job_id", jobId)
 				.eq("role", "primary")
 				.is("removed_at", null);
+
+			if (demoteError) {
+				throw new ActionError(
+					"Failed to update primary assignment",
+					ERROR_CODES.DB_UPDATE_ERROR,
+					500,
+					{ hint: demoteError.hint, details: demoteError.details },
+				);
+			}
 		}
 
 		// Update the role
@@ -528,7 +829,15 @@ export async function updateTeamMemberRole(
 			.is("removed_at", null);
 
 		if (error) {
-			throw error;
+			throw new ActionError(
+				"Failed to update team member role",
+				ERROR_CODES.DB_UPDATE_ERROR,
+				500,
+				{
+					hint: error.hint,
+					details: error.details,
+				},
+			);
 		}
 
 		// Revalidate paths

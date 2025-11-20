@@ -9,6 +9,10 @@ import {
 	Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { archiveServiceAgreement } from "@/actions/service-agreements";
+import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -24,6 +28,9 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
+import { useTableActions } from "@/hooks/use-table-actions";
+import { getRowHighlight } from "@/lib/datatable/rowHighlight";
+import { TablePresets } from "@/lib/datatable/table-presets";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
@@ -76,10 +83,56 @@ export function ServiceAgreementsTable({
 	currentPage?: number;
 	totalCount?: number;
 }) {
+	const router = useRouter();
+
 	// Archive filter state
 	const archiveFilter = useArchiveStore(
 		(state) => state.filters.service_agreements,
 	);
+
+	// Table actions hook
+	const { handleRefresh } = useTableActions({
+		entityType: "service_agreements",
+	});
+
+	// Archive dialog
+	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
+		onConfirm: async (id) => {
+			const result = await archiveServiceAgreement(id);
+			if (result.success) {
+				handleRefresh();
+			}
+		},
+		title: "Archive Service Agreement?",
+		description:
+			"This service agreement will be archived and can be restored within 90 days.",
+	});
+
+	// Bulk archive state
+	const [selectedAgreementIds, setSelectedAgreementIds] = useState<Set<string>>(
+		new Set(),
+	);
+
+	// Bulk archive dialog
+	const {
+		openArchiveDialog: openBulkArchiveDialog,
+		ArchiveDialogComponent: BulkArchiveDialogComponent,
+	} = useArchiveDialog({
+		onConfirm: async () => {
+			let archived = 0;
+			for (const id of selectedAgreementIds) {
+				const result = await archiveServiceAgreement(id);
+				if (result.success) {
+					archived++;
+				}
+			}
+			if (archived > 0) {
+				handleRefresh();
+			}
+		},
+		title: `Archive ${selectedAgreementIds.size} Service Agreement(s)?`,
+		description: `${selectedAgreementIds.size} service agreement(s) will be archived and can be restored within 90 days.`,
+	});
 
 	// Filter agreements based on archive status
 	const filteredAgreements = agreements.filter((agreement) => {
@@ -102,7 +155,7 @@ export function ServiceAgreementsTable({
 			sortable: true,
 			render: (agreement) => (
 				<Link
-					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
+					className="text-foreground hover:text-primary text-xs font-medium transition-colors hover:underline"
 					href={`/dashboard/work/service-agreements/${agreement.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -121,7 +174,7 @@ export function ServiceAgreementsTable({
 					href={`/dashboard/work/service-agreements/${agreement.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
+					<div className="text-foreground truncate text-xs leading-tight font-medium hover:underline">
 						{agreement.customer}
 					</div>
 					<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
@@ -138,7 +191,7 @@ export function ServiceAgreementsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (agreement) => (
-				<span className="text-muted-foreground text-sm tabular-nums">
+				<span className="text-muted-foreground text-xs tabular-nums">
 					{agreement.startDate}
 				</span>
 			),
@@ -151,7 +204,7 @@ export function ServiceAgreementsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (agreement) => (
-				<span className="text-muted-foreground text-sm tabular-nums">
+				<span className="text-muted-foreground text-xs tabular-nums">
 					{agreement.endDate}
 				</span>
 			),
@@ -188,7 +241,7 @@ export function ServiceAgreementsTable({
 			header: "",
 			width: "w-10",
 			shrink: true,
-			render: (_agreement) => (
+			render: (agreement) => (
 				<div data-no-row-click>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -208,6 +261,15 @@ export function ServiceAgreementsTable({
 								Renew Agreement
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								className="text-destructive"
+								onClick={() => {
+									openArchiveDialog(agreement.id);
+								}}
+							>
+								<Archive className="mr-2 size-4" />
+								Archive Agreement
+							</DropdownMenuItem>
 							<DropdownMenuItem className="text-destructive">
 								<Trash2 className="mr-2 size-4" />
 								Cancel Agreement
@@ -231,10 +293,13 @@ export function ServiceAgreementsTable({
 			onClick: (_selectedIds) => {},
 		},
 		{
-			label: "Archive",
+			label: "Archive Selected",
 			icon: <Archive className="h-4 w-4" />,
 			variant: "destructive",
-			onClick: (_selectedIds) => {},
+			onClick: async (selectedIds) => {
+				setSelectedAgreementIds(selectedIds);
+				openBulkArchiveDialog("");
+			},
 		},
 		{
 			label: "Cancel",
@@ -255,34 +320,40 @@ export function ServiceAgreementsTable({
 	};
 
 	return (
-		<FullWidthDataTable
-			bulkActions={bulkActions}
-			columns={columns}
-			data={filteredAgreements}
-			emptyIcon={
-				<FileText className="text-muted-foreground mx-auto h-12 w-12" />
-			}
-			emptyMessage="No service agreements found"
-			enableSelection={true}
-			entity="service_agreements"
-			getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
-			getItemId={(agreement) => agreement.id}
-			isArchived={(agreement) =>
-				Boolean(agreement.archived_at || agreement.deleted_at)
-			}
-			isHighlighted={(agreement) => agreement.status === "expired"}
-			itemsPerPage={itemsPerPage}
-			currentPageFromServer={currentPage}
-			serverPagination
-			onRefresh={() => window.location.reload()}
-			onRowClick={(agreement) =>
-				(window.location.href = `/dashboard/work/service-agreements/${agreement.id}`)
-			}
-			searchFilter={searchFilter}
-			searchPlaceholder="Search agreements by number, customer, type, or status..."
-			showArchived={archiveFilter !== "active"}
-			showRefresh={false}
-			totalCount={totalCount ?? filteredAgreements.length}
-		/>
+		<>
+			<FullWidthDataTable
+				{...TablePresets.fullList()}
+				bulkActions={bulkActions}
+				columns={columns}
+				data={filteredAgreements}
+				emptyIcon={
+					<FileText className="text-muted-foreground mx-auto h-12 w-12" />
+				}
+				emptyMessage="No service agreements found"
+				entity="service_agreements"
+				getHighlightClass={(agreement) =>
+					getRowHighlight(agreement).highlightClass
+				}
+				getItemId={(agreement) => agreement.id}
+				isArchived={(agreement) =>
+					Boolean(agreement.archived_at || agreement.deleted_at)
+				}
+				isHighlighted={(agreement) => getRowHighlight(agreement).isHighlighted}
+				currentPageFromServer={currentPage}
+				serverPagination
+				onRefresh={handleRefresh}
+				onRowClick={(agreement) =>
+					(window.location.href = `/dashboard/work/service-agreements/${agreement.id}`)
+				}
+				searchFilter={searchFilter}
+				searchPlaceholder="Search agreements by number, customer, type, or status..."
+				showArchived={archiveFilter !== "active"}
+				showRefresh={false}
+				totalCount={totalCount ?? filteredAgreements.length}
+			/>
+
+			<ArchiveDialogComponent />
+			<BulkArchiveDialogComponent />
+		</>
 	);
 }

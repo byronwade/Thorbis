@@ -48,6 +48,7 @@ import {
 	SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Slider } from "@/components/ui/slider";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
@@ -245,10 +246,13 @@ export function InvoiceOptionsSidebar() {
 						</SidebarGroupLabel>
 						<CollapsibleContent>
 							<div className="space-y-3 px-2 pt-1 pb-2">
-								<div className="space-y-2">
-									<Label className="text-xs">Primary Color</Label>
+								<StandardFormField
+									label="Primary Color"
+									htmlFor="invoice-options-primary-color"
+								>
 									<div className="flex items-center gap-2">
 										<input
+											id="invoice-options-primary-color"
 											className="h-8 w-16 cursor-pointer rounded border"
 											onChange={(e) => setPrimaryColor(e.target.value)}
 											type="color"
@@ -261,11 +265,14 @@ export function InvoiceOptionsSidebar() {
 											value={primaryColor}
 										/>
 									</div>
-								</div>
+								</StandardFormField>
 
-								<div className="space-y-2">
-									<Label className="text-xs">Logo Opacity</Label>
+								<StandardFormField
+									label="Logo Opacity"
+									htmlFor="invoice-options-logo-opacity"
+								>
 									<Slider
+										id="invoice-options-logo-opacity"
 										className="w-full"
 										max={100}
 										min={0}
@@ -276,12 +283,17 @@ export function InvoiceOptionsSidebar() {
 									<p className="text-muted-foreground text-xs">
 										{logoOpacity[0]}%
 									</p>
-								</div>
+								</StandardFormField>
 
-								<div className="space-y-2">
-									<Label className="text-xs">Font Size</Label>
+								<StandardFormField
+									label="Font Size"
+									htmlFor="invoice-options-font-size"
+								>
 									<Select onValueChange={setFontSize} value={fontSize}>
-										<SelectTrigger className="h-8 text-xs">
+										<SelectTrigger
+											id="invoice-options-font-size"
+											className="h-8 text-xs"
+										>
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
@@ -290,7 +302,7 @@ export function InvoiceOptionsSidebar() {
 											<SelectItem value="large">Large</SelectItem>
 										</SelectContent>
 									</Select>
-								</div>
+								</StandardFormField>
 							</div>
 						</CollapsibleContent>
 					</SidebarGroup>

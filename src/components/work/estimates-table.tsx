@@ -210,7 +210,6 @@ export function EstimatesTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/estimates/${estimate.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{estimate.estimateNumber}
@@ -242,7 +241,6 @@ export function EstimatesTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/estimates/${estimate.id}`}
-					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<span className="text-foreground text-sm leading-tight font-medium hover:underline">

@@ -129,7 +129,7 @@ export async function savePaymentMethod(formData: FormData) {
 
 		// Attach payment method to Stripe customer if not already attached
 		const { data: userData } = await supabase
-			.from("users")
+			.from("profiles")
 			.select("stripe_customer_id")
 			.eq("id", user.id)
 			.single();
@@ -217,7 +217,7 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 			.single();
 
 		const { data: userData } = await supabase
-			.from("users")
+			.from("profiles")
 			.select("stripe_customer_id")
 			.eq("id", user.id)
 			.single();

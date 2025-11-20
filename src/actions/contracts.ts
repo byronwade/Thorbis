@@ -55,7 +55,7 @@ async function getAuthContext() {
 
 	// Get user's active company from team_members
 	const { data: teamMember, error: teamError } = await typedSupabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", user.id)
 		.eq("status", "active")

@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	ArrowRight,
 	BarChart3,
@@ -15,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,12 +28,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const crmKeywords = generateSemanticKeywords("crm");
 
 export const metadata = generateSEOMetadata({
 	title: "Service Business CRM & Sales Pipeline | Thorbis",
@@ -44,6 +57,86 @@ export const metadata = generateSEOMetadata({
 		"customer relationship management",
 		"sales pipeline software",
 		"contractor crm",
+		...crmKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "What is a service business CRM?",
+		answer:
+			"A service business CRM (Customer Relationship Management) is software designed specifically for field service companies to manage customer interactions, track sales opportunities, and automate follow-ups. Unlike generic CRMs, Thorbis integrates with scheduling, invoicing, and job management so you can see the complete customer journey from lead to loyal customer. Track every call, estimate, job, invoice, and payment in one unified system.",
+	},
+	{
+		question: "How does Thorbis CRM help me close more deals?",
+		answer:
+			"Thorbis CRM increases close rates by tracking every customer touchpoint automatically. When a customer calls, you instantly see their history—past jobs, open estimates, equipment serviced, and payment history. The sales pipeline shows exactly where each opportunity stands (contacted, estimated, negotiating, won/lost) with automatic follow-up reminders. Analytics show which marketing sources generate the most revenue, helping you focus on what works.",
+	},
+	{
+		question: "Can I track sales pipeline and estimate conversion rates?",
+		answer:
+			"Yes. Thorbis provides visual sales pipeline management with drag-and-drop stages (Lead, Contacted, Estimated, Negotiating, Won, Lost). Track conversion rates at each stage, see average time to close, and identify bottlenecks. Revenue forecasting shows projected income based on pipeline value and historical close rates. You can filter by technician, service type, or marketing source to optimize your sales process.",
+	},
+	{
+		question: "Does the CRM integrate with my job management system?",
+		answer:
+			"Yes—Thorbis CRM is built directly into the job management system, not a separate tool. When you convert an estimate to a job, schedule an appointment, complete work, or send an invoice, it's all tracked in the customer record automatically. No duplicate data entry. See complete customer history including jobs, equipment, maintenance plans, invoices, payments, and communications all in one place.",
+	},
+	{
+		question: "How does automated follow-up work?",
+		answer:
+			"Thorbis automates follow-ups based on customer behavior and custom triggers. For example, automatically send a thank-you email after job completion, request a review 2 days later, remind about seasonal maintenance 6 months later, or follow up on unpaid estimates after 3 days. You can create custom workflows for different service types, set reminders for manual follow-ups, and track response rates to optimize timing.",
+	},
+	{
+		question: "Can I see which marketing sources generate the most revenue?",
+		answer:
+			"Yes. Thorbis tracks marketing source attribution from lead to revenue. Tag leads by source (Google Ads, Facebook, referral, direct, etc.) and see which channels generate the highest revenue, best customer lifetime value, and lowest acquisition cost. Pipeline analytics show conversion rates by source, average job value, and ROI. Use this data to allocate your marketing budget to the most profitable channels.",
+	},
+]);
+
+// ItemList Schema - CRM features
+const featuresSchema = createItemListSchema({
+	name: "CRM & Sales Pipeline Features",
+	description:
+		"Complete customer relationship management tools for service businesses",
+	items: [
+		{
+			name: "360° Customer View",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"See complete customer history including jobs, estimates, invoices, payments, equipment, maintenance plans, and all communications in one unified view.",
+		},
+		{
+			name: "Visual Sales Pipeline",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"Drag-and-drop pipeline management with custom stages, conversion tracking, revenue forecasting, and bottleneck identification.",
+		},
+		{
+			name: "Automatic Activity Tracking",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"Every call, email, estimate, job, and payment automatically logged in customer records. No manual data entry required.",
+		},
+		{
+			name: "Automated Follow-Up Workflows",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"Trigger-based automation for thank-you emails, review requests, maintenance reminders, and estimate follow-ups with customizable timing.",
+		},
+		{
+			name: "Marketing Source Attribution",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"Track ROI by marketing channel from lead to revenue. See which sources generate highest revenue and customer lifetime value.",
+		},
+		{
+			name: "Revenue Analytics & Forecasting",
+			url: `${siteUrl}/features/crm`,
+			description:
+				"Project future revenue based on pipeline value, historical close rates, and seasonal trends with advanced forecasting tools.",
+		},
 	],
 });
 
@@ -56,7 +149,7 @@ export default function CRMPage() {
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month",
+				description: "Included in Thorbis platform starting at $200/month",
 			},
 		],
 	});
@@ -84,6 +177,26 @@ export default function CRMPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="crm-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="crm-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="crm-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -793,6 +906,17 @@ export default function CRMPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("crm", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

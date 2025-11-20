@@ -264,7 +264,7 @@ export async function uploadDocument(
 
 		// 3. Verify user has access to company
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("id, role")
 			.eq("user_id", user.id)
 			.eq("company_id", options.companyId)
@@ -434,7 +434,7 @@ export async function getDownloadUrl(
 		}
 
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("id")
 			.eq("user_id", user.id)
 			.eq("company_id", attachment.company_id)
@@ -598,7 +598,7 @@ export async function deleteDocument(
 
 		// Verify access
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("role")
 			.eq("user_id", user.id)
 			.eq("company_id", attachment.company_id)

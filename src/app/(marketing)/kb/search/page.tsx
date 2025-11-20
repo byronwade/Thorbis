@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 /**
  * Knowledge Base Search Page - Server Component
  *
@@ -17,6 +20,11 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const searchKeywords = generateSemanticKeywords("search");
 
 export const metadata = generateSEOMetadata({
 	title: "Search Knowledge Base",
@@ -25,7 +33,17 @@ export const metadata = generateSEOMetadata({
 		"Search our knowledge base for answers, guides, tutorials, and documentation. Find help articles, FAQs, and step-by-step guides.",
 	path: "/kb/search",
 	imageAlt: "Thorbis knowledge base search interface",
-	keywords: ["search", "documentation", "help", "guides", "tutorials", "faq"],
+	keywords: [
+		"search",
+		"documentation",
+		"help",
+		"guides",
+		"tutorials",
+		"faq",
+		"find answers",
+		"help articles",
+		...searchKeywords.slice(0, 5),
+	],
 	noindex: true, // Don't index search pages
 	nofollow: true,
 });

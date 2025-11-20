@@ -40,7 +40,7 @@ export async function MessagesDataV2() {
 				.is("deleted_at", null)
 				.order("created_at", { ascending: false }),
 			supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("id, user_id, first_name, last_name, email, avatar_url, status")
 				.eq("company_id", companyId)
 				.eq("status", "active")

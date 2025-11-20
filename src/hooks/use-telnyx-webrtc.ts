@@ -129,6 +129,7 @@ export function useTelnyxWebRTC(
 	 */
 	const initializeClient = useCallback(() => {
 		if (clientRef.current) {
+			console.log("🔧 WebRTC: Reusing existing client instance");
 			return clientRef.current;
 		}
 
@@ -136,11 +137,20 @@ export function useTelnyxWebRTC(
 		const hasCredentials =
 			Boolean(currentOptions.username) && Boolean(currentOptions.password);
 
+		console.log("🔧 WebRTC: Initializing client with credentials:", {
+			hasUsername: Boolean(currentOptions.username),
+			hasPassword: Boolean(currentOptions.password),
+			username: currentOptions.username,
+			debug: currentOptions.debug,
+		});
+
 		if (!hasCredentials) {
+			console.error("❌ WebRTC: Missing credentials, cannot initialize");
 			// Don't initialize if credentials are missing
 			return null;
 		}
 
+		console.log("🔧 WebRTC: Creating new TelnyxRTC instance...");
 		const client = new TelnyxRTC({
 			login: currentOptions.username,
 			password: currentOptions.password,
@@ -148,9 +158,14 @@ export function useTelnyxWebRTC(
 			ringbackFile: undefined,
 			debug: currentOptions.debug,
 		});
+		console.log(
+			"🔧 WebRTC: TelnyxRTC instance created, SDK version:",
+			(client as any).version || "unknown",
+		);
 
 		// Handle ready event
 		client.on("telnyx.ready", () => {
+			console.log("🎉 WebRTC: telnyx.ready event - Connection successful!");
 			setIsConnected(true);
 			setIsConnecting(false);
 			setConnectionError(null);
@@ -158,24 +173,28 @@ export function useTelnyxWebRTC(
 
 		// Handle error event
 		client.on("telnyx.error", (error: any) => {
+			console.error("❌ WebRTC: telnyx.error event:", error);
 			const errorMessage =
 				error?.error?.message ||
 				error?.message ||
 				error?.description ||
 				"Connection error";
+			console.error("❌ WebRTC: Error message:", errorMessage);
 			setConnectionError(errorMessage);
 			setIsConnecting(false);
 		});
 
 		// Handle socket error
-		client.on("telnyx.socket.error", () => {
+		client.on("telnyx.socket.error", (socketError: any) => {
+			console.error("❌ WebRTC: telnyx.socket.error event:", socketError);
 			setConnectionError("Socket connection failed");
 			setIsConnecting(false);
 			setIsConnected(false);
 		});
 
 		// Handle socket close
-		client.on("telnyx.socket.close", () => {
+		client.on("telnyx.socket.close", (closeEvent: any) => {
+			console.warn("⚠️ WebRTC: telnyx.socket.close event:", closeEvent);
 			setIsConnected(false);
 		});
 
@@ -234,6 +253,7 @@ export function useTelnyxWebRTC(
 	 */
 	const connect = useCallback(async () => {
 		try {
+			console.log("🔌 WebRTC: Starting connection...");
 			setIsConnecting(true);
 			setConnectionError(null);
 
@@ -241,12 +261,16 @@ export function useTelnyxWebRTC(
 
 			// If client is null (no credentials), silently fail
 			if (!client) {
+				console.warn("⚠️ WebRTC: No credentials available, aborting connection");
 				setIsConnecting(false);
 				return;
 			}
 
+			console.log("🔌 WebRTC: Client initialized, calling connect()...");
 			await client.connect();
+			console.log("🔌 WebRTC: client.connect() completed");
 		} catch (error) {
+			console.error("❌ WebRTC: Connection error in connect():", error);
 			setConnectionError(
 				error instanceof Error ? error.message : "Connection failed",
 			);

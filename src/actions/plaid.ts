@@ -51,7 +51,7 @@ export async function createPlaidLinkToken(
 
 		// Verify user belongs to company
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("*")
 			.eq("company_id", companyId)
 			.eq("user_id", user.id)
@@ -129,7 +129,7 @@ export async function exchangePlaidToken(
 
 		// Verify user belongs to company
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("*")
 			.eq("company_id", companyId)
 			.eq("user_id", user.id)
@@ -265,7 +265,7 @@ export async function syncTransactions(
 			assertAuthenticated(user?.id);
 
 			const { data: membership } = await supabase
-				.from("team_members")
+				.from("company_memberships")
 				.select("*")
 				.eq("company_id", companyId)
 				.eq("user_id", user.id)
@@ -410,7 +410,7 @@ export async function getTransactions(
 		}
 
 		const { data: membership } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("*")
 			.eq("company_id", account.company_id)
 			.eq("user_id", user.id)

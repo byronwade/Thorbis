@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import { notFound } from "next/navigation";
 import Script from "next/script";
 
@@ -10,6 +13,8 @@ import {
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
 
 type FeaturePageProps = {
 	params: Promise<{ slug: string }>;

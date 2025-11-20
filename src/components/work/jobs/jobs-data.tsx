@@ -3,7 +3,11 @@ import { JobsKanban } from "@/components/work/jobs-kanban";
 import { JobsTable } from "@/components/work/jobs-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import type { Job } from "@/lib/db/schema";
-import { getJobsPageData, JOBS_PAGE_SIZE } from "@/lib/queries/jobs";
+import {
+	getJobsPageData,
+	getJobsWithTags,
+	JOBS_PAGE_SIZE,
+} from "@/lib/queries/jobs";
 
 type RelatedCustomer = {
 	display_name?: string | null;
@@ -48,11 +52,12 @@ type ExtendedJob = Job & {
  * Streams in after shell renders.
  *
  * Server-side pagination: Only fetches current page of data based on URL params.
+ * Supports tag filtering via URL query string: ?tags=warranty,emergency
  */
 export async function JobsData({
 	searchParams,
 }: {
-	searchParams?: { page?: string; search?: string };
+	searchParams?: { page?: string; search?: string; tags?: string };
 }) {
 	// Get user's active company
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
@@ -64,13 +69,23 @@ export async function JobsData({
 
 	const currentPage = Number(searchParams?.page) || 1;
 	const searchQuery = searchParams?.search ?? "";
+	const tagSlugs = searchParams?.tags ? searchParams.tags.split(",") : [];
 
-	const { jobs: jobsRaw, totalCount } = await getJobsPageData(
-		currentPage,
-		JOBS_PAGE_SIZE,
-		searchQuery,
-		companyId,
-	);
+	// Use tag-filtered query if tags are provided
+	const { jobs: jobsRaw, totalCount } =
+		tagSlugs.length > 0
+			? await getJobsWithTags(
+					currentPage,
+					JOBS_PAGE_SIZE,
+					searchQuery,
+					tagSlugs,
+				)
+			: await getJobsPageData(
+					currentPage,
+					JOBS_PAGE_SIZE,
+					searchQuery,
+					companyId,
+				);
 
 	// Transform snake_case to camelCase for the component
 	const toDate = (value: string | null) => (value ? new Date(value) : null);

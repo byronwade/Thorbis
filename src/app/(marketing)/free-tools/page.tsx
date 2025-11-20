@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketingWeekly";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -12,6 +15,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const freeToolsKeywords = generateSemanticKeywords("free tools");
 
 export const metadata = generateSEOMetadata({
 	title: "Free Field Service Tools & Templates",
@@ -23,6 +31,10 @@ export const metadata = generateSEOMetadata({
 		"field service templates",
 		"free field service tools",
 		"thorbis resources",
+		"free templates",
+		"contractor tools",
+		"business resources",
+		...freeToolsKeywords.slice(0, 5),
 	],
 });
 
@@ -127,7 +139,7 @@ export default async function FreeToolsPage() {
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Explore battle-tested tools from Thorbis customers—covering
 						operations, finance, training, and marketing. No paywall, no fluff,
-						and included with the $100/month base subscription, pay-as-you-go
+						and included with the $200/month base subscription, pay-as-you-go
 						usage, and zero lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">

@@ -34,8 +34,7 @@ export default function EquipmentDetailLayout({
 			back: (
 				<DetailBackButton href="/dashboard/work/equipment" label="Equipment" />
 			),
-			// TODO: Create EquipmentDetailToolbar component
-			// actions: <EquipmentDetailToolbar />,
+			// Actions provided by ToolbarActionsProvider in equipment-detail-data.tsx
 		},
 		sidebar: {
 			show: false,

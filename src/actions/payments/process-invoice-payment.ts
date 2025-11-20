@@ -14,8 +14,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { sendEmail } from "@/lib/email/email-sender";
-import { EmailTemplate } from "@/lib/email/email-types";
+import { sendCompanyBrandedEmail } from "@/lib/email/email-router";
 import {
 	markTokenAsUsed,
 	validatePaymentToken,
@@ -192,45 +191,46 @@ export async function processInvoicePayment(
 			? invoice.company[0]
 			: invoice.company;
 
-		if (customer?.email) {
+		if (customer?.email && company) {
 			try {
-				// Create simple confirmation email template
-				const confirmationTemplate = {
-					type: "div",
-					props: {
-						children: [
-							{
-								type: "h1",
-								props: { children: "Payment Confirmed" },
-							},
-							{
-								type: "p",
-								props: {
-									children: `Thank you for your payment of $${(amount / 100).toFixed(2)} for invoice ${invoice.invoice_number}.`,
-								},
-							},
-							{
-								type: "p",
-								props: {
-									children:
-										"Your payment has been received and processed successfully.",
-								},
-							},
-							{
-								type: "p",
-								props: {
-									children: `If you have any questions, please contact ${company.email || company.name}.`,
-								},
-							},
-						],
-					},
-				} as any;
+				// Import the payment received template
+				const PaymentReceivedEmail = (
+					await import("../../../emails/templates/billing/payment-received")
+				).default;
 
-				await sendEmail({
+				// Format payment details
+				const customerName =
+					customer.display_name ||
+					`${customer.first_name} ${customer.last_name}`.trim() ||
+					"Customer";
+				const paymentAmountFormatted = `$${(amount / 100).toFixed(2)}`;
+				const paymentMethodFormatted =
+					paymentMethod === "card" ? "Credit Card" : "ACH Bank Transfer";
+				const paymentDateFormatted = new Date().toLocaleDateString("en-US", {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				});
+
+				await sendCompanyBrandedEmail({
+					companyId: company.id,
+					companyName: company.name,
 					to: customer.email,
-					subject: `Payment Confirmation - Invoice ${invoice.invoice_number}`,
-					template: confirmationTemplate,
-					templateType: EmailTemplate.PAYMENT_RECEIVED,
+					subject: `Payment Received - Invoice ${invoice.invoice_number}`,
+					template: PaymentReceivedEmail({
+						customerName,
+						invoiceNumber: invoice.invoice_number,
+						paymentAmount: paymentAmountFormatted,
+						paymentMethod: paymentMethodFormatted,
+						paymentDate: paymentDateFormatted,
+						receiptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/portal/invoices/${invoiceId}/receipt?token=${token}`,
+						company: {
+							companyName: company.name,
+							supportEmail: company.email,
+						},
+					}),
+					templateType: "billing-payment-received",
+					emailType: "notification",
 					tags: [
 						{ name: "invoice_id", value: invoiceId },
 						{ name: "transaction_id", value: transactionId },
@@ -238,6 +238,10 @@ export async function processInvoicePayment(
 				});
 			} catch (_emailError) {
 				// Don't fail the payment if email fails
+				console.error(
+					"Failed to send payment confirmation email:",
+					_emailError,
+				);
 			}
 		}
 

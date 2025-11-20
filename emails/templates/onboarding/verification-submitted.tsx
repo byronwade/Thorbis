@@ -47,8 +47,11 @@ export default function VerificationSubmittedEmail({
 							10DLC Registration Complete
 						</Heading>
 						<Text style={cardText}>
-							<strong>{dlcCount} regular number{dlcCount !== 1 ? "s" : ""}</strong> enabled
-							for SMS immediately. You can start sending text messages right away!
+							<strong>
+								{dlcCount} regular number{dlcCount !== 1 ? "s" : ""}
+							</strong>{" "}
+							enabled for SMS immediately. You can start sending text messages
+							right away!
 						</Text>
 					</Card>
 				)}
@@ -60,8 +63,11 @@ export default function VerificationSubmittedEmail({
 							Toll-Free Verification Pending
 						</Heading>
 						<Text style={cardText}>
-							<strong>{tollFreeCount} toll-free number{tollFreeCount !== 1 ? "s" : ""}</strong> submitted
-							for verification. Approval typically takes <strong>5-7 business days</strong>.
+							<strong>
+								{tollFreeCount} toll-free number{tollFreeCount !== 1 ? "s" : ""}
+							</strong>{" "}
+							submitted for verification. Approval typically takes{" "}
+							<strong>5-7 business days</strong>.
 						</Text>
 					</Card>
 				)}
@@ -81,8 +87,8 @@ export default function VerificationSubmittedEmail({
 					{hasTollFreeNumbers && (
 						<li style={listItem}>
 							<strong>Toll-Free Numbers:</strong> Under review by our carrier
-							partners. We'll email you when they're approved (usually within 5-7
-							business days).
+							partners. We'll email you when they're approved (usually within
+							5-7 business days).
 						</li>
 					)}
 					<li style={listItem}>
@@ -90,8 +96,8 @@ export default function VerificationSubmittedEmail({
 						automatically. You can continue setting up your account.
 					</li>
 					<li style={listItem}>
-						<strong>Notification:</strong> You'll receive another email once your
-						toll-free verification is complete.
+						<strong>Notification:</strong> You'll receive another email once
+						your toll-free verification is complete.
 					</li>
 				</ul>
 			</Card>

@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -5,12 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+	createEnhancedReviewSchema,
+	type IndividualReview,
+} from "@/lib/seo/advanced-schemas";
+import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import { createReviewAggregateSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const reviewKeywords = generateSemanticKeywords("reviews");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Reviews & Customer Proof",
@@ -22,6 +34,10 @@ export const metadata = generateSEOMetadata({
 		"thorbis reviews",
 		"field service software ratings",
 		"servicetitan alternative testimonials",
+		"customer testimonials",
+		"field service reviews",
+		"contractor software reviews",
+		...reviewKeywords.slice(0, 5),
 	],
 });
 
@@ -69,17 +85,63 @@ const breadcrumbLd = generateBreadcrumbStructuredData([
 	{ name: "Reviews", url: `${siteUrl}/reviews` },
 ]);
 
-const aggregateLd = createReviewAggregateSchema({
-	item: {
+// Enhanced review schema with individual reviews and E-E-A-T signals
+const individualReviews: IndividualReview[] = [
+	{
+		author: "Leslie Warren",
+		jobTitle: "COO",
+		company: "Elevate Mechanical",
+		location: "Phoenix, AZ",
+		datePublished: "2024-10-15",
+		reviewBody:
+			"Thorbis replaced ServiceTitan for our 60-tech operation in six weeks. Dispatchers love the new board, and AI booking boosted after-hours jobs by 18%.",
+		ratingValue: 5,
+		bestRating: 5,
+		worstRating: 1,
+		verifiedPurchase: true,
+	},
+	{
+		author: "Jeremy Park",
+		jobTitle: "Founder",
+		company: "HomeHero Plumbing",
+		location: "Austin, TX",
+		datePublished: "2024-09-22",
+		reviewBody:
+			"AI call handling and automatic follow-up saved the equivalent of two coordinators. Customers notice the difference immediately.",
+		ratingValue: 5,
+		bestRating: 5,
+		worstRating: 1,
+		verifiedPurchase: true,
+	},
+	{
+		author: "Ellie Martin",
+		jobTitle: "Owner",
+		company: "ShineBright Cleaning",
+		location: "Denver, CO",
+		datePublished: "2024-11-08",
+		reviewBody:
+			"Thorbis let us scale from two crews to six without adding office staff. Reporting, inventory, and marketing are finally under one roof.",
+		ratingValue: 5,
+		bestRating: 5,
+		worstRating: 1,
+		verifiedPurchase: true,
+	},
+];
+
+const aggregateLd = createEnhancedReviewSchema({
+	itemReviewed: {
 		name: "Thorbis Field Service Platform",
 		url: siteUrl,
 		image: "/images/og-default.png",
 		type: "SoftwareApplication",
 	},
-	ratingValue: 4.9,
-	reviewCount: 182,
-	bestRating: 5,
-	worstRating: 1,
+	reviews: individualReviews,
+	aggregateRating: {
+		ratingValue: 4.9,
+		reviewCount: 182,
+		bestRating: 5,
+		worstRating: 1,
+	},
 });
 
 const faqLd = generateFAQStructuredData(FAQS);
@@ -114,7 +176,7 @@ export default function ReviewsPage() {
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Contractors choose Thorbis for transparent pricing, fast
 						implementation, and AI-powered workflows. Every customer pays the
-						same $100/month base with pay-as-you-go usage—no per-user surprises.
+						same $200/month base with pay-as-you-go usage—no per-user surprises.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">

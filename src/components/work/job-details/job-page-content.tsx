@@ -9,14 +9,19 @@ import {
 	Activity,
 	AlertCircle,
 	Building2,
+	Calculator,
 	Calendar,
 	Camera,
 	CheckCircle,
 	ChevronRight,
 	Clock,
+	DollarSign,
 	Download,
+	ExternalLink,
+	Eye,
 	FileText,
 	Globe,
+	Link2,
 	Mail,
 	MapPin,
 	MessageSquare,
@@ -27,16 +32,32 @@ import {
 	Save,
 	ShieldCheck,
 	Sparkles,
+	Star,
+	StickyNote,
+	Tag,
+	Target,
 	Upload,
 	User,
+	Users,
 	Wrench,
 	X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { type ReactNode, useMemo, useState } from "react";
-import { archiveJob, updateJob } from "@/actions/jobs";
+import React, { type ReactNode, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { updateEntityTags } from "@/actions/entity-tags";
+import {
+	archiveJob,
+	assignCustomerToJob,
+	removeCustomerFromJob,
+	updateJob,
+} from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
+import {
+	assignTeamMemberToJob,
+	removeTeamMemberFromJob,
+} from "@/actions/team-assignments";
 import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -44,6 +65,7 @@ import {
 	type DetailPageHeaderConfig,
 	DetailPageSurface,
 } from "@/components/layout/detail-page-shell";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -57,6 +79,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
 import {
 	Dialog,
 	DialogContent,
@@ -77,6 +107,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
+import {
 	Table,
 	TableBody,
 	TableCell,
@@ -89,22 +123,42 @@ import {
 	UnifiedAccordionContent,
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import { useSectionShortcuts } from "@/hooks/use-section-shortcuts";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/lib/stores";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import type { JobStatus } from "@/lib/validations/job-status-transitions";
+import {
+	getCustomerProperties,
+	searchCustomersForJob,
+} from "@/queries/customers-search";
+import { AIJobAssistantHeader } from "./ai-job-assistant-header";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
+import { JobActivityTimeline } from "./job-activity-timeline";
+import { JobAppointmentsExpandable } from "./job-appointments-expandable";
 import { JobAppointmentsTable } from "./job-appointments-table";
+import { JobCostingCard } from "./job-costing-card";
+import { JobCustomerPropertyManager } from "./job-customer-property-manager";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
 import { JobEstimatesTable } from "./job-estimates-table";
 import { JobInvoicesTable } from "./job-invoices-table";
+import { JobNotesTable } from "./job-notes-table";
+import { JobPaymentsTable } from "./job-payments-table";
 import { JobPurchaseOrdersTable } from "./job-purchase-orders-table";
 import { JobQuickActions } from "./job-quick-actions";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
+import { JobStatusSelector } from "./job-status-selector";
+import { JobTasksTable } from "./job-tasks-table";
+import { JobTeamMemberSelector } from "./job-team-member-selector";
+import { JobTeamMembersTable } from "./job-team-members-table";
+import { LeadAttributionCard } from "./lead-attribution-card";
+import { ReviewTrackingCard } from "./review-tracking-card";
 import { AddTagBadge } from "./tags/add-tag-badge";
 import { TagBadge } from "./tags/tag-badge";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
 import { TeamMemberSelector } from "./team-member-selector";
-// import { TravelTime } from "./travel-time"; // TEMPORARILY DISABLED FOR DEBUGGING
+import { TravelTime } from "./travel-time";
 import { PropertyLocationVisual } from "./widgets/property-location-visual";
 
 type JobPageContentProps = {
@@ -156,32 +210,344 @@ export function JobPageContent({
 	const [isArchiving, setIsArchiving] = useState(false);
 	const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
 	const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
+	const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
+	const [isAddNoteDialogOpen, setIsAddNoteDialogOpen] = useState(false);
+	const [isLoadTemplateDialogOpen, setIsLoadTemplateDialogOpen] =
+		useState(false);
+	const [newTaskTitle, setNewTaskTitle] = useState("");
+	const [newTaskDescription, setNewTaskDescription] = useState("");
+	const [newNoteContent, setNewNoteContent] = useState("");
+	const [isCreatingTask, setIsCreatingTask] = useState(false);
+	const [isCreatingNote, setIsCreatingNote] = useState(false);
+
+	// Link existing dialogs
+	const [isLinkEstimateOpen, setIsLinkEstimateOpen] = useState(false);
+	const [isLinkInvoiceOpen, setIsLinkInvoiceOpen] = useState(false);
+	const [isLinkPaymentOpen, setIsLinkPaymentOpen] = useState(false);
+	const [isLinkEquipmentOpen, setIsLinkEquipmentOpen] = useState(false);
+	const [estimateSearchQuery, setEstimateSearchQuery] = useState("");
+	const [invoiceSearchQuery, setInvoiceSearchQuery] = useState("");
+	const [paymentSearchQuery, setPaymentSearchQuery] = useState("");
+	const [equipmentSearchQuery, setEquipmentSearchQuery] = useState("");
+	const [isLinking, setIsLinking] = useState(false);
+	const [availableEstimates, setAvailableEstimates] = useState<
+		Array<{
+			id: string;
+			estimate_number: string;
+			total_amount: number;
+			status: string;
+			created_at: string;
+			customer?: { id: string; name: string } | null;
+		}>
+	>([]);
+	const [availableInvoices, setAvailableInvoices] = useState<
+		Array<{
+			id: string;
+			invoice_number: string;
+			total_amount: number;
+			status: string;
+			created_at: string;
+			customer?: { id: string; name: string } | null;
+		}>
+	>([]);
+	const [availablePayments, setAvailablePayments] = useState<
+		Array<{
+			id: string;
+			amount: number;
+			payment_method: string;
+			reference_number?: string;
+			created_at: string;
+			customer?: { id: string; name: string } | null;
+		}>
+	>([]);
+	const [availableEquipment, setAvailableEquipment] = useState<
+		Array<{
+			id: string;
+			name: string;
+			category?: string;
+			serial_number?: string;
+			created_at: string;
+		}>
+	>([]);
 
 	const {
 		customer: initialCustomer,
 		property: initialProperty,
 		assignedUser,
 		teamAssignments = [],
+		availableTeamMembers = [],
 		timeEntries = [],
-		invoices = [],
-		estimates = [],
-		payments = [],
+		invoices: initialInvoices = [],
+		estimates: initialEstimates = [],
+		payments: initialPayments = [],
 		purchaseOrders = [],
-		tasks = [],
+		tasks: initialTasks = [],
 		photos = [],
 		documents = [],
 		signatures = [],
 		activities = [],
 		communications = [],
 		equipment = [],
-		jobEquipment = [],
+		jobEquipment: initialJobEquipment = [],
 		jobMaterials = [],
-		jobNotes = [],
+		jobNotes: initialJobNotes = [],
 		schedules = [],
 		allCustomers = [],
 		allProperties = [],
 		companyPhones = [],
 	} = jobData || {};
+
+	// Optimistic state for data arrays
+	const [estimates, setEstimates] = useState(initialEstimates);
+	const [invoices, setInvoices] = useState(initialInvoices);
+	const [payments, setPayments] = useState(initialPayments);
+	const [jobEquipment, setJobEquipment] = useState(initialJobEquipment);
+	const [tasks, setTasks] = useState(initialTasks);
+	const [jobNotes, setJobNotes] = useState(initialJobNotes);
+
+	// Sync state with props when data changes (e.g., after page navigation or refresh)
+	useEffect(() => {
+		setEstimates(initialEstimates);
+		setInvoices(initialInvoices);
+		setPayments(initialPayments);
+		setJobEquipment(initialJobEquipment);
+		setTasks(initialTasks);
+		setJobNotes(initialJobNotes);
+	}, [
+		initialEstimates,
+		initialInvoices,
+		initialPayments,
+		initialJobEquipment,
+		initialTasks,
+		initialJobNotes,
+	]);
+
+	// Extract job tags from junction table (now included in RPC response)
+	// EntityTags expects {label, color} format
+	const jobTags = useMemo(() => {
+		if (!entityData?.job_tags) return [];
+		return entityData.job_tags.map((jt: any) => ({
+			label: jt.name || jt.label,
+			color: jt.color,
+		}));
+	}, [entityData?.job_tags]);
+
+	// Fetch available estimates when link dialog opens
+	useEffect(() => {
+		if (!isLinkEstimateOpen || !job?.company_id) return;
+
+		const fetchEstimates = async () => {
+			const supabase = createClient();
+			const { data, error } = await supabase
+				.from("estimates")
+				.select(
+					`
+					id,
+					estimate_number,
+					total_amount,
+					status,
+					created_at,
+					customer:customers(id, name)
+				`,
+				)
+				.eq("company_id", job.company_id)
+				.or(`job_id.is.null,job_id.neq.${job.id}`)
+				.order("created_at", { ascending: false })
+				.limit(50);
+
+			if (!error && data) {
+				setAvailableEstimates(data as any);
+			}
+		};
+
+		fetchEstimates();
+	}, [isLinkEstimateOpen, job?.company_id, job?.id]);
+
+	// Fetch available invoices when link dialog opens
+	useEffect(() => {
+		if (!isLinkInvoiceOpen || !job?.company_id) return;
+
+		const fetchInvoices = async () => {
+			const supabase = createClient();
+			const { data, error } = await supabase
+				.from("invoices")
+				.select(
+					`
+					id,
+					invoice_number,
+					total_amount,
+					status,
+					created_at,
+					customer:customers(id, name)
+				`,
+				)
+				.eq("company_id", job.company_id)
+				.or(`job_id.is.null,job_id.neq.${job.id}`)
+				.order("created_at", { ascending: false })
+				.limit(50);
+
+			if (!error && data) {
+				setAvailableInvoices(data as any);
+			}
+		};
+
+		fetchInvoices();
+	}, [isLinkInvoiceOpen, job?.company_id, job?.id]);
+
+	// Fetch available payments when link dialog opens
+	useEffect(() => {
+		if (!isLinkPaymentOpen || !job?.company_id) return;
+
+		const fetchPayments = async () => {
+			const supabase = createClient();
+			const { data, error } = await supabase
+				.from("payments")
+				.select(
+					`
+					id,
+					amount,
+					payment_method,
+					reference_number,
+					created_at,
+					customer:customers(id, name)
+				`,
+				)
+				.eq("company_id", job.company_id)
+				.or(`job_id.is.null,job_id.neq.${job.id}`)
+				.order("created_at", { ascending: false })
+				.limit(50);
+
+			if (!error && data) {
+				setAvailablePayments(data as any);
+			}
+		};
+
+		fetchPayments();
+	}, [isLinkPaymentOpen, job?.company_id, job?.id]);
+
+	// Fetch available equipment when link dialog opens
+	useEffect(() => {
+		if (!isLinkEquipmentOpen || !job?.company_id) return;
+
+		const fetchEquipment = async () => {
+			const supabase = createClient();
+			const { data, error } = await supabase
+				.from("equipment")
+				.select("id, name, category, serial_number, created_at")
+				.eq("company_id", job.company_id)
+				.order("created_at", { ascending: false })
+				.limit(50);
+
+			if (!error && data) {
+				setAvailableEquipment(data as any);
+			}
+		};
+
+		fetchEquipment();
+	}, [isLinkEquipmentOpen, job?.company_id]);
+
+	// Keyboard shortcuts: Ctrl+1 through Ctrl+9 to scroll and expand accordion sections
+	const sectionShortcuts = useMemo(
+		() => ({
+			"1": () => {
+				const element = document.querySelector('[data-section-id="customer"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"2": () => {
+				const element = document.querySelector('[data-section-id="team"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"3": () => {
+				const element = document.querySelector(
+					'[data-section-id="appointments"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"4": () => {
+				const element = document.querySelector('[data-section-id="estimates"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"5": () => {
+				const element = document.querySelector('[data-section-id="invoices"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"6": () => {
+				const element = document.querySelector('[data-section-id="payments"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"7": () => {
+				const element = document.querySelector(
+					'[data-section-id="purchase-orders"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"8": () => {
+				const element = document.querySelector('[data-section-id="tasks"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"9": () => {
+				const element = document.querySelector('[data-section-id="notes"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+		}),
+		[],
+	);
+
+	useSectionShortcuts(sectionShortcuts);
 
 	// Local state for optimistic updates
 	const [customer, setCustomer] = useState(initialCustomer);
@@ -518,6 +884,45 @@ export function JobPageContent({
 		}
 	};
 
+	const handleAssignTeamMember = async (teamMemberId: string, role: string) => {
+		try {
+			const result = await assignTeamMemberToJob({
+				jobId: job.id,
+				teamMemberId,
+				role,
+			});
+
+			if (result.success) {
+				toast.success("Team member assigned");
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to assign team member");
+			}
+		} catch (error) {
+			console.error("Failed to assign team member:", error);
+			toast.error("Failed to assign team member");
+		}
+	};
+
+	const handleRemoveTeamMember = async (teamMemberId: string) => {
+		try {
+			const result = await removeTeamMemberFromJob({
+				jobId: job.id,
+				teamMemberId,
+			});
+
+			if (result.success) {
+				toast.success("Team member removed");
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to remove team member");
+			}
+		} catch (error) {
+			console.error("Failed to remove team member:", error);
+			toast.error("Failed to remove team member");
+		}
+	};
+
 	// Filter customers based on search
 	const _filteredCustomers = allCustomers.filter((c: any) => {
 		if (!customerSearchQuery) {
@@ -619,6 +1024,102 @@ export function JobPageContent({
 			toast.error("Failed to save changes - changes reverted");
 		} finally {
 			setIsSaving(false);
+		}
+	};
+
+	// Handle job costing updates
+	const handleUpdateCosting = async (costingData: any) => {
+		const formData = new FormData();
+
+		// Add all costing fields
+		if (costingData.labor_hours_estimated !== undefined) {
+			formData.append(
+				"labor_hours_estimated",
+				costingData.labor_hours_estimated.toString(),
+			);
+		}
+		if (costingData.labor_hours_actual !== undefined) {
+			formData.append(
+				"labor_hours_actual",
+				costingData.labor_hours_actual.toString(),
+			);
+		}
+		if (costingData.labor_rate !== undefined) {
+			formData.append("labor_rate", costingData.labor_rate.toString());
+		}
+		if (costingData.labor_burden_percent !== undefined) {
+			formData.append(
+				"labor_burden_percent",
+				costingData.labor_burden_percent.toString(),
+			);
+		}
+		if (costingData.labor_cost_total !== undefined) {
+			formData.append(
+				"labor_cost_total",
+				costingData.labor_cost_total.toString(),
+			);
+		}
+		if (costingData.materials_cost_actual !== undefined) {
+			formData.append(
+				"materials_cost_actual",
+				costingData.materials_cost_actual.toString(),
+			);
+		}
+		if (costingData.materials_markup_percent !== undefined) {
+			formData.append(
+				"materials_markup_percent",
+				costingData.materials_markup_percent.toString(),
+			);
+		}
+		if (costingData.materials_revenue !== undefined) {
+			formData.append(
+				"materials_revenue",
+				costingData.materials_revenue.toString(),
+			);
+		}
+		if (costingData.equipment_cost !== undefined) {
+			formData.append("equipment_cost", costingData.equipment_cost.toString());
+		}
+		if (costingData.subcontractor_cost !== undefined) {
+			formData.append(
+				"subcontractor_cost",
+				costingData.subcontractor_cost.toString(),
+			);
+		}
+		if (costingData.overhead_allocation !== undefined) {
+			formData.append(
+				"overhead_allocation",
+				costingData.overhead_allocation.toString(),
+			);
+		}
+		if (costingData.total_cost_actual !== undefined) {
+			formData.append(
+				"total_cost_actual",
+				costingData.total_cost_actual.toString(),
+			);
+		}
+		if (costingData.total_revenue !== undefined) {
+			formData.append("total_revenue", costingData.total_revenue.toString());
+		}
+		if (costingData.profit_margin_actual !== undefined) {
+			formData.append(
+				"profit_margin_actual",
+				costingData.profit_margin_actual.toString(),
+			);
+		}
+		if (costingData.profit_margin_target !== undefined) {
+			formData.append(
+				"profit_margin_target",
+				costingData.profit_margin_target.toString(),
+			);
+		}
+
+		const result = await updateJob(job.id, formData);
+		if (result.success) {
+			toast.success("Job costing updated successfully");
+		} else {
+			toast.error(result.error || "Failed to update job costing");
+			throw new Error(result.error || "Failed to update job costing");
 		}
 	};
 
@@ -730,19 +1231,27 @@ export function JobPageContent({
 	};
 
 	const customerTags = useMemo<string[]>(() => {
+		const normalizeTagArray = (tags: unknown[]): string[] =>
+			tags
+				.filter(
+					(tag): tag is string =>
+						typeof tag === "string" && tag.trim().length > 0,
+				)
+				.map((tag) => tag.trim());
+
 		if (!customer?.tags) {
 			return [];
 		}
 
 		if (Array.isArray(customer.tags)) {
-			return customer.tags.filter(Boolean);
+			return normalizeTagArray(customer.tags);
 		}
 
 		if (typeof customer.tags === "string") {
 			try {
 				const parsed = JSON.parse(customer.tags);
 				if (Array.isArray(parsed)) {
-					return parsed.filter(Boolean);
+					return normalizeTagArray(parsed);
 				}
 				if (typeof parsed === "string") {
 					return parsed
@@ -790,11 +1299,15 @@ export function JobPageContent({
 			return fromMetadata;
 		}
 
-		const vipTag = customerTags.find((tag) =>
-			["vip", "member", "plan", "tier", "priority"].some((keyword) =>
-				tag.toLowerCase().includes(keyword),
-			),
-		);
+		const vipTag = customerTags.find((tag) => {
+			if (typeof tag !== "string") {
+				return false;
+			}
+			const lowerTag = tag.toLowerCase();
+			return ["vip", "member", "plan", "tier", "priority"].some((keyword) =>
+				lowerTag.includes(keyword),
+			);
+		});
 
 		return vipTag ?? null;
 	}, [customerMetadata, customerTags]);
@@ -1088,6 +1601,26 @@ export function JobPageContent({
 			.filter(Boolean);
 	}, [teamAssignments]);
 
+	const currentTeamMemberIds = useMemo(() => {
+		if (!Array.isArray(teamAssignments) || teamAssignments.length === 0) {
+			return [];
+		}
+
+		const ids = teamAssignments
+			.map((assignment: any) => {
+				return (
+					assignment.team_member_id ||
+					assignment.teamMemberId ||
+					assignment.team_member?.id ||
+					assignment.id ||
+					null
+				);
+			})
+			.filter((id): id is string => Boolean(id));
+
+		return Array.from(new Set(ids));
+	}, [teamAssignments]);
+
 	const _primaryAddressLine = [
 		customer?.address,
 		customer?.city,
@@ -1303,22 +1836,34 @@ export function JobPageContent({
 	//   },
 	// ];
 
-	// Build header config
+	// Build header config - Now using AI Job Assistant Header
 	const headerConfig: DetailPageHeaderConfig = {
 		title: (
-			<Input
-				className="h-auto border-0 bg-transparent p-0 text-2xl font-bold tracking-tight shadow-none focus-visible:ring-0 md:text-3xl"
-				onChange={(e) => handleFieldChange("title", e.target.value)}
-				placeholder="Enter job title..."
-				value={localJob.title}
+			<AIJobAssistantHeader
+				job={localJob}
+				customer={customer}
+				property={property}
+				metrics={metrics}
+				teamAssignments={teamAssignments}
+				timeEntries={timeEntries}
+				invoices={invoices}
+				payments={payments}
+				estimates={estimates}
+				userRole="owner" // TODO: Get from user context
+				onTitleChange={(value) => handleFieldChange("title", value)}
+				onSave={handleSave}
+				onCancel={() => {
+					setLocalJob({
+						...job,
+						priority: job.priority || "medium",
+					});
+					setHasChanges(false);
+				}}
+				isSaving={isSaving}
+				hasChanges={hasChanges}
 			/>
 		),
-		subtitle: subtitleContent,
-		badges: headerBadges,
-		actions: primaryActions,
-		secondaryActions:
-			secondaryActions.length > 0 ? secondaryActions : undefined,
-		// metadata: metadataItems, // Removed - stats already in toolbar
+		// subtitle, badges, actions all handled by AIJobAssistantHeader now
 	};
 
 	// Memoize property object to prevent unnecessary re-renders in child components
@@ -1354,48 +1899,41 @@ export function JobPageContent({
 				property={enrichmentProperty}
 			/> */}
 
-			{/* Consolidated Job Info Card */}
+			{/* Comprehensive Job Overview */}
 			<DetailPageSurface padding="lg" variant="default">
 				<div className="space-y-6">
-					<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-						<div className="space-y-2">
-							<Label className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-								Status
-							</Label>
-							<Select
-								onValueChange={(value) => handleFieldChange("status", value)}
-								value={localJob.status || undefined}
-							>
-								<SelectTrigger className="border-border/40 bg-background h-10 w-full justify-between rounded-lg border px-3 text-sm font-medium shadow-sm">
-									<SelectValue placeholder="Set status">
-										<div className="flex items-center gap-2">
-											<CheckCircle className="h-4 w-4" />
-											<span className="capitalize">
-												{localJob.status?.replace(/_/g, " ") || "Set status"}
-											</span>
-										</div>
-									</SelectValue>
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="quoted">Quoted</SelectItem>
-									<SelectItem value="scheduled">Scheduled</SelectItem>
-									<SelectItem value="in_progress">In Progress</SelectItem>
-									<SelectItem value="on_hold">On Hold</SelectItem>
-									<SelectItem value="completed">Completed</SelectItem>
-									<SelectItem value="cancelled">Cancelled</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+					{/* Row 1: Status & Workflow */}
+					<StandardFormRow cols={4}>
+						<StandardFormField label="Status">
+							<JobStatusSelector
+								currentStatus={(localJob.status || "quoted") as JobStatus}
+								onStatusChange={(newStatus) =>
+									handleFieldChange("status", newStatus)
+								}
+								job={{
+									id: jobData.job.id,
+									scheduled_start:
+										localJob.scheduled_start || jobData.job.scheduled_start,
+									scheduled_end:
+										localJob.scheduled_end || jobData.job.scheduled_end,
+									assigned_to: localJob.assigned_to || jobData.job.assigned_to,
+									customer_id: localJob.customer_id || jobData.job.customer_id,
+									property_id: localJob.property_id || jobData.property?.id,
+									total_amount:
+										localJob.total_amount || jobData.job.total_amount,
+									invoices: jobData.invoices,
+									estimates: jobData.estimates,
+									teamAssignments: jobData.teamAssignments,
+								}}
+							/>
+						</StandardFormField>
 
-						<div className="space-y-2">
-							<Label className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-								Priority
-							</Label>
+						<StandardFormField label="Priority">
 							<Select
 								onValueChange={(value) => handleFieldChange("priority", value)}
 								value={localJob.priority || undefined}
 							>
-								<SelectTrigger className="border-border/40 bg-background h-10 w-full justify-between rounded-lg border px-3 text-sm font-medium shadow-sm">
+								<SelectTrigger>
 									<SelectValue placeholder="Set priority">
 										<div className="flex items-center gap-2">
 											<AlertCircle className="h-4 w-4" />
@@ -1412,64 +1950,393 @@ export function JobPageContent({
 									<SelectItem value="urgent">Urgent</SelectItem>
 								</SelectContent>
 							</Select>
-						</div>
-
-						<div className="space-y-2">
-							<Label className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-								Assigned Team
-							</Label>
-							<TeamMemberSelector isEditMode={true} jobId={job.id} />
-						</div>
+						</StandardFormField>
 
 						{property && (
-							<div className="space-y-2">
-								<Label className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-									Travel Time
-								</Label>
-								<TravelTime
-									className="border-border/40 bg-background h-10 w-full items-center rounded-lg border px-3 text-sm"
-									property={property}
-								/>
-							</div>
+							<StandardFormField
+								label="Travel Time"
+								className="sm:col-span-2 lg:col-span-1"
+							>
+								<TravelTime property={property} />
+							</StandardFormField>
 						)}
+					</StandardFormRow>
+
+					<Separator />
+
+					{/* Row 2: Customer Quick View */}
+					{customer && (
+						<>
+							<div>
+								<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+									<User className="h-4 w-4" />
+									Customer Information
+								</h3>
+								<StandardFormRow cols={4}>
+									<StandardFormField label="Customer">
+										<Link
+											href={`/dashboard/customers/${customer.id}`}
+											className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+										>
+											{customer.display_name ||
+												`${customer.first_name} ${customer.last_name}`}
+										</Link>
+									</StandardFormField>
+
+									<StandardFormField label="Phone">
+										{customer.phone ? (
+											<a
+												href={`tel:${customer.phone}`}
+												className="text-sm text-primary hover:underline"
+											>
+												{customer.phone}
+											</a>
+										) : (
+											<span className="text-muted-foreground text-sm">
+												No phone
+											</span>
+										)}
+									</StandardFormField>
+
+									<StandardFormField label="Email">
+										{customer.email ? (
+											<a
+												href={`mailto:${customer.email}`}
+												className="text-sm text-primary hover:underline truncate"
+											>
+												{customer.email}
+											</a>
+										) : (
+											<span className="text-muted-foreground text-sm">
+												No email
+											</span>
+										)}
+									</StandardFormField>
+
+									<StandardFormField label="Customer Type">
+										<Badge variant="outline" className="w-fit">
+											{customer.type || "residential"}
+										</Badge>
+									</StandardFormField>
+								</StandardFormRow>
+							</div>
+
+							<Separator />
+						</>
+					)}
+
+					{/* Row 3: Property & Location */}
+					{property && (
+						<>
+							<div>
+								<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+									<MapPin className="h-4 w-4" />
+									Property & Location
+								</h3>
+								<StandardFormRow cols={4}>
+									<StandardFormField label="Address" className="col-span-2">
+										<div className="flex items-center gap-2">
+											<span className="text-sm">
+												{property.address}
+												{property.address_line2 &&
+													`, ${property.address_line2}`}
+												<br />
+												{property.city}, {property.state} {property.zip}
+											</span>
+											{property.lat && property.lon && (
+												<a
+													href={`https://www.google.com/maps?q=${property.lat},${property.lon}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-primary hover:underline"
+												>
+													<ExternalLink className="h-3 w-3" />
+												</a>
+											)}
+										</div>
+									</StandardFormField>
+
+									<StandardFormField label="Property Type">
+										<Badge variant="outline" className="w-fit">
+											{property.property_type || "Unknown"}
+										</Badge>
+									</StandardFormField>
+
+									<StandardFormField label="Access Code">
+										{property.access_code ? (
+											<code className="text-sm bg-muted px-2 py-1 rounded">
+												{property.access_code}
+											</code>
+										) : (
+											<span className="text-muted-foreground text-sm">
+												None
+											</span>
+										)}
+									</StandardFormField>
+								</StandardFormRow>
+							</div>
+
+							<Separator />
+						</>
+					)}
+
+					{/* Row 4: Schedule & Team */}
+					<div>
+						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+							<Calendar className="h-4 w-4" />
+							Schedule & Team
+						</h3>
+						<StandardFormRow cols={4}>
+							<StandardFormField label="Scheduled Start">
+								{localJob.scheduled_start ? (
+									<span className="text-sm">
+										{formatDate(localJob.scheduled_start)}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">
+										Not scheduled
+									</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Scheduled End">
+								{localJob.scheduled_end ? (
+									<span className="text-sm">
+										{formatDate(localJob.scheduled_end)}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">
+										Not scheduled
+									</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Assigned Techs" className="col-span-2">
+								{teamAssignments && teamAssignments.length > 0 ? (
+									<div className="flex items-center gap-2">
+										{teamAssignments.slice(0, 3).map((assignment: any) => (
+											<Badge key={assignment.id} variant="secondary">
+												{assignment.user?.name || "Unknown"}
+											</Badge>
+										))}
+										{teamAssignments.length > 3 && (
+											<span className="text-muted-foreground text-xs">
+												+{teamAssignments.length - 3} more
+											</span>
+										)}
+									</div>
+								) : (
+									<span className="text-muted-foreground text-sm">
+										No techs assigned
+									</span>
+								)}
+							</StandardFormField>
+
+							{timeEntries && timeEntries.length > 0 && (
+								<>
+									<StandardFormField label="Clock In">
+										<span className="text-sm">
+											{formatDate(timeEntries[0]?.clock_in_time)}
+										</span>
+									</StandardFormField>
+
+									<StandardFormField label="Clock Out">
+										{timeEntries[0]?.clock_out_time ? (
+											<span className="text-sm">
+												{formatDate(timeEntries[0]?.clock_out_time)}
+											</span>
+										) : (
+											<Badge variant="secondary">In Progress</Badge>
+										)}
+									</StandardFormField>
+
+									<StandardFormField label="Total Hours" className="col-span-2">
+										<span className="text-sm font-semibold">
+											{timeEntries
+												.reduce(
+													(sum: number, entry: any) =>
+														sum + (entry.total_hours || 0),
+													0,
+												)
+												.toFixed(1)}
+											h
+										</span>
+									</StandardFormField>
+								</>
+							)}
+						</StandardFormRow>
 					</div>
 
-					<div className="grid gap-4 md:grid-cols-2">
-						<div className="space-y-2">
-							<Label
-								className="text-muted-foreground text-xs font-medium tracking-wide uppercase"
-								htmlFor="service-type"
-							>
-								Service Type
-							</Label>
-							<Input
-								className="border-border/40 bg-background focus-visible:border-primary/50 focus-visible:ring-primary/20 h-11 rounded-lg border px-3 text-sm shadow-sm focus-visible:ring-2"
-								id="service-type"
-								onChange={(e) =>
-									handleFieldChange("service_type", e.target.value)
-								}
-								placeholder="e.g. HVAC Maintenance, Plumbing Repair"
-								value={localJob.service_type || localJob.job_type || ""}
-							/>
-						</div>
+					<Separator />
 
-						<div className="space-y-2">
-							<Label
-								className="text-muted-foreground text-xs font-medium tracking-wide uppercase"
+					{/* Row 5: Financial Snapshot */}
+					<div>
+						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+							<DollarSign className="h-4 w-4" />
+							Financial Overview
+						</h3>
+						<StandardFormRow cols={4}>
+							<StandardFormField label="Job Value">
+								<span className="text-sm font-semibold">
+									{formatCurrency(localJob.total_amount || 0)}
+								</span>
+							</StandardFormField>
+
+							<StandardFormField label="Estimates">
+								{estimates && estimates.length > 0 ? (
+									<div className="flex items-center gap-2">
+										<span className="text-sm">{estimates.length} sent</span>
+										<Badge
+											variant={
+												estimates.some((e: any) => e.status === "accepted")
+													? "default"
+													: "secondary"
+											}
+										>
+											{estimates.find((e: any) => e.status === "accepted")
+												? "Accepted"
+												: "Pending"}
+										</Badge>
+									</div>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Invoices">
+								{invoices && invoices.length > 0 ? (
+									<span className="text-sm">
+										{invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Payments">
+								{payments && payments.length > 0 ? (
+									<div className="flex flex-col gap-1">
+										<span className="text-sm font-semibold text-green-600 dark:text-green-400">
+											{formatCurrency(
+												payments.reduce(
+													(sum: number, p: any) => sum + (p.amount || 0),
+													0,
+												),
+											)}
+										</span>
+										<span className="text-xs text-muted-foreground">
+											{payments.length} payment
+											{payments.length !== 1 ? "s" : ""}
+										</span>
+									</div>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+						</StandardFormRow>
+					</div>
+
+					<Separator />
+
+					{/* Row 6: Activity & Communications */}
+					<div>
+						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+							<MessageSquare className="h-4 w-4" />
+							Recent Activity
+						</h3>
+						<StandardFormRow cols={4}>
+							<StandardFormField label="Communications">
+								{communications && communications.length > 0 ? (
+									<span className="text-sm">
+										{communications.length} message
+										{communications.length !== 1 ? "s" : ""}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Notes">
+								{jobNotes && jobNotes.length > 0 ? (
+									<span className="text-sm">
+										{jobNotes.length} note{jobNotes.length !== 1 ? "s" : ""}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Photos">
+								{photos && photos.length > 0 ? (
+									<span className="text-sm">
+										{photos.length} photo{photos.length !== 1 ? "s" : ""}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+
+							<StandardFormField label="Documents">
+								{documents && documents.length > 0 ? (
+									<span className="text-sm">
+										{documents.length} doc{documents.length !== 1 ? "s" : ""}
+									</span>
+								) : (
+									<span className="text-muted-foreground text-sm">None</span>
+								)}
+							</StandardFormField>
+						</StandardFormRow>
+					</div>
+
+					<Separator />
+
+					{/* Row 7: Service Details */}
+					<div>
+						<h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+							<Wrench className="h-4 w-4" />
+							Service Details
+						</h3>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="Service Type" htmlFor="service-type">
+								<Input
+									id="service-type"
+									onChange={(e) =>
+										handleFieldChange("service_type", e.target.value)
+									}
+									placeholder="e.g. HVAC Maintenance, Plumbing Repair"
+									value={localJob.service_type || localJob.job_type || ""}
+								/>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Job Description"
 								htmlFor="job-description"
 							>
-								Job Description
-							</Label>
-							<Textarea
-								className="border-border/40 bg-background focus-visible:border-primary/50 focus-visible:ring-primary/20 min-h-[120px] rounded-lg border px-3 py-2 text-sm shadow-sm focus-visible:ring-2"
-								id="job-description"
-								onChange={(e) =>
-									handleFieldChange("description", e.target.value)
-								}
-								placeholder="Add context, expectations, or key notes for the crew."
-								value={localJob.description || ""}
-							/>
-						</div>
+								<Textarea
+									id="job-description"
+									onChange={(e) =>
+										handleFieldChange("description", e.target.value)
+									}
+									placeholder="Add context, expectations, or key notes for the crew."
+									value={localJob.description || ""}
+									className="min-h-[120px]"
+								/>
+							</StandardFormField>
+						</StandardFormRow>
+
+						{jobEquipment && jobEquipment.length > 0 && (
+							<StandardFormRow cols={4} className="mt-4">
+								<StandardFormField label="Equipment" className="col-span-4">
+									<div className="flex flex-wrap gap-2">
+										{jobEquipment.map((eq: any) => (
+											<Badge key={eq.id} variant="outline">
+												{eq.equipment?.name || eq.equipment_id}
+											</Badge>
+										))}
+									</div>
+								</StandardFormField>
+							</StandardFormRow>
+						)}
 					</div>
 
 					<div className="border-border/40 flex justify-end border-t pt-4">
@@ -1488,38 +2355,86 @@ export function JobPageContent({
 		icon: <User className="size-4" />,
 		count: customer ? 1 : 0,
 		actions: (
-			<div className="flex items-center gap-2">
-				<Button
-					onClick={() => {
-						// TODO: Implement change customer dialog
-						toast.info("Change customer feature coming soon");
-					}}
-					size="sm"
-					variant="outline"
-				>
-					<User className="mr-1.5 h-3.5 w-3.5" />
-					Change Customer
-				</Button>
-				<Button
-					onClick={() => {
-						// TODO: Implement change property dialog
-						toast.info("Change property feature coming soon");
-					}}
-					size="sm"
-					variant="outline"
-				>
-					<Building2 className="mr-1.5 h-3.5 w-3.5" />
-					Change Property
-				</Button>
-				<Button
-					onClick={() => setIsRemoveCustomerDialogOpen(true)}
-					size="sm"
-					variant="outline"
-				>
-					<X className="mr-1.5 h-3.5 w-3.5" />
-					Remove Customer
-				</Button>
-			</div>
+			<JobCustomerPropertyManager
+				currentCustomer={
+					customer
+						? {
+								id: customer.id,
+								first_name: customer.first_name || "",
+								last_name: customer.last_name || "",
+								display_name: customer.display_name || "",
+								email: customer.email || "",
+								phone: customer.phone || "",
+								company_name: customer.company_name,
+								type: customer.type || "residential",
+								address: customer.address,
+								city: customer.city,
+								state: customer.state,
+								zip: customer.zip,
+							}
+						: null
+				}
+				currentProperty={
+					property
+						? {
+								id: property.id,
+								customer_id: property.customer_id,
+								address: property.address || "",
+								address_line2: property.address_line2,
+								city: property.city || "",
+								state: property.state || "",
+								zip: property.zip || "",
+								property_type: property.property_type,
+							}
+						: null
+				}
+				getCustomerProperties={getCustomerProperties}
+				onAssignCustomer={async (selectedCustomer, selectedProperty) => {
+					const result = await assignCustomerToJob(
+						job.id,
+						selectedCustomer.id,
+						selectedProperty?.id || null,
+					);
+
+					if (result.success) {
+						// Update local state immediately so UI reflects the change without waiting for router refresh
+						setCustomer(selectedCustomer);
+						setProperty(selectedProperty ?? null);
+						toast.success("Customer and property assigned successfully");
+						router.refresh();
+					} else {
+						toast.error(result.error || "Failed to assign customer");
+					}
+				}}
+				onRemoveCustomer={async () => {
+					const result = await removeCustomerFromJob(job.id);
+
+					if (result.success) {
+						setCustomer(null);
+						setProperty(null);
+						toast.success("Customer and property removed successfully");
+						router.refresh();
+					} else {
+						toast.error(result.error || "Failed to remove customer");
+					}
+				}}
+				onRemoveProperty={async () => {
+					if (!customer) {
+						return;
+					}
+
+					const result = await assignCustomerToJob(job.id, customer.id, null);
+
+					if (result.success) {
+						setProperty(null);
+						toast.success("Property removed from job");
+						router.refresh();
+					} else {
+						toast.error(result.error || "Failed to remove property");
+					}
+				}}
+				searchCustomers={searchCustomersForJob}
+			/>
 		),
 		content: (
 			<UnifiedAccordionContent className="space-y-6">
@@ -1592,8 +2507,8 @@ export function JobPageContent({
 							</div>
 
 							<div className="border-border/60 bg-card/80 rounded-xl border shadow-sm">
-								<div className="divide-border/40 bg-muted/20 grid grid-cols-4 divide-x px-6 py-4">
-									<div className="px-3 first:pl-0 last:pr-0">
+								<div className="divide-border/40 bg-muted/20 grid grid-cols-2 divide-x divide-y sm:divide-y-0 md:grid-cols-4 px-4 py-4 sm:px-6">
+									<div className="px-3 py-3 first:pl-0 last:pr-0 sm:py-0">
 										<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 											Lifetime Value
 										</div>
@@ -1605,7 +2520,7 @@ export function JobPageContent({
 											{formatCurrency(averageJobValue)} avg
 										</div>
 									</div>
-									<div className="px-3 first:pl-0 last:pr-0">
+									<div className="px-3 py-3 first:pl-0 last:pr-0 sm:py-0">
 										<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 											Balance Due
 										</div>
@@ -1625,7 +2540,7 @@ export function JobPageContent({
 												: normalizedPaymentTerms}
 										</div>
 									</div>
-									<div className="px-3 first:pl-0 last:pr-0">
+									<div className="px-3 py-3 first:pl-0 last:pr-0 sm:py-0">
 										<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 											Credit Limit
 										</div>
@@ -1640,7 +2555,7 @@ export function JobPageContent({
 													: "Cash only"}
 										</div>
 									</div>
-									<div className="px-3 first:pl-0 last:pr-0">
+									<div className="px-3 py-3 first:pl-0 last:pr-0 sm:py-0">
 										<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 											Customer Since
 										</div>
@@ -1842,6 +2757,29 @@ export function JobPageContent({
 								</div>
 							</div>
 
+							{/* Job Tags Section */}
+							<div className="border-border/60 bg-card/80 rounded-xl border p-6 shadow-sm">
+								<div className="space-y-3">
+									<div className="flex items-center gap-2">
+										<Tag className="text-muted-foreground size-4" />
+										<h4 className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
+											Job Tags
+										</h4>
+									</div>
+									<EntityTags
+										entityId={job.id}
+										entityType="job"
+										tags={jobTags}
+										onUpdateTags={async (id, tags) => {
+											const result = await updateEntityTags("job", id, tags);
+											if (result.success) {
+												router.refresh();
+											}
+										}}
+									/>
+								</div>
+							</div>
+
 							{(assignedTeamMembers.length > 0 || customerTags.length > 0) && (
 								<div className="border-border/60 bg-card/80 rounded-xl border p-6 shadow-sm">
 									<div className="space-y-4">
@@ -1992,6 +2930,25 @@ export function JobPageContent({
 	});
 
 	sections.push({
+		id: "team",
+		title: "Team Members",
+		icon: <Users className="size-4" />,
+		count: teamAssignments.length,
+		actions: (
+			<JobTeamMemberSelector
+				availableMembers={availableTeamMembers}
+				currentMemberIds={currentTeamMemberIds}
+				onAssign={handleAssignTeamMember}
+			/>
+		),
+		content: (
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobTeamMembersTable teamAssignments={teamAssignments} />
+			</UnifiedAccordionContent>
+		),
+	});
+
+	sections.push({
 		id: "appointments",
 		title: "Appointments",
 		icon: <Calendar className="size-4" />,
@@ -2006,179 +2963,181 @@ export function JobPageContent({
 			</Button>
 		),
 		content: (
-			<UnifiedAccordionContent className="p-0">
-				<div className="text-muted-foreground border-b px-6 py-4 text-sm">
-					Manage scheduled visits and dispatch activities.
-				</div>
-				<div className="overflow-x-auto">
-					<JobAppointmentsTable appointments={schedules} />
-				</div>
+			<UnifiedAccordionContent className="p-0 sm:p-0">
+				<JobAppointmentsExpandable appointments={schedules} />
 			</UnifiedAccordionContent>
 		),
 	});
 
 	sections.push({
-		id: "tasks",
-		title: "Job Tasks & Checklist",
-		icon: <CheckCircle className="size-4" />,
-		count: tasks.length,
+		id: "equipment-serviced",
+		title: "Equipment Serviced",
+		icon: <Wrench className="size-4" />,
+		count: jobEquipment.length,
 		actions: (
 			<div className="flex items-center gap-2">
-				<Button size="sm" variant="outline">
-					<Plus className="mr-2 h-4 w-4" /> Add Task
+				<Button
+					onClick={() => setIsLinkEquipmentOpen(true)}
+					size="sm"
+					variant="ghost"
+				>
+					<Link2 className="mr-2 h-4 w-4" /> Link Existing
 				</Button>
-				<Button size="sm" variant="outline">
-					Load Template
+				<Button
+					onClick={() =>
+						router.push(`/dashboard/work/equipment/new?jobId=${job.id}`)
+					}
+					size="sm"
+					variant="outline"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Add Equipment
 				</Button>
 			</div>
 		),
 		content: (
 			<UnifiedAccordionContent>
-				<div className="space-y-6">
-					{tasks.length > 0 && (
-						<div>
-							<div className="mb-2 flex items-center justify-between text-sm">
-								<span className="font-medium">Overall Progress</span>
-								<span className="text-muted-foreground">
-									{Math.round(
-										(tasks.filter((t: any) => t.is_completed).length /
-											tasks.length) *
-											100,
-									)}
-									%
-								</span>
-							</div>
-							<div className="bg-muted h-2 w-full overflow-hidden rounded-full">
-								<div
-									className="bg-success h-full transition-all"
-									style={{
-										width: `${(tasks.filter((t: any) => t.is_completed).length / tasks.length) * 100}%`,
-									}}
-								/>
-							</div>
+				{jobEquipment.length === 0 ? (
+					<div className="flex flex-col items-center justify-center py-8 text-center">
+						<div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+							<Wrench className="text-muted-foreground h-8 w-8" />
 						</div>
-					)}
-
-					{tasks.length > 0 ? (
-						["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map(
-							(category) => {
-								const categoryTasks = tasks.filter((t: any) =>
-									category === null ? !t.category : t.category === category,
-								);
-
-								if (categoryTasks.length === 0) {
-									return null;
-								}
-
-								return (
-									<div key={category || "uncategorized"}>
-										<h4 className="text-muted-foreground mb-3 text-sm font-semibold uppercase">
-											{category || "Other Tasks"}
-										</h4>
-										<div className="space-y-2">
-											{categoryTasks.map((task: any) => {
-												const assignedTaskUser = Array.isArray(
-													task.assigned_user,
-												)
-													? task.assigned_user[0]
-													: task.assigned_user;
-
-												return (
-													<div
-														className={cn(
-															"flex items-start gap-3 rounded-lg border p-3 transition-colors",
-															task.is_completed && "bg-secondary opacity-75",
-														)}
-														key={task.id}
-													>
-														<div className="flex items-center pt-0.5">
-															<input
-																checked={task.is_completed}
-																className="border-border text-success h-5 w-5 rounded focus:ring-2 focus:ring-green-500"
-																onChange={() => {}}
-																type="checkbox"
-															/>
-														</div>
-														<div className="min-w-0 flex-1">
-															<div className="flex items-start justify-between gap-2">
-																<div className="flex-1">
-																	<p
-																		className={cn(
-																			"font-medium",
-																			task.is_completed &&
-																				"text-muted-foreground line-through",
-																		)}
-																	>
-																		{task.title}
-																		{task.is_required && (
-																			<Badge
-																				className="ml-2 text-xs"
-																				variant="destructive"
-																			>
-																				Required
-																			</Badge>
-																		)}
-																	</p>
-																	{task.description && (
-																		<p className="text-muted-foreground mt-1 text-sm">
-																			{task.description}
-																		</p>
-																	)}
-																</div>
-																{assignedTaskUser && (
-																	<div className="flex items-center gap-1">
-																		<Avatar className="h-6 w-6">
-																			<AvatarImage
-																				src={assignedTaskUser.avatar}
-																			/>
-																			<AvatarFallback className="text-xs">
-																				{assignedTaskUser.name
-																					?.substring(0, 2)
-																					.toUpperCase() || "TM"}
-																			</AvatarFallback>
-																		</Avatar>
-																	</div>
-																)}
-															</div>
-															<div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-2 text-xs">
-																{task.is_completed && task.completed_at && (
-																	<span className="flex items-center gap-1">
-																		<CheckCircle className="text-success h-3 w-3" />
-																		Completed {formatDate(task.completed_at)}
-																	</span>
-																)}
-																{!task.is_completed && task.due_date && (
-																	<span className="flex items-center gap-1">
-																		<Clock className="h-3 w-3" />
-																		Due {formatDate(task.due_date)}
-																	</span>
-																)}
-															</div>
-														</div>
-													</div>
-												);
-											})}
+						<h3 className="mb-2 text-lg font-semibold">
+							No equipment has been added to this job yet
+						</h3>
+						<p className="text-muted-foreground mb-4 text-sm">
+							Equipment serviced on this job will appear here
+						</p>
+						<Button onClick={() => {}} size="sm" variant="secondary">
+							<Plus className="mr-2 h-4 w-4" /> Add Equipment
+						</Button>
+					</div>
+				) : (
+					<div className="space-y-4">
+						{jobEquipment.map((je: any) => (
+							<div
+								className="hover:bg-accent/50 space-y-3 rounded-lg border p-4 transition-colors"
+								key={je.id}
+							>
+								<div className="flex items-start justify-between">
+									<div className="flex-1">
+										<div className="mb-2 flex items-center gap-2">
+											<h4 className="font-semibold">{je.equipment?.name}</h4>
+											<Badge variant="secondary">{je.service_type}</Badge>
+										</div>
+										<div className="text-muted-foreground space-y-1 text-sm">
+											<p>
+												{je.equipment?.manufacturer} {je.equipment?.model}
+												{je.equipment?.serial_number &&
+													` • SN: ${je.equipment.serial_number}`}
+											</p>
 										</div>
 									</div>
-								);
-							},
-						)
-					) : (
-						<div className="rounded-lg border border-dashed p-6 text-center">
-							<CheckCircle className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-							<p className="text-muted-foreground mb-1 text-sm">
-								No tasks added yet
-							</p>
-							<p className="text-muted-foreground mb-3 text-xs">
-								Create a step-by-step checklist so the field crew knows exactly
-								what to complete on-site.
-							</p>
-							<Button size="sm" variant="outline">
-								<Plus className="mr-2 h-4 w-4" /> Add Task
-							</Button>
-						</div>
-					)}
-				</div>
+								</div>
+								{je.work_performed && (
+									<div className="text-sm">
+										<span className="font-medium">Work Performed:</span>
+										<p className="text-muted-foreground mt-1">
+											{je.work_performed}
+										</p>
+									</div>
+								)}
+								<div className="flex flex-wrap items-center gap-4 text-sm">
+									{je.condition_before && (
+										<div>
+											<span className="text-muted-foreground mr-2">
+												Before:
+											</span>
+											<Badge variant="outline">{je.condition_before}</Badge>
+										</div>
+									)}
+									{je.condition_after && (
+										<div>
+											<span className="text-muted-foreground mr-2">After:</span>
+											<Badge variant="default">{je.condition_after}</Badge>
+										</div>
+									)}
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+			</UnifiedAccordionContent>
+		),
+	});
+
+	if (equipment.length > 0) {
+		sections.push({
+			id: "equipment",
+			title: "Customer Equipment at Property",
+			icon: <Building2 className="size-4" />,
+			count: equipment.length,
+			content: (
+				<UnifiedAccordionContent className="p-0">
+					<div className="overflow-x-auto">
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Equipment</TableHead>
+									<TableHead>Type</TableHead>
+									<TableHead>Manufacturer</TableHead>
+									<TableHead>Model</TableHead>
+									<TableHead>Serial #</TableHead>
+									<TableHead>Last Service</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{equipment.map((item: any) => (
+									<TableRow key={item.id}>
+										<TableCell className="font-medium">{item.name}</TableCell>
+										<TableCell>{item.type}</TableCell>
+										<TableCell>{item.manufacturer || "N/A"}</TableCell>
+										<TableCell>{item.model || "N/A"}</TableCell>
+										<TableCell className="font-mono text-sm">
+											{item.serial_number || "N/A"}
+										</TableCell>
+										<TableCell className="text-sm">
+											{item.last_service_date
+												? formatDate(item.last_service_date)
+												: "Never"}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</div>
+				</UnifiedAccordionContent>
+			),
+		});
+	}
+
+	sections.push({
+		id: "estimates",
+		title: "Estimates",
+		icon: <Receipt className="size-4" />,
+		count: estimates.length,
+		actions: (
+			<div className="flex items-center gap-2">
+				<Button
+					onClick={() => setIsLinkEstimateOpen(true)}
+					size="sm"
+					variant="ghost"
+				>
+					<Link2 className="mr-2 h-4 w-4" /> Link Existing
+				</Button>
+				<Button
+					onClick={() =>
+						router.push(`/dashboard/work/estimates/new?jobId=${job.id}`)
+					}
+					size="sm"
+					variant="outline"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Create Estimate
+				</Button>
+			</div>
+		),
+		content: (
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobEstimatesTable estimates={estimates} />
 			</UnifiedAccordionContent>
 		),
 	});
@@ -2189,40 +3148,60 @@ export function JobPageContent({
 		icon: <FileText className="size-4" />,
 		count: invoices.length,
 		actions: (
-			<Button onClick={() => {}} size="sm" variant="outline">
-				<Plus className="mr-2 h-4 w-4" /> Create Invoice
-			</Button>
+			<div className="flex items-center gap-2">
+				<Button
+					onClick={() => setIsLinkInvoiceOpen(true)}
+					size="sm"
+					variant="ghost"
+				>
+					<Link2 className="mr-2 h-4 w-4" /> Link Existing
+				</Button>
+				<Button
+					onClick={() =>
+						router.push(`/dashboard/work/invoices/new?jobId=${job.id}`)
+					}
+					size="sm"
+					variant="outline"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Create Invoice
+				</Button>
+			</div>
 		),
 		content: (
-			<UnifiedAccordionContent className="p-0">
-				<div className="text-muted-foreground border-b px-6 py-4 text-sm">
-					Billing history and outstanding invoices for this job.
-				</div>
-				<div className="overflow-x-auto">
-					<JobInvoicesTable invoices={invoices} />
-				</div>
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobInvoicesTable invoices={invoices} />
 			</UnifiedAccordionContent>
 		),
 	});
 
 	sections.push({
-		id: "estimates",
-		title: "Estimates",
-		icon: <Receipt className="size-4" />,
-		count: estimates.length,
+		id: "payments",
+		title: "Payments",
+		icon: <DollarSign className="size-4" />,
+		count: payments.length,
 		actions: (
-			<Button onClick={() => {}} size="sm" variant="outline">
-				<Plus className="mr-2 h-4 w-4" /> Create Estimate
-			</Button>
+			<div className="flex items-center gap-2">
+				<Button
+					onClick={() => setIsLinkPaymentOpen(true)}
+					size="sm"
+					variant="ghost"
+				>
+					<Link2 className="mr-2 h-4 w-4" /> Link Existing
+				</Button>
+				<Button
+					onClick={() =>
+						router.push(`/dashboard/work/payments/new?jobId=${job.id}`)
+					}
+					size="sm"
+					variant="outline"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Record Payment
+				</Button>
+			</div>
 		),
 		content: (
-			<UnifiedAccordionContent className="p-0">
-				<div className="text-muted-foreground border-b px-6 py-4 text-sm">
-					Proposals and estimates created for this job.
-				</div>
-				<div className="overflow-x-auto">
-					<JobEstimatesTable estimates={estimates} />
-				</div>
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobPaymentsTable payments={payments} />
 			</UnifiedAccordionContent>
 		),
 	});
@@ -2233,18 +3212,19 @@ export function JobPageContent({
 		icon: <Package className="size-4" />,
 		count: purchaseOrders.length,
 		actions: (
-			<Button onClick={() => {}} size="sm" variant="outline">
+			<Button
+				onClick={() =>
+					router.push(`/dashboard/work/purchase-orders/new?jobId=${job.id}`)
+				}
+				size="sm"
+				variant="outline"
+			>
 				<Plus className="mr-2 h-4 w-4" /> Create PO
 			</Button>
 		),
 		content: (
-			<UnifiedAccordionContent className="p-0">
-				<div className="text-muted-foreground border-b px-6 py-4 text-sm">
-					Track materials and purchases tied to this job.
-				</div>
-				<div className="overflow-x-auto">
-					<JobPurchaseOrdersTable purchaseOrders={purchaseOrders} />
-				</div>
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobPurchaseOrdersTable purchaseOrders={purchaseOrders} />
 			</UnifiedAccordionContent>
 		),
 	});
@@ -2514,214 +3494,83 @@ export function JobPageContent({
 	});
 
 	sections.push({
-		id: "activity",
-		title: "Activity & Communications",
-		icon: <Activity className="size-4" />,
-		count: activities.length + communications.length,
+		id: "tasks",
+		title: "Job Tasks & Checklist",
+		icon: <CheckCircle className="size-4" />,
+		count: tasks.length,
 		actions: (
-			<Button onClick={() => {}} size="sm" variant="outline">
-				<Plus className="mr-2 h-4 w-4" /> Add Note
-			</Button>
+			<div className="flex items-center gap-2">
+				<Button
+					onClick={() => setIsAddTaskDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Add Task
+				</Button>
+				<Button
+					onClick={() => setIsLoadTemplateDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
+					Load Template
+				</Button>
+			</div>
 		),
 		content: (
-			<UnifiedAccordionContent>
-				<div className="space-y-3">
-					{activities.length > 0 || communications.length > 0 ? (
-						[...activities, ...communications]
-							.sort(
-								(a, b) =>
-									new Date(b.created_at).getTime() -
-									new Date(a.created_at).getTime(),
-							)
-							.slice(0, 20)
-							.map((item: any) => {
-								const itemUser = Array.isArray(item.user)
-									? item.user[0]
-									: item.user;
-								const isComm = item.type || item.subject;
-								return (
-									<div
-										className="flex gap-3 rounded-lg border p-3"
-										key={item.id}
-									>
-										<Avatar className="h-8 w-8">
-											<AvatarImage src={itemUser?.avatar} />
-											<AvatarFallback className="text-xs">
-												{itemUser?.name
-													?.split(" ")
-													.map((n: string) => n[0])
-													.join("") || "?"}
-											</AvatarFallback>
-										</Avatar>
-										<div className="flex-1">
-											<div className="mb-1 flex items-center gap-2">
-												<span className="text-sm font-medium">
-													{itemUser?.name || "System"}
-												</span>
-												<span className="text-muted-foreground text-xs">
-													{formatDate(item.created_at)}
-												</span>
-												{isComm && item.type && (
-													<Badge className="text-xs" variant="outline">
-														{item.type.toUpperCase()}
-													</Badge>
-												)}
-											</div>
-											{item.subject && (
-												<p className="mb-1 text-sm font-medium">
-													{item.subject}
-												</p>
-											)}
-											<p className="text-muted-foreground text-sm">
-												{item.description || item.body || "Activity logged"}
-											</p>
-										</div>
-									</div>
-								);
-							})
-					) : (
-						<div className="flex flex-col items-center justify-center py-8 text-center">
-							<div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-								<Activity className="text-muted-foreground h-8 w-8" />
-							</div>
-							<h3 className="mb-2 text-lg font-semibold">
-								No activity or communications yet
-							</h3>
-							<p className="text-muted-foreground text-sm">
-								Activity logs and communications will appear here
-							</p>
-						</div>
-					)}
-				</div>
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobTasksTable tasks={tasks} />
 			</UnifiedAccordionContent>
 		),
 	});
 
 	sections.push({
-		id: "equipment-serviced",
-		title: "Equipment Serviced",
-		icon: <Wrench className="size-4" />,
-		count: jobEquipment.length,
+		id: "notes",
+		title: "Notes",
+		icon: <StickyNote className="size-4" />,
+		count: jobNotes.length,
 		actions: (
-			<Button onClick={() => {}} size="sm" variant="outline">
-				<Plus className="mr-2 h-4 w-4" /> Add Equipment
+			<Button
+				onClick={() => setIsAddNoteDialogOpen(true)}
+				size="sm"
+				variant="outline"
+			>
+				<Plus className="mr-2 h-4 w-4" /> Add Note
 			</Button>
 		),
 		content: (
-			<UnifiedAccordionContent>
-				{jobEquipment.length === 0 ? (
-					<div className="flex flex-col items-center justify-center py-8 text-center">
-						<div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-							<Wrench className="text-muted-foreground h-8 w-8" />
-						</div>
-						<h3 className="mb-2 text-lg font-semibold">
-							No equipment has been added to this job yet
-						</h3>
-						<p className="text-muted-foreground mb-4 text-sm">
-							Equipment serviced on this job will appear here
-						</p>
-						<Button onClick={() => {}} size="sm" variant="secondary">
-							<Plus className="mr-2 h-4 w-4" /> Add Equipment
-						</Button>
-					</div>
-				) : (
-					<div className="space-y-4">
-						{jobEquipment.map((je: any) => (
-							<div
-								className="hover:bg-accent/50 space-y-3 rounded-lg border p-4 transition-colors"
-								key={je.id}
-							>
-								<div className="flex items-start justify-between">
-									<div className="flex-1">
-										<div className="mb-2 flex items-center gap-2">
-											<h4 className="font-semibold">{je.equipment?.name}</h4>
-											<Badge variant="secondary">{je.service_type}</Badge>
-										</div>
-										<div className="text-muted-foreground space-y-1 text-sm">
-											<p>
-												{je.equipment?.manufacturer} {je.equipment?.model}
-												{je.equipment?.serial_number &&
-													` • SN: ${je.equipment.serial_number}`}
-											</p>
-										</div>
-									</div>
-								</div>
-								{je.work_performed && (
-									<div className="text-sm">
-										<span className="font-medium">Work Performed:</span>
-										<p className="text-muted-foreground mt-1">
-											{je.work_performed}
-										</p>
-									</div>
-								)}
-								<div className="flex flex-wrap items-center gap-4 text-sm">
-									{je.condition_before && (
-										<div>
-											<span className="text-muted-foreground mr-2">
-												Before:
-											</span>
-											<Badge variant="outline">{je.condition_before}</Badge>
-										</div>
-									)}
-									{je.condition_after && (
-										<div>
-											<span className="text-muted-foreground mr-2">After:</span>
-											<Badge variant="default">{je.condition_after}</Badge>
-										</div>
-									)}
-								</div>
-							</div>
-						))}
-					</div>
-				)}
+			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
+				<JobNotesTable notes={jobNotes} />
 			</UnifiedAccordionContent>
 		),
 	});
 
-	if (equipment.length > 0) {
-		sections.push({
-			id: "equipment",
-			title: "Customer Equipment at Property",
-			icon: <Building2 className="size-4" />,
-			count: equipment.length,
-			content: (
-				<UnifiedAccordionContent className="p-0">
-					<div className="overflow-x-auto">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Equipment</TableHead>
-									<TableHead>Type</TableHead>
-									<TableHead>Manufacturer</TableHead>
-									<TableHead>Model</TableHead>
-									<TableHead>Serial #</TableHead>
-									<TableHead>Last Service</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{equipment.map((item: any) => (
-									<TableRow key={item.id}>
-										<TableCell className="font-medium">{item.name}</TableCell>
-										<TableCell>{item.type}</TableCell>
-										<TableCell>{item.manufacturer || "N/A"}</TableCell>
-										<TableCell>{item.model || "N/A"}</TableCell>
-										<TableCell className="font-mono text-sm">
-											{item.serial_number || "N/A"}
-										</TableCell>
-										<TableCell className="text-sm">
-											{item.last_service_date
-												? formatDate(item.last_service_date)
-												: "Never"}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</div>
-				</UnifiedAccordionContent>
-			),
-		});
-	}
+	sections.push({
+		id: "activity",
+		title: "Activity & Communications",
+		icon: <Activity className="size-4" />,
+		count: activities.length + communications.length,
+		actions: (
+			<Button
+				onClick={() => {
+					// Navigate to messages page - if customer is attached, their communications will auto-load
+					const baseUrl = "/dashboard/communication/messages";
+					const url = customer?.id
+						? `${baseUrl}?customerId=${customer.id}`
+						: baseUrl;
+					router.push(url);
+				}}
+				size="sm"
+				variant="outline"
+			>
+				<Plus className="mr-2 h-4 w-4" /> Add Communication
+			</Button>
+		),
+		content: (
+			<UnifiedAccordionContent className="p-0">
+				<JobActivityTimeline activities={[...activities, ...communications]} />
+			</UnifiedAccordionContent>
+		),
+	});
 
 	const relatedItems = [] as Array<{
 		id: string;
@@ -2799,9 +3648,8 @@ export function JobPageContent({
 						</DialogDescription>
 					</DialogHeader>
 
-					<div className="grid gap-4 py-4">
-						<div className="grid gap-2">
-							<Label htmlFor="property-name">Property Name</Label>
+					<div className="space-y-4 py-4">
+						<StandardFormField label="Property Name" htmlFor="property-name">
 							<Input
 								id="property-name"
 								onChange={(e) =>
@@ -2810,25 +3658,27 @@ export function JobPageContent({
 								placeholder="Main Residence"
 								value={newProperty.name}
 							/>
-						</div>
+						</StandardFormField>
 
-						<div className="grid gap-2">
-							<Label htmlFor="property-address">
-								Address <span className="text-destructive">*</span>
-							</Label>
+						<StandardFormField
+							label="Address"
+							htmlFor="property-address"
+							required
+						>
 							<Input
 								id="property-address"
 								onChange={(e) =>
 									setNewProperty({ ...newProperty, address: e.target.value })
 								}
 								placeholder="123 Main St"
-								required
 								value={newProperty.address}
 							/>
-						</div>
+						</StandardFormField>
 
-						<div className="grid gap-2">
-							<Label htmlFor="property-address2">Address Line 2</Label>
+						<StandardFormField
+							label="Address Line 2"
+							htmlFor="property-address2"
+						>
 							<Input
 								id="property-address2"
 								onChange={(e) =>
@@ -2837,54 +3687,46 @@ export function JobPageContent({
 								placeholder="Apt 4B"
 								value={newProperty.address2}
 							/>
-						</div>
+						</StandardFormField>
 
-						<div className="grid grid-cols-2 gap-4">
-							<div className="grid gap-2">
-								<Label htmlFor="property-city">
-									City <span className="text-destructive">*</span>
-								</Label>
+						<StandardFormRow cols={2}>
+							<StandardFormField label="City" htmlFor="property-city" required>
 								<Input
 									id="property-city"
 									onChange={(e) =>
 										setNewProperty({ ...newProperty, city: e.target.value })
 									}
 									placeholder="New York"
-									required
 									value={newProperty.city}
 								/>
-							</div>
+							</StandardFormField>
 
-							<div className="grid gap-2">
-								<Label htmlFor="property-state">
-									State <span className="text-destructive">*</span>
-								</Label>
+							<StandardFormField
+								label="State"
+								htmlFor="property-state"
+								required
+							>
 								<Input
 									id="property-state"
 									onChange={(e) =>
 										setNewProperty({ ...newProperty, state: e.target.value })
 									}
 									placeholder="NY"
-									required
 									value={newProperty.state}
 								/>
-							</div>
-						</div>
+							</StandardFormField>
+						</StandardFormRow>
 
-						<div className="grid gap-2">
-							<Label htmlFor="property-zip">
-								ZIP Code <span className="text-destructive">*</span>
-							</Label>
+						<StandardFormField label="ZIP Code" htmlFor="property-zip" required>
 							<Input
 								id="property-zip"
 								onChange={(e) =>
 									setNewProperty({ ...newProperty, zipCode: e.target.value })
 								}
 								placeholder="10001"
-								required
 								value={newProperty.zipCode}
 							/>
-						</div>
+						</StandardFormField>
 					</div>
 
 					<DialogFooter>
@@ -3018,8 +3860,845 @@ export function JobPageContent({
 					payments={payments}
 					teamAssignments={teamAssignments}
 					timeEntries={timeEntries}
+					onUpdateCosting={handleUpdateCosting}
 				/>
 			)}
+
+			{/* Add Task Dialog */}
+			<Dialog onOpenChange={setIsAddTaskDialogOpen} open={isAddTaskDialogOpen}>
+				<DialogContent className="sm:max-w-[500px]">
+					<DialogHeader>
+						<DialogTitle>Add Task</DialogTitle>
+						<DialogDescription>
+							Create a new task or checklist item for this job.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4 py-4">
+						<StandardFormField label="Title" htmlFor="task-title" required>
+							<Input
+								id="task-title"
+								onChange={(e) => setNewTaskTitle(e.target.value)}
+								placeholder="Enter task title..."
+								value={newTaskTitle}
+							/>
+						</StandardFormField>
+
+						<StandardFormField
+							label="Description"
+							htmlFor="task-description"
+							description="Optional"
+						>
+							<Textarea
+								id="task-description"
+								onChange={(e) => setNewTaskDescription(e.target.value)}
+								placeholder="Enter task description..."
+								value={newTaskDescription}
+								className="min-h-[80px]"
+							/>
+						</StandardFormField>
+					</div>
+					<DialogFooter>
+						<Button
+							disabled={isCreatingTask}
+							onClick={() => {
+								setNewTaskTitle("");
+								setNewTaskDescription("");
+								setIsAddTaskDialogOpen(false);
+							}}
+							variant="outline"
+						>
+							Cancel
+						</Button>
+						<Button
+							disabled={isCreatingTask || !newTaskTitle.trim()}
+							onClick={async () => {
+								if (!newTaskTitle.trim()) return;
+
+								setIsCreatingTask(true);
+
+								// Optimistic update - add task to UI immediately
+								const newTask = {
+									id: `temp-${Date.now()}`,
+									job_id: job.id,
+									title: newTaskTitle.trim(),
+									description: newTaskDescription.trim() || null,
+									is_completed: false,
+									is_required: false,
+									created_at: new Date().toISOString(),
+									updated_at: new Date().toISOString(),
+								};
+
+								setTasks([...tasks, newTask]);
+								setNewTaskTitle("");
+								setNewTaskDescription("");
+								setIsAddTaskDialogOpen(false);
+
+								try {
+									const supabase = createClient();
+									const { data, error } = await supabase
+										.from("job_tasks")
+										.insert({
+											job_id: job.id,
+											title: newTask.title,
+											description: newTask.description,
+											is_completed: false,
+											is_required: false,
+										})
+										.select()
+										.single();
+
+									if (error) {
+										// Rollback optimistic update
+										setTasks(tasks);
+										toast.error("Failed to create task");
+									} else {
+										// Replace temp item with real data
+										setTasks((prev) =>
+											prev.map((t) => (t.id === newTask.id ? data : t)),
+										);
+										toast.success("Task created successfully");
+									}
+								} catch {
+									// Rollback optimistic update
+									setTasks(tasks);
+									toast.error("Failed to create task");
+								} finally {
+									setIsCreatingTask(false);
+								}
+							}}
+						>
+							{isCreatingTask ? "Creating..." : "Create Task"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Add Note Dialog */}
+			<Dialog onOpenChange={setIsAddNoteDialogOpen} open={isAddNoteDialogOpen}>
+				<DialogContent className="sm:max-w-[500px]">
+					<DialogHeader>
+						<DialogTitle>Add Note</DialogTitle>
+						<DialogDescription>
+							Add a note or comment for this job.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4 py-4">
+						<StandardFormField
+							label="Note Content"
+							htmlFor="note-content"
+							required
+						>
+							<Textarea
+								id="note-content"
+								onChange={(e) => setNewNoteContent(e.target.value)}
+								placeholder="Enter note content..."
+								value={newNoteContent}
+								className="min-h-[120px]"
+							/>
+						</StandardFormField>
+					</div>
+					<DialogFooter>
+						<Button
+							disabled={isCreatingNote}
+							onClick={() => {
+								setNewNoteContent("");
+								setIsAddNoteDialogOpen(false);
+							}}
+							variant="outline"
+						>
+							Cancel
+						</Button>
+						<Button
+							disabled={isCreatingNote || !newNoteContent.trim()}
+							onClick={async () => {
+								if (!newNoteContent.trim()) return;
+
+								setIsCreatingNote(true);
+
+								// Get user first for optimistic update
+								const supabase = createClient();
+								const {
+									data: { user },
+								} = await supabase.auth.getUser();
+
+								// Optimistic update - add note to UI immediately
+								const newNote = {
+									id: `temp-${Date.now()}`,
+									job_id: job.id,
+									content: newNoteContent.trim(),
+									note_type: "general",
+									is_important: false,
+									created_by: user?.id || null,
+									created_by_name: user?.email || "Unknown",
+									created_at: new Date().toISOString(),
+								};
+
+								setJobNotes([...jobNotes, newNote]);
+								setNewNoteContent("");
+								setIsAddNoteDialogOpen(false);
+
+								try {
+									const { data, error } = await supabase
+										.from("job_notes")
+										.insert({
+											job_id: job.id,
+											content: newNote.content,
+											note_type: "general",
+											is_important: false,
+											created_by: user?.id || null,
+										})
+										.select()
+										.single();
+
+									if (error) {
+										// Rollback optimistic update
+										setJobNotes(jobNotes);
+										toast.error("Failed to create note");
+									} else {
+										// Replace temp item with real data
+										setJobNotes((prev) =>
+											prev.map((n) => (n.id === newNote.id ? data : n)),
+										);
+										toast.success("Note created successfully");
+									}
+								} catch {
+									// Rollback optimistic update
+									setJobNotes(jobNotes);
+									toast.error("Failed to create note");
+								} finally {
+									setIsCreatingNote(false);
+								}
+							}}
+						>
+							{isCreatingNote ? "Creating..." : "Create Note"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Load Template Dialog */}
+			<Dialog
+				onOpenChange={setIsLoadTemplateDialogOpen}
+				open={isLoadTemplateDialogOpen}
+			>
+				<DialogContent className="sm:max-w-[500px]">
+					<DialogHeader>
+						<DialogTitle>Load Task Template</DialogTitle>
+						<DialogDescription>
+							Select a task template to apply to this job. This feature will be
+							available soon.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4 py-4">
+						<div className="text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm">
+							Task templates feature is coming soon. You'll be able to save and
+							load predefined task checklists for different job types.
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							onClick={() => setIsLoadTemplateDialogOpen(false)}
+							variant="outline"
+						>
+							Close
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Link Existing Estimate Dialog */}
+			<Dialog onOpenChange={setIsLinkEstimateOpen} open={isLinkEstimateOpen}>
+				<DialogContent className="sm:max-w-[700px]">
+					<DialogHeader>
+						<DialogTitle>Link Existing Estimate</DialogTitle>
+						<DialogDescription>
+							Search and select an estimate to link to this job. Only unlinked
+							estimates are shown.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="relative">
+							<Input
+								placeholder="Search by estimate number, customer, or status..."
+								value={estimateSearchQuery}
+								onChange={(e) => setEstimateSearchQuery(e.target.value)}
+								className="pl-10"
+							/>
+							<FileText className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+						</div>
+						<div className="border rounded-lg max-h-[400px] overflow-y-auto">
+							{availableEstimates.filter((estimate) => {
+								if (!estimateSearchQuery) return true;
+								const query = estimateSearchQuery.toLowerCase();
+								return (
+									estimate.estimate_number.toLowerCase().includes(query) ||
+									estimate.status.toLowerCase().includes(query) ||
+									estimate.customer?.name?.toLowerCase().includes(query)
+								);
+							}).length === 0 ? (
+								<div className="flex flex-col items-center justify-center py-12 text-center">
+									<FileText className="h-12 w-12 text-muted-foreground/50 mb-3" />
+									<p className="text-sm text-muted-foreground">
+										No estimates found
+									</p>
+									<p className="text-xs text-muted-foreground">
+										Try adjusting your search
+									</p>
+								</div>
+							) : (
+								<div className="divide-y">
+									{availableEstimates
+										.filter((estimate) => {
+											if (!estimateSearchQuery) return true;
+											const query = estimateSearchQuery.toLowerCase();
+											return (
+												estimate.estimate_number
+													.toLowerCase()
+													.includes(query) ||
+												estimate.status.toLowerCase().includes(query) ||
+												estimate.customer?.name?.toLowerCase().includes(query)
+											);
+										})
+										.map((estimate) => (
+											<button
+												key={estimate.id}
+												onClick={async () => {
+													setIsLinking(true);
+
+													// Optimistic update - add estimate to UI immediately
+													const linkedEstimate = {
+														...estimate,
+														job_id: job.id,
+													};
+													setEstimates([...estimates, linkedEstimate]);
+													setIsLinkEstimateOpen(false);
+													setEstimateSearchQuery("");
+
+													try {
+														const supabase = createClient();
+														const { error } = await supabase
+															.from("estimates")
+															.update({ job_id: job.id })
+															.eq("id", estimate.id);
+
+														if (error) {
+															// Rollback optimistic update
+															setEstimates(estimates);
+															toast.error("Failed to link estimate");
+														} else {
+															toast.success("Estimate linked successfully");
+														}
+													} catch {
+														// Rollback optimistic update
+														setEstimates(estimates);
+														toast.error("Failed to link estimate");
+													} finally {
+														setIsLinking(false);
+													}
+												}}
+												disabled={isLinking}
+												className="w-full px-4 py-3 hover:bg-accent transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<div className="flex items-center justify-between gap-4">
+													<div className="flex-1 min-w-0">
+														<div className="flex items-center gap-2 mb-1">
+															<span className="font-semibold text-sm">
+																{estimate.estimate_number}
+															</span>
+															<Badge variant="outline" className="text-xs">
+																{estimate.status}
+															</Badge>
+														</div>
+														<div className="flex items-center gap-2 text-xs text-muted-foreground">
+															<User className="h-3 w-3" />
+															<span className="truncate">
+																{estimate.customer?.name || "No customer"}
+															</span>
+														</div>
+													</div>
+													<div className="text-right">
+														<div className="font-semibold text-sm">
+															${(estimate.total_amount / 100).toFixed(2)}
+														</div>
+														<div className="text-xs text-muted-foreground">
+															{new Date(
+																estimate.created_at,
+															).toLocaleDateString()}
+														</div>
+													</div>
+												</div>
+											</button>
+										))}
+								</div>
+							)}
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							onClick={() => {
+								setIsLinkEstimateOpen(false);
+								setEstimateSearchQuery("");
+							}}
+							variant="outline"
+							disabled={isLinking}
+						>
+							Cancel
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Link Existing Invoice Dialog */}
+			<Dialog onOpenChange={setIsLinkInvoiceOpen} open={isLinkInvoiceOpen}>
+				<DialogContent className="sm:max-w-[700px]">
+					<DialogHeader>
+						<DialogTitle>Link Existing Invoice</DialogTitle>
+						<DialogDescription>
+							Search and select an invoice to link to this job. Only unlinked
+							invoices are shown.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="relative">
+							<Input
+								placeholder="Search by invoice number, customer, or status..."
+								value={invoiceSearchQuery}
+								onChange={(e) => setInvoiceSearchQuery(e.target.value)}
+								className="pl-10"
+							/>
+							<FileText className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+						</div>
+						<div className="border rounded-lg max-h-[400px] overflow-y-auto">
+							{availableInvoices.filter((invoice) => {
+								if (!invoiceSearchQuery) return true;
+								const query = invoiceSearchQuery.toLowerCase();
+								return (
+									invoice.invoice_number.toLowerCase().includes(query) ||
+									invoice.status.toLowerCase().includes(query) ||
+									invoice.customer?.name?.toLowerCase().includes(query)
+								);
+							}).length === 0 ? (
+								<div className="flex flex-col items-center justify-center py-12 text-center">
+									<FileText className="h-12 w-12 text-muted-foreground/50 mb-3" />
+									<p className="text-sm text-muted-foreground">
+										No invoices found
+									</p>
+									<p className="text-xs text-muted-foreground">
+										Try adjusting your search
+									</p>
+								</div>
+							) : (
+								<div className="divide-y">
+									{availableInvoices
+										.filter((invoice) => {
+											if (!invoiceSearchQuery) return true;
+											const query = invoiceSearchQuery.toLowerCase();
+											return (
+												invoice.invoice_number.toLowerCase().includes(query) ||
+												invoice.status.toLowerCase().includes(query) ||
+												invoice.customer?.name?.toLowerCase().includes(query)
+											);
+										})
+										.map((invoice) => (
+											<button
+												key={invoice.id}
+												onClick={async () => {
+													setIsLinking(true);
+
+													// Optimistic update - add invoice to UI immediately
+													const linkedInvoice = { ...invoice, job_id: job.id };
+													setInvoices([...invoices, linkedInvoice]);
+													setIsLinkInvoiceOpen(false);
+													setInvoiceSearchQuery("");
+
+													try {
+														const supabase = createClient();
+														const { error } = await supabase
+															.from("invoices")
+															.update({ job_id: job.id })
+															.eq("id", invoice.id);
+
+														if (error) {
+															// Rollback optimistic update
+															setInvoices(invoices);
+															toast.error("Failed to link invoice");
+														} else {
+															toast.success("Invoice linked successfully");
+														}
+													} catch {
+														// Rollback optimistic update
+														setInvoices(invoices);
+														toast.error("Failed to link invoice");
+													} finally {
+														setIsLinking(false);
+													}
+												}}
+												disabled={isLinking}
+												className="w-full px-4 py-3 hover:bg-accent transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<div className="flex items-center justify-between gap-4">
+													<div className="flex-1 min-w-0">
+														<div className="flex items-center gap-2 mb-1">
+															<span className="font-semibold text-sm">
+																{invoice.invoice_number}
+															</span>
+															<Badge variant="outline" className="text-xs">
+																{invoice.status}
+															</Badge>
+														</div>
+														<div className="flex items-center gap-2 text-xs text-muted-foreground">
+															<User className="h-3 w-3" />
+															<span className="truncate">
+																{invoice.customer?.name || "No customer"}
+															</span>
+														</div>
+													</div>
+													<div className="text-right">
+														<div className="font-semibold text-sm">
+															${(invoice.total_amount / 100).toFixed(2)}
+														</div>
+														<div className="text-xs text-muted-foreground">
+															{new Date(
+																invoice.created_at,
+															).toLocaleDateString()}
+														</div>
+													</div>
+												</div>
+											</button>
+										))}
+								</div>
+							)}
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							onClick={() => {
+								setIsLinkInvoiceOpen(false);
+								setInvoiceSearchQuery("");
+							}}
+							variant="outline"
+							disabled={isLinking}
+						>
+							Cancel
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Link Existing Payment Dialog */}
+			<Dialog onOpenChange={setIsLinkPaymentOpen} open={isLinkPaymentOpen}>
+				<DialogContent className="sm:max-w-[700px]">
+					<DialogHeader>
+						<DialogTitle>Link Existing Payment</DialogTitle>
+						<DialogDescription>
+							Search and select a payment to link to this job. Only unlinked
+							payments are shown.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="relative">
+							<Input
+								placeholder="Search by reference, payment method, or customer..."
+								value={paymentSearchQuery}
+								onChange={(e) => setPaymentSearchQuery(e.target.value)}
+								className="pl-10"
+							/>
+							<DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+						</div>
+						<div className="border rounded-lg max-h-[400px] overflow-y-auto">
+							{availablePayments.filter((payment) => {
+								if (!paymentSearchQuery) return true;
+								const query = paymentSearchQuery.toLowerCase();
+								return (
+									payment.payment_method.toLowerCase().includes(query) ||
+									payment.reference_number?.toLowerCase().includes(query) ||
+									payment.customer?.name?.toLowerCase().includes(query)
+								);
+							}).length === 0 ? (
+								<div className="flex flex-col items-center justify-center py-12 text-center">
+									<DollarSign className="h-12 w-12 text-muted-foreground/50 mb-3" />
+									<p className="text-sm text-muted-foreground">
+										No payments found
+									</p>
+									<p className="text-xs text-muted-foreground">
+										Try adjusting your search
+									</p>
+								</div>
+							) : (
+								<div className="divide-y">
+									{availablePayments
+										.filter((payment) => {
+											if (!paymentSearchQuery) return true;
+											const query = paymentSearchQuery.toLowerCase();
+											return (
+												payment.payment_method.toLowerCase().includes(query) ||
+												payment.reference_number
+													?.toLowerCase()
+													.includes(query) ||
+												payment.customer?.name?.toLowerCase().includes(query)
+											);
+										})
+										.map((payment) => (
+											<button
+												key={payment.id}
+												onClick={async () => {
+													setIsLinking(true);
+
+													// Optimistic update - add payment to UI immediately
+													const linkedPayment = { ...payment, job_id: job.id };
+													setPayments([...payments, linkedPayment]);
+													setIsLinkPaymentOpen(false);
+													setPaymentSearchQuery("");
+
+													try {
+														const supabase = createClient();
+														const { error } = await supabase
+															.from("payments")
+															.update({ job_id: job.id })
+															.eq("id", payment.id);
+
+														if (error) {
+															// Rollback optimistic update
+															setPayments(payments);
+															toast.error("Failed to link payment");
+														} else {
+															toast.success("Payment linked successfully");
+														}
+													} catch {
+														// Rollback optimistic update
+														setPayments(payments);
+														toast.error("Failed to link payment");
+													} finally {
+														setIsLinking(false);
+													}
+												}}
+												disabled={isLinking}
+												className="w-full px-4 py-3 hover:bg-accent transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<div className="flex items-center justify-between gap-4">
+													<div className="flex-1 min-w-0">
+														<div className="flex items-center gap-2 mb-1">
+															<span className="font-semibold text-sm">
+																{payment.reference_number || "No reference"}
+															</span>
+															<Badge variant="outline" className="text-xs">
+																{payment.payment_method}
+															</Badge>
+														</div>
+														<div className="flex items-center gap-2 text-xs text-muted-foreground">
+															<User className="h-3 w-3" />
+															<span className="truncate">
+																{payment.customer?.name || "No customer"}
+															</span>
+														</div>
+													</div>
+													<div className="text-right">
+														<div className="font-semibold text-sm">
+															${(payment.amount / 100).toFixed(2)}
+														</div>
+														<div className="text-xs text-muted-foreground">
+															{new Date(
+																payment.created_at,
+															).toLocaleDateString()}
+														</div>
+													</div>
+												</div>
+											</button>
+										))}
+								</div>
+							)}
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							onClick={() => {
+								setIsLinkPaymentOpen(false);
+								setPaymentSearchQuery("");
+							}}
+							variant="outline"
+							disabled={isLinking}
+						>
+							Cancel
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Link Existing Equipment Dialog */}
+			<Dialog onOpenChange={setIsLinkEquipmentOpen} open={isLinkEquipmentOpen}>
+				<DialogContent className="sm:max-w-[700px]">
+					<DialogHeader>
+						<DialogTitle>Link Existing Equipment</DialogTitle>
+						<DialogDescription>
+							Search and link existing equipment to this job. Select equipment
+							from the list below.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="relative">
+							<Input
+								placeholder="Search by equipment name, category, or serial number..."
+								value={equipmentSearchQuery}
+								onChange={(e) => setEquipmentSearchQuery(e.target.value)}
+								className="pl-10"
+							/>
+							<Wrench className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+						</div>
+						<div className="border rounded-lg max-h-[400px] overflow-y-auto">
+							{availableEquipment.filter((equipment) => {
+								if (!equipmentSearchQuery) return true;
+								const query = equipmentSearchQuery.toLowerCase();
+								return (
+									equipment.name.toLowerCase().includes(query) ||
+									equipment.category?.toLowerCase().includes(query) ||
+									equipment.serial_number?.toLowerCase().includes(query)
+								);
+							}).length === 0 ? (
+								<div className="flex flex-col items-center justify-center py-12 text-center">
+									<Wrench className="h-12 w-12 text-muted-foreground/50 mb-4" />
+									<p className="text-sm text-muted-foreground mb-2">
+										No equipment found
+									</p>
+									<p className="text-xs text-muted-foreground">
+										Try adjusting your search terms or create new equipment from
+										the inventory section.
+									</p>
+								</div>
+							) : (
+								availableEquipment
+									.filter((equipment) => {
+										if (!equipmentSearchQuery) return true;
+										const query = equipmentSearchQuery.toLowerCase();
+										return (
+											equipment.name.toLowerCase().includes(query) ||
+											equipment.category?.toLowerCase().includes(query) ||
+											equipment.serial_number?.toLowerCase().includes(query)
+										);
+									})
+									.map((equipment, index, filteredArray) => (
+										<div key={equipment.id}>
+											<button
+												onClick={async () => {
+													setIsLinking(true);
+
+													// Optimistic update - add equipment to UI immediately
+													const newJobEquipment = {
+														id: `temp-${Date.now()}`,
+														company_id: job.company_id,
+														job_id: job.id,
+														equipment_id: equipment.id,
+														equipment: equipment,
+														service_type: null,
+														service_description: null,
+														hours_spent: null,
+														parts_cost: null,
+														labor_cost: null,
+														created_at: new Date().toISOString(),
+														updated_at: new Date().toISOString(),
+													};
+
+													setJobEquipment([...jobEquipment, newJobEquipment]);
+													setIsLinkEquipmentOpen(false);
+													setEquipmentSearchQuery("");
+
+													try {
+														const supabase = createClient();
+														// Check if equipment is already linked
+														const { data: existing } = await supabase
+															.from("job_equipment")
+															.select("id")
+															.eq("job_id", job.id)
+															.eq("equipment_id", equipment.id)
+															.single();
+
+														if (existing) {
+															// Rollback optimistic update
+															setJobEquipment(jobEquipment);
+															toast.error(
+																"Equipment is already linked to this job",
+															);
+															setIsLinking(false);
+															return;
+														}
+
+														// Create junction table entry
+														const { data, error } = await supabase
+															.from("job_equipment")
+															.insert({
+																company_id: job.company_id,
+																job_id: job.id,
+																equipment_id: equipment.id,
+															})
+															.select("*, equipment:equipment_id(*)")
+															.single();
+
+														if (error) {
+															// Rollback optimistic update
+															setJobEquipment(jobEquipment);
+															toast.error("Failed to link equipment");
+														} else {
+															// Replace temp item with real data
+															setJobEquipment((prev) =>
+																prev.map((je) =>
+																	je.id === newJobEquipment.id ? data : je,
+																),
+															);
+															toast.success("Equipment linked successfully");
+														}
+													} catch {
+														// Rollback optimistic update
+														setJobEquipment(jobEquipment);
+														toast.error("Failed to link equipment");
+													} finally {
+														setIsLinking(false);
+													}
+												}}
+												disabled={isLinking}
+												className="w-full px-4 py-3 hover:bg-accent transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												<div className="flex items-center justify-between gap-4">
+													<div className="flex-1 min-w-0">
+														<div className="flex items-center gap-2 mb-1">
+															<span className="font-semibold text-sm truncate">
+																{equipment.name}
+															</span>
+															{equipment.category && (
+																<Badge
+																	variant="outline"
+																	className="text-xs shrink-0"
+																>
+																	{equipment.category}
+																</Badge>
+															)}
+														</div>
+														{equipment.serial_number && (
+															<div className="flex items-center gap-2 text-xs text-muted-foreground">
+																<Wrench className="h-3 w-3" />
+																<span className="truncate">
+																	SN: {equipment.serial_number}
+																</span>
+															</div>
+														)}
+													</div>
+													<div className="text-right shrink-0">
+														<div className="text-xs text-muted-foreground">
+															{new Date(
+																equipment.created_at,
+															).toLocaleDateString()}
+														</div>
+													</div>
+												</div>
+											</button>
+											{index < filteredArray.length - 1 && (
+												<div className="border-b" />
+											)}
+										</div>
+									))
+							)}
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
 		</>
 	) : (
 		<div className="flex h-full w-full items-center justify-center">

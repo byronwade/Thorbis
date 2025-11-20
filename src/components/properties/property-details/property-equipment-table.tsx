@@ -16,6 +16,7 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { TablePresets } from "@/lib/datatable/table-presets";
 
 type PropertyEquipment = {
 	id: string;
@@ -63,7 +64,7 @@ export function PropertyEquipmentTable({
 				shrink: true,
 				render: (equipment) => (
 					<Link
-						className="font-mono text-sm font-medium hover:underline"
+						className="font-mono text-xs font-medium hover:underline"
 						href={`/dashboard/work/equipment/${equipment.id}`}
 					>
 						{equipment.equipment_number}
@@ -80,7 +81,7 @@ export function PropertyEquipmentTable({
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex flex-col gap-1">
-							<span className="text-sm leading-tight font-medium hover:underline">
+							<span className="text-xs leading-tight font-medium hover:underline">
 								{equipment.name}
 							</span>
 							{equipment.type && (
@@ -98,7 +99,7 @@ export function PropertyEquipmentTable({
 				width: "w-48",
 				hideOnMobile: true,
 				render: (equipment) => (
-					<div className="flex flex-col gap-1 text-sm">
+					<div className="flex flex-col gap-1 text-xs">
 						<span>{equipment.manufacturer || "-"}</span>
 						{equipment.model && (
 							<span className="text-muted-foreground text-xs">
@@ -114,7 +115,7 @@ export function PropertyEquipmentTable({
 				width: "w-40",
 				hideOnMobile: true,
 				render: (equipment) => (
-					<span className="font-mono text-sm">
+					<span className="font-mono text-xs">
 						{equipment.serial_number || "-"}
 					</span>
 				),
@@ -125,7 +126,7 @@ export function PropertyEquipmentTable({
 				width: "w-32",
 				hideOnMobile: true,
 				render: (equipment) => (
-					<span className="text-sm">{equipment.location || "-"}</span>
+					<span className="text-xs">{equipment.location || "-"}</span>
 				),
 			},
 			{
@@ -136,7 +137,7 @@ export function PropertyEquipmentTable({
 				render: (equipment) => {
 					const installDate = equipment.install_date;
 					return installDate ? (
-						<div className="flex items-center gap-2 text-sm">
+						<div className="flex items-center gap-2 text-xs">
 							<Calendar className="text-muted-foreground size-4" />
 							<span>
 								{new Date(installDate).toLocaleDateString(undefined, {
@@ -146,7 +147,7 @@ export function PropertyEquipmentTable({
 							</span>
 						</div>
 					) : (
-						<span className="text-muted-foreground text-sm">-</span>
+						<span className="text-muted-foreground text-xs">-</span>
 					);
 				},
 			},
@@ -195,6 +196,7 @@ export function PropertyEquipmentTable({
 
 	return (
 		<FullWidthDataTable
+			{...TablePresets.compact()}
 			columns={columns}
 			data={equipment}
 			emptyMessage="No equipment installed at this property"

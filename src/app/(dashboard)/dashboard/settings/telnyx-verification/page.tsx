@@ -70,7 +70,8 @@ export default function TelnyxVerificationPage() {
 									<ul className="ml-6 list-disc space-y-1">
 										<li>Manual identity verification by a human reviewer</li>
 										<li>
-											Document validation by compliance teams (not AI/automation)
+											Document validation by compliance teams (not
+											AI/automation)
 										</li>
 										<li>Business ownership proof through official documents</li>
 										<li>
@@ -86,7 +87,9 @@ export default function TelnyxVerificationPage() {
 						</AccordionItem>
 
 						<AccordionItem value="how-long">
-							<AccordionTrigger>How long does verification take?</AccordionTrigger>
+							<AccordionTrigger>
+								How long does verification take?
+							</AccordionTrigger>
 							<AccordionContent>
 								<div className="space-y-2 text-sm">
 									<p>
@@ -123,15 +126,9 @@ export default function TelnyxVerificationPage() {
 									<div>
 										<p className="font-medium">Level 2 (Business):</p>
 										<ul className="ml-6 list-disc space-y-1">
-											<li>
-												IRS EIN Confirmation Letter (CP 575 or 147C form)
-											</li>
-											<li>
-												Business license or Articles of Incorporation
-											</li>
-											<li>
-												Proof of business address (utility bill, lease)
-											</li>
+											<li>IRS EIN Confirmation Letter (CP 575 or 147C form)</li>
+											<li>Business license or Articles of Incorporation</li>
+											<li>Proof of business address (utility bill, lease)</li>
 											<li>Tax documents (W-9 or business tax return)</li>
 										</ul>
 									</div>
@@ -151,7 +148,9 @@ export default function TelnyxVerificationPage() {
 									</p>
 									<ol className="ml-6 list-decimal space-y-1">
 										<li>Create your 10DLC brand (instant)</li>
-										<li>Submit brand for Campaign Registry approval (instant)</li>
+										<li>
+											Submit brand for Campaign Registry approval (instant)
+										</li>
 										<li>Create messaging campaign (instant)</li>
 										<li>Attach your phone numbers (instant)</li>
 										<li>Enable business SMS sending (immediate)</li>

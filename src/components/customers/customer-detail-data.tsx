@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CustomerPageContent } from "@/components/customers/customer-page-content";
 import { ToolbarActionsProvider } from "@/components/layout/toolbar-actions-provider";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
+import { getCustomerComplete } from "@/lib/queries/customers";
 import { generateCustomerStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -46,7 +47,7 @@ export async function CustomerDetailData({
 
 	// Get user's membership for the ACTIVE company
 	const { data: teamMember, error: teamMemberError } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("company_id")
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)
@@ -67,14 +68,9 @@ export async function CustomerDetailData({
 		return notFound();
 	}
 
-	// Fetch customer
-	const { data: customer, error: customerError } = await supabase
-		.from("customers")
-		.select("*")
-		.eq("id", customerId)
-		.eq("company_id", teamMember.company_id)
-		.is("deleted_at", null)
-		.maybeSingle();
+	// Fetch customer with tags using RPC
+	const customer = await getCustomerComplete(customerId, teamMember.company_id);
+	const customerError = customer ? null : { code: "PGRST116" };
 
 	if (customerError) {
 		if (customerError.code === "PGRST116") {

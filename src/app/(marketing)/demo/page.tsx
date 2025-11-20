@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -9,6 +12,11 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const getStartedKeywords = generateSemanticKeywords("get started");
 
 export const metadata = generateSEOMetadata({
 	title: "Get Started with Thorbis",
@@ -16,7 +24,15 @@ export const metadata = generateSEOMetadata({
 		"Create your Thorbis account in minutes. Choose a plan, invite your team, and start automating operations without waiting for a sales call.",
 	path: "/demo",
 	section: "Company",
-	keywords: ["thorbis signup", "start thorbis trial", "thorbis onboarding"],
+	keywords: [
+		"thorbis signup",
+		"start thorbis trial",
+		"thorbis onboarding",
+		"create account",
+		"free trial",
+		"sign up",
+		...getStartedKeywords.slice(0, 5),
+	],
 });
 
 const GET_STARTED_STEPS = [
@@ -86,7 +102,7 @@ export default function DemoPage() {
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Choose your plan, invite your team, and start automating operations
-						without waiting for a sales call. Thorbis costs $100/month for the
+						without waiting for a sales call. Thorbis costs $200/month for the
 						base platform with pay-as-you-go usage—unlimited users, no
 						contracts, no lock-in.
 					</p>

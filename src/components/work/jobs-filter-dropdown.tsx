@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type JobsFilters,
 	useJobsFiltersStore,
@@ -112,15 +113,14 @@ export function JobsFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-jobs-status">
 						<Select
 							onValueChange={(value: JobsFilters["archiveStatus"]) =>
 								setLocalFilters({ ...localFilters, archiveStatus: value })
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-jobs-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -136,18 +136,20 @@ export function JobsFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Job Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Job Status</Label>
+					<StandardFormField
+						label="Job Status"
+						htmlFor="filter-jobs-job-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-jobs-job-status" className="h-9">
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -159,18 +161,17 @@ export function JobsFilterDropdown({
 								<SelectItem value="cancelled">Cancelled</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Priority */}
-					<div className="space-y-2">
-						<Label className="text-xs">Priority</Label>
+					<StandardFormField label="Priority" htmlFor="filter-jobs-priority">
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, priority: value })
 							}
 							value={localFilters.priority}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-jobs-priority" className="h-9">
 								<SelectValue placeholder="All priorities" />
 							</SelectTrigger>
 							<SelectContent>
@@ -181,12 +182,15 @@ export function JobsFilterDropdown({
 								<SelectItem value="urgent">Urgent</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs">Customer Name</Label>
+					<StandardFormField
+						label="Customer Name"
+						htmlFor="filter-jobs-customer-name"
+					>
 						<Input
+							id="filter-jobs-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -197,12 +201,15 @@ export function JobsFilterDropdown({
 							placeholder="Search by customer..."
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Assigned To */}
-					<div className="space-y-2">
-						<Label className="text-xs">Assigned To</Label>
+					<StandardFormField
+						label="Assigned To"
+						htmlFor="filter-jobs-assigned-to"
+					>
 						<Input
+							id="filter-jobs-assigned-to"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, assignedTo: e.target.value })
@@ -210,12 +217,15 @@ export function JobsFilterDropdown({
 							placeholder="Search by assigned person..."
 							value={localFilters.assignedTo}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Job Number */}
-					<div className="space-y-2">
-						<Label className="text-xs">Job Number</Label>
+					<StandardFormField
+						label="Job Number"
+						htmlFor="filter-jobs-job-number"
+					>
 						<Input
+							id="filter-jobs-job-number"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, jobNumber: e.target.value })
@@ -223,12 +233,12 @@ export function JobsFilterDropdown({
 							placeholder="Search by number..."
 							value={localFilters.jobNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Category */}
-					<div className="space-y-2">
-						<Label className="text-xs">Category</Label>
+					<StandardFormField label="Category" htmlFor="filter-jobs-category">
 						<Input
+							id="filter-jobs-category"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, category: e.target.value })
@@ -236,7 +246,7 @@ export function JobsFilterDropdown({
 							placeholder="Filter by category..."
 							value={localFilters.category}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 

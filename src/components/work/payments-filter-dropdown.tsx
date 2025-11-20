@@ -21,6 +21,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type PaymentsFilters,
 	usePaymentsFiltersStore,
@@ -125,8 +126,10 @@ export function PaymentsFilterDropdown({
 
 				<div className="space-y-4 p-3">
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Archive Status</Label>
+					<StandardFormField
+						label="Archive Status"
+						htmlFor="filter-payments-archive-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								handleLocalChange(
@@ -136,7 +139,10 @@ export function PaymentsFilterDropdown({
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-payments-archive-status"
+								className="h-9"
+							>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -152,18 +158,17 @@ export function PaymentsFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-payments-status">
 						<Select
 							onValueChange={(value) => handleLocalChange("status", value)}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-payments-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -174,18 +179,20 @@ export function PaymentsFilterDropdown({
 								<SelectItem value="refunded">Refunded</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Payment Method */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Payment Method</Label>
+					<StandardFormField
+						label="Payment Method"
+						htmlFor="filter-payments-method"
+					>
 						<Select
 							onValueChange={(value) => handleLocalChange("method", value)}
 							value={localFilters.method}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-payments-method" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -197,15 +204,18 @@ export function PaymentsFilterDropdown({
 								<SelectItem value="other">Other</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Amount Range */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Amount Range</Label>
+					<StandardFormField
+						label="Amount Range"
+						htmlFor="filter-payments-amount-min"
+					>
 						<div className="grid grid-cols-2 gap-2">
 							<Input
+								id="filter-payments-amount-min"
 								className="h-9"
 								onChange={(e) => handleLocalChange("amountMin", e.target.value)}
 								placeholder="Min"
@@ -213,6 +223,7 @@ export function PaymentsFilterDropdown({
 								value={localFilters.amountMin}
 							/>
 							<Input
+								id="filter-payments-amount-max"
 								className="h-9"
 								onChange={(e) => handleLocalChange("amountMax", e.target.value)}
 								placeholder="Max"
@@ -220,14 +231,17 @@ export function PaymentsFilterDropdown({
 								value={localFilters.amountMax}
 							/>
 						</div>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Customer</Label>
+					<StandardFormField
+						label="Customer"
+						htmlFor="filter-payments-customer-name"
+					>
 						<Input
+							id="filter-payments-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("customerName", e.target.value)
@@ -236,14 +250,17 @@ export function PaymentsFilterDropdown({
 							type="text"
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Reference Number */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Reference Number</Label>
+					<StandardFormField
+						label="Reference Number"
+						htmlFor="filter-payments-reference-number"
+					>
 						<Input
+							id="filter-payments-reference-number"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("referenceNumber", e.target.value)
@@ -252,7 +269,7 @@ export function PaymentsFilterDropdown({
 							type="text"
 							value={localFilters.referenceNumber}
 						/>
-					</div>
+					</StandardFormField>
 				</div>
 
 				<DropdownMenuSeparator />

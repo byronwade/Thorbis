@@ -8,8 +8,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { sendEmail } from "@/lib/email/email-sender";
-import { EmailTemplate } from "@/lib/email/email-types";
+import TeamInvitationEmail from "@/emails/templates/team/invitation";
+import { sendPlatformEmail } from "@/lib/email/email-router";
 import {
 	ActionError,
 	ERROR_CODES,
@@ -22,7 +22,6 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { generateInvitationToken } from "@/lib/invitations/token-utils";
 import { createClient } from "@/lib/supabase/server";
-import TeamInvitationEmail from "../../emails/templates/team/invitation";
 
 const INVITATION_EXPIRY_DAYS = 7;
 
@@ -82,8 +81,8 @@ export async function sendTeamMemberInvitations(
 		assertAuthenticated(user?.id);
 
 		const { data: inviter } = await supabase
-			.from("users")
-			.select("name, email")
+			.from("profiles")
+			.select("full_name, email")
 			.eq("id", user.id)
 			.single();
 
@@ -98,7 +97,7 @@ export async function sendTeamMemberInvitations(
 			if (member.isCurrentUser) {
 				// Create team_members record for current user (owner)
 				const { error: ownerError } = await supabase
-					.from("team_members")
+					.from("company_memberships")
 					.upsert(
 						{
 							company_id: companyId,
@@ -154,7 +153,7 @@ export async function sendTeamMemberInvitations(
 				// Send invitation email
 				const magicLink = `${siteUrl}/accept-invitation?token=${token}`;
 
-				const emailResult = await sendEmail({
+				const emailResult = await sendPlatformEmail({
 					to: member.email,
 					subject: `You've been invited to join ${company.name} on Thorbis`,
 					template: TeamInvitationEmail({
@@ -165,7 +164,7 @@ export async function sendTeamMemberInvitations(
 						magicLink,
 						expiresInDays: INVITATION_EXPIRY_DAYS,
 					}),
-					templateType: EmailTemplate.TEAM_INVITATION,
+					templateType: "team-invitation",
 				});
 
 				if (emailResult.success) {
@@ -205,7 +204,7 @@ export async function sendSingleTeamInvitation(
 
 		// Get user's company
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id, companies!inner(name)")
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -276,12 +275,12 @@ export async function sendSingleTeamInvitation(
 			: teamMember.companies;
 
 		const { data: inviter } = await supabase
-			.from("users")
-			.select("name, email")
+			.from("profiles")
+			.select("full_name, email")
 			.eq("id", user.id)
 			.single();
 
-		const emailResult = await sendEmail({
+		const emailResult = await sendPlatformEmail({
 			to: validated.email,
 			subject: `You've been invited to join ${companies?.name} on Thorbis`,
 			template: TeamInvitationEmail({
@@ -292,7 +291,7 @@ export async function sendSingleTeamInvitation(
 				magicLink,
 				expiresInDays: INVITATION_EXPIRY_DAYS,
 			}),
-			templateType: EmailTemplate.TEAM_INVITATION,
+			templateType: "team-invitation",
 		});
 
 		if (!emailResult.success) {

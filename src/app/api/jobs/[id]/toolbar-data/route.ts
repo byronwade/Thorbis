@@ -60,7 +60,7 @@ export async function GET(
 			supabase
 				.from("customers")
 				.select(
-					"id, first_name, last_name, display_name, tags, credit_limit, outstanding_balance",
+					"id, first_name, last_name, display_name, phone, email, tags, credit_limit, outstanding_balance",
 				)
 				.eq("id", job.customer_id)
 				.single(),

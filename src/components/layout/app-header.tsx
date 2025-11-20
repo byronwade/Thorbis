@@ -1,3 +1,4 @@
+import { getPayrixMerchantAccount } from "@/actions/payrix";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
@@ -58,10 +59,16 @@ export async function AppHeader() {
 	// PERFORMANCE: Customer data is lazy-loaded on client when dialer opens
 	// This saves 400-800ms per page load by not fetching ALL customers upfront
 	let companyPhones: any[] = [];
+	let hasPhoneNumbers = false;
+	let hasPayrixAccount = false;
+	let payrixStatus: string | null = null;
 
 	if (activeCompanyId) {
 		try {
-			const phonesResult = await getCompanyPhoneNumbers(activeCompanyId);
+			const [phonesResult, payrixResult] = await Promise.all([
+				getCompanyPhoneNumbers(activeCompanyId),
+				getPayrixMerchantAccount(activeCompanyId),
+			]);
 
 			if (phonesResult.success && phonesResult.data) {
 				companyPhones = phonesResult.data.map((p) => ({
@@ -69,9 +76,15 @@ export async function AppHeader() {
 					number: p.phone_number,
 					label: p.formatted_number || p.phone_number,
 				}));
+				hasPhoneNumbers = phonesResult.data.length > 0;
+			}
+
+			if (payrixResult.success && payrixResult.data) {
+				hasPayrixAccount = true;
+				payrixStatus = payrixResult.data.status;
 			}
 		} catch (_error) {
-			// Continue without phone data - component will handle empty array
+			// Continue without phone/payrix data - component will handle empty array
 		}
 	}
 
@@ -83,6 +96,9 @@ export async function AppHeader() {
 			companies={companies}
 			companyPhones={companyPhones}
 			userProfile={userProfile}
+			hasPhoneNumbers={hasPhoneNumbers}
+			hasPayrixAccount={hasPayrixAccount}
+			payrixStatus={payrixStatus}
 		/>
 	);
 }

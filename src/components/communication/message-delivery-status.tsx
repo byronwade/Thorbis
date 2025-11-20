@@ -40,7 +40,7 @@ export function MessageDeliveryStatusBadge({
 	if (direction === "inbound") {
 		if (showText) {
 			return (
-				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+				<span className="text-muted-foreground flex items-center gap-1 text-xxs">
 					Received
 				</span>
 			);
@@ -57,13 +57,13 @@ export function MessageDeliveryStatusBadge({
 	if (!messageId) {
 		if (showText) {
 			return (
-				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+				<span className="text-muted-foreground flex items-center gap-1 text-xxs">
 					{initialStatus || "Unknown"}
 				</span>
 			);
 		}
 		return (
-			<Badge variant="outline" className="gap-1 text-muted-foreground">
+			<Badge variant="outline" className="text-muted-foreground gap-1">
 				<Clock className="size-3" />
 				{initialStatus || "Unknown"}
 			</Badge>
@@ -98,7 +98,7 @@ function getStatusText(
 	switch (status) {
 		case "queued":
 			return (
-				<span className="flex items-center gap-1 text-[10px] text-gray-500">
+				<span className="flex items-center gap-1 text-xxs text-gray-500">
 					Sending...
 					{isPolling && <Loader2 className="size-2.5 animate-spin" />}
 				</span>
@@ -107,7 +107,7 @@ function getStatusText(
 		case "sending":
 		case "sent":
 			return (
-				<span className="flex items-center gap-1 text-[10px] text-blue-500">
+				<span className="flex items-center gap-1 text-xxs text-blue-500">
 					Sent
 					{isPolling && <Loader2 className="ml-0.5 size-2.5 animate-spin" />}
 				</span>
@@ -115,28 +115,28 @@ function getStatusText(
 
 		case "delivered":
 			return (
-				<span className="flex items-center gap-1 text-[10px] text-green-600">
+				<span className="flex items-center gap-1 text-xxs text-green-600">
 					Delivered
 				</span>
 			);
 
 		case "read":
 			return (
-				<span className="flex items-center gap-1 text-[10px] text-green-700">
+				<span className="flex items-center gap-1 text-xxs text-green-700">
 					Read
 				</span>
 			);
 
 		case "failed":
 			return (
-				<span className="flex items-center gap-1 text-[10px] text-red-500">
+				<span className="flex items-center gap-1 text-xxs text-red-500">
 					Not Delivered
 				</span>
 			);
 
 		default:
 			return (
-				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+				<span className="text-muted-foreground flex items-center gap-1 text-xxs">
 					Unknown
 				</span>
 			);
@@ -150,7 +150,10 @@ function getStatusBadge(
 	switch (status) {
 		case "queued":
 			return (
-				<Badge variant="outline" className="gap-1 border-gray-500 text-gray-500">
+				<Badge
+					variant="outline"
+					className="gap-1 border-gray-500 text-gray-500"
+				>
 					<Clock className="size-3" />
 					Queued
 					{isPolling && <Loader2 className="ml-1 size-3 animate-spin" />}
@@ -160,7 +163,10 @@ function getStatusBadge(
 		case "sending":
 		case "sent":
 			return (
-				<Badge variant="outline" className="gap-1 border-blue-500 text-blue-500">
+				<Badge
+					variant="outline"
+					className="gap-1 border-blue-500 text-blue-500"
+				>
 					<Check className="size-3" />
 					Sent
 					{isPolling && <Loader2 className="ml-1 size-3 animate-spin" />}
@@ -199,7 +205,7 @@ function getStatusBadge(
 
 		default:
 			return (
-				<Badge variant="outline" className="gap-1 text-muted-foreground">
+				<Badge variant="outline" className="text-muted-foreground gap-1">
 					<Clock className="size-3" />
 					Unknown
 				</Badge>

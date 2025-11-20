@@ -14,6 +14,7 @@ import type {
 import { ContractPageContent } from "@/components/work/contracts/contract-page-content";
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { formatDate } from "@/lib/formatters";
+import { getContractComplete } from "@/lib/queries/contracts";
 import { createClient } from "@/lib/supabase/server";
 
 type ContractDetailDataProps = {
@@ -69,9 +70,9 @@ function resolveCustomerName(
 /**
  * Contract Detail Data - Async Server Component
  *
- * Fetches contract data with 3 queries:
+ * Uses single optimized RPC query instead of N+1 pattern:
  * 1. Auth user check and onboarding check
- * 2. Contract with related estimate, invoice, and job data
+ * 2. Contract with tags, estimate, invoice, and job data (single RPC call)
  * 3. Property and appointments (parallel)
  *
  * Streams in after shell renders (100-300ms).
@@ -109,71 +110,23 @@ export async function ContractDetailData({
 		redirect("/dashboard/welcome");
 	}
 
-	// Fetch contract with all related data
-	const { data: contractRaw, error: contractError } = await supabase
-		.from("contracts")
-		.select(
-			`
-      *,
-      estimate:estimates!estimate_id(
-        id,
-        estimate_number,
-        title,
-        customer_id,
-        customer:customers!customer_id(*)
-      ),
-      invoice:invoices!invoice_id(
-        id,
-        invoice_number,
-        title,
-        customer_id,
-        customer:customers!customer_id(*)
-      ),
-      job:jobs!job_id(
-        id,
-        job_number,
-        title,
-        customer_id,
-        customer:customers!customer_id(*)
-      )
-    `,
-		)
-		.eq("id", contractId)
-		.eq("company_id", activeCompanyId)
-		.is("deleted_at", null)
-		.single();
+	// ✅ Load contract with tags via single RPC call
+	const contractData = await getContractComplete(contractId, activeCompanyId);
 
-	if (contractError || !contractRaw) {
+	if (!contractData) {
 		return notFound();
 	}
 
+	// Extract related entities from RPC response
+	const estimate = contractData.estimate;
+	const invoice = contractData.invoice;
+	const job = contractData.job;
+
 	// Get customer from estimate, invoice, or job
-	const estimate = Array.isArray(contractRaw.estimate)
-		? contractRaw.estimate[0]
-		: contractRaw.estimate;
-	const invoice = Array.isArray(contractRaw.invoice)
-		? contractRaw.invoice[0]
-		: contractRaw.invoice;
-	const job = Array.isArray(contractRaw.job)
-		? contractRaw.job[0]
-		: contractRaw.job;
-
-	const customer = estimate?.customer
-		? Array.isArray(estimate.customer)
-			? estimate.customer[0]
-			: estimate.customer
-		: invoice?.customer
-			? Array.isArray(invoice.customer)
-				? invoice.customer[0]
-				: invoice.customer
-			: job?.customer
-				? Array.isArray(job.customer)
-					? job.customer[0]
-					: job.customer
-				: null;
-
+	const customer =
+		estimate?.customer || invoice?.customer || job?.customer || null;
 	const customerId =
-		estimate?.customer_id || invoice?.customer_id || job?.customer_id;
+		estimate?.customer?.id || invoice?.customer?.id || job?.customer?.id;
 
 	// Fetch property (via job) and appointments for contract context
 	const [{ data: property }, { data: appointments }] = await Promise.all([
@@ -217,32 +170,33 @@ export async function ContractDetailData({
 	const customerFallback =
 		normalizedCustomer?.display_name ||
 		`${normalizedCustomer?.first_name || ""} ${normalizedCustomer?.last_name || ""}`.trim() ||
-		contractRaw.signer_email ||
+		contractData.signer_email ||
 		"Unknown Customer";
 
-	const contract: ContractRecord = {
-		id: contractRaw.id,
-		contractNumber: contractRaw.contract_number,
-		title: contractRaw.title,
-		description: contractRaw.description,
+	const contract: ContractRecord & { contract_tags?: any[] } = {
+		id: contractData.id,
+		contractNumber: contractData.contract_number,
+		title: contractData.title,
+		description: contractData.description,
 		customerName: resolveCustomerName(normalizedCustomer, customerFallback),
 		customerId: customerId || null,
-		status: contractRaw.status,
-		contractType: contractRaw.contract_type,
-		signerName: contractRaw.signer_name,
-		signerEmail: contractRaw.signer_email,
-		signerTitle: contractRaw.signer_title,
-		signerCompany: contractRaw.signer_company,
-		signedAt: contractRaw.signed_at,
-		sentAt: contractRaw.sent_at,
-		viewedAt: contractRaw.viewed_at,
-		createdAt: contractRaw.created_at,
-		validFrom: contractRaw.valid_from,
-		validUntil: contractRaw.expires_at || contractRaw.valid_until,
-		ipAddress: contractRaw.signer_ip_address,
-		content: contractRaw.content,
-		terms: contractRaw.terms,
-		notes: contractRaw.notes,
+		status: contractData.status,
+		contractType: contractData.contract_type,
+		signerName: contractData.signer_name,
+		signerEmail: contractData.signer_email,
+		signerTitle: contractData.signer_title,
+		signerCompany: contractData.signer_company,
+		signedAt: contractData.signed_at,
+		sentAt: contractData.sent_at,
+		viewedAt: contractData.viewed_at,
+		createdAt: contractData.created_at,
+		validFrom: contractData.valid_from,
+		validUntil: contractData.valid_until,
+		ipAddress: contractData.ip_address,
+		content: contractData.content,
+		terms: contractData.terms,
+		notes: contractData.notes,
+		contract_tags: contractData.contract_tags || [],
 	};
 
 	const entityData: ContractPageEntityData = {

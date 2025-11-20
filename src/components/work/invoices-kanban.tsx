@@ -142,10 +142,7 @@ function InvoiceCard({ item }: { item: InvoicesKanbanItem }) {
 					size="sm"
 					variant="ghost"
 				>
-					<Link
-						href={`/dashboard/work/invoices/${invoice.id}`}
-						prefetch={false}
-					>
+					<Link href={`/dashboard/work/invoices/${invoice.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
 					</Link>

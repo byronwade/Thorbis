@@ -39,6 +39,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 type NumberPortingWizardProps = {
 	open: boolean;
@@ -450,8 +454,7 @@ function Step2Eligibility({
 				</p>
 			</div>
 
-			<div className="space-y-2">
-				<Label htmlFor="phoneNumber">Phone Number to Port</Label>
+			<StandardFormField label="Phone Number to Port" htmlFor="phoneNumber">
 				<div className="flex gap-2">
 					<Input
 						disabled={checking || isEligible === true}
@@ -474,7 +477,7 @@ function Step2Eligibility({
 						)}
 					</Button>
 				</div>
-			</div>
+			</StandardFormField>
 
 			{/* Eligibility Result */}
 			{isEligible === true && (
@@ -562,34 +565,40 @@ function Step3ProviderInfo({
 			</Alert>
 
 			<div className="space-y-4">
-				<div className="space-y-2">
-					<Label htmlFor="currentCarrier">Current Carrier/Provider *</Label>
+				<StandardFormField
+					label="Current Carrier/Provider"
+					htmlFor="currentCarrier"
+					description="Enter the name of your current phone service provider"
+					required
+				>
 					<Input
 						id="currentCarrier"
 						onChange={(e) => updateData("currentCarrier", e.target.value)}
 						placeholder="e.g., Verizon, AT&T, T-Mobile, Spectrum"
 						value={data.currentCarrier}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Enter the name of your current phone service provider
-					</p>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-2">
-					<Label htmlFor="accountNumber">Account Number *</Label>
+				<StandardFormField
+					label="Account Number"
+					htmlFor="accountNumber"
+					description="Found on your bill - NOT your phone number"
+					required
+				>
 					<Input
 						id="accountNumber"
 						onChange={(e) => updateData("accountNumber", e.target.value)}
 						placeholder="Usually 10-15 digits"
 						value={data.accountNumber}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Found on your bill - NOT your phone number
-					</p>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-2">
-					<Label htmlFor="accountPin">Account PIN/Password *</Label>
+				<StandardFormField
+					label="Account PIN/Password"
+					htmlFor="accountPin"
+					description="Set when you opened the account - call carrier if you don't know it"
+					required
+				>
 					<Input
 						id="accountPin"
 						onChange={(e) => updateData("accountPin", e.target.value)}
@@ -597,10 +606,7 @@ function Step3ProviderInfo({
 						type="password"
 						value={data.accountPin}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Set when you opened the account - call carrier if you don't know it
-					</p>
-				</div>
+				</StandardFormField>
 			</div>
 
 			<div className="flex gap-3">
@@ -658,32 +664,31 @@ function Step4ServiceAddress({
 			</Alert>
 
 			<div className="space-y-4">
-				<div className="space-y-2">
-					<Label htmlFor="addressLine1">Street Address *</Label>
+				<StandardFormField
+					label="Street Address"
+					htmlFor="addressLine1"
+					description="Match the format on your bill exactly (including abbreviations)"
+					required
+				>
 					<Input
 						id="addressLine1"
 						onChange={(e) => updateData("addressLine1", e.target.value)}
 						placeholder="123 Main Street"
 						value={data.addressLine1}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Match the format on your bill exactly (including abbreviations)
-					</p>
-				</div>
+				</StandardFormField>
 
-				<div className="grid gap-4 sm:grid-cols-3">
-					<div className="space-y-2">
-						<Label htmlFor="city">City *</Label>
+				<StandardFormRow cols={3}>
+					<StandardFormField label="City" htmlFor="city" required>
 						<Input
 							id="city"
 							onChange={(e) => updateData("city", e.target.value)}
 							placeholder="Monterey"
 							value={data.city}
 						/>
-					</div>
+					</StandardFormField>
 
-					<div className="space-y-2">
-						<Label htmlFor="state">State *</Label>
+					<StandardFormField label="State" htmlFor="state" required>
 						<Input
 							id="state"
 							maxLength={2}
@@ -691,10 +696,9 @@ function Step4ServiceAddress({
 							placeholder="CA"
 							value={data.state}
 						/>
-					</div>
+					</StandardFormField>
 
-					<div className="space-y-2">
-						<Label htmlFor="zipCode">ZIP Code *</Label>
+					<StandardFormField label="ZIP Code" htmlFor="zipCode" required>
 						<Input
 							id="zipCode"
 							maxLength={10}
@@ -702,8 +706,8 @@ function Step4ServiceAddress({
 							placeholder="93940"
 							value={data.zipCode}
 						/>
-					</div>
-				</div>
+					</StandardFormField>
+				</StandardFormRow>
 			</div>
 
 			<div className="flex gap-3">
@@ -755,23 +759,26 @@ function Step5AuthorizedPerson({
 			</Alert>
 
 			<div className="space-y-4">
-				<div className="space-y-2">
-					<Label htmlFor="authorizedPerson">
-						Full Name of Account Holder *
-					</Label>
+				<StandardFormField
+					label="Full Name of Account Holder"
+					htmlFor="authorizedPerson"
+					description="Must match the name on the account with your current carrier"
+					required
+				>
 					<Input
 						id="authorizedPerson"
 						onChange={(e) => updateData("authorizedPerson", e.target.value)}
 						placeholder="John Smith"
 						value={data.authorizedPerson}
 					/>
-					<p className="text-muted-foreground text-xs">
-						Must match the name on the account with your current carrier
-					</p>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-2">
-					<Label htmlFor="authorizedEmail">Email Address *</Label>
+				<StandardFormField
+					label="Email Address"
+					htmlFor="authorizedEmail"
+					description="We'll send porting status updates to this email"
+					required
+				>
 					<Input
 						id="authorizedEmail"
 						onChange={(e) => updateData("authorizedEmail", e.target.value)}
@@ -779,10 +786,7 @@ function Step5AuthorizedPerson({
 						type="email"
 						value={data.authorizedEmail}
 					/>
-					<p className="text-muted-foreground text-xs">
-						We'll send porting status updates to this email
-					</p>
-				</div>
+				</StandardFormField>
 			</div>
 
 			<div className="flex gap-3">
@@ -855,8 +859,11 @@ function Step6DocumentUpload({
 				</div>
 			</div>
 
-			<div className="space-y-2">
-				<Label htmlFor="billDocument">Upload Document</Label>
+			<StandardFormField
+				label="Upload Document"
+				htmlFor="billDocument"
+				description="Max file size: 10MB. Accepted formats: PDF, JPG, PNG"
+			>
 				<div className="flex flex-col gap-3">
 					<Input
 						accept=".pdf,.jpg,.jpeg,.png"
@@ -884,10 +891,7 @@ function Step6DocumentUpload({
 						</div>
 					)}
 				</div>
-				<p className="text-muted-foreground text-xs">
-					Max file size: 10MB. Accepted formats: PDF, JPG, PNG
-				</p>
-			</div>
+			</StandardFormField>
 
 			<Alert>
 				<Info className="size-4" />

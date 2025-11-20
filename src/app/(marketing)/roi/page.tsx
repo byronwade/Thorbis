@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import Link from "next/link";
 import Script from "next/script";
 
@@ -11,7 +14,12 @@ import {
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
 import { createHowToSchema } from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const roiKeywords = generateSemanticKeywords("roi calculator");
 
 export const metadata = generateSEOMetadata({
 	title: "ROI Calculator for Field Service Teams",
@@ -23,6 +31,9 @@ export const metadata = generateSEOMetadata({
 		"field service roi calculator",
 		"servicetitan roi alternative",
 		"thorbis savings estimate",
+		"field service management roi",
+		"calculate software roi",
+		...roiKeywords.slice(0, 5),
 	],
 });
 
@@ -110,7 +121,7 @@ export default function RoiPage() {
 					<p className="text-muted-foreground text-lg leading-relaxed">
 						Use your real numbers to project labor savings, net-new revenue, and
 						net ROI after Thorbis replaces your legacy field service stack.
-						Thorbis pricing starts at $100/month with pay-as-you-go usage—no
+						Thorbis pricing starts at $200/month with pay-as-you-go usage—no
 						per-user fees and absolutely no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">

@@ -28,6 +28,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 type IndustryData = {
 	[key: string]: {
@@ -194,8 +195,7 @@ export default function IndustryPricingStandards() {
 							<CardDescription>Enter your rates to compare</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="service">Service Call Fee ($)</Label>
+							<StandardFormField label="Service Call Fee ($)" htmlFor="service">
 								<Input
 									id="service"
 									onChange={(e) => setMyServiceCall(e.target.value)}
@@ -205,10 +205,9 @@ export default function IndustryPricingStandards() {
 								<p className="text-muted-foreground text-xs">
 									What you charge just to show up and diagnose
 								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="hourly">Hourly Labor Rate ($)</Label>
+							<StandardFormField label="Hourly Labor Rate ($)" htmlFor="hourly">
 								<Input
 									id="hourly"
 									onChange={(e) => setMyHourlyRate(e.target.value)}
@@ -218,10 +217,9 @@ export default function IndustryPricingStandards() {
 								<p className="text-muted-foreground text-xs">
 									Your labor charge per hour
 								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="markup">Material Markup (%)</Label>
+							<StandardFormField label="Material Markup (%)" htmlFor="markup">
 								<Input
 									id="markup"
 									onChange={(e) => setMyMarkup(e.target.value)}
@@ -231,7 +229,7 @@ export default function IndustryPricingStandards() {
 								<p className="text-muted-foreground text-xs">
 									Percentage added to material costs
 								</p>
-							</div>
+							</StandardFormField>
 						</CardContent>
 					</Card>
 

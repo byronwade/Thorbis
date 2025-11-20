@@ -4,7 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 
 type VerificationStatus = {
 	isReady: boolean;
-	step: "not_started" | "provisioning" | "pending_10dlc" | "pending_porting" | "ready";
+	step:
+		| "not_started"
+		| "provisioning"
+		| "pending_10dlc"
+		| "pending_porting"
+		| "ready";
 	issues: string[];
 	nextAction: string;
 	setupUrl: string;
@@ -99,41 +104,17 @@ async function checkTelnyxVerificationStatus(
 		};
 	}
 
-	// Check if ANY verification is complete (toll-free OR 10DLC)
-	const hasTollFreeVerification = settings.toll_free_verification_status === "approved";
-	const has10DLC = settings.ten_dlc_brand_id && settings.ten_dlc_campaign_id;
-	const hasPendingTollFree = settings.toll_free_verification_status === "pending";
+	// IMPORTANT: Voice calling works without SMS verification
+	// Only SMS requires toll-free/10DLC verification
+	// Allow access if basic provisioning is complete
 
-	if (!hasTollFreeVerification && !has10DLC) {
-		// Check if toll-free verification is pending
-		if (hasPendingTollFree) {
-			return {
-				isReady: false,
-				step: "pending_10dlc",
-				issues: ["Toll-free verification pending (5-7 business days)"],
-				nextAction:
-					"Your toll-free verification has been submitted and is pending approval. You'll receive an email when approved.",
-				setupUrl: "/dashboard/settings/messaging",
-			};
-		}
-
-		// Not started at all
-		return {
-			isReady: false,
-			step: "pending_10dlc",
-			issues: ["Messaging verification not completed"],
-			nextAction:
-				"Enable business messaging with automated verification. Uses toll-free numbers for instant setup (5-7 day approval).",
-			setupUrl: "/test-telnyx-setup",
-		};
-	}
-
-	// Everything is ready
+	// Everything is ready (basic provisioning complete)
+	// SMS verification is optional - users can still make calls
 	return {
 		isReady: true,
 		step: "ready",
 		issues: [],
-		nextAction: "All set! You can send messages and make calls.",
+		nextAction: "All set! You can make calls. SMS requires verification.",
 		setupUrl: "/dashboard/communication",
 	};
 }
@@ -156,21 +137,21 @@ export async function CommunicationVerificationGate({
 
 	// Otherwise, show the verification/setup required page
 	return (
-		<div className="flex items-center justify-center min-h-[600px] p-8">
-			<div className="max-w-2xl w-full">
-				<div className="text-center mb-8">
-					<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-500/10 mb-4">
+		<div className="flex min-h-[600px] items-center justify-center p-8">
+			<div className="w-full max-w-2xl">
+				<div className="mb-8 text-center">
+					<div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/10">
 						{status.step === "not_started" ? (
-							<AlertCircle className="w-8 h-8 text-yellow-500" />
+							<AlertCircle className="h-8 w-8 text-yellow-500" />
 						) : status.step === "pending_10dlc" ? (
-							<Clock className="w-8 h-8 text-blue-500" />
+							<Clock className="h-8 w-8 text-blue-500" />
 						) : status.step === "pending_porting" ? (
-							<Clock className="w-8 h-8 text-blue-500 animate-pulse" />
+							<Clock className="h-8 w-8 animate-pulse text-blue-500" />
 						) : (
-							<Phone className="w-8 h-8 text-yellow-500" />
+							<Phone className="h-8 w-8 text-yellow-500" />
 						)}
 					</div>
-					<h1 className="text-3xl font-bold text-foreground mb-2">
+					<h1 className="text-foreground mb-2 text-3xl font-bold">
 						{status.step === "not_started"
 							? "Communications Setup Required"
 							: status.step === "provisioning"
@@ -184,42 +165,44 @@ export async function CommunicationVerificationGate({
 
 				{/* Phone Porting Status - Special Display */}
 				{status.step === "pending_porting" && status.portingRequests && (
-					<div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6 mb-6">
-						<h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-							<Clock className="w-5 h-5 text-blue-500 animate-pulse" />
+					<div className="mb-6 rounded-lg border border-blue-500/20 bg-blue-500/10 p-6">
+						<h3 className="text-foreground mb-3 flex items-center gap-2 font-semibold">
+							<Clock className="h-5 w-5 animate-pulse text-blue-500" />
 							Porting Requests In Progress
 						</h3>
 						<div className="space-y-3">
 							{status.portingRequests.map((request) => (
 								<div
 									key={request.id}
-									className="bg-background border border-border rounded-lg p-4"
+									className="bg-background border-border rounded-lg border p-4"
 								>
-									<div className="flex items-start justify-between mb-2">
+									<div className="mb-2 flex items-start justify-between">
 										<div>
-											<p className="font-mono text-foreground font-semibold">
+											<p className="text-foreground font-mono font-semibold">
 												{request.phone_number}
 											</p>
-											<p className="text-sm text-muted-foreground capitalize">
+											<p className="text-muted-foreground text-sm capitalize">
 												Status: {request.status.replace(/_/g, " ")}
 											</p>
 										</div>
-										<div className="flex items-center gap-2 text-xs text-blue-500 font-medium px-3 py-1 bg-blue-500/10 rounded-full">
-											<Clock className="w-3 h-3 animate-pulse" />
+										<div className="flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-500">
+											<Clock className="h-3 w-3 animate-pulse" />
 											In Progress
 										</div>
 									</div>
 									{request.estimated_completion && (
-										<p className="text-xs text-muted-foreground mt-2">
+										<p className="text-muted-foreground mt-2 text-xs">
 											Estimated completion:{" "}
-											{new Date(request.estimated_completion).toLocaleDateString()}
+											{new Date(
+												request.estimated_completion,
+											).toLocaleDateString()}
 										</p>
 									)}
 								</div>
 							))}
 						</div>
-						<div className="mt-4 p-3 bg-muted/50 rounded-lg">
-							<p className="text-sm text-muted-foreground">
+						<div className="bg-muted/50 mt-4 rounded-lg p-3">
+							<p className="text-muted-foreground text-sm">
 								<strong className="text-foreground">Note:</strong> Phone number
 								porting typically takes 3-7 business days. You'll receive email
 								notifications when the process completes. Communications will be
@@ -231,18 +214,18 @@ export async function CommunicationVerificationGate({
 
 				{/* Other Issues */}
 				{status.issues.length > 0 && status.step !== "pending_porting" && (
-					<div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-6 mb-6">
-						<h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-							<AlertCircle className="w-5 h-5 text-yellow-500" />
+					<div className="mb-6 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-6">
+						<h3 className="text-foreground mb-3 flex items-center gap-2 font-semibold">
+							<AlertCircle className="h-5 w-5 text-yellow-500" />
 							Setup Requirements
 						</h3>
 						<ul className="space-y-2">
 							{status.issues.map((issue, i) => (
 								<li
 									key={i}
-									className="text-sm text-muted-foreground flex items-start gap-2"
+									className="text-muted-foreground flex items-start gap-2 text-sm"
 								>
-									<span className="text-yellow-500 mt-0.5">•</span>
+									<span className="mt-0.5 text-yellow-500">•</span>
 									<span>{issue}</span>
 								</li>
 							))}
@@ -250,45 +233,45 @@ export async function CommunicationVerificationGate({
 					</div>
 				)}
 
-				<div className="bg-muted/50 border border-border rounded-lg p-6 mb-6">
-					<h3 className="font-semibold text-foreground mb-4">
+				<div className="bg-muted/50 border-border mb-6 rounded-lg border p-6">
+					<h3 className="text-foreground mb-4 font-semibold">
 						What You'll Get
 					</h3>
 					<div className="grid gap-3">
 						<div className="flex items-start gap-3">
-							<CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+							<CheckCircle2 className="mt-0.5 h-5 w-5 text-green-500" />
 							<div>
-								<p className="font-medium text-foreground">SMS Messaging</p>
-								<p className="text-sm text-muted-foreground">
+								<p className="text-foreground font-medium">SMS Messaging</p>
+								<p className="text-muted-foreground text-sm">
 									Send and receive text messages with customers
 								</p>
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+							<CheckCircle2 className="mt-0.5 h-5 w-5 text-green-500" />
 							<div>
-								<p className="font-medium text-foreground">Voice Calls</p>
-								<p className="text-sm text-muted-foreground">
+								<p className="text-foreground font-medium">Voice Calls</p>
+								<p className="text-muted-foreground text-sm">
 									Make and receive phone calls with call recording
 								</p>
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+							<CheckCircle2 className="mt-0.5 h-5 w-5 text-green-500" />
 							<div>
-								<p className="font-medium text-foreground">
-									Delivery Tracking
-								</p>
-								<p className="text-sm text-muted-foreground">
+								<p className="text-foreground font-medium">Delivery Tracking</p>
+								<p className="text-muted-foreground text-sm">
 									Real-time status updates for all messages
 								</p>
 							</div>
 						</div>
 						<div className="flex items-start gap-3">
-							<CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+							<CheckCircle2 className="mt-0.5 h-5 w-5 text-green-500" />
 							<div>
-								<p className="font-medium text-foreground">Carrier Compliance</p>
-								<p className="text-sm text-muted-foreground">
+								<p className="text-foreground font-medium">
+									Carrier Compliance
+								</p>
+								<p className="text-muted-foreground text-sm">
 									Verified messaging for reliable delivery (toll-free or 10DLC)
 								</p>
 							</div>
@@ -298,16 +281,16 @@ export async function CommunicationVerificationGate({
 
 				<div className="space-y-3">
 					{status.step === "pending_porting" ? (
-						<div className="block w-full px-6 py-4 bg-muted border border-border rounded-lg font-semibold text-center cursor-not-allowed">
-							<div className="flex items-center justify-center gap-2 text-muted-foreground">
-								<Clock className="w-5 h-5 animate-pulse" />
+						<div className="bg-muted border-border block w-full cursor-not-allowed rounded-lg border px-6 py-4 text-center font-semibold">
+							<div className="text-muted-foreground flex items-center justify-center gap-2">
+								<Clock className="h-5 w-5 animate-pulse" />
 								<span>Waiting for Porting to Complete</span>
 							</div>
 						</div>
 					) : (
 						<Link
 							href={status.setupUrl}
-							className="block w-full px-6 py-4 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all text-center"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 block w-full rounded-lg px-6 py-4 text-center font-semibold transition-all"
 						>
 							{status.step === "not_started"
 								? "🚀 Start Automated Setup"
@@ -317,19 +300,19 @@ export async function CommunicationVerificationGate({
 						</Link>
 					)}
 
-					<p className="text-center text-sm text-muted-foreground">
+					<p className="text-muted-foreground text-center text-sm">
 						{status.step === "pending_porting"
 							? "Porting typically takes 3-7 business days"
 							: "Setup takes 1-2 minutes • Fully automated • No manual steps"}
 					</p>
 				</div>
 
-				<div className="mt-8 pt-6 border-t border-border">
+				<div className="border-border mt-8 border-t pt-6">
 					<details className="group">
-						<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+						<summary className="text-muted-foreground hover:text-foreground cursor-pointer text-sm font-medium transition-colors">
 							How does business messaging verification work?
 						</summary>
-						<div className="mt-3 text-sm text-muted-foreground space-y-2">
+						<div className="text-muted-foreground mt-3 space-y-2 text-sm">
 							<p>
 								<strong className="text-foreground">
 									Business messaging verification
@@ -345,8 +328,8 @@ export async function CommunicationVerificationGate({
 							</p>
 							<p>
 								Our automated setup handles everything: verification submission,
-								carrier approval tracking, and email notifications when complete.
-								No manual steps or external portals required.
+								carrier approval tracking, and email notifications when
+								complete. No manual steps or external portals required.
 							</p>
 						</div>
 					</details>

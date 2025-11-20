@@ -393,7 +393,7 @@ async function fetchTeamMembersWithUsers(
 	companyId: string,
 ): Promise<TeamMemberRecord[]> {
 	const { data: bareMembers, error: bareError } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("*")
 		.eq("company_id", companyId)
 		.eq("status", "active")
@@ -414,8 +414,8 @@ async function fetchTeamMembersWithUsers(
 	const usersById = new Map<string, TeamMemberRecord["users"]>();
 	if (userIds.length > 0) {
 		const { data: users, error: userError } = await supabase
-			.from("users")
-			.select("id, name, email, phone, avatar")
+			.from("profiles")
+			.select("id, full_name, email, phone, avatar_url")
 			.in("id", userIds);
 		if (userError) {
 			throw userError;

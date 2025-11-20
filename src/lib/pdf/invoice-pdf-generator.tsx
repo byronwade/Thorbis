@@ -34,19 +34,27 @@ Font.register({
 });
 
 // PDF Styles - matches invoice preview
+const PDF_COLORS = {
+	white: "#FFFFFF",
+	black: "#000000",
+	textPrimary: "#333333",
+	textSecondary: "#666666",
+	border: "#E5E7EB",
+};
+
 const styles = StyleSheet.create({
 	page: {
 		padding: 72, // 1 inch
 		fontFamily: "Helvetica",
 		fontSize: 11,
-		backgroundColor: "#FFFFFF",
+		backgroundColor: PDF_COLORS.white,
 	},
 	header: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 		marginBottom: 48,
 		paddingBottom: 24,
-		borderBottom: "2px solid #000000",
+		borderBottom: `2px solid ${PDF_COLORS.black}`,
 	},
 	headerLeft: {
 		flex: 1,
@@ -75,7 +83,7 @@ const styles = StyleSheet.create({
 		marginBottom: 4,
 	},
 	metaLabel: {
-		color: "#666666",
+		color: PDF_COLORS.textSecondary,
 	},
 	metaValue: {
 		fontWeight: "bold",
@@ -87,7 +95,7 @@ const styles = StyleSheet.create({
 		fontSize: 9,
 		fontWeight: "bold",
 		textTransform: "uppercase",
-		color: "#666666",
+		color: PDF_COLORS.textSecondary,
 		marginBottom: 12,
 		letterSpacing: 0.5,
 	},
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
 	},
 	tableHeader: {
 		flexDirection: "row",
-		borderBottom: "2px solid #000000",
+		borderBottom: `2px solid ${PDF_COLORS.black}`,
 		paddingBottom: 8,
 		marginBottom: 8,
 	},
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
 	},
 	tableRow: {
 		flexDirection: "row",
-		borderBottom: "1px solid #E5E7EB",
+		borderBottom: `1px solid ${PDF_COLORS.border}`,
 		paddingVertical: 12,
 	},
 	tableCell: {
@@ -155,7 +163,7 @@ const styles = StyleSheet.create({
 	},
 	totalLabel: {
 		fontSize: 10,
-		color: "#666666",
+		color: PDF_COLORS.textSecondary,
 	},
 	totalValue: {
 		fontSize: 10,
@@ -163,7 +171,7 @@ const styles = StyleSheet.create({
 	grandTotalRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		borderTop: "2px solid #000000",
+		borderTop: `2px solid ${PDF_COLORS.black}`,
 		paddingTop: 12,
 		marginTop: 8,
 	},
@@ -182,17 +190,17 @@ const styles = StyleSheet.create({
 	notesText: {
 		fontSize: 10,
 		lineHeight: 1.5,
-		color: "#333333",
+		color: PDF_COLORS.textPrimary,
 	},
 	footer: {
 		marginTop: 48,
 		paddingTop: 16,
-		borderTop: "1px solid #E5E7EB",
+		borderTop: `1px solid ${PDF_COLORS.border}`,
 		alignItems: "center",
 	},
 	footerText: {
 		fontSize: 10,
-		color: "#666666",
+		color: PDF_COLORS.textSecondary,
 	},
 });
 

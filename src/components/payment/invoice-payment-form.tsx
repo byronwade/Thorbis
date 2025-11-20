@@ -30,6 +30,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 type InvoicePaymentFormProps = {
 	invoice: any;
@@ -186,8 +190,11 @@ export function InvoicePaymentForm({
 					{/* Card Payment Fields */}
 					{paymentMethod === "card" && (
 						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="cardName">Cardholder Name</Label>
+							<StandardFormField
+								label="Cardholder Name"
+								htmlFor="cardName"
+								required
+							>
 								<Input
 									id="cardName"
 									onChange={(e) => setCardName(e.target.value)}
@@ -195,9 +202,13 @@ export function InvoicePaymentForm({
 									required
 									value={cardName}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="cardNumber">Card Number</Label>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Card Number"
+								htmlFor="cardNumber"
+								required
+							>
 								<Input
 									id="cardNumber"
 									maxLength={19}
@@ -211,10 +222,14 @@ export function InvoicePaymentForm({
 									required
 									value={cardNumber}
 								/>
-							</div>
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-2">
-									<Label htmlFor="cardExpiry">Expiry Date</Label>
+							</StandardFormField>
+
+							<StandardFormRow cols={2}>
+								<StandardFormField
+									label="Expiry Date"
+									htmlFor="cardExpiry"
+									required
+								>
 									<Input
 										id="cardExpiry"
 										maxLength={5}
@@ -232,9 +247,9 @@ export function InvoicePaymentForm({
 										required
 										value={cardExpiry}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="cardCvc">CVC</Label>
+								</StandardFormField>
+
+								<StandardFormField label="CVC" htmlFor="cardCvc" required>
 									<Input
 										id="cardCvc"
 										maxLength={4}
@@ -245,16 +260,19 @@ export function InvoicePaymentForm({
 										required
 										value={cardCvc}
 									/>
-								</div>
-							</div>
+								</StandardFormField>
+							</StandardFormRow>
 						</div>
 					)}
 
 					{/* ACH Payment Fields */}
 					{paymentMethod === "ach" && (
 						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="accountName">Account Holder Name</Label>
+							<StandardFormField
+								label="Account Holder Name"
+								htmlFor="accountName"
+								required
+							>
 								<Input
 									id="accountName"
 									onChange={(e) => setAccountName(e.target.value)}
@@ -262,9 +280,13 @@ export function InvoicePaymentForm({
 									required
 									value={accountName}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="routingNumber">Routing Number</Label>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Routing Number"
+								htmlFor="routingNumber"
+								required
+							>
 								<Input
 									id="routingNumber"
 									maxLength={9}
@@ -275,9 +297,13 @@ export function InvoicePaymentForm({
 									required
 									value={routingNumber}
 								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="accountNumber">Account Number</Label>
+							</StandardFormField>
+
+							<StandardFormField
+								label="Account Number"
+								htmlFor="accountNumber"
+								required
+							>
 								<Input
 									id="accountNumber"
 									onChange={(e) =>
@@ -287,7 +313,7 @@ export function InvoicePaymentForm({
 									required
 									value={accountNumber}
 								/>
-							</div>
+							</StandardFormField>
 						</div>
 					)}
 

@@ -25,6 +25,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type AppointmentsFilters,
 	useAppointmentsFiltersStore,
@@ -116,15 +117,17 @@ export function AppointmentsFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField
+						label="Status"
+						htmlFor="filter-appointments-status"
+					>
 						<Select
 							onValueChange={(value: AppointmentsFilters["archiveStatus"]) =>
 								setLocalFilters({ ...localFilters, archiveStatus: value })
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-appointments-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -141,18 +144,23 @@ export function AppointmentsFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Appointment Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Appointment Status</Label>
+					<StandardFormField
+						label="Appointment Status"
+						htmlFor="filter-appointments-appointment-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-appointments-appointment-status"
+								className="h-9"
+							>
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -165,12 +173,15 @@ export function AppointmentsFilterDropdown({
 								<SelectItem value="no_show">No Show</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs">Customer Name</Label>
+					<StandardFormField
+						label="Customer Name"
+						htmlFor="filter-appointments-customer-name"
+					>
 						<Input
+							id="filter-appointments-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -181,12 +192,15 @@ export function AppointmentsFilterDropdown({
 							placeholder="Search by customer..."
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Assigned To */}
-					<div className="space-y-2">
-						<Label className="text-xs">Assigned To</Label>
+					<StandardFormField
+						label="Assigned To"
+						htmlFor="filter-appointments-assigned-to"
+					>
 						<Input
+							id="filter-appointments-assigned-to"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, assignedTo: e.target.value })
@@ -194,12 +208,15 @@ export function AppointmentsFilterDropdown({
 							placeholder="Search by assigned person..."
 							value={localFilters.assignedTo}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Appointment Number */}
-					<div className="space-y-2">
-						<Label className="text-xs">Appointment Number</Label>
+					<StandardFormField
+						label="Appointment Number"
+						htmlFor="filter-appointments-appointment-number"
+					>
 						<Input
+							id="filter-appointments-appointment-number"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -210,7 +227,7 @@ export function AppointmentsFilterDropdown({
 							placeholder="Search by number..."
 							value={localFilters.appointmentNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 

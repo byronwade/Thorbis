@@ -1,18 +1,18 @@
 /**
- * Materials Page - PPR Enabled
+ * Materials Page - PPR Enabled with Inline Stats
  *
  * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
- * - Stats stream in first (100-200ms)
- * - Data streams in second (200-500ms)
+ * - Stats stream in toolbar (100-200ms)
+ * - Data streams in main content (200-500ms)
  *
  * Performance: 10-40x faster than traditional SSR
+ * Clean design: Stats integrated directly into toolbar
  */
 
 import { Suspense } from "react";
 import { MaterialsData } from "@/components/work/materials/materials-data";
 import { MaterialsSkeleton } from "@/components/work/materials/materials-skeleton";
-import { MaterialsStats } from "@/components/work/materials/materials-stats";
 
 export default async function MaterialsPage({
 	searchParams,
@@ -21,18 +21,15 @@ export default async function MaterialsPage({
 }) {
 	const params = await searchParams;
 	return (
-		<>
-			{/* Stats - Streams in first */}
-			<Suspense
-				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
-			>
-				<MaterialsStats />
-			</Suspense>
+		<div className="flex h-full flex-col">
+			{/* Stats now shown in toolbar - see layout.tsx */}
 
-			{/* Table/Kanban - Streams in second */}
-			<Suspense fallback={<MaterialsSkeleton />}>
-				<MaterialsData searchParams={params} />
-			</Suspense>
-		</>
+			{/* Table - Main content */}
+			<div className="flex-1 overflow-hidden">
+				<Suspense fallback={<MaterialsSkeleton />}>
+					<MaterialsData searchParams={params} />
+				</Suspense>
+			</div>
+		</div>
 	);
 }

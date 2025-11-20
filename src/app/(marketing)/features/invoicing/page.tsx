@@ -1,3 +1,6 @@
+"use cache";
+export const cacheLife = "marketing";
+
 import {
 	ArrowDownRight,
 	BadgePercent,
@@ -16,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-
+import { RelatedContent } from "@/components/seo/related-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,25 +29,115 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getRelatedFeatures } from "@/lib/seo/content-recommendations";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	generateServiceStructuredData,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+import {
+	createFAQSchema,
+	createItemListSchema,
+} from "@/lib/seo/structured-data";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const invoicingKeywords = generateSemanticKeywords("invoicing");
 
 export const metadata = generateSEOMetadata({
-	title: "0% Fee Payment Processing & Invoicing | Thorbis",
+	title: "Automated Invoicing & Payment Processing Software",
 	section: "Features",
 	description:
-		"Get paid faster with zero processing fees. Create professional invoices, accept payments anywhere, and get instant deposits. Save thousands on transaction fees every month.",
+		"Automated invoicing with integrated payment processing. Create, send, and track invoices in seconds. Accept credit cards, ACH, and mobile payments. Get paid 3x faster with automated reminders.",
 	path: "/features/invoicing",
 	keywords: [
-		"zero fee payment processing",
+		"automated invoicing software",
 		"field service invoicing",
-		"contractor payment software",
-		"instant payment deposits",
-		"mobile payment processing",
+		"payment processing",
+		"invoice automation",
+		"mobile payment collection",
+		...invoicingKeywords.slice(0, 5),
+	],
+});
+
+// FAQ Schema - Optimized for AI Overviews
+const faqSchema = createFAQSchema([
+	{
+		question: "How do I create and send invoices with Thorbis?",
+		answer:
+			"Thorbis automates invoice creation from completed jobs. Simply mark a job as complete, and the system automatically generates a professional invoice with all labor, materials, and taxes calculated. You can customize the invoice, add notes or photos, and send it via email or SMS with a single click. Customers receive a payment link and can pay instantly with credit card, ACH, or digital wallet.",
+	},
+	{
+		question: "What are Thorbis payment processing fees?",
+		answer:
+			"Thorbis charges 0% payment processing fees on all transactions including credit cards, debit cards, ACH bank transfers, and digital wallets like Apple Pay and Google Pay. Unlike traditional processors that charge 2.9-3.5% per transaction, you keep 100% of every payment. The $200/month base fee includes unlimited payment processing with no hidden fees, monthly minimums, or per-transaction costs.",
+	},
+	{
+		question: "Can customers pay invoices online?",
+		answer:
+			"Yes. Every invoice includes a secure payment link where customers can pay online instantly. They can pay with credit/debit cards, ACH bank transfers, Apple Pay, Google Pay, or even save payment methods for future use. The customer portal shows all invoices, payment history, and allows them to set up auto-pay for recurring services. Payments are deposited directly to your bank account within 24 hours.",
+	},
+	{
+		question: "How does automated payment reminder work?",
+		answer:
+			"Thorbis automatically sends payment reminders via email and SMS based on your settings. You can configure reminders to send before the due date, on the due date, and at custom intervals after (e.g., 3 days, 7 days, 14 days overdue). Each reminder includes a one-click payment link. The system tracks payment status in real-time and stops reminders once paid. You can customize reminder messages and timing in settings.",
+	},
+	{
+		question: "Does Thorbis support recurring billing and subscriptions?",
+		answer:
+			"Yes. Thorbis supports recurring billing for maintenance plans, subscriptions, and contract services. Set up automatic billing cycles (monthly, quarterly, annually) and the system automatically charges saved payment methods, sends invoices, and handles failed payment retry logic. You can track subscription revenue, manage dunning workflows for failed payments, and view analytics on subscription churn and revenue.",
+	},
+	{
+		question: "Can I accept partial payments on invoices?",
+		answer:
+			"Yes. Thorbis supports partial payments, payment plans, and deposits. You can split invoices into multiple installments with different due dates, accept down payments before starting work, or allow customers to make partial payments over time. The system tracks all payments against the total balance and shows remaining amounts due. Payment plans can be configured with custom schedules and automatic reminders for each installment.",
+	},
+]);
+
+// ItemList Schema - Invoice features
+const featuresSchema = createItemListSchema({
+	name: "Invoicing & Payment Processing Features",
+	description:
+		"Complete invoicing and payment features with 0% processing fees",
+	items: [
+		{
+			name: "Zero Payment Processing Fees",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"0% fees on credit cards, ACH, and digital wallets. Keep 100% of every payment with no hidden costs or monthly minimums.",
+		},
+		{
+			name: "Professional Invoice Templates",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"Branded invoice templates with custom logos, line items, tax calculations, photo attachments, and professional formatting.",
+		},
+		{
+			name: "Instant Payment Links",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"Every invoice includes a secure payment link. Customers can pay instantly with credit cards, ACH, or digital wallets.",
+		},
+		{
+			name: "Automated Payment Reminders",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"Smart reminders via email and SMS with customizable schedules. Automatic escalation workflows for overdue payments.",
+		},
+		{
+			name: "Recurring Billing & Subscriptions",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"Automate subscription and maintenance plan billing with payment retry logic, dunning management, and revenue analytics.",
+		},
+		{
+			name: "Partial Payments & Payment Plans",
+			url: `${siteUrl}/features/invoicing`,
+			description:
+				"Support deposits, installments, and payment plans with flexible scheduling and automatic tracking of remaining balances.",
+		},
 	],
 });
 
@@ -58,7 +151,7 @@ export default function InvoicingPage() {
 				price: "100",
 				currency: "USD",
 				description:
-					"Included in Thorbis platform starting at $100/month - 0% processing fees",
+					"Included in Thorbis platform starting at $200/month - 0% processing fees",
 			},
 		],
 	});
@@ -86,6 +179,26 @@ export default function InvoicingPage() {
 					__html: JSON.stringify(serviceStructuredData),
 				}}
 				id="invoicing-service-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema - Optimized for AI Overviews */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="invoicing-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
+
+			{/* Features List Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresSchema),
+				}}
+				id="invoicing-features-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 
@@ -812,6 +925,17 @@ export default function InvoicingPage() {
 						</Card>
 					</div>
 				</div>
+			</section>
+
+			{/* Related Features Section */}
+			<section className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+				<RelatedContent
+					title="Explore Related Features"
+					description="Discover how these features work together to power your field service business"
+					items={getRelatedFeatures("invoicing", 3)}
+					variant="grid"
+					showDescription={true}
+				/>
 			</section>
 
 			{/* CTA Section */}

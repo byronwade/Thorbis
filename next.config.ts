@@ -52,6 +52,18 @@ const nextConfig: NextConfig = {
 			revalidate: THIRTY_DAYS_IN_SECONDS,
 			expire: THIRTY_DAYS_IN_SECONDS,
 		},
+		// Marketing - high-frequency pages (pricing, features, homepage)
+		marketing: {
+			stale: ONE_DAY_IN_SECONDS, // 24 hours
+			revalidate: ONE_DAY_IN_SECONDS,
+			expire: ONE_DAY_IN_SECONDS * 2, // 48 hours max
+		},
+		// Marketing Weekly - medium-frequency pages (blog, case studies)
+		marketingWeekly: {
+			stale: 7 * ONE_DAY_IN_SECONDS, // 7 days
+			revalidate: 7 * ONE_DAY_IN_SECONDS,
+			expire: 14 * ONE_DAY_IN_SECONDS, // 14 days max
+		},
 		// Default - business data (contracts, jobs, invoices)
 		default: {
 			stale: 15 * 60, // 15 minutes (Next.js default)
@@ -183,6 +195,86 @@ const nextConfig: NextConfig = {
 		// Keep webpack running to display all errors instead of bailing on the first failure
 		webpackConfig.bail = false;
 		return webpackConfig;
+	},
+
+	// CDN Caching Headers (Phase 3.1)
+	// Optimized cache control for different asset types
+	async headers() {
+		return [
+			{
+				// Static assets (JS, CSS, fonts, etc.) - Immutable with content hash
+				source: "/_next/static/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=31536000, immutable",
+					},
+				],
+			},
+			{
+				// Public folder static assets - Long-term caching
+				source: "/static/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=31536000, immutable",
+					},
+				],
+			},
+			{
+				// Images from public folder - Long-term caching
+				source: "/:all*.(svg|jpg|jpeg|png|gif|ico|webp|avif)",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=31536000, immutable",
+					},
+				],
+			},
+			{
+				// Optimized Next.js images - Stale-while-revalidate
+				source: "/_next/image/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=3600, stale-while-revalidate=86400",
+					},
+				],
+			},
+			{
+				// API routes - No caching (always fresh)
+				source: "/api/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "no-store, must-revalidate",
+					},
+				],
+			},
+			{
+				// HTML pages - Stale-while-revalidate for instant loading
+				source: "/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value:
+							"public, max-age=0, stale-while-revalidate=60, must-revalidate",
+					},
+					{
+						key: "X-Content-Type-Options",
+						value: "nosniff",
+					},
+					{
+						key: "X-Frame-Options",
+						value: "DENY",
+					},
+					{
+						key: "X-XSS-Protection",
+						value: "1; mode=block",
+					},
+				],
+			},
+		];
 	},
 };
 

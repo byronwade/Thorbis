@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
+import {
 	type PurchaseOrdersFilters,
 	usePurchaseOrdersFiltersStore,
 } from "@/lib/stores/purchase-orders-filters-store";
@@ -114,15 +118,14 @@ export function PurchaseOrdersFilterDropdown({
 					<Separator />
 
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-po-status">
 						<Select
 							onValueChange={(value: PurchaseOrdersFilters["archiveStatus"]) =>
 								setLocalFilters({ ...localFilters, archiveStatus: value })
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-po-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -139,18 +142,20 @@ export function PurchaseOrdersFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Order Status */}
-					<div className="space-y-2">
-						<Label className="text-xs">Order Status</Label>
+					<StandardFormField
+						label="Order Status"
+						htmlFor="filter-po-order-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								setLocalFilters({ ...localFilters, status: value })
 							}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-po-order-status" className="h-9">
 								<SelectValue placeholder="All statuses" />
 							</SelectTrigger>
 							<SelectContent>
@@ -162,12 +167,12 @@ export function PurchaseOrdersFilterDropdown({
 								<SelectItem value="cancelled">Cancelled</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					{/* Vendor Name */}
-					<div className="space-y-2">
-						<Label className="text-xs">Vendor Name</Label>
+					<StandardFormField label="Vendor Name" htmlFor="filter-po-vendor">
 						<Input
+							id="filter-po-vendor"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({ ...localFilters, vendorName: e.target.value })
@@ -175,12 +180,12 @@ export function PurchaseOrdersFilterDropdown({
 							placeholder="Search by vendor..."
 							value={localFilters.vendorName}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Order Number */}
-					<div className="space-y-2">
-						<Label className="text-xs">Order Number</Label>
+					<StandardFormField label="Order Number" htmlFor="filter-po-number">
 						<Input
+							id="filter-po-number"
 							className="h-9"
 							onChange={(e) =>
 								setLocalFilters({
@@ -191,13 +196,13 @@ export function PurchaseOrdersFilterDropdown({
 							placeholder="Search by number..."
 							value={localFilters.orderNumber}
 						/>
-					</div>
+					</StandardFormField>
 
 					{/* Total Range */}
-					<div className="space-y-2">
-						<Label className="text-xs">Total Range</Label>
-						<div className="flex gap-2">
+					<StandardFormField label="Total Range" htmlFor="filter-po-total-min">
+						<StandardFormRow cols={2}>
 							<Input
+								id="filter-po-total-min"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, totalMin: e.target.value })
@@ -207,6 +212,7 @@ export function PurchaseOrdersFilterDropdown({
 								value={localFilters.totalMin}
 							/>
 							<Input
+								id="filter-po-total-max"
 								className="h-9"
 								onChange={(e) =>
 									setLocalFilters({ ...localFilters, totalMax: e.target.value })
@@ -215,8 +221,8 @@ export function PurchaseOrdersFilterDropdown({
 								type="number"
 								value={localFilters.totalMax}
 							/>
-						</div>
-					</div>
+						</StandardFormRow>
+					</StandardFormField>
 
 					<Separator />
 

@@ -128,10 +128,7 @@ function EquipmentCard({ item }: { item: EquipmentKanbanItem }) {
 				size="sm"
 				variant="ghost"
 			>
-				<Link
-					href={`/dashboard/work/equipment/${equipment.id}`}
-					prefetch={false}
-				>
+				<Link href={`/dashboard/work/equipment/${equipment.id}`}>
 					View asset
 					<ArrowUpRight className="size-3.5" />
 				</Link>

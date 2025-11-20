@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	Archive,
 	Building2,
 	Download,
 	Mail,
@@ -10,6 +11,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useState } from "react";
+import { archiveVendor } from "@/actions/vendors";
+import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +29,9 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
+import { useTableActions } from "@/hooks/use-table-actions";
+import { getRowHighlight } from "@/lib/datatable/rowHighlight";
+import { TablePresets } from "@/lib/datatable/table-presets";
 
 export type Vendor = {
 	id: string;
@@ -79,7 +86,10 @@ const categoryConfig: Record<string, { label: string; className: string }> = {
 	},
 };
 
-const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
+const getColumns = (
+	basePath: string,
+	openArchiveDialog: (id: string) => void,
+): ColumnDef<Vendor>[] => [
 	{
 		key: "vendor_number",
 		header: "Vendor #",
@@ -87,7 +97,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 		shrink: true,
 		render: (vendor) => (
 			<Link
-				className="text-foreground text-sm leading-tight font-medium hover:underline"
+				className="text-foreground text-xs leading-tight font-medium hover:underline"
 				href={`${basePath}/${vendor.id}`}
 				onClick={(e) => e.stopPropagation()}
 			>
@@ -102,7 +112,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 		render: (vendor) => (
 			<div className="flex flex-col">
 				<Link
-					className="text-foreground text-sm leading-tight font-medium hover:underline"
+					className="text-foreground text-xs leading-tight font-medium hover:underline"
 					href={`${basePath}/${vendor.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -126,7 +136,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 		shrink: true,
 		hideOnMobile: true,
 		render: (vendor) => (
-			<div className="flex flex-col gap-1 text-sm">
+			<div className="flex flex-col gap-1 text-xs">
 				{vendor.email && (
 					<div className="flex items-center gap-2">
 						<Mail className="text-muted-foreground h-3 w-3" />
@@ -209,13 +219,26 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 							View Purchase Orders
 						</Link>
 					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem
+						className="text-destructive"
+						onClick={() => {
+							openArchiveDialog(vendor.id);
+						}}
+					>
+						<Archive className="mr-2 size-4" />
+						Archive Vendor
+					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 		),
 	},
 ];
 
-const bulkActions: BulkAction[] = [
+const getBulkActions = (
+	setSelectedIds: (ids: Set<string>) => void,
+	openBulkArchiveDialog: (id: string) => void,
+): BulkAction[] => [
 	{
 		label: "Export Selected",
 		icon: <Download className="size-4" />,
@@ -226,6 +249,15 @@ const bulkActions: BulkAction[] = [
 		icon: <Pause className="size-4" />,
 		onClick: (_ids) => {},
 		variant: "ghost",
+	},
+	{
+		label: "Archive Selected",
+		icon: <Archive className="h-4 w-4" />,
+		variant: "destructive",
+		onClick: async (selectedIds) => {
+			setSelectedIds(selectedIds);
+			openBulkArchiveDialog("");
+		},
 	},
 ];
 
@@ -240,44 +272,93 @@ export function VendorTable({
 	basePath?: string;
 	toolbarActions?: ReactNode;
 }) {
-	const columns = getColumns(basePath);
+	// Table actions hook
+	const { handleRefresh } = useTableActions({ entityType: "vendors" });
+
+	// Archive dialog
+	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
+		onConfirm: async (id) => {
+			const result = await archiveVendor(id);
+			if (result.success) {
+				handleRefresh();
+			}
+		},
+		title: "Archive Vendor?",
+		description:
+			"This vendor will be archived and can be restored within 90 days.",
+	});
+
+	// Bulk archive state
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+	// Bulk archive dialog
+	const {
+		openArchiveDialog: openBulkArchiveDialog,
+		ArchiveDialogComponent: BulkArchiveDialogComponent,
+	} = useArchiveDialog({
+		onConfirm: async () => {
+			let archived = 0;
+			for (const id of selectedIds) {
+				const result = await archiveVendor(id);
+				if (result.success) {
+					archived++;
+				}
+			}
+			if (archived > 0) {
+				handleRefresh();
+			}
+		},
+		title: `Archive ${selectedIds.size} Vendor(s)?`,
+		description: `${selectedIds.size} vendor(s) will be archived and can be restored within 90 days.`,
+	});
+
+	const columns = getColumns(basePath, openArchiveDialog);
+	const bulkActions = getBulkActions(setSelectedIds, openBulkArchiveDialog);
 
 	return (
-		<FullWidthDataTable
-			bulkActions={bulkActions}
-			columns={columns}
-			data={vendors}
-			emptyAction={
-				<Button asChild>
-					<Link href={`${basePath}/new`}>
-						<Building2 className="mr-2 size-4" />
-						Add Vendor
-					</Link>
-				</Button>
-			}
-			emptyIcon={<Building2 className="text-muted-foreground h-12 w-12" />}
-			emptyMessage="No vendors found. Create your first vendor to get started."
-			getItemId={(vendor) => vendor.id}
-			itemsPerPage={itemsPerPage}
-			onRowClick={(vendor) => {
-				window.location.href = `${basePath}/${vendor.id}`;
-			}}
-			searchFilter={(vendor, query) => {
-				const searchable = [
-					vendor.name,
-					vendor.display_name,
-					vendor.vendor_number,
-					vendor.email,
-					vendor.phone,
-					vendor.category,
-				]
-					.filter(Boolean)
-					.join(" ")
-					.toLowerCase();
-				return searchable.includes(query);
-			}}
-			searchPlaceholder="Search vendors by name, number, email..."
-			toolbarActions={toolbarActions}
-		/>
+		<>
+			<FullWidthDataTable
+				{...TablePresets.fullList()}
+				bulkActions={bulkActions}
+				columns={columns}
+				data={vendors}
+				emptyAction={
+					<Button asChild>
+						<Link href={`${basePath}/new`}>
+							<Building2 className="mr-2 size-4" />
+							Add Vendor
+						</Link>
+					</Button>
+				}
+				emptyIcon={<Building2 className="text-muted-foreground h-12 w-12" />}
+				emptyMessage="No vendors found. Create your first vendor to get started."
+				getItemId={(vendor) => vendor.id}
+				onRefresh={handleRefresh}
+				onRowClick={(vendor) => {
+					window.location.href = `${basePath}/${vendor.id}`;
+				}}
+				searchFilter={(vendor, query) => {
+					const searchable = [
+						vendor.name,
+						vendor.display_name,
+						vendor.vendor_number,
+						vendor.email,
+						vendor.phone,
+						vendor.category,
+					]
+						.filter(Boolean)
+						.join(" ")
+						.toLowerCase();
+					return searchable.includes(query);
+				}}
+				searchPlaceholder="Search vendors by name, number, email..."
+				toolbarActions={toolbarActions}
+				isHighlighted={(vendor) => getRowHighlight(vendor).isHighlighted}
+				getHighlightClass={(vendor) => getRowHighlight(vendor).highlightClass}
+			/>
+
+			<ArchiveDialogComponent />
+			<BulkArchiveDialogComponent />
+		</>
 	);
 }

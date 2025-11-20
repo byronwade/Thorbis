@@ -29,14 +29,14 @@ export type TenDlcBrandPayload = {
 };
 
 export async function createTenDlcBrand(payload: TenDlcBrandPayload) {
-	return telnyxRequest<{ id: string }>("/10dlc/brand", {
+	return telnyxRequest<{ brandId: string; status: string }>("/10dlc/brand", {
 		method: "POST",
 		body: payload,
 	});
 }
 
 export async function getTenDlcBrand(brandId: string) {
-	return telnyxRequest<{ id: string; status: string }>(
+	return telnyxRequest<{ brandId: string; status: string }>(
 		`/10dlc/brand/${brandId}`,
 	);
 }
@@ -102,88 +102,4 @@ export async function attachNumberToCampaign(
 			},
 		},
 	);
-}
-
-/**
- * Toll-Free Verification Payload
- * Required fields as of January 1, 2026
- * @see https://developers.telnyx.com/docs/messaging/toll-free-verification
- */
-export type TollFreeVerificationPayload = {
-	// Business Information (Required)
-	businessName: string;
-	corporateWebsite: string;
-	businessAddr1: string;
-	businessCity: string;
-	businessState: string;
-	businessZip: string;
-
-	// Contact Information (Required)
-	businessContactFirstName: string;
-	businessContactLastName: string;
-	businessContactEmail: string;
-	businessContactPhone: string;
-
-	// Phone Numbers to Verify (Required)
-	phoneNumbers: Array<{ phoneNumber: string }>;
-
-	// Use Case Information (Required)
-	useCase: string; // e.g., "Account Notifications", "Customer Support", etc.
-	useCaseSummary: string;
-	productionMessageContent: string;
-	messageVolume: string; // e.g., "10000", "100000"
-
-	// Opt-in/Opt-out Workflow (Required)
-	optInWorkflow: string;
-	optInWorkflowImageURLs?: Array<{ url: string }>;
-
-	// Business Registration (Required as of Jan 1, 2026)
-	businessRegistrationNumber: string; // e.g., EIN number
-	businessRegistrationType: string; // e.g., "EIN", "VAT", "ABN", "SSN", "CRA"
-	businessRegistrationCountry: string; // ISO 3166-1 alpha-2 (e.g., "US")
-
-	// Optional Fields
-	entityType?:
-		| "SOLE_PROPRIETOR"
-		| "PRIVATE_PROFIT"
-		| "PUBLIC_PROFIT"
-		| "NON_PROFIT"
-		| "GOVERNMENT";
-	additionalInformation?: string;
-	doingBusinessAs?: string;
-	optInConfirmationResponse?: string;
-	helpMessageResponse?: string;
-	privacyPolicyURL?: string;
-	termsAndConditionURL?: string;
-	ageGatedContent?: boolean;
-	optInKeywords?: string;
-};
-
-/**
- * Submit toll-free verification request to Telnyx
- * This allows customers to send SMS from toll-free numbers
- * Approval typically takes 5 business days or less
- */
-export async function submitTollFreeVerification(
-	payload: TollFreeVerificationPayload,
-) {
-	return telnyxRequest<{
-		id: string;
-		status: string;
-		createdAt: string;
-	}>("/messaging_tollfree/verification/requests", {
-		method: "POST",
-		body: payload,
-	});
-}
-
-/**
- * Check the status of a toll-free verification request
- */
-export async function getTollFreeVerificationStatus(requestId: string) {
-	return telnyxRequest<{
-		id: string;
-		status: string;
-		phoneNumbers: Array<{ phoneNumber: string; status: string }>;
-	}>(`/messaging_tollfree/verification/requests/${requestId}`);
 }

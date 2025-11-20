@@ -13,10 +13,15 @@
 import {
 	Archive,
 	BarChart3,
+	Calendar,
 	Copy,
+	CreditCard,
 	Download,
 	FileText,
+	Mail,
+	MessageSquare,
 	MoreVertical,
+	Phone,
 	Printer,
 	Receipt,
 	Share2,
@@ -51,6 +56,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { useDialerStore } from "@/lib/stores/dialer-store";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
 
@@ -78,6 +84,7 @@ export function JobDetailToolbar({
 	const pathname = usePathname();
 	const router = useRouter();
 	const { toast } = useToast();
+	const openDialer = useDialerStore((state) => state.openDialer);
 	const jobId = pathname?.split("/").pop();
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -89,6 +96,14 @@ export function JobDetailToolbar({
 	const jobTags =
 		((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
 	const tagCount = customerTags.length + jobTags.length;
+
+	// Helper to get customer name
+	const getCustomerName = (cust: any) => {
+		return (
+			cust?.display_name ||
+			`${cust?.first_name || ""} ${cust?.last_name || ""}`.trim()
+		);
+	};
 
 	const handleArchive = async () => {
 		if (!jobId) {
@@ -114,11 +129,146 @@ export function JobDetailToolbar({
 		}
 	};
 
+	const handleCall = () => {
+		if (customer?.phone) {
+			// Open the WebRTC dialer dropdown in app header with customer info pre-filled
+			openDialer(customer.phone, customer.id, getCustomerName(customer));
+		} else {
+			toast.error("No phone number available");
+		}
+	};
+
+	const handleText = () => {
+		if (customer?.phone) {
+			router.push(
+				`/dashboard/communication/messages?phone=${customer.phone}&customerId=${customer.id}`,
+			);
+		} else {
+			toast.error("No phone number available");
+		}
+	};
+
+	const handleEmail = () => {
+		if (customer?.email) {
+			router.push(
+				`/dashboard/communication/email?email=${customer.email}&customerId=${customer.id}`,
+			);
+		} else {
+			toast.error("No email address available");
+		}
+	};
+
+	const handleExport = () => {
+		// Export job details to CSV
+		const csvData = [
+			["Field", "Value"],
+			["Job Number", job?.job_number || ""],
+			["Title", job?.title || ""],
+			["Status", job?.status || ""],
+			["Customer", customer?.display_name || ""],
+			["Phone", customer?.phone || ""],
+			["Email", customer?.email || ""],
+			[
+				"Created",
+				job?.created_at ? new Date(job.created_at).toLocaleDateString() : "",
+			],
+			[
+				"Total Revenue",
+				metrics?.totalRevenue ? `$${metrics.totalRevenue.toFixed(2)}` : "$0.00",
+			],
+		];
+
+		const csv = csvData
+			.map((row) => row.map((cell) => `"${cell}"`).join(","))
+			.join("\n");
+		const blob = new Blob([csv], { type: "text/csv" });
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `job-${job?.job_number || jobId}.csv`;
+		a.click();
+		window.URL.revokeObjectURL(url);
+		toast.success("Job exported to CSV");
+	};
+
+	const handlePrint = () => {
+		window.print();
+		toast.success("Opening print dialog...");
+	};
+
 	return (
 		<>
-			<div className="flex items-center gap-2">
-				{/* Quick Actions - Individual Buttons with consistent styling */}
+			<div className="flex items-center gap-1.5">
+				{/* Primary Actions */}
 				<TooltipProvider>
+					{/* Schedule Appointment */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button asChild size="sm" variant="outline">
+								<a href={`/dashboard/work/appointments/new?jobId=${jobId}`}>
+									<Calendar />
+									<span className="hidden md:inline">Schedule</span>
+								</a>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Schedule appointment</p>
+						</TooltipContent>
+					</Tooltip>
+
+					{/* Contact Dropdown */}
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button size="sm" variant="outline">
+								<Phone />
+								<span className="hidden md:inline">Contact</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start">
+							<DropdownMenuLabel>Contact Customer</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								disabled={!customer?.phone}
+								onClick={handleCall}
+							>
+								<Phone className="mr-2 size-3.5" />
+								{customer?.phone ? `Call ${customer.phone}` : "No phone number"}
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								disabled={!customer?.phone}
+								onClick={handleText}
+							>
+								<MessageSquare className="mr-2 size-3.5" />
+								{customer?.phone ? "Send text message" : "No phone number"}
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								disabled={!customer?.email}
+								onClick={handleEmail}
+							>
+								<Mail className="mr-2 size-3.5" />
+								{customer?.email
+									? `Email ${customer.email}`
+									: "No email address"}
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+
+					{/* Payment */}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button asChild size="sm" variant="outline">
+								<a href={`/dashboard/work/payments/new?jobId=${jobId}`}>
+									<CreditCard />
+									<span className="hidden md:inline">Payment</span>
+								</a>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Collect payment</p>
+						</TooltipContent>
+					</Tooltip>
+
+					{/* Invoice */}
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
@@ -129,10 +279,11 @@ export function JobDetailToolbar({
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Create invoice from this job</p>
+							<p>Create invoice</p>
 						</TooltipContent>
 					</Tooltip>
 
+					{/* Estimate */}
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
@@ -143,114 +294,84 @@ export function JobDetailToolbar({
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Create estimate from this job</p>
-						</TooltipContent>
-					</Tooltip>
-
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/new?cloneFrom=${jobId}`}>
-									<Copy />
-									<span className="hidden lg:inline">Clone</span>
-								</a>
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>
-							<p>Duplicate this job</p>
+							<p>Create estimate</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>
 
-				{/* Separator before Tags */}
-				<Separator className="h-8" orientation="vertical" />
-
-				{/* Tag Management */}
-				<TooltipProvider>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								className="h-8 gap-1.5"
-								onClick={() => setIsTagDialogOpen(true)}
-								size="sm"
-								variant="outline"
-							>
-								<Tags className="size-3.5" />
-								<span className="hidden lg:inline">Tags</span>
-								{tagCount > 0 && (
-									<Badge className="ml-1 h-5 px-1.5" variant="secondary">
-										{tagCount}
-									</Badge>
-								)}
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>
-							<p>Manage tags</p>
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-
-				{/* Archive Button - Red/Destructive */}
-				<TooltipProvider>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
-								onClick={() => setIsArchiveDialogOpen(true)}
-								size="sm"
-								variant="outline"
-							>
-								<Archive className="size-3.5" />
-								<span className="hidden lg:inline">Archive</span>
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>
-							<p>Archive this job</p>
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-
-				{/* Ellipsis Menu - Includes Statistics + Export/Print/Share */}
-				<Separator className="h-8" orientation="vertical" />
+				{/* Actions Dropdown */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button size="icon-sm" variant="outline">
+						<Button size="sm" variant="outline">
 							<MoreVertical />
-							<span className="sr-only">More actions</span>
+							<span className="hidden md:inline">Actions</span>
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-56">
-						<DropdownMenuLabel className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-							Actions
-						</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-
-						{/* Statistics - Only if available */}
+						{/* Statistics */}
 						{job && metrics && (
-							<>
-								<DropdownMenuItem onClick={() => setIsStatisticsOpen(true)}>
-									<BarChart3 className="mr-2 size-3.5" />
-									View Statistics
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
-							</>
+							<DropdownMenuItem onClick={() => setIsStatisticsOpen(true)}>
+								<BarChart3 className="mr-2 size-3.5" />
+								View Statistics
+							</DropdownMenuItem>
 						)}
 
-						{/* Export/Print/Share */}
-						<DropdownMenuItem>
+						{/* Tags */}
+						<DropdownMenuItem onClick={() => setIsTagDialogOpen(true)}>
+							<Tags className="mr-2 size-3.5" />
+							Manage Tags
+							{tagCount > 0 && (
+								<Badge className="ml-auto h-5 px-1.5" variant="secondary">
+									{tagCount}
+								</Badge>
+							)}
+						</DropdownMenuItem>
+
+						<DropdownMenuSeparator />
+
+						{/* Clone */}
+						<DropdownMenuItem
+							onClick={() =>
+								router.push(`/dashboard/work/new?cloneFrom=${jobId}`)
+							}
+						>
+							<Copy className="mr-2 size-3.5" />
+							Clone Job
+						</DropdownMenuItem>
+
+						{/* Export */}
+						<DropdownMenuItem onClick={handleExport}>
 							<Download className="mr-2 size-3.5" />
 							Export to CSV
 						</DropdownMenuItem>
-						<DropdownMenuItem>
+
+						{/* Print */}
+						<DropdownMenuItem onClick={handlePrint}>
 							<Printer className="mr-2 size-3.5" />
-							Print Job Details
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<Share2 className="mr-2 size-3.5" />
-							Share Job Link
+							Print Details
 						</DropdownMenuItem>
 
-						{/* Destructive Actions */}
+						{/* Share */}
+						<DropdownMenuItem
+							onClick={() => {
+								navigator.clipboard.writeText(window.location.href);
+								toast.success("Job link copied to clipboard");
+							}}
+						>
+							<Share2 className="mr-2 size-3.5" />
+							Share Link
+						</DropdownMenuItem>
+
+						<DropdownMenuSeparator />
+
+						{/* Archive */}
+						<DropdownMenuItem
+							className="text-destructive"
+							onClick={() => setIsArchiveDialogOpen(true)}
+						>
+							<Archive className="mr-2 size-3.5" />
+							Archive Job
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>

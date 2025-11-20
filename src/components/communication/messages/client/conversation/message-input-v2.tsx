@@ -244,15 +244,15 @@ export function MessageInputV2({
 		>
 			{/* Drag overlay */}
 			{isDragging && (
-				<div className="absolute inset-0 bg-primary/10 border-2 border-dashed border-primary rounded-lg z-50 flex items-center justify-center">
+				<div className="bg-primary/10 border-primary absolute inset-0 z-50 flex items-center justify-center rounded-lg border-2 border-dashed">
 					<div className="text-center">
-						<p className="text-lg font-semibold text-primary">
+						<p className="text-primary text-lg font-semibold">
 							Drop files here
 						</p>
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Images, videos, and PDFs supported
 						</p>
-						<p className="text-xs text-muted-foreground mt-2">
+						<p className="text-muted-foreground mt-2 text-xs">
 							Max {MAX_FILES} files • {MAX_TOTAL_SIZE_MB} MB total
 							{selectedFiles.length > 0 &&
 								` • ${MAX_FILES - selectedFiles.length} slots remaining`}
@@ -263,16 +263,16 @@ export function MessageInputV2({
 
 			{/* Attachment previews */}
 			{selectedFiles.length > 0 && (
-				<div className="px-4 pt-3 pb-2 border-t">
+				<div className="border-t px-4 pt-3 pb-2">
 					{/* Warning banner if near limits */}
 					{(isNearSizeLimit || isNearCountLimit) && (
-						<div className="mb-3 flex items-start gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-							<AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+						<div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-2">
+							<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500" />
 							<div className="flex-1 text-xs">
 								<p className="font-medium text-amber-700 dark:text-amber-400">
 									Approaching Telnyx MMS limits
 								</p>
-								<p className="text-amber-600/80 dark:text-amber-500/80 mt-0.5">
+								<p className="mt-0.5 text-amber-600/80 dark:text-amber-500/80">
 									{isNearCountLimit &&
 										`${selectedFiles.length}/${MAX_FILES} files`}
 									{isNearCountLimit && isNearSizeLimit && " • "}
@@ -283,38 +283,38 @@ export function MessageInputV2({
 						</div>
 					)}
 
-					<div className="flex gap-2 flex-wrap">
+					<div className="flex flex-wrap gap-2">
 						{selectedFiles.map((file, index) => (
 							<div
 								key={index}
-								className="relative group rounded-lg border bg-muted p-2 pr-8"
+								className="group bg-muted relative rounded-lg border p-2 pr-8"
 							>
 								<div className="flex items-center gap-2">
 									{file.type.startsWith("image/") ? (
 										<img
 											src={URL.createObjectURL(file)}
 											alt={file.name}
-											className="h-12 w-12 object-cover rounded"
+											className="h-12 w-12 rounded object-cover"
 										/>
 									) : (
-										<div className="h-12 w-12 flex items-center justify-center bg-background rounded">
+										<div className="bg-background flex h-12 w-12 items-center justify-center rounded">
 											<span className="text-xs font-medium">
 												{file.name.split(".").pop()?.toUpperCase()}
 											</span>
 										</div>
 									)}
 									<div className="min-w-0">
-										<p className="text-sm font-medium truncate max-w-[150px]">
+										<p className="max-w-[150px] truncate text-sm font-medium">
 											{file.name}
 										</p>
-										<p className="text-xs text-muted-foreground">
+										<p className="text-muted-foreground text-xs">
 											{(file.size / 1024).toFixed(1)} KB
 										</p>
 									</div>
 								</div>
 								<button
 									onClick={() => handleRemoveFile(index)}
-									className="absolute top-1 right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+									className="bg-destructive text-destructive-foreground absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
 								>
 									<X className="h-3 w-3" />
 								</button>
@@ -323,12 +323,12 @@ export function MessageInputV2({
 					</div>
 
 					{/* File count and size indicator */}
-					<div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+					<div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
 						<span>
 							{selectedFiles.length} file{selectedFiles.length === 1 ? "" : "s"}{" "}
 							• {totalFileSizeMB} MB
 						</span>
-						<span className="text-[10px]">
+						<span className="text-xxs">
 							Limit: {MAX_FILES} files, {MAX_TOTAL_SIZE_MB} MB total
 						</span>
 					</div>
@@ -336,7 +336,7 @@ export function MessageInputV2({
 			)}
 
 			{/* Template picker toolbar */}
-			<div className="px-4 py-2 border-t flex items-center justify-between gap-2">
+			<div className="flex items-center justify-between gap-2 border-t px-4 py-2">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
@@ -359,7 +359,7 @@ export function MessageInputV2({
 						>
 							<div>
 								<div className="font-medium">Greeting</div>
-								<div className="text-xs text-muted-foreground">
+								<div className="text-muted-foreground text-xs">
 									Thank you for contacting us! How can we help?
 								</div>
 							</div>
@@ -373,7 +373,7 @@ export function MessageInputV2({
 						>
 							<div>
 								<div className="font-medium">Follow-up</div>
-								<div className="text-xs text-muted-foreground">
+								<div className="text-muted-foreground text-xs">
 									We'll get back to you within 24 hours...
 								</div>
 							</div>
@@ -387,7 +387,7 @@ export function MessageInputV2({
 						>
 							<div>
 								<div className="font-medium">Appointment confirmation</div>
-								<div className="text-xs text-muted-foreground">
+								<div className="text-muted-foreground text-xs">
 									Your appointment has been scheduled...
 								</div>
 							</div>
@@ -395,12 +395,10 @@ export function MessageInputV2({
 					</DropdownMenuContent>
 				</DropdownMenu>
 
-				<div className="text-xs text-muted-foreground hidden sm:block">
-					<kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px]">
-						Enter
-					</kbd>{" "}
+				<div className="text-muted-foreground hidden text-xs sm:block">
+					<kbd className="bg-muted rounded px-1.5 py-0.5 text-xxs">Enter</kbd>{" "}
 					to send •{" "}
-					<kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px]">
+					<kbd className="bg-muted rounded px-1.5 py-0.5 text-xxs">
 						Shift+Enter
 					</kbd>{" "}
 					for new line

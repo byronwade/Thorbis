@@ -1,25 +1,22 @@
 /**
- * Work Page (Jobs) - PPR Enabled
+ * Work Page (Main Jobs List) - PPR Enabled
  *
  * Uses Partial Prerendering for instant page loads:
  * - Static shell renders instantly (5-20ms)
- * - Stats render instantly (static for now)
+ * - Stats render in toolbar (single-row inline)
  * - Table streams in (200-500ms)
  *
  * Performance: 8-20x faster than traditional SSR
+ *
+ * Note: This is the fallback route for /dashboard/work
+ * The main jobs route is now at /dashboard/work/jobs
  */
 
 import { Suspense } from "react";
 import { JobsData } from "@/components/work/jobs/jobs-data";
 import { JobsSkeleton } from "@/components/work/jobs/jobs-skeleton";
-import { JobsStats } from "@/components/work/jobs/jobs-stats";
 
-// Enable Partial Prerendering for this page (Next.js 16+)
-// PPR is now enabled globally via cacheComponents in next.config.ts
-// This export is no longer needed but kept for documentation
-// export const experimental_ppr = true;
-
-export default async function JobsPage({
+export default async function WorkPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string; search?: string }>;
@@ -28,10 +25,7 @@ export default async function JobsPage({
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Job Flow Pipeline - Static for now */}
-			<JobsStats />
-
-			{/* Jobs Table - Streams in after shell */}
+			{/* Stats now shown in toolbar - see WorkSectionLayout */}
 			<div className="flex-1 overflow-hidden">
 				<Suspense fallback={<JobsSkeleton />}>
 					<JobsData searchParams={params} />

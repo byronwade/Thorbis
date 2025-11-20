@@ -136,10 +136,10 @@ export function ThreadList({ currentUserId, onThreadSelect }: ThreadListProps) {
 	// Empty state
 	if (!isLoadingThreads && threads.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center h-full p-8 text-center">
-				<MessageCircle className="h-12 w-12 text-muted-foreground/50 mb-4" />
-				<h3 className="font-semibold text-lg mb-1">No conversations</h3>
-				<p className="text-sm text-muted-foreground">
+			<div className="flex h-full flex-col items-center justify-center p-8 text-center">
+				<MessageCircle className="text-muted-foreground/50 mb-4 h-12 w-12" />
+				<h3 className="mb-1 text-lg font-semibold">No conversations</h3>
+				<p className="text-muted-foreground text-sm">
 					Start a new message or adjust your filters
 				</p>
 			</div>
@@ -149,15 +149,15 @@ export function ThreadList({ currentUserId, onThreadSelect }: ThreadListProps) {
 	// Loading state
 	if (isLoadingThreads) {
 		return (
-			<div className="flex flex-col h-full">
+			<div className="flex h-full flex-col">
 				{Array.from({ length: 8 }).map((_, i) => (
-					<div key={i} className="px-3 py-3 border-b animate-pulse">
+					<div key={i} className="animate-pulse border-b px-3 py-3">
 						<div className="flex items-start gap-3">
-							<div className="h-10 w-10 rounded-full bg-muted" />
+							<div className="bg-muted h-10 w-10 rounded-full" />
 							<div className="flex-1 space-y-2">
-								<div className="h-4 bg-muted rounded w-3/4" />
-								<div className="h-3 bg-muted rounded w-1/2" />
-								<div className="h-3 bg-muted rounded w-full" />
+								<div className="bg-muted h-4 w-3/4 rounded" />
+								<div className="bg-muted h-3 w-1/2 rounded" />
+								<div className="bg-muted h-3 w-full rounded" />
 							</div>
 						</div>
 					</div>
@@ -192,7 +192,7 @@ export function ThreadList({ currentUserId, onThreadSelect }: ThreadListProps) {
 							ref={rowVirtualizer.measureElement}
 							className={cn(
 								"absolute top-0 left-0 w-full border-b",
-								isSelected && "border-l-2 border-l-primary",
+								isSelected && "border-l-primary border-l-2",
 							)}
 							style={{
 								transform: `translateY(${virtualItem.start}px)`,

@@ -23,8 +23,8 @@ export async function GET() {
 
 		// Get user profile from database
 		const { data: profile } = await supabase
-			.from("users")
-			.select("name, email, phone")
+			.from("profiles")
+			.select("full_name, email, phone")
 			.eq("id", user.id)
 			.single();
 

@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 
 export function LoginForm() {
 	const searchParams = useSearchParams();
@@ -162,8 +163,7 @@ export function LoginForm() {
 
 			{/* Login Form */}
 			<form className="space-y-4" onSubmit={handleSubmit}>
-				<div className="space-y-1">
-					<Label htmlFor="email">Email address*</Label>
+				<StandardFormField label="Email address" htmlFor="email" required>
 					<Input
 						disabled={isLoading}
 						id="email"
@@ -172,10 +172,9 @@ export function LoginForm() {
 						required
 						type="email"
 					/>
-				</div>
+				</StandardFormField>
 
-				<div className="space-y-1">
-					<Label htmlFor="password">Password*</Label>
+				<StandardFormField label="Password" htmlFor="password" required>
 					<div className="relative">
 						<Input
 							className="pr-9"
@@ -204,7 +203,7 @@ export function LoginForm() {
 							</span>
 						</Button>
 					</div>
-				</div>
+				</StandardFormField>
 
 				{/* Remember Me & Forgot Password */}
 				<div className="flex items-center justify-between">

@@ -20,13 +20,16 @@ import {
 	Wrench,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { updateEntityTags } from "@/actions/entity-tags";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
 } from "@/components/layout/detail-page-content-layout";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
+import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +38,7 @@ import {
 	UnifiedAccordionContent,
 	type UnifiedAccordionSection,
 } from "@/components/ui/unified-accordion";
+import { useSectionShortcuts } from "@/hooks/use-section-shortcuts";
 
 export type EquipmentData = {
 	equipment: any;
@@ -203,10 +207,139 @@ export function EquipmentPageContent({
 	} = entityData;
 
 	const [mounted, setMounted] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		setMounted(true);
 	}, []);
+
+	// Extract equipment tags from junction table (now included in RPC response)
+	const equipmentTags = useMemo(() => {
+		if (!equipment?.equipment_tags) return [];
+		return equipment.equipment_tags.map((et: any) => ({
+			id: et.id,
+			name: et.name,
+			slug: et.slug,
+			color: et.color,
+			category: et.category,
+			icon: et.icon,
+		}));
+	}, [equipment?.equipment_tags]);
+
+	// Keyboard shortcuts for section navigation (Ctrl+1 through Ctrl+9)
+	const sectionShortcuts = useMemo(
+		() => ({
+			"1": () => {
+				const element = document.querySelector(
+					'[data-section-id="equipment-details"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"2": () => {
+				const element = document.querySelector(
+					'[data-section-id="fleet-profile"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"3": () => {
+				const element = document.querySelector(
+					'[data-section-id="fleet-service"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"4": () => {
+				const element = document.querySelector(
+					'[data-section-id="installation"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"5": () => {
+				const element = document.querySelector(
+					'[data-section-id="last-service"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"6": () => {
+				const element = document.querySelector(
+					'[data-section-id="upcoming-maintenance"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"7": () => {
+				const element = document.querySelector('[data-section-id="warranty"]');
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"8": () => {
+				const element = document.querySelector(
+					'[data-section-id="service-history"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+			"9": () => {
+				const element = document.querySelector(
+					'[data-section-id="customer-details"]',
+				);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+					const trigger = element.querySelector("[data-accordion-trigger]");
+					if (trigger && trigger.getAttribute("data-state") === "closed") {
+						(trigger as HTMLElement).click();
+					}
+				}
+			},
+		}),
+		[],
+	);
+
+	useSectionShortcuts(sectionShortcuts);
 
 	const rawClassification =
 		(equipment.classification as
@@ -1336,6 +1469,41 @@ export function EquipmentPageContent({
 			});
 		}
 
+		// Tags Section - Always show
+		sections.push({
+			id: "tags",
+			title: "Tags",
+			icon: <Package className="size-4" />,
+			content: (
+				<UnifiedAccordionContent>
+					<div className="w-full">
+						<div className="bg-muted/50 rounded-md">
+							<div className="flex flex-col gap-3 p-4">
+								<span className="text-muted-foreground text-xs font-medium">
+									Organize equipment with tags:
+								</span>
+								<EntityTags
+									entityId={equipment.id}
+									entityType="equipment"
+									onUpdateTags={async (id, tags) => {
+										const result = await updateEntityTags(
+											"equipment",
+											id,
+											tags,
+										);
+										if (result.success) {
+											router.refresh();
+										}
+									}}
+									tags={equipmentTags}
+								/>
+							</div>
+						</div>
+					</div>
+				</UnifiedAccordionContent>
+			),
+		});
+
 		return sections;
 	}, [
 		assetCategoryLabel,
@@ -1351,6 +1519,8 @@ export function EquipmentPageContent({
 		isTool,
 		isVehicle,
 		typeLabel,
+		equipmentTags,
+		router,
 	]);
 
 	const relatedItems = useMemo(() => {

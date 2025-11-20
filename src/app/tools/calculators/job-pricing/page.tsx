@@ -28,6 +28,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 
 type LineItem = {
 	id: string;
@@ -169,11 +173,13 @@ export default function JobPricingCalculator() {
 						<CardContent className="space-y-4">
 							{materials.map((material, index) => (
 								<div
-									className="space-y-2 rounded-lg border p-3"
+									className="space-y-3 rounded-lg border p-3"
 									key={material.id}
 								>
 									<div className="flex items-center justify-between">
-										<Label className="text-sm">Item {index + 1}</Label>
+										<span className="text-sm font-medium">
+											Item {index + 1}
+										</span>
 										{materials.length > 1 && (
 											<Button
 												onClick={() => removeMaterial(material.id)}
@@ -184,17 +190,30 @@ export default function JobPricingCalculator() {
 											</Button>
 										)}
 									</div>
-									<Input
-										onChange={(e) =>
-											updateMaterial(material.id, "description", e.target.value)
-										}
-										placeholder="Material description"
-										value={material.description}
-									/>
-									<div className="grid grid-cols-2 gap-2">
-										<div>
-											<Label className="text-xs">Quantity</Label>
+									<StandardFormField
+										label="Material Description"
+										htmlFor={`material-desc-${material.id}`}
+									>
+										<Input
+											id={`material-desc-${material.id}`}
+											onChange={(e) =>
+												updateMaterial(
+													material.id,
+													"description",
+													e.target.value,
+												)
+											}
+											placeholder="Material description"
+											value={material.description}
+										/>
+									</StandardFormField>
+									<StandardFormRow cols={2}>
+										<StandardFormField
+											label="Quantity"
+											htmlFor={`material-qty-${material.id}`}
+										>
 											<Input
+												id={`material-qty-${material.id}`}
 												onChange={(e) =>
 													updateMaterial(
 														material.id,
@@ -205,10 +224,13 @@ export default function JobPricingCalculator() {
 												type="number"
 												value={material.quantity}
 											/>
-										</div>
-										<div>
-											<Label className="text-xs">Unit Cost ($)</Label>
+										</StandardFormField>
+										<StandardFormField
+											label="Unit Cost ($)"
+											htmlFor={`material-cost-${material.id}`}
+										>
 											<Input
+												id={`material-cost-${material.id}`}
 												onChange={(e) =>
 													updateMaterial(
 														material.id,
@@ -219,8 +241,8 @@ export default function JobPricingCalculator() {
 												type="number"
 												value={material.unitCost}
 											/>
-										</div>
-									</div>
+										</StandardFormField>
+									</StandardFormRow>
 									<div className="flex justify-between border-t pt-2 text-sm">
 										<span className="text-muted-foreground">Item Total:</span>
 										<span className="font-semibold">
@@ -251,42 +273,41 @@ export default function JobPricingCalculator() {
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-2">
-									<Label htmlFor="hours">Labor Hours</Label>
+								<StandardFormField label="Labor Hours" htmlFor="hours">
 									<Input
 										id="hours"
 										onChange={(e) => setLaborHours(e.target.value)}
 										type="number"
 										value={laborHours}
 									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="rate">Hourly Rate ($)</Label>
+								</StandardFormField>
+								<StandardFormField label="Hourly Rate ($)" htmlFor="rate">
 									<Input
 										id="rate"
 										onChange={(e) => setLaborRate(e.target.value)}
 										type="number"
 										value={laborRate}
 									/>
-								</div>
+								</StandardFormField>
 							</div>
 							<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">Labor Cost:</span>
 								<span className="font-semibold">${laborCost.toFixed(2)}</span>
 							</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="equipment">Equipment/Vehicle Cost ($)</Label>
+							<StandardFormField
+								label="Equipment/Vehicle Cost ($)"
+								htmlFor="equipment"
+							>
 								<Input
 									id="equipment"
 									onChange={(e) => setEquipmentCost(e.target.value)}
 									type="number"
 									value={equipmentCost}
 								/>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="overhead">Overhead (%)</Label>
+							<StandardFormField label="Overhead (%)" htmlFor="overhead">
 								<Input
 									id="overhead"
 									onChange={(e) => setOverheadPercent(e.target.value)}
@@ -296,10 +317,9 @@ export default function JobPricingCalculator() {
 								<p className="text-muted-foreground text-xs">
 									Applied to all direct costs (typically 10-20%)
 								</p>
-							</div>
+							</StandardFormField>
 
-							<div className="space-y-2">
-								<Label htmlFor="profit">Profit Margin (%)</Label>
+							<StandardFormField label="Profit Margin (%)" htmlFor="profit">
 								<Input
 									id="profit"
 									onChange={(e) => setProfitPercent(e.target.value)}
@@ -309,7 +329,7 @@ export default function JobPricingCalculator() {
 								<p className="text-muted-foreground text-xs">
 									Your desired profit (typically 15-30%)
 								</p>
-							</div>
+							</StandardFormField>
 						</CardContent>
 					</Card>
 				</div>

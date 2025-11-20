@@ -21,6 +21,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type CustomersFilters,
 	useCustomersFiltersStore,
@@ -122,8 +123,10 @@ export function CustomersFilterDropdown({
 
 				<div className="space-y-4 p-3">
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Archive Status</Label>
+					<StandardFormField
+						label="Archive Status"
+						htmlFor="filter-archive-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								handleLocalChange(
@@ -133,7 +136,7 @@ export function CustomersFilterDropdown({
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-archive-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -149,18 +152,20 @@ export function CustomersFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Customer Type */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Customer Type</Label>
+					<StandardFormField
+						label="Customer Type"
+						htmlFor="filter-customer-type"
+					>
 						<Select
 							onValueChange={(value) => handleLocalChange("type", value)}
 							value={localFilters.type}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-customer-type" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -169,18 +174,17 @@ export function CustomersFilterDropdown({
 								<SelectItem value="commercial">Commercial</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-status">
 						<Select
 							onValueChange={(value) => handleLocalChange("status", value)}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -189,49 +193,49 @@ export function CustomersFilterDropdown({
 								<SelectItem value="inactive">Inactive</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Name */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Name</Label>
+					<StandardFormField label="Name" htmlFor="filter-name">
 						<Input
+							id="filter-name"
 							className="h-9"
 							onChange={(e) => handleLocalChange("name", e.target.value)}
 							placeholder="Search by name..."
 							type="text"
 							value={localFilters.name}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Email */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Email</Label>
+					<StandardFormField label="Email" htmlFor="filter-email">
 						<Input
+							id="filter-email"
 							className="h-9"
 							onChange={(e) => handleLocalChange("email", e.target.value)}
 							placeholder="Search by email..."
 							type="text"
 							value={localFilters.email}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Phone */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Phone</Label>
+					<StandardFormField label="Phone" htmlFor="filter-phone">
 						<Input
+							id="filter-phone"
 							className="h-9"
 							onChange={(e) => handleLocalChange("phone", e.target.value)}
 							placeholder="Search by phone..."
 							type="text"
 							value={localFilters.phone}
 						/>
-					</div>
+					</StandardFormField>
 				</div>
 
 				<DropdownMenuSeparator />

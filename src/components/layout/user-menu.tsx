@@ -135,12 +135,14 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				>
 					<div className="relative">
 						<Avatar className="size-6 rounded-md">
-							<AvatarImage alt={user.name} src={user.avatar} />
+							<AvatarImage alt={user.name || user.email} src={user.avatar} />
 							<AvatarFallback className="rounded-md text-[10px]">
 								{user.name
-									.split(" ")
-									.map((n) => n[0])
-									.join("")}
+									? user.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")
+									: user.email?.substring(0, 2).toUpperCase() || "U"}
 							</AvatarFallback>
 						</Avatar>
 						<div className="absolute -right-0.5 -bottom-0.5">
@@ -148,7 +150,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						</div>
 					</div>
 					<span className="hidden text-sm font-medium md:inline-block">
-						{user.name.split(" ")[0]}
+						{user.name
+							? user.name.split(" ")[0]
+							: user.email?.split("@")[0] || "User"}
 					</span>
 					<span className="sr-only">User menu</span>
 				</button>
@@ -158,12 +162,14 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 					<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 						<div className="relative">
 							<Avatar className="size-8 rounded-lg">
-								<AvatarImage alt={user.name} src={user.avatar} />
+								<AvatarImage alt={user.name || user.email} src={user.avatar} />
 								<AvatarFallback className="rounded-lg">
 									{user.name
-										.split(" ")
-										.map((n) => n[0])
-										.join("")}
+										? user.name
+												.split(" ")
+												.map((n) => n[0])
+												.join("")
+										: user.email?.substring(0, 2).toUpperCase() || "U"}
 								</AvatarFallback>
 							</Avatar>
 							<div className="absolute -right-0.5 -bottom-0.5">
@@ -171,7 +177,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							</div>
 						</div>
 						<div className="grid flex-1 text-left text-sm leading-tight">
-							<span className="truncate font-semibold">{user.name}</span>
+							<span className="truncate font-semibold">
+								{user.name || user.email?.split("@")[0] || "User"}
+							</span>
 							<span className="truncate text-xs">{user.email}</span>
 						</div>
 					</div>

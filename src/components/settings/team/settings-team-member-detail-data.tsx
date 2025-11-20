@@ -47,7 +47,7 @@ export async function SettingsTeamMemberDetailData({
 	}
 
 	const { data: teamMember } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("*,user:users!user_id(*)")
 		.eq("id", teamMemberId)
 		.eq("company_id", activeCompanyId)

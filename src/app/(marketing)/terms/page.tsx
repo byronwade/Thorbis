@@ -1,9 +1,17 @@
+"use cache";
+export const cacheLife = "static";
+
 import Script from "next/script";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
 	siteUrl,
 } from "@/lib/seo/metadata";
+import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
+
+// Note: Caching is controlled by next.config.ts cacheLife configuration
+
+const termsKeywords = generateSemanticKeywords("terms of service");
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Terms of Service",
@@ -15,6 +23,9 @@ export const metadata = generateSEOMetadata({
 		"thorbis terms",
 		"thorbis agreement",
 		"field service software terms",
+		"terms of service",
+		"service agreement",
+		...termsKeywords.slice(0, 5),
 	],
 });
 

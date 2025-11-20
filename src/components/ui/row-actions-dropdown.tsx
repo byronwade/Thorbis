@@ -80,9 +80,7 @@ export function RowActionsDropdown({
 
 						const menuItem = action.href ? (
 							<DropdownMenuItem asChild key={index}>
-								<Link href={action.href} prefetch={false}>
-									{ActionContent}
-								</Link>
+								<Link href={action.href}>{ActionContent}</Link>
 							</DropdownMenuItem>
 						) : (
 							<DropdownMenuItem

@@ -29,6 +29,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+	StandardFormField,
+	StandardFormRow,
+} from "@/components/ui/standard-form-field";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -138,10 +142,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 						<CardDescription>Number and name customers see</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<div className="grid gap-4 md:grid-cols-2">
-							<div>
-								<Label className="flex items-center gap-2 text-sm font-medium">
-									SMS phone number
+						<StandardFormRow cols={2}>
+							<StandardFormField label="SMS phone number" htmlFor="sms-phone">
+								<div className="flex items-center gap-2 mb-2">
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<HelpCircle className="text-muted-foreground size-3" />
@@ -150,9 +153,12 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 											Provisioned number used to send all texts.
 										</TooltipContent>
 									</Tooltip>
-								</Label>
+									<span className="text-sm text-muted-foreground">
+										Provisioned number used to send all texts
+									</span>
+								</div>
 								<Input
-									className="mt-2"
+									id="sms-phone"
 									onChange={(event) =>
 										updateSetting("senderNumber", event.target.value)
 									}
@@ -160,42 +166,47 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 									type="tel"
 									value={settings.senderNumber}
 								/>
-								<p className="text-muted-foreground mt-1 text-xs">
+								<p className="text-muted-foreground text-xs">
 									Must match an active Telnyx or Twilio number.
 								</p>
-							</div>
-							<div>
-								<Label className="flex items-center gap-2 text-sm font-medium">
-									Provider
-								</Label>
-								<select
-									className="border-input bg-background mt-2 block w-full rounded-md border px-3 py-2 text-sm"
-									onChange={(event) =>
-										updateSetting(
-											"provider",
-											event.target.value as SmsSettingsState["provider"],
-										)
-									}
-									value={settings.provider}
+							</StandardFormField>
+							<div className="space-y-4">
+								<StandardFormField label="Provider" htmlFor="sms-provider">
+									<select
+										id="sms-provider"
+										className="border-input bg-background block w-full rounded-md border px-3 py-2 text-sm"
+										onChange={(event) =>
+											updateSetting(
+												"provider",
+												event.target.value as SmsSettingsState["provider"],
+											)
+										}
+										value={settings.provider}
+									>
+										<option value="telnyx">Telnyx</option>
+										<option value="twilio">Twilio</option>
+										<option value="other">Other</option>
+									</select>
+								</StandardFormField>
+								<StandardFormField
+									label="Provider API Key"
+									htmlFor="sms-api-key"
 								>
-									<option value="telnyx">Telnyx</option>
-									<option value="twilio">Twilio</option>
-									<option value="other">Other</option>
-								</select>
-								<Input
-									className="mt-3"
-									onChange={(event) =>
-										updateSetting("providerApiKey", event.target.value)
-									}
-									placeholder="Provider API key"
-									type="password"
-									value={settings.providerApiKey}
-								/>
-								<p className="text-muted-foreground mt-1 text-xs">
-									Stored securely; leave blank to keep existing.
-								</p>
+									<Input
+										id="sms-api-key"
+										onChange={(event) =>
+											updateSetting("providerApiKey", event.target.value)
+										}
+										placeholder="Provider API key"
+										type="password"
+										value={settings.providerApiKey}
+									/>
+									<p className="text-muted-foreground text-xs">
+										Stored securely; leave blank to keep existing.
+									</p>
+								</StandardFormField>
 							</div>
-						</div>
+						</StandardFormRow>
 					</CardContent>
 				</Card>
 
@@ -225,22 +236,23 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 						{settings.autoReplyEnabled && (
 							<>
 								<Separator />
-								<div>
-									<Label className="text-sm font-medium">
-										Auto-response message
-									</Label>
+								<StandardFormField
+									label="Auto-response message"
+									htmlFor="auto-response-msg"
+								>
 									<Textarea
-										className="mt-2 min-h-[120px] resize-none"
+										id="auto-response-msg"
+										className="min-h-[120px] resize-none"
 										onChange={(event) =>
 											updateSetting("autoReplyMessage", event.target.value)
 										}
-										placeholder="Thanks for texting! We’ll respond during business hours."
+										placeholder="Thanks for texting! We'll respond during business hours."
 										value={settings.autoReplyMessage}
 									/>
-									<p className="text-muted-foreground mt-1 text-xs">
+									<p className="text-muted-foreground text-xs">
 										Sent once per conversation when an incoming SMS is received.
 									</p>
-								</div>
+								</StandardFormField>
 							</>
 						)}
 					</CardContent>
@@ -281,20 +293,20 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 
 						<Separator />
 
-						<div>
-							<Label className="text-sm font-medium">Opt-out message</Label>
+						<StandardFormField label="Opt-out message" htmlFor="opt-out-msg">
 							<Textarea
-								className="mt-2 min-h-[80px] resize-none"
+								id="opt-out-msg"
+								className="min-h-[80px] resize-none"
 								onChange={(event) =>
 									updateSetting("optOutMessage", event.target.value)
 								}
 								value={settings.optOutMessage}
 							/>
-							<p className="text-muted-foreground mt-1 text-xs">
+							<p className="text-muted-foreground text-xs">
 								Displayed after any outgoing SMS when opt-out instructions are
 								enabled.
 							</p>
-						</div>
+						</StandardFormField>
 
 						<Separator />
 

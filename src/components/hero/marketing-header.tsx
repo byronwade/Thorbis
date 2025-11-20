@@ -281,7 +281,7 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 												</span>
 												{item.badge && (
 													<Badge
-														className="h-5 px-1.5 text-[10px] font-semibold"
+														className="h-5 px-1.5 text-xxs font-semibold"
 														variant="secondary"
 													>
 														{item.badge}
@@ -352,7 +352,7 @@ export function MarketingHeader() {
 				}
 
 				const { data: profile } = await supabase
-					.from("users")
+					.from("profiles")
 					.select("*")
 					.eq("id", user.id)
 					.single();
@@ -384,7 +384,7 @@ export function MarketingHeader() {
 
 				// Fetch user's companies
 				const { data: memberships } = await supabase
-					.from("team_members")
+					.from("company_memberships")
 					.select(
 						`
             company_id,
@@ -559,13 +559,14 @@ export function MarketingHeader() {
 							<DesktopNavItem key={section.label} section={section} />
 						))}
 						<Link
-							className="group bg-primary/10 text-primary hover:bg-primary/15 relative ml-2 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-all"
+							className="group bg-primary/10 text-primary hover:bg-primary/15 relative ml-2 inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-all"
 							href="/pricing"
 						>
 							Pricing
-							<Badge className="bg-primary text-primary-foreground h-4 px-1.5 text-[9px] font-bold">
-								$100/mo
+							<Badge className="bg-primary text-primary-foreground h-5 px-2 text-[10px] font-bold">
+								$200/mo
 							</Badge>
+							<span className="text-xs font-medium opacity-70">+ usage</span>
 						</Link>
 					</div>
 				</nav>
@@ -699,14 +700,14 @@ export function MarketingHeader() {
 															</span>
 															{item.badge && (
 																<Badge
-																	className="h-4 px-1.5 text-[9px] font-semibold"
+																	className="h-4 px-1.5 text-xxs font-semibold"
 																	variant="secondary"
 																>
 																	{item.badge}
 																</Badge>
 															)}
 														</div>
-														<p className="text-muted-foreground line-clamp-2 text-[11px] leading-relaxed">
+														<p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
 															{item.description}
 														</p>
 													</Link>
@@ -727,12 +728,12 @@ export function MarketingHeader() {
 									<span className="text-foreground text-sm font-semibold">
 										Pricing
 									</span>
-									<p className="text-muted-foreground text-[11px]">
-										Flat $100/mo base plus usage
+									<p className="text-muted-foreground text-xs">
+										Flat $200/mo base plus usage
 									</p>
 								</div>
-								<Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold">
-									$100/mo
+								<Badge className="bg-primary text-white px-2 py-1 text-xs font-bold">
+									$200/mo
 								</Badge>
 							</Link>
 						</div>
@@ -745,7 +746,7 @@ export function MarketingHeader() {
 										<p className="text-foreground text-xs font-semibold">
 											{userProfile.name}
 										</p>
-										<p className="text-muted-foreground text-[11px]">
+										<p className="text-muted-foreground text-xs">
 											{userProfile.email}
 										</p>
 									</div>

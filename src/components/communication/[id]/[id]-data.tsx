@@ -78,13 +78,13 @@ export async function CommunicationIdData({ id }: { id: string }) {
 		<div className="flex h-full flex-col gap-6">
 			<header className="flex flex-wrap items-center justify-between gap-3">
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">
+					<p className="text-muted-foreground text-xs uppercase">
 						Communication
 					</p>
 					<h1 className="text-2xl font-semibold">
 						{communication.subject || formatTitle(communication)}
 					</h1>
-					<p className="text-sm text-muted-foreground">
+					<p className="text-muted-foreground text-sm">
 						{formatDateTime(
 							new Date(
 								communication.created_at ??
@@ -113,7 +113,7 @@ export async function CommunicationIdData({ id }: { id: string }) {
 							<CardTitle>Message</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							<div className="text-sm text-muted-foreground">
+							<div className="text-muted-foreground text-sm">
 								<p>
 									<strong>From:</strong>{" "}
 									{renderAddress(
@@ -158,7 +158,7 @@ export async function CommunicationIdData({ id }: { id: string }) {
 							<CardContent className="space-y-4">
 								{conversationTimeline.map((message) => (
 									<div key={message.id} className="rounded-lg border px-4 py-3">
-										<div className="flex items-center justify-between text-xs text-muted-foreground">
+										<div className="text-muted-foreground flex items-center justify-between text-xs">
 											<span>
 												{message.direction === "outbound" ? "You" : "Customer"}
 											</span>
@@ -188,7 +188,7 @@ export async function CommunicationIdData({ id }: { id: string }) {
 									Download recording
 								</a>
 								{communication.call_duration ? (
-									<p className="text-xs text-muted-foreground">
+									<p className="text-muted-foreground text-xs">
 										Duration: {formatDuration(communication.call_duration)}
 									</p>
 								) : null}
@@ -408,7 +408,7 @@ function renderAttachments(attachments: any, compact = false) {
 								{attachment.name || attachment.url || `Attachment ${index + 1}`}
 							</p>
 							{attachment.type && (
-								<p className="text-xs text-muted-foreground">
+								<p className="text-muted-foreground text-xs">
 									{attachment.type}
 								</p>
 							)}
@@ -431,7 +431,7 @@ function renderAttachments(attachments: any, compact = false) {
 function renderMetadata(metadata: CommunicationRow["provider_metadata"]) {
 	if (!metadata || typeof metadata !== "object") {
 		return (
-			<p className="text-sm text-muted-foreground">
+			<p className="text-muted-foreground text-sm">
 				No provider metadata available.
 			</p>
 		);

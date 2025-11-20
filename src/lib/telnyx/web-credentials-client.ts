@@ -68,6 +68,11 @@ function persistCredential(credential: Credential) {
 function createPromise() {
 	const cached = loadFromStorage();
 	if (cached) {
+		console.log("🔑 Using cached WebRTC credentials:", {
+			username: cached.username,
+			expiresAt: new Date(cached.expires_at).toISOString(),
+			isExpired: cached.expires_at <= Date.now(),
+		});
 		const cachedResult: WebRTCCredentialsResult = {
 			success: true,
 			credential: cached,
@@ -77,16 +82,21 @@ function createPromise() {
 		return promise;
 	}
 
+	console.log("🔑 Fetching WebRTC credentials from server...");
 	const promise = getWebRTCCredentials()
 		.then((result) => {
+			console.log("🔑 WebRTC credentials response:", result);
 			if (result?.success && result.credential) {
+				console.log("🔑 Persisting new credentials to localStorage");
 				persistCredential(result.credential);
 			} else {
+				console.warn("🔑 Failed to get credentials, clearing cache");
 				credentialsPromise = null;
 			}
 			return result;
 		})
 		.catch((error) => {
+			console.error("🔑 WebRTC credentials fetch error:", error);
 			credentialsPromise = null;
 			throw error;
 		});

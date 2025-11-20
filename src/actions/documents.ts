@@ -71,7 +71,7 @@ async function verifyCompanyAccess(
 	}
 
 	const { data: membership, error } = await supabase
-		.from("team_members")
+		.from("company_memberships")
 		.select("id, role")
 		.eq("user_id", user.id)
 		.eq("company_id", companyId)

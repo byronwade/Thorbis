@@ -31,6 +31,11 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { notifyJobCreated } from "@/lib/notifications/triggers";
 import { createClient } from "@/lib/supabase/server";
+import {
+	type JobStatus,
+	type JobStatusTransitionContext,
+	validateStatusTransition,
+} from "@/lib/validations/job-status-transitions";
 
 // Regex constants
 const JOB_NUMBER_REGEX = /JOB-\d{4}-(\d+)/;
@@ -78,6 +83,8 @@ const updateJobSchema = z.object({
 			"on_hold",
 			"completed",
 			"cancelled",
+			"invoiced",
+			"paid",
 		])
 		.optional(),
 	priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
@@ -102,6 +109,9 @@ const updateJobSchema = z.object({
 	customerId: z.string().uuid("Invalid customer ID").optional().nullable(),
 	propertyId: z.string().uuid("Invalid property ID").optional().nullable(),
 });
+
+// Type for updateJobData - makes it easier to use programmatically
+export type UpdateJobData = z.infer<typeof updateJobSchema>;
 
 const scheduleJobSchema = z.object({
 	scheduledStart: z.string(),
@@ -615,7 +625,7 @@ export async function updateJob(
 
 		// Get user's role to check if they're admin/owner
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select(
 				`
         role_id,
@@ -711,6 +721,88 @@ export async function updateJob(
 			customerId: parsedCustomerId,
 			propertyId: parsedPropertyId,
 		});
+
+		// If status is being changed, validate the transition
+		if (data.status !== undefined && data.status !== existingJob.status) {
+			// Fetch additional context for status validation
+			const { data: jobWithContext } = await supabase
+				.from("jobs")
+				.select(
+					`
+					id,
+					status,
+					scheduled_start,
+					scheduled_end,
+					assigned_to,
+					customer_id,
+					property_id,
+					total_amount,
+					invoices:invoices(status, total_amount),
+					estimates:estimates(status),
+					team_assignments:job_team_assignments(team_member_id)
+				`,
+				)
+				.eq("id", jobId)
+				.single();
+
+			if (jobWithContext) {
+				const transitionContext: JobStatusTransitionContext = {
+					currentStatus: jobWithContext.status as JobStatus,
+					newStatus: data.status as JobStatus,
+					job: {
+						id: jobWithContext.id,
+						scheduled_start:
+							data.scheduledStart || jobWithContext.scheduled_start,
+						scheduled_end: data.scheduledEnd || jobWithContext.scheduled_end,
+						assigned_to:
+							data.assignedTo !== undefined
+								? data.assignedTo
+								: jobWithContext.assigned_to,
+						customer_id:
+							data.customerId !== undefined
+								? data.customerId
+								: jobWithContext.customer_id,
+						property_id:
+							data.propertyId !== undefined
+								? data.propertyId
+								: jobWithContext.property_id,
+						total_amount:
+							data.totalAmount !== undefined
+								? data.totalAmount
+								: jobWithContext.total_amount,
+						invoices: jobWithContext.invoices || [],
+						estimates: jobWithContext.estimates || [],
+						teamAssignments: jobWithContext.team_assignments || [],
+					},
+				};
+
+				const validationResult = validateStatusTransition(transitionContext);
+
+				if (!validationResult.allowed) {
+					let errorMessage =
+						validationResult.reason || "Status transition not allowed";
+
+					if (
+						validationResult.requiredFields &&
+						validationResult.requiredFields.length > 0
+					) {
+						errorMessage += `. Missing: ${validationResult.requiredFields.join(", ")}`;
+					}
+
+					throw new ActionError(errorMessage, ERROR_CODES.VALIDATION_FAILED);
+				}
+
+				// Log warnings if present (non-blocking)
+				if (validationResult.warnings && validationResult.warnings.length > 0) {
+					console.warn("⚠️ Status transition warnings:", {
+						jobId,
+						currentStatus: jobWithContext.status,
+						newStatus: data.status,
+						warnings: validationResult.warnings,
+					});
+				}
+			}
+		}
 
 		// Build core job update object with only defined values
 		const coreUpdateData: any = {};
@@ -820,6 +912,48 @@ export async function updateJob(
 }
 
 /**
+ * Update job with data object (easier for programmatic use)
+ * Used by job editor for in-place updates
+ */
+export async function updateJobData(
+	jobId: string,
+	data: Partial<UpdateJobData>,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		// Convert data object to FormData for compatibility with existing updateJob
+		const formData = new FormData();
+
+		// Add all defined fields to FormData
+		if (data.title !== undefined) formData.append("title", data.title);
+		if (data.description !== undefined)
+			formData.append("description", data.description);
+		if (data.status !== undefined) formData.append("status", data.status);
+		if (data.priority !== undefined) formData.append("priority", data.priority);
+		if (data.jobType !== undefined) formData.append("jobType", data.jobType);
+		if (data.notes !== undefined) formData.append("notes", data.notes);
+		if (data.totalAmount !== undefined)
+			formData.append("totalAmount", data.totalAmount.toString());
+		if (data.paidAmount !== undefined)
+			formData.append("paidAmount", data.paidAmount.toString());
+		if (data.depositAmount !== undefined)
+			formData.append("depositAmount", data.depositAmount.toString());
+		if (data.scheduledStart !== undefined)
+			formData.append("scheduledStart", data.scheduledStart);
+		if (data.scheduledEnd !== undefined)
+			formData.append("scheduledEnd", data.scheduledEnd);
+		if (data.assignedTo !== undefined)
+			formData.append("assignedTo", data.assignedTo || "");
+		if (data.customerId !== undefined)
+			formData.append("customerId", data.customerId || "");
+		if (data.propertyId !== undefined)
+			formData.append("propertyId", data.propertyId || "");
+
+		// Reuse existing updateJob logic
+		return await updateJob(jobId, formData);
+	});
+}
+
+/**
  * Update job status with validation
  * ✅ NO CHANGES NEEDED - Only updates jobs.status
  */
@@ -855,25 +989,42 @@ export async function updateJobStatus(
 		}
 
 		// Validate status value
-		const validStatuses = [
+		const validStatuses: JobStatus[] = [
 			"quoted",
 			"scheduled",
 			"in_progress",
 			"on_hold",
 			"completed",
 			"cancelled",
+			"invoiced",
+			"paid",
 		];
-		if (!validStatuses.includes(newStatus)) {
+		if (!validStatuses.includes(newStatus as JobStatus)) {
 			throw new ActionError(
 				"Invalid job status",
 				ERROR_CODES.VALIDATION_FAILED,
 			);
 		}
 
-		// Verify job belongs to company
+		// Fetch job with all context needed for transition validation
 		const { data: existingJob } = await supabase
 			.from("jobs")
-			.select("company_id, status")
+			.select(
+				`
+				id,
+				company_id,
+				status,
+				scheduled_start,
+				scheduled_end,
+				assigned_to,
+				customer_id,
+				property_id,
+				total_amount,
+				invoices:invoices(status, total_amount),
+				estimates:estimates(status),
+				team_assignments:job_team_assignments(team_member_id)
+			`,
+			)
 			.eq("id", jobId)
 			.single();
 
@@ -887,16 +1038,49 @@ export async function updateJobStatus(
 			);
 		}
 
-		// Prevent changing from completed or cancelled
-		if (
-			(existingJob.status === "completed" ||
-				existingJob.status === "cancelled") &&
-			existingJob.status !== newStatus
-		) {
-			throw new ActionError(
-				`Cannot change status of ${existingJob.status} job`,
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+		// Build context for transition validation
+		const transitionContext: JobStatusTransitionContext = {
+			currentStatus: existingJob.status as JobStatus,
+			newStatus: newStatus as JobStatus,
+			job: {
+				id: existingJob.id,
+				scheduled_start: existingJob.scheduled_start,
+				scheduled_end: existingJob.scheduled_end,
+				assigned_to: existingJob.assigned_to,
+				customer_id: existingJob.customer_id,
+				property_id: existingJob.property_id,
+				total_amount: existingJob.total_amount,
+				invoices: existingJob.invoices || [],
+				estimates: existingJob.estimates || [],
+				teamAssignments: existingJob.team_assignments || [],
+			},
+		};
+
+		// Validate transition with comprehensive business rules
+		const validationResult = validateStatusTransition(transitionContext);
+
+		if (!validationResult.allowed) {
+			let errorMessage =
+				validationResult.reason || "Status transition not allowed";
+
+			if (
+				validationResult.requiredFields &&
+				validationResult.requiredFields.length > 0
+			) {
+				errorMessage += `. Missing: ${validationResult.requiredFields.join(", ")}`;
+			}
+
+			throw new ActionError(errorMessage, ERROR_CODES.VALIDATION_FAILED);
+		}
+
+		// Log warnings if present (non-blocking)
+		if (validationResult.warnings && validationResult.warnings.length > 0) {
+			console.warn("⚠️ Status transition warnings:", {
+				jobId,
+				currentStatus: existingJob.status,
+				newStatus,
+				warnings: validationResult.warnings,
+			});
 		}
 
 		// Update status
@@ -911,6 +1095,12 @@ export async function updateJobStatus(
 				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
+
+		console.log("✅ Job status updated:", {
+			jobId,
+			oldStatus: existingJob.status,
+			newStatus,
+		});
 
 		revalidatePath("/dashboard/work");
 		revalidatePath(`/dashboard/work/${jobId}`);
@@ -971,7 +1161,7 @@ export async function assignJob(
 
 		// Verify technician belongs to company
 		const { data: technician } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("user_id")
 			.eq("user_id", technicianId)
 			.eq("company_id", companyId)
@@ -1371,7 +1561,7 @@ export async function searchJobs(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1420,7 +1610,7 @@ export async function searchAll(
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1475,7 +1665,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1576,7 +1766,7 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 		assertAuthenticated(user?.id);
 
 		const { data: teamMember } = await supabase
-			.from("team_members")
+			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
 			.single();
@@ -1726,5 +1916,218 @@ export async function removeTeamAssignment(
 		}
 		revalidatePath("/dashboard/schedule");
 		revalidatePath("/dashboard/work");
+	});
+}
+
+/**
+ * Assign Customer and Property to Job
+ *
+ * Updates the job's customer_id and property_id.
+ * Only one customer and property can be assigned per job.
+ *
+ * @param jobId - Job ID
+ * @param customerId - Customer ID to assign
+ * @param propertyId - Property ID to assign (optional)
+ */
+export async function assignCustomerToJob(
+	jobId: string,
+	customerId: string,
+	propertyId: string | null,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("company access"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify job exists and belongs to company
+		const { data: job, error: jobError } = await supabase
+			.from("jobs")
+			.select("id, company_id")
+			.eq("id", jobId)
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.single();
+
+		if (jobError) {
+			console.error("Job query error:", jobError);
+			throw new ActionError(
+				`Failed to find job: ${jobError.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+			);
+		}
+
+		assertExists(job, "Job");
+
+		// Verify customer exists and belongs to company
+		const { data: customer, error: customerError } = await supabase
+			.from("customers")
+			.select("id, company_id")
+			.eq("id", customerId)
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.single();
+
+		if (customerError) {
+			console.error("Customer query error:", customerError);
+			throw new ActionError(
+				`Failed to find customer: ${customerError.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+				500,
+			);
+		}
+
+		assertExists(customer, "Customer");
+
+		// If property is provided, verify it exists and belongs to customer
+		if (propertyId) {
+			const { data: property } = await supabase
+				.from("properties")
+				.select("id, customer_id")
+				.eq("id", propertyId)
+				.eq("customer_id", customerId)
+				.single();
+
+			if (!property) {
+				throw new ActionError(
+					"Property not found or does not belong to this customer",
+					ERROR_CODES.DB_RECORD_NOT_FOUND,
+					404,
+				);
+			}
+		}
+
+		// Update job with customer and property
+		const { error: updateError } = await supabase
+			.from("jobs")
+			.update({
+				customer_id: customerId,
+				property_id: propertyId,
+			})
+			.eq("id", jobId);
+
+		if (updateError) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("assign customer to job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Log activity
+		await supabase.from("job_activity_log").insert({
+			job_id: jobId,
+			company_id: companyId,
+			user_id: user.id,
+			activity_type: "assigned",
+			entity_type: "customer",
+			description: `Assigned customer${propertyId ? " and property" : ""}`,
+			metadata: {
+				customer_id: customerId,
+				property_id: propertyId,
+			},
+		});
+
+		revalidatePath(`/dashboard/work/${jobId}`);
+		revalidatePath("/dashboard/work");
+		revalidatePath("/dashboard/welcome");
+	});
+}
+
+/**
+ * Remove Customer and Property from Job
+ *
+ * Removes the customer_id and property_id from the job.
+ * Related data (appointments, invoices, etc.) remain but are no longer linked.
+ *
+ * @param jobId - Job ID
+ */
+export async function removeCustomerFromJob(
+	jobId: string,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("company access"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify job exists and belongs to company
+		const { data: job } = await supabase
+			.from("jobs")
+			.select("id, company_id, customer_id, property_id")
+			.eq("id", jobId)
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.single();
+
+		assertExists(job, "Job");
+
+		// Update job to remove customer and property
+		const { error: updateError } = await supabase
+			.from("jobs")
+			.update({
+				customer_id: null,
+				property_id: null,
+			})
+			.eq("id", jobId);
+
+		if (updateError) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("remove customer from job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Log activity
+		await supabase.from("job_activity_log").insert({
+			job_id: jobId,
+			company_id: companyId,
+			user_id: user.id,
+			activity_type: "removed",
+			entity_type: "customer",
+			description: "Removed customer and property",
+			metadata: {
+				previous_customer_id: job.customer_id,
+				previous_property_id: job.property_id,
+			},
+		});
+
+		revalidatePath(`/dashboard/work/${jobId}`);
+		revalidatePath("/dashboard/work");
+		revalidatePath("/dashboard/welcome");
 	});
 }

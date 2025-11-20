@@ -21,6 +21,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { StandardFormField } from "@/components/ui/standard-form-field";
 import {
 	type EstimatesFilters,
 	useEstimatesFiltersStore,
@@ -122,8 +123,10 @@ export function EstimatesFilterDropdown({
 
 				<div className="space-y-4 p-3">
 					{/* Archive Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Archive Status</Label>
+					<StandardFormField
+						label="Archive Status"
+						htmlFor="filter-estimates-archive-status"
+					>
 						<Select
 							onValueChange={(value) =>
 								handleLocalChange(
@@ -133,7 +136,10 @@ export function EstimatesFilterDropdown({
 							}
 							value={localFilters.archiveStatus}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger
+								id="filter-estimates-archive-status"
+								className="h-9"
+							>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -149,18 +155,17 @@ export function EstimatesFilterDropdown({
 								</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Status */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Status</Label>
+					<StandardFormField label="Status" htmlFor="filter-estimates-status">
 						<Select
 							onValueChange={(value) => handleLocalChange("status", value)}
 							value={localFilters.status}
 						>
-							<SelectTrigger className="h-9">
+							<SelectTrigger id="filter-estimates-status" className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -172,15 +177,18 @@ export function EstimatesFilterDropdown({
 								<SelectItem value="expired">Expired</SelectItem>
 							</SelectContent>
 						</Select>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Amount Range */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Amount Range</Label>
+					<StandardFormField
+						label="Amount Range"
+						htmlFor="filter-estimates-amount-min"
+					>
 						<div className="grid grid-cols-2 gap-2">
 							<Input
+								id="filter-estimates-amount-min"
 								className="h-9"
 								onChange={(e) => handleLocalChange("amountMin", e.target.value)}
 								placeholder="Min"
@@ -188,6 +196,7 @@ export function EstimatesFilterDropdown({
 								value={localFilters.amountMin}
 							/>
 							<Input
+								id="filter-estimates-amount-max"
 								className="h-9"
 								onChange={(e) => handleLocalChange("amountMax", e.target.value)}
 								placeholder="Max"
@@ -195,14 +204,17 @@ export function EstimatesFilterDropdown({
 								value={localFilters.amountMax}
 							/>
 						</div>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Customer Name */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Customer</Label>
+					<StandardFormField
+						label="Customer"
+						htmlFor="filter-estimates-customer-name"
+					>
 						<Input
+							id="filter-estimates-customer-name"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("customerName", e.target.value)
@@ -211,14 +223,17 @@ export function EstimatesFilterDropdown({
 							type="text"
 							value={localFilters.customerName}
 						/>
-					</div>
+					</StandardFormField>
 
 					<Separator />
 
 					{/* Estimate Number */}
-					<div className="space-y-2">
-						<Label className="text-xs font-medium">Estimate Number</Label>
+					<StandardFormField
+						label="Estimate Number"
+						htmlFor="filter-estimates-estimate-number"
+					>
 						<Input
+							id="filter-estimates-estimate-number"
 							className="h-9"
 							onChange={(e) =>
 								handleLocalChange("estimateNumber", e.target.value)
@@ -227,7 +242,7 @@ export function EstimatesFilterDropdown({
 							type="text"
 							value={localFilters.estimateNumber}
 						/>
-					</div>
+					</StandardFormField>
 				</div>
 
 				<DropdownMenuSeparator />
