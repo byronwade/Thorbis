@@ -194,7 +194,6 @@ Place assertion fns inside `it()` fn calls
 No shorthand assign when var appears on both sides
 No octal escape sequences in strings
 No `Object.prototype` builtins directly
-No `quickfix.biome` in editor settings
 No redeclaring vars, fns, classes, and types in same scope
 No redundant `use strict`
 No comparing where both sides are same
