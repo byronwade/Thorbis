@@ -162,7 +162,7 @@ export function SmsMessageInput({
     }, [handleSend]);
 
     return (
-        <div className="sticky bottom-0 border-t border-border/50 bg-card">
+        <div className="sticky bottom-0 bg-card">
             {/* Attachment Previews */}
             {attachments.length > 0 && (
                 <div className="border-b border-border/50 p-2">

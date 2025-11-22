@@ -263,13 +263,13 @@ export default function InvoicingPage() {
 								className="shadow-lg shadow-green-500/20"
 								size="lg"
 							>
-								<Link href="/register">
-									Start Saving Today
+								<Link href="/waitlist">
+									Join Waitlist
 									<Zap className="ml-2 size-4" />
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">Calculate Your Savings</Link>
+								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 					</div>
@@ -956,8 +956,8 @@ export default function InvoicingPage() {
 							className="bg-white text-green-600 shadow-lg hover:bg-white/90"
 							size="lg"
 						>
-							<Link href="/register">
-								Start Saving Today
+							<Link href="/waitlist">
+								Join Waitlist
 								<ArrowDownRight className="ml-2 size-4" />
 							</Link>
 						</Button>
@@ -967,7 +967,7 @@ export default function InvoicingPage() {
 							size="lg"
 							variant="outline"
 						>
-							<Link href="/contact">Calculate Your Savings</Link>
+							<Link href="/demo">Watch Demo</Link>
 						</Button>
 					</div>
 				</div>

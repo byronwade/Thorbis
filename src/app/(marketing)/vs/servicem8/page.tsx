@@ -83,7 +83,7 @@ export default async function ServiceM8VsPage() {
 						<p className="text-sm font-semibold text-white">Switch from ServiceM8 → Platform that works on all devices</p>
 					</div>
 					<Button asChild className="bg-white text-teal-600 hover:bg-teal-50 shadow-md" size="sm">
-						<Link href="/register">Start Free Trial →</Link>
+						<Link href="/waitlist">Join Waitlist →</Link>
 					</Button>
 				</div>
 			</div>
@@ -149,7 +149,7 @@ export default async function ServiceM8VsPage() {
 
 						<div className="flex flex-wrap justify-center gap-4">
 							<Button asChild className="bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 shadow-lg" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start Your Free 30-Day Trial
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1003,7 +1003,7 @@ export default async function ServiceM8VsPage() {
 								<p className="text-muted-foreground mx-auto mb-6 max-w-2xl">Our migration specialists handle the technical details so you can focus on running your business.</p>
 								<div className="flex flex-wrap justify-center gap-4">
 									<Button asChild size="lg">
-										<Link href="/register">Start Your Free Trial →</Link>
+										<Link href="/waitlist">Join Waitlist →</Link>
 									</Button>
 									<Button asChild size="lg" variant="outline">
 										<Link href="/contact">Talk to Migration Specialist</Link>
@@ -1068,7 +1068,7 @@ export default async function ServiceM8VsPage() {
 
 						<div className="mb-8 flex flex-wrap justify-center gap-4">
 							<Button asChild className="bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 shadow-lg" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start Your Free 30-Day Trial
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1077,7 +1077,7 @@ export default async function ServiceM8VsPage() {
 								<Link href="/demo">See Thorbis in Action</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">Talk to Sales</Link>
+								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
 						</div>
 

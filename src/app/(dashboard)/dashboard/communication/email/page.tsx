@@ -15,6 +15,7 @@ import {
     archiveAllEmailsAction,
     fetchEmailContentAction,
     getEmailsAction,
+    getEmailByIdAction,
     markEmailAsReadAction,
     toggleSpamEmailAction,
     toggleStarEmailAction,
@@ -26,29 +27,125 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
     AlertTriangle,
     Archive,
     ChevronLeft,
     ChevronRight,
     Forward,
+    Info,
+    Inbox,
     Loader2,
     Lock,
+    Mail,
     MoreHorizontal,
+    Plus,
     RefreshCw,
     Reply,
     ReplyAll,
     Star,
     StickyNote,
+    Trash2,
     X
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, useMemo } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
 import { PanelLeft } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { EmailListItem } from "@/components/communication/email-list-item";
+import { useOptimisticEmailActions } from "@/hooks/use-optimistic-email-actions";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+
+/**
+ * Safely extract full email address from various formats
+ * NEVER truncates - always returns the complete email address
+ * 
+ * Handles:
+ * - String: "email@domain.com" or "Name <email@domain.com>"
+ * - Array: ["email@domain.com"] or [{email: "email@domain.com", name: "Name"}]
+ * - Object: {email: "email@domain.com", name: "Name"}
+ * - Provider metadata fallback
+ */
+function extractFullEmailAddress(
+    value: unknown,
+    providerMetadata?: Record<string, unknown> | null,
+    metadataKey?: string
+): string {
+    // Extract email from "Name <email@domain.com>" format
+    const extractEmailFromFormat = (str: string): string => {
+        const emailMatch = str.match(/<([^>]+)>/); // Extract email from <email@domain.com>
+        if (emailMatch && emailMatch[1]) {
+            return emailMatch[1].trim();
+        }
+        // If no angle brackets, check if it's a valid email
+        if (str.includes("@") && str.length > 3) {
+            return str.trim();
+        }
+        return str.trim();
+    };
+
+    // Try direct value first
+    if (typeof value === "string" && value.length > 0) {
+        const extracted = extractEmailFromFormat(value);
+        if (extracted.length > 1 && extracted.includes("@")) {
+            return extracted;
+        }
+    }
+
+    // Handle array format
+    if (Array.isArray(value) && value.length > 0) {
+        const first = value[0];
+        if (typeof first === "string" && first.length > 0) {
+            const extracted = extractEmailFromFormat(first);
+            if (extracted.length > 1 && extracted.includes("@")) {
+                return extracted;
+            }
+        }
+        if (first && typeof first === "object" && "email" in first) {
+            const email = (first as { email?: string }).email;
+            if (email && typeof email === "string" && email.length > 0) {
+                return extractEmailFromFormat(email);
+            }
+        }
+    }
+
+    // Handle object format
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        const obj = value as Record<string, unknown>;
+        if ("email" in obj && typeof obj.email === "string" && obj.email.length > 0) {
+            return extractEmailFromFormat(obj.email);
+        }
+    }
+
+    // Fallback to provider metadata if available
+    if (providerMetadata && metadataKey) {
+        const metadataValue = providerMetadata[metadataKey];
+        if (metadataValue) {
+            const extracted = extractFullEmailAddress(metadataValue);
+            if (extracted && extracted.includes("@")) {
+                return extracted;
+            }
+        }
+    }
+
+    // Try extracting from provider_metadata.data if available
+    if (providerMetadata && typeof providerMetadata === "object") {
+        const data = (providerMetadata as any).data;
+        if (data && metadataKey && data[metadataKey]) {
+            const extracted = extractFullEmailAddress(data[metadataKey]);
+            if (extracted && extracted.includes("@")) {
+                return extracted;
+            }
+        }
+    }
+
+    return "Unknown";
+}
 
 export default function EmailPage() {
     const router = useRouter();
@@ -67,12 +164,27 @@ export default function EmailPage() {
     const [selectedEmail, setSelectedEmail] = useState<CompanyEmail | null>(null);
     const [emailContent, setEmailContent] = useState<{ html?: string | null; text?: string | null } | null>(null);
     const [loadingContent, setLoadingContent] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Use debounced hook instead of manual setTimeout
+    const searchQuery = useDebouncedValue(searchInput, 300);
     const selectedEmailRef = useRef<CompanyEmail | null>(null);
     const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const realtimeChannelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null);
+    const [companyId, setCompanyId] = useState<string | null>(null);
+    const mostRecentEmailTimeRef = useRef<string | null>(null);
     const { toggleSidebar } = useSidebar();
+
+    // Optimistic email actions hook
+    const {
+        emails: optimisticEmails,
+        isPending: isOptimisticPending,
+        updateEmails: updateOptimisticEmails,
+        optimisticStar,
+        optimisticToggleSpam,
+        optimisticArchive,
+        optimisticRead,
+        optimisticAdd,
+    } = useOptimisticEmailActions(emails);
 
     // Fetch emails function with optimistic loading
     const fetchEmails = useCallback(async (showRefreshing = false) => {
@@ -117,10 +229,27 @@ export default function EmailPage() {
                     };
                 });
                 
-                setEmails({
+                const updatedResult = {
                     ...result,
                     emails: normalizedEmails,
+                };
+                
+                setEmails(updatedResult);
+                // Update optimistic state immediately
+                updateOptimisticEmails(updatedResult);
+                
+                // Debug logging
+                console.log("📧 Fetched emails:", {
+                    count: normalizedEmails.length,
+                    folder,
+                    firstEmail: normalizedEmails[0]?.subject,
+                    total: updatedResult.total,
                 });
+                
+                // Track most recent email time for incremental fetching
+                if (normalizedEmails.length > 0) {
+                    mostRecentEmailTimeRef.current = normalizedEmails[0].created_at;
+                }
                 
                 // Update selected email if it still exists (preserve selection)
                 const currentSelected = selectedEmailRef.current;
@@ -147,29 +276,391 @@ export default function EmailPage() {
                 setRefreshing(false);
             }
         });
-    }, [searchQuery, folder]); // Removed selectedEmail from deps - using ref instead
+    }, [searchQuery, folder, updateOptimisticEmails]); // Removed selectedEmail from deps - using ref instead
+
+    // Helper function to check if an email matches the current folder
+    const emailMatchesFolder = useCallback((email: CompanyEmail & { is_archived?: boolean; deleted_at?: string | null; snoozed_until?: string | null; category?: string | null }, currentFolder: string): boolean => {
+        const tags = (email.tags as string[]) || [];
+        const isSpam = email.category === "spam" || tags.includes("spam");
+        const isStarred = tags.includes("starred");
+        const isArchived = (email as any).is_archived || false;
+        const isDeleted = !!(email as any).deleted_at;
+        const isDraft = email.status === "draft";
+        const now = new Date().toISOString();
+        const isSnoozed = (email as any).snoozed_until && (email as any).snoozed_until > now;
+
+        switch (currentFolder) {
+            case "inbox":
+                return email.direction === "inbound" && !isArchived && !isDeleted && !isDraft && !isSnoozed && !isSpam;
+            case "drafts":
+                return isDraft && !isDeleted && !isSpam;
+            case "sent":
+                return email.direction === "outbound" && !isArchived && !isDeleted && !isDraft && !isSpam;
+            case "archive":
+                return isArchived && !isDeleted;
+            case "snoozed":
+                return isSnoozed && !isDeleted && !isSpam;
+            case "spam":
+                return isSpam && !isDeleted;
+            case "trash":
+            case "bin":
+                return isDeleted;
+            case "starred":
+                return isStarred && !isDeleted && !isSpam;
+            default:
+                // Custom folder - check if tags include the folder name
+                return tags.includes(currentFolder) && !isDeleted && !isSpam;
+        }
+    }, []);
+
+    // Fetch company ID for real-time subscriptions
+    useEffect(() => {
+        async function fetchCompanyId() {
+            const supabase = createClient();
+            if (!supabase) return;
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                const { data, error } = await supabase
+                    .from("company_memberships")
+                    .select("company_id")
+                    .eq("user_id", user.id)
+                    .eq("status", "active")
+                    .order("updated_at", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (!error && data?.company_id) {
+                    setCompanyId(data.company_id);
+                }
+            } catch (err) {
+                console.error("Failed to fetch company ID:", err);
+            }
+        }
+        fetchCompanyId();
+    }, []);
+
+    // Real-time subscription for new emails and updates
+    useEffect(() => {
+        if (!companyId) return;
+
+        const supabase = createClient();
+        if (!supabase) return;
+
+        // Clean up existing subscription
+        if (realtimeChannelRef.current) {
+            supabase.removeChannel(realtimeChannelRef.current);
+        }
+
+        const channel = supabase
+            .channel(`emails:company:${companyId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "communications",
+                    filter: `company_id=eq.${companyId}`,
+                },
+                async (payload) => {
+                    const newEmail = payload.new as any;
+                    
+                    // Only process email type communications
+                    if (newEmail.type !== "email") return;
+                    
+                    // Check if email matches current folder
+                    try {
+                        const emailResult = await getEmailByIdAction(newEmail.id);
+                        if (emailResult.success && emailResult.email) {
+                            const email = emailResult.email;
+                            
+                            // Normalize to_address
+                            let parsedToAddress = email.to_address;
+                            if (typeof email.to_address === 'string') {
+                                const trimmed = email.to_address.trim();
+                                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                                    try {
+                                        const parsed = JSON.parse(email.to_address);
+                                        if (Array.isArray(parsed) && parsed.length > 0) {
+                                            parsedToAddress = parsed[0];
+                                        }
+                                    } catch (e) {
+                                        // Keep original if parsing fails
+                                    }
+                                }
+                            }
+                            const normalizedEmail = { ...email, to_address: parsedToAddress };
+                            
+                            // Only add if it matches the current folder and search query
+                            if (emailMatchesFolder(normalizedEmail, folder)) {
+                                // Check search query if present
+                                if (!searchQuery || 
+                                    normalizedEmail.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    normalizedEmail.from_address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    normalizedEmail.body?.toLowerCase().includes(searchQuery.toLowerCase())
+                                ) {
+                                    // Add to the beginning of the list (newest first)
+                                    setEmails(prev => {
+                                        if (!prev) return prev;
+                                        
+                                        // Check if email already exists (prevent duplicates)
+                                        if (prev.emails.some(e => e.id === normalizedEmail.id)) {
+                                            return prev;
+                                        }
+                                        
+                                        const updated = {
+                                            ...prev,
+                                            emails: [normalizedEmail, ...prev.emails],
+                                            total: prev.total + 1,
+                                        };
+                                        
+                                        // Update optimistic state too
+                                        updateOptimisticEmails(updated);
+                                        
+                                        return updated;
+                                    });
+                                    
+                                    // Update most recent email time
+                                    if (!mostRecentEmailTimeRef.current || normalizedEmail.created_at > mostRecentEmailTimeRef.current) {
+                                        mostRecentEmailTimeRef.current = normalizedEmail.created_at;
+                                    }
+                                    
+                                    // Dispatch event to update sidebar counts
+                                    window.dispatchEvent(new CustomEvent("email-read"));
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch new email:", err);
+                    }
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "communications",
+                    filter: `company_id=eq.${companyId}`,
+                },
+                async (payload) => {
+                    const updatedEmail = payload.new as any;
+                    const oldEmail = payload.old as any;
+                    
+                    // Only process email type communications
+                    if (updatedEmail.type !== "email") return;
+                    
+                    // Fetch full email data to get normalized format
+                    try {
+                        const emailResult = await getEmailByIdAction(updatedEmail.id);
+                        if (emailResult.success && emailResult.email) {
+                            const email = emailResult.email;
+                            
+                            // Normalize to_address
+                            let parsedToAddress = email.to_address;
+                            if (typeof email.to_address === 'string') {
+                                const trimmed = email.to_address.trim();
+                                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                                    try {
+                                        const parsed = JSON.parse(email.to_address);
+                                        if (Array.isArray(parsed) && parsed.length > 0) {
+                                            parsedToAddress = parsed[0];
+                                        }
+                                    } catch (e) {
+                                        // Keep original if parsing fails
+                                    }
+                                }
+                            }
+                            const normalizedEmail = { ...email, to_address: parsedToAddress };
+                            
+                            // Update emails list
+                            setEmails(prev => {
+                                if (!prev) return prev;
+                                
+                                const emailIndex = prev.emails.findIndex(e => e.id === normalizedEmail.id);
+                                const emailExists = emailIndex !== -1;
+                                const matchesFolder = emailMatchesFolder(normalizedEmail, folder);
+                                
+                                let updated;
+                                
+                                // If email exists in list
+                                if (emailExists) {
+                                    // If it no longer matches folder (e.g., was archived), remove it
+                                    if (!matchesFolder) {
+                                        updated = {
+                                            ...prev,
+                                            emails: prev.emails.filter(e => e.id !== normalizedEmail.id),
+                                            total: Math.max(0, prev.total - 1),
+                                        };
+                                    } else {
+                                        // Otherwise, update it in place
+                                        const updatedEmails = [...prev.emails];
+                                        updatedEmails[emailIndex] = normalizedEmail;
+                                        
+                                        updated = {
+                                            ...prev,
+                                            emails: updatedEmails,
+                                        };
+                                    }
+                                } else if (matchesFolder) {
+                                    // Email doesn't exist but now matches folder, add it
+                                    // Check search query if present
+                                    if (!searchQuery || 
+                                        normalizedEmail.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        normalizedEmail.from_address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        normalizedEmail.body?.toLowerCase().includes(searchQuery.toLowerCase())
+                                    ) {
+                                        updated = {
+                                            ...prev,
+                                            emails: [normalizedEmail, ...prev.emails],
+                                            total: prev.total + 1,
+                                        };
+                                    } else {
+                                        return prev; // Don't add if search doesn't match
+                                    }
+                                } else {
+                                    // Email doesn't match folder - don't add it
+                                    return prev;
+                                }
+                                
+                                // Update optimistic state too
+                                updateOptimisticEmails(updated);
+                                
+                                // Update selected email if it's the one being updated
+                                if (selectedEmail?.id === normalizedEmail.id) {
+                                    setSelectedEmail(normalizedEmail);
+                                }
+                                
+                                return updated;
+                            });
+                            
+                            // Dispatch event to update sidebar counts
+                            window.dispatchEvent(new CustomEvent("email-read"));
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch updated email:", err);
+                    }
+                }
+            )
+            .subscribe((status, err) => {
+                if (status === "SUBSCRIBED") {
+                    console.log("✅ Real-time email subscription active");
+                } else if (status === "CHANNEL_ERROR") {
+                    console.warn("⚠️ Real-time subscription channel error:", err);
+                } else if (status === "TIMED_OUT") {
+                    console.warn("⚠️ Real-time subscription timed out");
+                }
+                // CLOSED status is expected during cleanup/unmount - no need to log
+            });
+
+        realtimeChannelRef.current = channel;
+
+        return () => {
+            if (realtimeChannelRef.current) {
+                supabase.removeChannel(realtimeChannelRef.current);
+                realtimeChannelRef.current = null;
+            }
+        };
+    }, [companyId, folder, searchQuery, emailMatchesFolder, selectedEmail, updateOptimisticEmails]);
+
+    // Polling backup: Check for new emails every 60 seconds (reduced frequency for performance)
+    // Only runs if real-time subscription might have missed something
+    useEffect(() => {
+        if (!companyId || !mostRecentEmailTimeRef.current) return;
+
+        const pollForNewEmails = async () => {
+            try {
+                // Fetch only the latest 10 emails (smaller query for performance)
+                const result = await getEmailsAction({
+                    limit: 10,
+                    offset: 0,
+                    type: "all",
+                    folder: folder === "inbox" ? undefined : folder,
+                    search: searchQuery || undefined,
+                    sortBy: "created_at",
+                    sortOrder: "desc",
+                });
+
+                if (result.emails && result.emails.length > 0) {
+                    // Find emails newer than our most recent
+                    const newEmails = result.emails.filter(
+                        email => !mostRecentEmailTimeRef.current || email.created_at > mostRecentEmailTimeRef.current
+                    );
+
+                    if (newEmails.length > 0) {
+                        // Normalize to_address for new emails (memoize this)
+                        const normalizedNewEmails = newEmails.map(email => {
+                            let parsedToAddress = email.to_address;
+                            if (typeof email.to_address === 'string') {
+                                const trimmed = email.to_address.trim();
+                                if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                                    try {
+                                        const parsed = JSON.parse(email.to_address);
+                                        if (Array.isArray(parsed) && parsed.length > 0) {
+                                            parsedToAddress = parsed[0];
+                                        }
+                                    } catch (e) {
+                                        // Keep original if parsing fails
+                                    }
+                                }
+                            }
+                            return { ...email, to_address: parsedToAddress };
+                        });
+
+                        // Use optimistic add for instant UI updates
+                        normalizedNewEmails.forEach(email => {
+                            if (emailMatchesFolder(email, folder)) {
+                                optimisticAdd(email);
+                            }
+                        });
+
+                        // Also update regular state for consistency
+                        setEmails(prev => {
+                            if (!prev) return { emails: normalizedNewEmails, total: normalizedNewEmails.length, hasMore: false };
+                            
+                            const existingIds = new Set(prev.emails.map(e => e.id));
+                            const uniqueNewEmails = normalizedNewEmails.filter(e => !existingIds.has(e.id));
+                            
+                            if (uniqueNewEmails.length === 0) return prev;
+                            
+                            // Sort by created_at desc and add to beginning, keep only latest 50
+                            const allEmails = [...uniqueNewEmails, ...prev.emails]
+                                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                                .slice(0, 50);
+                            
+                            // Update most recent email time
+                            if (allEmails.length > 0) {
+                                mostRecentEmailTimeRef.current = allEmails[0].created_at;
+                            }
+                            
+                            return {
+                                ...prev,
+                                emails: allEmails,
+                                total: prev.total + uniqueNewEmails.length,
+                            };
+                        });
+                        
+                        // Dispatch event to update sidebar counts
+                        window.dispatchEvent(new CustomEvent("email-read"));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to poll for new emails:", err);
+            }
+        };
+
+        // Poll every 60 seconds (reduced from 30s for better performance)
+        const interval = setInterval(pollForNewEmails, 60000);
+        
+        return () => clearInterval(interval);
+    }, [companyId, folder, searchQuery, emailMatchesFolder, optimisticAdd]);
 
     // Initial fetch and refetch when folder or search changes
     useEffect(() => {
         fetchEmails();
-    }, [folder, searchQuery]);
-
-    // Handle search input with debounce
-    useEffect(() => {
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current);
-        }
-
-        searchTimeoutRef.current = setTimeout(() => {
-            setSearchQuery(searchInput);
-        }, 300);
-
-        return () => {
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current);
-            }
-        };
-    }, [searchInput]);
+    }, [folder, searchQuery, fetchEmails]);
 
     // Handle email selection - update URL but stay on same page (no refresh)
     const handleEmailSelect = useCallback((email: CompanyEmail) => {
@@ -222,20 +713,13 @@ export default function EmailPage() {
 
         // Optimistic update for read status (after content is set)
         if (!email.read_at) {
-            setEmails(prev => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    emails: prev.emails.map(e => 
-                        e.id === email.id ? { ...e, read_at: new Date().toISOString() } : e
-                    )
-                };
-            });
+            // Instant optimistic update
+            optimisticRead(email.id);
             // Mark as read in background (don't wait, don't reload list)
             markEmailAsReadAction({ emailId: email.id })
                 .then((result) => {
                     if (result.success) {
-                        // Only update the specific email in the list, don't reload everything
+                        // Update the email in state
                         setEmails(prev => {
                             if (!prev) return prev;
                             return {
@@ -249,13 +733,17 @@ export default function EmailPage() {
                         window.dispatchEvent(new CustomEvent("email-read"));
                     } else {
                         console.error("Failed to mark email as read:", { emailId: email.id, error: result.error });
+                        // Revert optimistic update on error
+                        fetchEmails(false);
                     }
                 })
                 .catch((err) => {
                     console.error("Error marking email as read:", { emailId: email.id, error: err });
+                    // Revert optimistic update on error
+                    fetchEmails(false);
                 });
         }
-    }, [router, folder]);
+    }, [router, folder, optimisticRead, fetchEmails]);
 
     // Load email from URL if ID is present (from path or query)
     // Only run if emailId changed and email isn't already selected (prevents double-loading)
@@ -307,19 +795,13 @@ export default function EmailPage() {
 
                 // Optimistic update for read status (after content is set)
                 if (!email.read_at) {
-                    setEmails(prev => {
-                        if (!prev) return prev;
-                        return {
-                            ...prev,
-                            emails: prev.emails.map(e => 
-                                e.id === email.id ? { ...e, read_at: new Date().toISOString() } : e
-                            )
-                        };
-                    });
+                    // Instant optimistic update
+                    optimisticRead(email.id);
+                    // Mark as read in background
                     markEmailAsReadAction({ emailId: email.id })
                         .then((result) => {
                             if (result.success) {
-                                // Only update the specific email in the list, don't reload everything
+                                // Update the email in state
                                 setEmails(prev => {
                                     if (!prev) return prev;
                                     return {
@@ -333,10 +815,14 @@ export default function EmailPage() {
                                 window.dispatchEvent(new CustomEvent("email-read"));
                             } else {
                                 console.error("Failed to mark email as read:", { emailId: email.id, error: result.error });
+                                // Revert optimistic update on error
+                                fetchEmails(false);
                             }
                         })
                         .catch((err) => {
                             console.error("Error marking email as read:", { emailId: email.id, error: err });
+                            // Revert optimistic update on error
+                            fetchEmails(false);
                         });
                 }
             } else if (!email) {
@@ -391,7 +877,7 @@ export default function EmailPage() {
             setEmailContent(null);
             setLoadingContent(false);
         }
-    }, [emailId, emails?.emails]);
+    }, [emailId, emails?.emails, optimisticRead, fetchEmails]);
 
     // Handle refresh
     const handleRefresh = useCallback(() => {
@@ -399,28 +885,59 @@ export default function EmailPage() {
         toast.success("Refreshing emails...");
     }, [fetchEmails]);
 
-    // Handle archive
+    // Handle archive - with optimistic updates
     const handleArchive = useCallback(async (emailId: string) => {
         try {
+            // Instant optimistic update - remove from list immediately
+            optimisticArchive(emailId);
+            
+            // Clear selection if archived email was selected - do this immediately
+            if (selectedEmail?.id === emailId) {
+                setSelectedEmail(null);
+                setEmailContent(null);
+                const params = new URLSearchParams();
+                if (folder && folder !== "inbox") params.set("folder", folder);
+                router.replace(`/dashboard/communication/email?${params.toString()}`, { scroll: false });
+            }
+            
+            // Execute server action in background
             const result = await archiveEmailAction(emailId);
             if (result.success) {
-                toast.success("Email archived");
-                // Refresh emails list
-                fetchEmails(false);
+                // Double-check: ensure email is removed from list if it somehow got re-added
+                setEmails(prev => {
+                    if (!prev) return prev;
+                    const stillExists = prev.emails.some(e => e.id === emailId);
+                    if (stillExists) {
+                        // Remove it and update optimistic state
+                        const updated = {
+                            ...prev,
+                            emails: prev.emails.filter(e => e.id !== emailId),
+                            total: Math.max(0, prev.total - 1),
+                        };
+                        updateOptimisticEmails(updated);
+                        return updated;
+                    }
+                    return prev;
+                });
+                
                 // Notify sidebar to refresh counts
                 window.dispatchEvent(new CustomEvent("email-read"));
             } else {
+                // Revert optimistic update on error
+                fetchEmails(false);
                 toast.error("Failed to archive email", { 
                     description: result.error || "Unknown error" 
                 });
             }
         } catch (err) {
             console.error("Failed to archive email:", err);
+            // Revert optimistic update on error
+            fetchEmails(false);
             toast.error("Failed to archive email", { 
                 description: err instanceof Error ? err.message : "Unknown error" 
             });
         }
-    }, [fetchEmails]);
+    }, [optimisticArchive, selectedEmail, folder, router, fetchEmails]);
 
     // Handle archive all
     const handleArchiveAll = useCallback(async () => {
@@ -461,66 +978,36 @@ export default function EmailPage() {
         }
     }, [emails, folder, fetchEmails]);
 
-    // Handle toggle spam (similar to star toggle)
+    // Handle toggle spam - with optimistic updates
     const handleToggleSpam = useCallback(async (emailId: string) => {
         try {
-            // Get the email being marked/unmarked as spam
-            const emailToUpdate = emails?.emails.find(e => e.id === emailId);
-            const currentTags = (emailToUpdate?.tags as string[]) || [];
-            const isSpam = currentTags.includes("spam") || emailToUpdate?.category === "spam";
-            const willBeSpam = !isSpam;
+            // Calculate the updated email state BEFORE optimistic update
+            // Read from both optimistic and regular state to get current email
+            const currentEmail = optimisticEmails?.emails.find(e => e.id === emailId) 
+                || emails?.emails.find(e => e.id === emailId) 
+                || selectedEmail;
+            const currentTags = (currentEmail?.tags as string[]) || [];
+            const isSpam = currentTags.includes("spam") || currentEmail?.category === "spam";
             
-            // Optimistic update - update tags and category in email list
-            setEmails(prev => {
-                if (!prev) return prev;
+            // Instant optimistic update - update list immediately
+            optimisticToggleSpam(emailId);
+            
+            // Update selected email immediately if it's the one being toggled
+            if (selectedEmail?.id === emailId && currentEmail) {
+                const updatedTags = isSpam 
+                    ? currentTags.filter(tag => tag !== "spam")
+                    : [...currentTags, "spam"];
                 
-                const updatedEmails = prev.emails.map(e => {
-                    if (e.id === emailId) {
-                        const newTags = willBeSpam 
-                            ? [...currentTags, "spam"]
-                            : currentTags.filter(tag => tag !== "spam");
-                        return { 
-                            ...e, 
-                            tags: newTags.length > 0 ? newTags : null,
-                            category: willBeSpam ? "spam" : null
-                        };
-                    }
-                    return e;
-                });
-                
-                // If viewing spam folder, filter the list immediately
-                if (folder === "spam") {
-                    const filteredEmails = updatedEmails.filter(e => {
-                        const tags = (e.tags as string[]) || [];
-                        return tags.includes("spam") || e.category === "spam";
-                    });
-                    
-                    return {
-                        ...prev,
-                        emails: filteredEmails,
-                        total: filteredEmails.length,
-                    };
-                }
-                
-                return {
-                    ...prev,
-                    emails: updatedEmails,
+                const updatedEmail: CompanyEmail = {
+                    ...currentEmail,
+                    tags: updatedTags.length > 0 ? updatedTags : undefined,
+                    category: isSpam ? null : "spam",
                 };
-            });
-            
-            // Update selected email if it's the one being toggled
-            if (selectedEmail?.id === emailId) {
-                const newTags = willBeSpam 
-                    ? [...currentTags, "spam"]
-                    : currentTags.filter(tag => tag !== "spam");
-                setSelectedEmail({ 
-                    ...selectedEmail, 
-                    tags: newTags.length > 0 ? newTags : null,
-                    category: willBeSpam ? "spam" : null
-                });
+                
+                setSelectedEmail(updatedEmail);
                 
                 // If unmarking spam and viewing spam folder, clear selection
-                if (folder === "spam" && !willBeSpam) {
+                if (folder === "spam" && isSpam) {
                     setSelectedEmail(null);
                     setEmailContent(null);
                     const params = new URLSearchParams();
@@ -529,9 +1016,57 @@ export default function EmailPage() {
                 }
             }
             
+            // Execute server action in background
             const result = await toggleSpamEmailAction(emailId);
             if (result.success) {
-                toast.success(willBeSpam ? "Email marked as spam" : "Email removed from spam");
+                // Update both emails and optimistic state immediately (don't wait for real-time)
+                setEmails(prev => {
+                    if (!prev) return prev;
+                    
+                    const emailIndex = prev.emails.findIndex(e => e.id === emailId);
+                    if (emailIndex === -1) return prev;
+                    
+                    const email = prev.emails[emailIndex];
+                    const tags = (email.tags as string[]) || [];
+                    const isCurrentlySpam = tags.includes("spam") || email.category === "spam";
+                    
+                    const updatedTags = isCurrentlySpam
+                        ? tags.filter(tag => tag !== "spam")
+                        : [...tags, "spam"];
+                    
+                    const updatedEmail: CompanyEmail = {
+                        ...email,
+                        tags: updatedTags.length > 0 ? updatedTags : undefined,
+                        category: isCurrentlySpam ? null : "spam",
+                    };
+                    
+                    const updatedEmails = [...prev.emails];
+                    updatedEmails[emailIndex] = updatedEmail;
+                    
+                    // Check if email still matches folder after update
+                    const matchesFolder = emailMatchesFolder(updatedEmail, folder);
+                    
+                    let updated;
+                    if (!matchesFolder) {
+                        // Remove from list if it no longer matches folder
+                        updated = {
+                            ...prev,
+                            emails: prev.emails.filter(e => e.id !== emailId),
+                            total: Math.max(0, prev.total - 1),
+                        };
+                    } else {
+                        updated = {
+                            ...prev,
+                            emails: updatedEmails,
+                        };
+                    }
+                    
+                    // Also update optimistic state with the same data
+                    updateOptimisticEmails(updated);
+                    
+                    return updated;
+                });
+                
                 // Notify sidebar to refresh counts immediately
                 window.dispatchEvent(new CustomEvent("email-read"));
             } else {
@@ -549,60 +1084,37 @@ export default function EmailPage() {
                 description: err instanceof Error ? err.message : "Unknown error" 
             });
         }
-    }, [fetchEmails, selectedEmail, folder, emails, router]);
+    }, [optimisticToggleSpam, optimisticEmails, emails, selectedEmail, folder, router, fetchEmails]);
 
-    // Handle star (using tags)
+    // Handle star (using tags) - with optimistic updates
     const handleStar = useCallback(async (emailId: string) => {
         try {
-            // Get the email being starred/unstarred
-            const emailToUpdate = emails?.emails.find(e => e.id === emailId);
-            const currentTags = (emailToUpdate?.tags as string[]) || [];
+            // Calculate the updated email state BEFORE optimistic update
+            // Read from both optimistic and regular state to get current email
+            const currentEmail = optimisticEmails?.emails.find(e => e.id === emailId) 
+                || emails?.emails.find(e => e.id === emailId) 
+                || selectedEmail;
+            const currentTags = (currentEmail?.tags as string[]) || [];
             const isStarred = currentTags.includes("starred");
-            const willBeStarred = !isStarred;
             
-            // Optimistic update - update tags in email list
-            setEmails(prev => {
-                if (!prev) return prev;
+            // Instant optimistic update - update list immediately
+            optimisticStar(emailId);
+            
+            // Update selected email immediately if it's the one being starred
+            if (selectedEmail?.id === emailId && currentEmail) {
+                const updatedTags = isStarred
+                    ? currentTags.filter(tag => tag !== "starred")
+                    : [...currentTags, "starred"];
                 
-                const updatedEmails = prev.emails.map(e => {
-                    if (e.id === emailId) {
-                        const newTags = willBeStarred 
-                            ? [...currentTags, "starred"]
-                            : currentTags.filter(tag => tag !== "starred");
-                        return { ...e, tags: newTags.length > 0 ? newTags : null };
-                    }
-                    return e;
-                });
-                
-                // If viewing starred folder, filter the list immediately
-                if (folder === "starred") {
-                    const filteredEmails = updatedEmails.filter(e => {
-                        const tags = (e.tags as string[]) || [];
-                        return tags.includes("starred");
-                    });
-                    
-                    return {
-                        ...prev,
-                        emails: filteredEmails,
-                        total: filteredEmails.length,
-                    };
-                }
-                
-                return {
-                    ...prev,
-                    emails: updatedEmails,
+                const updatedEmail: CompanyEmail = {
+                    ...currentEmail,
+                    tags: updatedTags.length > 0 ? updatedTags : undefined,
                 };
-            });
-            
-            // Update selected email if it's the one being starred
-            if (selectedEmail?.id === emailId) {
-                const newTags = willBeStarred 
-                    ? [...currentTags, "starred"]
-                    : currentTags.filter(tag => tag !== "starred");
-                setSelectedEmail({ ...selectedEmail, tags: newTags.length > 0 ? newTags : null });
+                
+                setSelectedEmail(updatedEmail);
                 
                 // If unstarring and viewing starred folder, clear selection
-                if (folder === "starred" && !willBeStarred) {
+                if (folder === "starred" && isStarred) {
                     setSelectedEmail(null);
                     setEmailContent(null);
                     const params = new URLSearchParams();
@@ -611,8 +1123,56 @@ export default function EmailPage() {
                 }
             }
             
+            // Execute server action in background
             const result = await toggleStarEmailAction(emailId);
             if (result.success) {
+                // Update the email in local state immediately (don't wait for real-time)
+                setEmails(prev => {
+                    if (!prev) return prev;
+                    
+                    const emailIndex = prev.emails.findIndex(e => e.id === emailId);
+                    if (emailIndex === -1) return prev;
+                    
+                    const email = prev.emails[emailIndex];
+                    const tags = (email.tags as string[]) || [];
+                    const isCurrentlyStarred = tags.includes("starred");
+                    
+                    const updatedTags = isCurrentlyStarred
+                        ? tags.filter(tag => tag !== "starred")
+                        : [...tags, "starred"];
+                    
+                    const updatedEmail: CompanyEmail = {
+                        ...email,
+                        tags: updatedTags.length > 0 ? updatedTags : undefined,
+                    };
+                    
+                    const updatedEmails = [...prev.emails];
+                    updatedEmails[emailIndex] = updatedEmail;
+                    
+                    // Check if email still matches folder after update
+                    const matchesFolder = emailMatchesFolder(updatedEmail, folder);
+                    
+                    let updated;
+                    if (!matchesFolder) {
+                        // Remove from list if it no longer matches folder (e.g., unstarred while viewing starred)
+                        updated = {
+                            ...prev,
+                            emails: prev.emails.filter(e => e.id !== emailId),
+                            total: Math.max(0, prev.total - 1),
+                        };
+                    } else {
+                        updated = {
+                            ...prev,
+                            emails: updatedEmails,
+                        };
+                    }
+                    
+                    // Also update optimistic state with the same data
+                    updateOptimisticEmails(updated);
+                    
+                    return updated;
+                });
+                
                 // Notify sidebar to refresh counts immediately
                 window.dispatchEvent(new CustomEvent("email-read"));
             } else {
@@ -630,7 +1190,107 @@ export default function EmailPage() {
                 description: err instanceof Error ? err.message : "Unknown error" 
             });
         }
-    }, [fetchEmails, selectedEmail, folder, emails, router]);
+    }, [optimisticStar, optimisticEmails, emails, selectedEmail, folder, router, fetchEmails]);
+
+    // Get empty state config based on folder
+    const getEmptyStateConfig = useCallback(() => {
+        const folderConfig = {
+            inbox: {
+                icon: Inbox,
+                title: searchQuery ? "No emails found" : "No emails in inbox",
+                description: searchQuery 
+                    ? "Try adjusting your search terms to find emails"
+                    : "Incoming emails will appear here when you receive them"
+            },
+            drafts: {
+                icon: StickyNote,
+                title: searchQuery ? "No drafts found" : "No drafts",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Draft emails you create will be saved here"
+            },
+            sent: {
+                icon: Mail,
+                title: searchQuery ? "No sent emails found" : "No sent emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Emails you send will appear here"
+            },
+            archive: {
+                icon: Archive,
+                title: searchQuery ? "No archived emails found" : "No archived emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Archived emails will appear here"
+            },
+            snoozed: {
+                icon: RefreshCw,
+                title: searchQuery ? "No snoozed emails found" : "No snoozed emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Emails you snooze will appear here"
+            },
+            spam: {
+                icon: AlertTriangle,
+                title: searchQuery ? "No spam emails found" : "No spam emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Emails marked as spam will appear here"
+            },
+            trash: {
+                icon: X,
+                title: searchQuery ? "No deleted emails found" : "No deleted emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Deleted emails will appear here"
+            },
+            starred: {
+                icon: Star,
+                title: searchQuery ? "No starred emails found" : "No starred emails",
+                description: searchQuery 
+                    ? "Try adjusting your search terms"
+                    : "Star emails to keep them here for easy access"
+            }
+        };
+        
+        return folderConfig[folder as keyof typeof folderConfig] || folderConfig.inbox;
+    }, [folder, searchQuery]);
+
+    // Memoized email list to prevent unnecessary re-renders
+    // Use optimisticEmails if available, fallback to emails if optimistic state is empty
+    // Also filter to ensure archived emails don't show in inbox
+    const emailsToDisplay = useMemo(() => {
+        const emailList = optimisticEmails?.emails && optimisticEmails.emails.length > 0 
+            ? optimisticEmails.emails 
+            : (emails?.emails || []);
+        
+        // Safety filter: ensure emails match current folder (double-check archived status)
+        if (folder === "inbox") {
+            return emailList.filter(email => {
+                const isArchived = (email as any).is_archived || false;
+                return !isArchived;
+            });
+        }
+        
+        return emailList;
+    }, [optimisticEmails?.emails, emails?.emails, folder]);
+    
+    const emailListItems = useMemo(() => {
+        if (!emailsToDisplay || emailsToDisplay.length === 0) {
+            return [];
+        }
+        return emailsToDisplay.map((email) => (
+            <EmailListItem
+                key={email.id}
+                email={email}
+                isSelected={selectedEmail?.id === email.id}
+                onSelect={handleEmailSelect}
+                onStar={handleStar}
+                onToggleSpam={handleToggleSpam}
+                onArchive={handleArchive}
+            />
+        ));
+    }, [emailsToDisplay, selectedEmail?.id, handleEmailSelect, handleStar, handleToggleSpam, handleArchive]);
 
     return (
         <div className="flex h-full w-full flex-col overflow-hidden bg-sidebar">
@@ -739,151 +1399,31 @@ export default function EmailPage() {
                                                     </Button>
                                                 </div>
                                             </div>
-                                        ) : emails?.emails?.length ? (
+                                        ) : emailListItems && emailListItems.length > 0 ? (
                                             <div className="min-h-[200px] px-2">
-                                                {emails.emails.map((email) => {
-                                                    const isSelected = selectedEmail?.id === email.id;
-                                                    return (
-                                                        <div
-                                                            key={email.id}
-                                                            className="select-none md:my-1"
-                                                        >
-                                                            <div
-                                                                className={`hover:bg-accent group flex cursor-pointer flex-col items-start rounded-lg py-2 text-left text-sm transition-all hover:opacity-100 relative ${
-                                                                    isSelected 
-                                                                        ? 'bg-accent opacity-100' 
-                                                                        : ''
-                                                                } ${!email.read_at ? 'opacity-100' : 'opacity-60'}`}
-                                                                onClick={() => handleEmailSelect(email)}
-                                                            >
-                                                                {/* Hover Action Toolbar */}
-                                                                <div 
-                                                                    className="dark:bg-panelDark absolute right-2 z-25 flex -translate-y-1/2 items-center gap-1 rounded-xl border bg-white p-1 opacity-0 shadow-sm group-hover:opacity-100 top-[-1] transition-opacity duration-200"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                >
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="h-6 w-6 overflow-visible p-0 hover:bg-accent group/star"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleStar(email.id);
-                                                                        }}
-                                                                        title={email.tags && Array.isArray(email.tags) && email.tags.includes("starred") ? "Unstar" : "Star"}
-                                                                    >
-                                                                        <Star className={cn(
-                                                                            "h-4 w-4 transition-colors group-hover/star:text-yellow-500 dark:group-hover/star:text-yellow-400",
-                                                                            email.tags && Array.isArray(email.tags) && email.tags.includes("starred")
-                                                                                ? "fill-yellow-500 text-yellow-500 dark:fill-yellow-400 dark:text-yellow-400"
-                                                                                : "text-muted-foreground"
-                                                                        )} />
-                                                                    </Button>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="h-6 w-6 p-0 hover:bg-accent group/spam"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleToggleSpam(email.id);
-                                                                        }}
-                                                                        title={email.tags && Array.isArray(email.tags) && email.tags.includes("spam") || email.category === "spam" ? "Remove from spam" : "Mark as spam"}
-                                                                    >
-                                                                        <AlertTriangle className={cn(
-                                                                            "h-4 w-4 transition-colors group-hover/spam:text-orange-500 dark:group-hover/spam:text-orange-400",
-                                                                            (email.tags && Array.isArray(email.tags) && email.tags.includes("spam")) || email.category === "spam"
-                                                                                ? "fill-orange-500 text-orange-500 dark:fill-orange-400 dark:text-orange-400"
-                                                                                : "text-muted-foreground"
-                                                                        )} />
-                                                                    </Button>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="h-6 w-6 p-0 hover:bg-accent group/archive"
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleArchive(email.id);
-                                                                        }}
-                                                                        title="Archive"
-                                                                    >
-                                                                        <Archive className="h-4 w-4 text-muted-foreground transition-colors group-hover/archive:text-blue-500 dark:group-hover/archive:text-blue-400" />
-                                                                    </Button>
-                                                                </div>
-
-                                                                {/* Email Card Content */}
-                                                                <div className="relative flex w-full items-center justify-between gap-4 px-2">
-                                                                    {/* Avatar */}
-                                                                    <Avatar className="h-8 w-8 shrink-0 rounded-full border">
-                                                                        <AvatarFallback className="bg-white dark:bg-[#373737] text-[#9F9F9D] font-bold text-xs">
-                                                                            {email.from_address?.[0]?.toUpperCase() || "U"}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-
-                                                                    {/* Email Info */}
-                                                                    <div className="flex w-full justify-between">
-                                                                        <div className="w-full">
-                                                                            {/* Sender Name + Time */}
-                                                                            <div className="flex w-full flex-row items-center justify-between">
-                                                                                <div className="flex flex-row items-center gap-[4px]">
-                                                                                    <span className={`font-${!email.read_at ? 'bold' : 'bold'} text-md flex items-baseline gap-1 group-hover:opacity-100`}>
-                                                                                        <div className="flex items-center gap-1">
-                                                                                            <span className="line-clamp-1 overflow-hidden text-sm">
-                                                                                                {email.from_address || email.from_name || "Unknown"}
-                                                                                            </span>
-                                                                                            {/* Unread Indicator */}
-                                                                                            {!email.read_at && (
-                                                                                                <span className="ml-0.5 size-2 rounded-full bg-[#006FFE]"></span>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </div>
-                                                                                <p className="text-muted-foreground text-nowrap text-xs font-normal opacity-70 transition-opacity group-hover:opacity-100 dark:text-[#8C8C8C]">
-                                                                                    {email.created_at ? new Date(email.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                                                                                </p>
-                                                                            </div>
-
-                                                                            {/* Subject */}
-                                                                            <div className="flex justify-between">
-                                                                                <p className="mt-1 line-clamp-1 w-[95%] min-w-0 overflow-hidden text-sm text-[#8C8C8C]">
-                                                                                    {email.subject || "No subject"}
-                                                                                </p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
+                                                {emailListItems}
                                             </div>
                                         ) : (
-                                            <div className="flex items-center justify-center p-8">
-                                                <div className="text-center">
-                                                    <svg
-                                                        width="64"
-                                                        height="64"
-                                                        viewBox="0 0 192 192"
-                                                        fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="mx-auto mb-4 opacity-50"
-                                                    >
-                                                        <rect
-                                                            width="192"
-                                                            height="192"
-                                                            rx="96"
-                                                            fill="#141414"
-                                                            fillOpacity="0.25"
-                                                        />
-                                                    </svg>
-                                                    <p className="text-sm font-medium text-muted-foreground mb-1">
-                                                        {searchQuery ? "No emails found" : "No emails yet"}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {searchQuery 
-                                                            ? "Try adjusting your search terms" 
-                                                            : "Emails will appear here when received"}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                            (() => {
+                                                const emptyConfig = getEmptyStateConfig();
+                                                const EmptyIcon = emptyConfig.icon;
+                                                
+                                                return (
+                                                    <div className="flex items-center justify-center p-8 min-h-[400px]">
+                                                        <div className="text-center space-y-3 max-w-sm mx-auto">
+                                                            <div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                                                                <EmptyIcon className="h-8 w-8 text-muted-foreground" />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <h3 className="text-lg font-semibold text-foreground">{emptyConfig.title}</h3>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {emptyConfig.description}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()
                                         )}
                                     </ScrollArea>
                                 </div>
@@ -892,29 +1432,30 @@ export default function EmailPage() {
                     </div>
                 </div>
 
-                {/* Email Detail - Right Panel (only shown when email is selected) */}
-                {selectedEmail && (
-                    <div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
-                        <div className="relative flex-1 min-h-0 flex flex-col">
-                            <div className="bg-card relative flex flex-col overflow-hidden transition-all duration-300 h-full flex-1 min-h-0">
-                                {/* Email Header Toolbar */}
-                                <div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
-                                    <div className="flex flex-1 items-center gap-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                const params = new URLSearchParams();
-                                                if (folder && folder !== "inbox") params.set("folder", folder);
-                                                router.push(`/dashboard/communication/email?${params.toString()}`, { scroll: false });
-                                            }}
-                                            className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors"
-                                        >
-                                            <X className="h-4 w-4 text-muted-foreground" />
-                                            <span className="sr-only">Close</span>
-                                        </Button>
-                                        <Separator orientation="vertical" className="h-4 bg-border/60" />
-                                    </div>
+                {/* Email Detail - Right Panel */}
+                <div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
+                    <div className="relative flex-1 min-h-0 flex flex-col">
+                        {selectedEmail ? (
+                            <>
+                                <div className="bg-card relative flex flex-col overflow-hidden transition-all duration-300 h-full flex-1 min-h-0">
+                                    {/* Email Header Toolbar */}
+                                    <div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
+                                        <div className="flex flex-1 items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const params = new URLSearchParams();
+                                                    if (folder && folder !== "inbox") params.set("folder", folder);
+                                                    router.push(`/dashboard/communication/email?${params.toString()}`, { scroll: false });
+                                                }}
+                                                className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors"
+                                            >
+                                                <X className="h-4 w-4 text-muted-foreground" />
+                                                <span className="sr-only">Close</span>
+                                            </Button>
+                                            <Separator orientation="vertical" className="h-4 bg-border/60" />
+                                        </div>
                                     <div className="flex items-center gap-1">
                                         <Button variant="ghost" size="sm" className="h-8 px-2 hover:bg-accent/80 active:bg-accent transition-colors">
                                             <ReplyAll className="h-4 w-4 mr-1.5 text-muted-foreground" />
@@ -982,14 +1523,38 @@ export default function EmailPage() {
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="h-9 w-9 shrink-0 rounded-md cursor-pointer">
                                                         <AvatarFallback className="bg-muted text-muted-foreground font-semibold text-sm rounded-md">
-                                                            {selectedEmail.from_address?.[0]?.toUpperCase() || "U"}
+                                                            {(() => {
+                                                                const customer = selectedEmail.customer as any;
+                                                                const displayName = customer?.display_name || 
+                                                                                   (customer?.first_name && customer?.last_name 
+                                                                                    ? `${customer.first_name} ${customer.last_name}` 
+                                                                                    : null) ||
+                                                                                   selectedEmail.from_name ||
+                                                                                   (typeof selectedEmail.from_address === 'string' ? selectedEmail.from_address : selectedEmail.from_address?.[0] || "");
+                                                                return displayName?.[0]?.toUpperCase() || "U";
+                                                            })()}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-semibold text-sm text-foreground">
-                                                                {selectedEmail.from_name || selectedEmail.from_address || "Unknown"}
+                                                                {(() => {
+                                                                    const customer = selectedEmail.customer as any;
+                                                                    if (customer?.display_name) {
+                                                                        return customer.display_name;
+                                                                    }
+                                                                    if (customer?.first_name && customer?.last_name) {
+                                                                        return `${customer.first_name} ${customer.last_name}`;
+                                                                    }
+                                                                    if (selectedEmail.from_name) {
+                                                                        return selectedEmail.from_name;
+                                                                    }
+                                                                    const fromAddr = typeof selectedEmail.from_address === 'string' 
+                                                                        ? selectedEmail.from_address 
+                                                                        : (Array.isArray(selectedEmail.from_address) ? selectedEmail.from_address[0] : selectedEmail.from_address);
+                                                                    return fromAddr || "Unknown";
+                                                                })()}
                                                             </span>
                                                             {!selectedEmail.read_at && (
                                                                 <div className="h-2 w-2 rounded-full bg-primary" />
@@ -1009,6 +1574,152 @@ export default function EmailPage() {
                                                                 minute: '2-digit'
                                                             })}
                                                         </span>
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                                                                    title="View email details"
+                                                                >
+                                                                    <Info className="h-4 w-4" />
+                                                                </Button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-[420px]" align="end">
+                                                                <div className="space-y-1 text-sm">
+                                                                    {/* From */}
+                                                                    {(() => {
+                                                                        const fromEmail = extractFullEmailAddress(
+                                                                            selectedEmail.from_address,
+                                                                            selectedEmail.provider_metadata,
+                                                                            "from"
+                                                                        );
+                                                                        const fromName = selectedEmail.from_name;
+                                                                        return (
+                                                                            <div className="flex">
+                                                                                <span className="w-24 text-end text-gray-500">From:</span>
+                                                                                <div className="ml-3">
+                                                                                    {fromName && fromName.length > 0 && fromName !== fromEmail && (
+                                                                                        <span className="text-muted-foreground text-nowrap pr-1 font-bold">
+                                                                                            {fromName}
+                                                                                        </span>
+                                                                                    )}
+                                                                                    <span className="text-muted-foreground text-nowrap break-all">
+                                                                                        {fromEmail}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+
+                                                                    {/* To */}
+                                                                    {(() => {
+                                                                        const toEmail = extractFullEmailAddress(
+                                                                            selectedEmail.to_address,
+                                                                            selectedEmail.provider_metadata,
+                                                                            "to"
+                                                                        );
+                                                                        return (
+                                                                            <div className="flex">
+                                                                                <span className="w-24 text-nowrap text-end text-gray-500">To:</span>
+                                                                                <span className="text-muted-foreground ml-3 text-nowrap break-all">
+                                                                                    {toEmail}
+                                                                                </span>
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+
+                                                                    {/* Reply To */}
+                                                                    {(() => {
+                                                                        const replyToEmail = extractFullEmailAddress(
+                                                                            selectedEmail.reply_to,
+                                                                            selectedEmail.provider_metadata,
+                                                                            "reply_to"
+                                                                        );
+                                                                        // Only show if we have a valid email (not "Unknown")
+                                                                        if (replyToEmail && replyToEmail !== "Unknown" && replyToEmail.includes("@")) {
+                                                                            return (
+                                                                                <div className="flex">
+                                                                                    <span className="w-24 text-nowrap text-end text-gray-500">Reply To:</span>
+                                                                                    <span className="text-muted-foreground ml-3 text-nowrap break-all">
+                                                                                        {replyToEmail}
+                                                                                    </span>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                        return null;
+                                                                    })()}
+
+                                                                    {/* Date */}
+                                                                    <div className="flex">
+                                                                        <span className="w-24 text-end text-gray-500">Date:</span>
+                                                                        <span className="text-muted-foreground ml-3 text-nowrap">
+                                                                            {new Date(selectedEmail.created_at).toLocaleString('en-US', {
+                                                                                month: 'short',
+                                                                                day: 'numeric',
+                                                                                year: 'numeric',
+                                                                                hour: 'numeric',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: true
+                                                                            })}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {/* Mailed-By */}
+                                                                    {(() => {
+                                                                        const mailedByEmail = extractFullEmailAddress(
+                                                                            selectedEmail.from_address,
+                                                                            selectedEmail.provider_metadata,
+                                                                            "from"
+                                                                        );
+                                                                        return (
+                                                                            <div className="flex">
+                                                                                <span className="w-24 text-end text-gray-500">Mailed-By:</span>
+                                                                                <span className="text-muted-foreground ml-3 text-nowrap break-all">
+                                                                                    {mailedByEmail}
+                                                                                </span>
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+
+                                                                    {/* Signed-By */}
+                                                                    {(() => {
+                                                                        const signedByEmail = extractFullEmailAddress(
+                                                                            selectedEmail.from_address,
+                                                                            selectedEmail.provider_metadata,
+                                                                            "from"
+                                                                        );
+                                                                        return (
+                                                                            <div className="flex">
+                                                                                <span className="w-24 text-end text-gray-500">Signed-By:</span>
+                                                                                <span className="text-muted-foreground ml-3 text-nowrap break-all">
+                                                                                    {signedByEmail}
+                                                                                </span>
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+
+                                                                    {/* Security */}
+                                                                    <div className="flex items-center">
+                                                                        <span className="w-24 text-end text-gray-500">Security:</span>
+                                                                        <div className="text-muted-foreground ml-3 flex items-center gap-1">
+                                                                            {selectedEmail.category === 'spam' || (selectedEmail.tags && Array.isArray(selectedEmail.tags) && selectedEmail.tags.includes('spam')) ? (
+                                                                                <>
+                                                                                    <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                                                                                    <span className="text-orange-600 dark:text-orange-400">Marked as spam</span>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Lock className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                                                                    <span>Standard encryption (TLS)</span>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1033,30 +1744,73 @@ export default function EmailPage() {
                                                 )}
                                             </div>
                                             
-                                            {/* Reply Action Bar */}
-                                            <div className="px-2 py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <Button variant="default" size="sm" className="h-9 px-4">
-                                                        <Reply className="h-4 w-4 mr-2" />
-                                                        Reply
-                                                    </Button>
-                                                    <Button variant="outline" size="sm" className="h-9 px-4">
-                                                        <ReplyAll className="h-4 w-4 mr-2" />
-                                                        Reply All
-                                                    </Button>
-                                                    <Button variant="outline" size="sm" className="h-9 px-4">
-                                                        <Forward className="h-4 w-4 mr-2" />
-                                                        Forward
-                                                    </Button>
-                                                </div>
-                                            </div>
+                                    {/* Reply Action Bar */}
+                                    <div className="px-2 py-4">
+                                        <div className="flex items-center gap-2">
+                                            <Button variant="default" size="sm" className="h-9 px-4">
+                                                <Reply className="h-4 w-4 mr-2" />
+                                                Reply
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="h-9 px-4">
+                                                <ReplyAll className="h-4 w-4 mr-2" />
+                                                Reply All
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="h-9 px-4">
+                                                <Forward className="h-4 w-4 mr-2" />
+                                                Forward
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                )}
+                </>
+            ) : (
+                /* Empty State - No Email Selected */
+                <div className="flex flex-col items-center justify-center h-full px-4 py-8">
+                    <div className="text-center space-y-4 max-w-md">
+                        <svg
+                            width="64"
+                            height="64"
+                            viewBox="0 0 192 192"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="mx-auto opacity-50"
+                        >
+                            <rect
+                                width="192"
+                                height="192"
+                                rx="96"
+                                fill="#141414"
+                                fillOpacity="0.25"
+                            />
+                        </svg>
+                        <div className="space-y-2">
+                            <h3 className="text-lg font-semibold text-foreground">No email selected</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Select an email from the list to view its contents, or create a new email to get started.
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => {
+                                if (typeof window !== "undefined") {
+                                    window.dispatchEvent(new CustomEvent("open-recipient-selector", { 
+                                        detail: { type: "email" } 
+                                    }));
+                                }
+                            }}
+                            className="mt-4"
+                            size="lg"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create new email
+                        </Button>
+                    </div>
+                </div>
+            )}
+                    </div>
+                </div>
             </div>
         </div>
     );

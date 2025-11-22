@@ -118,7 +118,7 @@ export default function ContactPage() {
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild variant="outline">
 							<a href="https://status.thorbis.com" rel="noopener">

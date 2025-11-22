@@ -209,7 +209,7 @@ export default function ImplementationPage() {
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
 							<Link href="/switch">Explore migration center</Link>
@@ -359,7 +359,7 @@ export default function ImplementationPage() {
 											))}
 										</ul>
 										<Button asChild variant="outline">
-											<Link href="/register">Get started</Link>
+											<Link href="/waitlist">Get started</Link>
 										</Button>
 									</CardContent>
 								</Card>
@@ -417,7 +417,7 @@ export default function ImplementationPage() {
 						</div>
 						<div className="flex flex-wrap justify-center gap-3">
 							<Button asChild>
-								<Link href="/register">Start implementation planning</Link>
+								<Link href="/waitlist">Start implementation planning</Link>
 							</Button>
 							<Button asChild variant="outline">
 								<Link href="/free-tools">Download rollout templates</Link>

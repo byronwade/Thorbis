@@ -43,7 +43,7 @@ async function VerifyEmailContent({ token }: { token: string }) {
 							<a href="/login">Go to Login</a>
 						</Button>
 						<Button asChild className="w-full" variant="outline">
-							<a href="/register">Sign Up Again</a>
+							<a href="/waitlist">Join Waitlist</a>
 						</Button>
 					</div>
 				</CardContent>

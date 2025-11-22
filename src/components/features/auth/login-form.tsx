@@ -234,7 +234,7 @@ export function LoginForm() {
 			{/* Sign Up Link */}
 			<p className="text-muted-foreground text-center">
 				New to Thorbis?{" "}
-				<Link className="text-foreground hover:underline" href="/register">
+				<Link className="text-foreground hover:underline" href="/waitlist">
 					Create an account
 				</Link>
 			</p>

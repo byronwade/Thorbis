@@ -85,7 +85,7 @@ export default async function FieldEdgeVsPage() {
 						</p>
 					</div>
 					<Button asChild className="bg-white text-purple-600 hover:bg-purple-50 shadow-md" size="sm">
-						<Link href="/register">Start Free Trial →</Link>
+						<Link href="/waitlist">Join Waitlist →</Link>
 					</Button>
 				</div>
 			</div>
@@ -151,7 +151,7 @@ export default async function FieldEdgeVsPage() {
 
 						<div className="flex flex-wrap justify-center gap-4">
 							<Button asChild className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 shadow-lg" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start Your Free 30-Day Trial
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1003,7 +1003,7 @@ export default async function FieldEdgeVsPage() {
 								<p className="text-muted-foreground mx-auto mb-6 max-w-2xl">Our migration specialists handle the technical details so you can focus on running your business.</p>
 								<div className="flex flex-wrap justify-center gap-4">
 									<Button asChild size="lg">
-										<Link href="/register">Start Your Free Trial →</Link>
+										<Link href="/waitlist">Join Waitlist →</Link>
 									</Button>
 									<Button asChild size="lg" variant="outline">
 										<Link href="/contact">Talk to Migration Specialist</Link>
@@ -1068,7 +1068,7 @@ export default async function FieldEdgeVsPage() {
 
 						<div className="mb-8 flex flex-wrap justify-center gap-4">
 							<Button asChild className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 shadow-lg" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start Your Free 30-Day Trial
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1077,7 +1077,7 @@ export default async function FieldEdgeVsPage() {
 								<Link href="/demo">See Thorbis in Action</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">Talk to Sales</Link>
+								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
 						</div>
 

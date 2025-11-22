@@ -124,7 +124,7 @@ export class DataValidator {
 				const result = schema.safeParse(record);
 
 				if (!result.success) {
-					result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
 						const field = err.path.join(".");
 						const message = err.message;
 

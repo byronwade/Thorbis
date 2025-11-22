@@ -41,7 +41,7 @@ export default function DashboardLayout({
 			</Suspense>
 
 			{/* Page content - each page has its own Suspense boundaries */}
-			<main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+			<main className="flex-1 flex flex-col overflow-y-auto">{children}</main>
 		</div>
 	);
 }

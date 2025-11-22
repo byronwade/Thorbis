@@ -60,6 +60,9 @@ export async function getAppointmentsPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -102,6 +105,9 @@ export async function getAppointmentStats(companyIdOverride?: string) {
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const { data, error } = await supabase
 		.from("appointments")
 		.select("status, archived_at, deleted_at")
@@ -140,6 +146,9 @@ export async function getAppointmentStats(companyIdOverride?: string) {
 const getAppointmentComplete = cache(
 	async (appointmentId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_appointment_complete", {
 			p_appointment_id: appointmentId,

@@ -26,6 +26,9 @@ export default function PaymentReceivedEmail({
 	company,
 	previewText = `Payment received - ${paymentAmount}`,
 }: PaymentReceivedProps) {
+	if (!company) {
+		throw new Error("Company branding is required");
+	}
 	return (
 		<CompanyLayout company={company} previewText={previewText}>
 			<Heading level={1}>Payment Received - Thank You!</Heading>

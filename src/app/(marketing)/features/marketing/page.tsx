@@ -216,13 +216,13 @@ export default function MarketingPage() {
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
-								<Link href="/register">
-									Start Automating
+								<Link href="/waitlist">
+									Join Waitlist
 									<Zap className="ml-2 size-4" />
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">See Campaign Examples</Link>
+								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 					</div>
@@ -1185,8 +1185,8 @@ export default function MarketingPage() {
 							className="bg-white text-purple-600 shadow-lg hover:bg-white/90"
 							size="lg"
 						>
-							<Link href="/register">
-								Start 14-day Free Trial
+							<Link href="/waitlist">
+								Join Waitlist
 								<Zap className="ml-2 size-4" />
 							</Link>
 						</Button>
@@ -1196,7 +1196,7 @@ export default function MarketingPage() {
 							size="lg"
 							variant="outline"
 						>
-							<Link href="/contact">See Campaign Examples</Link>
+							<Link href="/demo">Watch Demo</Link>
 						</Button>
 					</div>
 				</div>

@@ -114,7 +114,7 @@ export default async function ServiceTitanPage() {
 								<Link href="/contact">Talk to migrations team</Link>
 							</Button>
 							<Button asChild size="sm">
-								<Link href="/register">Start free trial</Link>
+								<Link href="/waitlist">Start free trial</Link>
 							</Button>
 						</div>
 					</div>
@@ -178,7 +178,7 @@ export default async function ServiceTitanPage() {
 							{/* Primary CTAs */}
 							<div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
 								<Button asChild className="group" size="lg">
-									<Link href="/register">
+									<Link href="/waitlist">
 										Calculate your savings
 										<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 									</Link>
@@ -611,7 +611,7 @@ export default async function ServiceTitanPage() {
 									Get enterprise features at <span className="text-primary">70-85% lower cost</span> with better support and no lock-in
 								</p>
 								<Button asChild className="mt-4" size="lg">
-									<Link href="/register">Start your migration today</Link>
+									<Link href="/waitlist">Start your migration today</Link>
 								</Button>
 							</div>
 						</div>
@@ -1237,7 +1237,7 @@ export default async function ServiceTitanPage() {
 								{/* CTAs */}
 								<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
 									<Button asChild className="group" size="lg">
-										<Link href="/register">
+										<Link href="/waitlist">
 											Calculate your savings now
 											<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 										</Link>

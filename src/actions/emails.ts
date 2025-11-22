@@ -11,26 +11,26 @@
 "use server";
 
 import { sendEmail } from "@/lib/email/email-sender";
-import type {
-	AppointmentReminderProps,
-	EmailSendResult,
-	EmailVerificationProps,
-	EstimateSentProps,
-	InvoiceSentProps,
-	JobCompleteProps,
-	JobConfirmationProps,
-	MagicLinkProps,
-	PasswordChangedProps,
-	PasswordResetProps,
-	PaymentReceivedProps,
-	PaymentReminderProps,
-	ReviewRequestProps,
-	ServiceReminderProps,
-	TechEnRouteProps,
-	WelcomeCustomerProps,
-	WelcomeEmailProps,
+import {
+	type AppointmentReminderProps,
+	type EmailSendResult,
+	type EmailVerificationProps,
+	type EstimateSentProps,
+	type InvoiceSentProps,
+	type JobCompleteProps,
+	type JobConfirmationProps,
+	type MagicLinkProps,
+	type PasswordChangedProps,
+	type PasswordResetProps,
+	type PaymentReceivedProps,
+	type PaymentReminderProps,
+	type ReviewRequestProps,
+	type ServiceReminderProps,
+	type TechEnRouteProps,
+	type WelcomeCustomerProps,
+	type WelcomeEmailProps,
+	EmailTemplate,
 } from "@/lib/email/email-types";
-import { EmailTemplate } from "@/lib/email/email-types";
 import EmailVerificationEmail from "../../emails/templates/auth/email-verification";
 import MagicLinkEmail from "../../emails/templates/auth/magic-link";
 import PasswordChangedEmail from "../../emails/templates/auth/password-changed";

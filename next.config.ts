@@ -87,6 +87,7 @@ const nextConfig: NextConfig = {
 	poweredByHeader: false, // Remove X-Powered-By header
 	compress: true, // Enable gzip compression
 	transpilePackages: ["shiki"], // Transpile shiki to fix external warnings
+	serverExternalPackages: ["prettier"], // Allow prettier to be used by @react-email/render
 	webpack: (webpackConfig) => {
 		// Keep webpack running to display all errors instead of bailing on the first failure
 		webpackConfig.bail = false;

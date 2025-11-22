@@ -106,7 +106,7 @@ export default function DemoPage() {
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/register">Create account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
 							<Link href="/pricing">Review pricing</Link>

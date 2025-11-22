@@ -178,7 +178,7 @@ export default function ReviewsPage() {
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
 							<Link href="/case-studies">Read case studies</Link>
@@ -361,7 +361,7 @@ export default function ReviewsPage() {
 						</div>
 						<div className="flex flex-wrap justify-center gap-3">
 							<Button asChild>
-								<Link href="/register">Get started now</Link>
+								<Link href="/waitlist">Get started now</Link>
 							</Button>
 							<Button asChild variant="outline">
 								<Link href="/switch">Plan your migration</Link>

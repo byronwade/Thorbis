@@ -19,7 +19,7 @@ import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-const CTA_LINK = { label: "Get Started", href: "/register" } as const;
+const CTA_LINK = { label: "Join Waitlist", href: "/waitlist" } as const;
 
 type NavItem = {
 	label: string;
@@ -193,9 +193,9 @@ const NAV_SECTIONS: NavSection[] = [
 				badge: "Hiring",
 			},
 			{
-				label: "Contact Sales",
-				href: "/contact",
-				description: "Schedule a personalized demo",
+				label: "Join Waitlist",
+				href: "/waitlist",
+				description: "Be notified when we launch",
 			},
 			{
 				label: "Security",

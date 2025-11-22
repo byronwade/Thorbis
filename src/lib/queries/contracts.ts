@@ -117,6 +117,9 @@ export async function getContractsPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -153,6 +156,9 @@ export async function getContractsStatusSummary(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const { data, error } = await supabase
 		.from("contracts")
 		.select("status, archived_at, deleted_at")
@@ -172,6 +178,9 @@ export async function getContractsStatusSummary(
 export const getContractComplete = cache(
 	async (contractId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_contract_complete", {
 			p_contract_id: contractId,

@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import colors from "tailwindcss/colors";
 
 const config = {
 	content: [
@@ -10,9 +9,9 @@ const config = {
 	],
 	theme: {
 		colors: {
-			...colors,
 			white: "hsl(var(--surface-light) / <alpha-value>)",
 			black: "hsl(var(--surface-inverse) / <alpha-value>)",
+			// Tailwind default colors are available by default in v4
 		},
 		extend: {
 			fontSize: {

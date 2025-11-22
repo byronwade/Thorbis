@@ -63,6 +63,15 @@ export function getSmsSidebarConfig(counts?: SmsFolderCounts): CommunicationSide
 				}
 			},
 		},
+		additionalSections: [
+			{
+				label: "Folders",
+				items: [],
+				scrollable: true,
+				scrollHeight: "h-[200px]",
+				defaultOpen: true, // Keep Folders section open by default (matching email page)
+			},
+		],
 	};
 }
 

@@ -135,7 +135,7 @@ export default async function WebinarsPage({
 					<div className="flex flex-wrap items-center justify-between gap-4">
 						<h2 className="text-2xl font-semibold">Upcoming live sessions</h2>
 						<Button asChild>
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 					</div>
 					{upcoming.length ? (

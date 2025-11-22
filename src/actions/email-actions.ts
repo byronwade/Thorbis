@@ -54,9 +54,9 @@ export async function getEmailsAction(
     const parseResult = getEmailsSchema.safeParse(input);
     
     if (!parseResult.success) {
-      console.error("❌ Zod validation error:", parseResult.error.errors);
+      console.error("❌ Zod validation error:", parseResult.error.issues);
       console.error("   Input received:", JSON.stringify(input, null, 2));
-      throw new Error(`Invalid input parameters: ${parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
+      throw new Error(`Invalid input parameters: ${parseResult.error.issues.map((e) => `${e.path.map(String).join('.')}: ${e.message}`).join(', ')}`);
     }
     
     const validatedInput = parseResult.data;
@@ -67,7 +67,12 @@ export async function getEmailsAction(
       throw new Error("No active company found");
     }
 
-    return await getCompanyEmails(companyId, validatedInput);
+    // Convert null to undefined for search field
+    const sanitizedInput = {
+      ...validatedInput,
+      search: validatedInput.search ?? undefined,
+    };
+    return await getCompanyEmails(companyId, sanitizedInput);
   } catch (error) {
     console.error("❌ getEmailsAction error:", error);
     throw error;
@@ -152,7 +157,7 @@ export async function markEmailAsReadAction(
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: `Invalid input: ${error.errors.map(e => e.message).join(", ")}` };
+      return { success: false, error: `Invalid input: ${error.issues.map((e: { message: string }) => e.message).join(", ")}` };
     }
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error marking email as read:", error);
@@ -213,6 +218,9 @@ export async function fetchEmailContentAction(
     }
 
     const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection failed" };
+    }
 
     let html: string | null = null;
     let text: string | null = null;
@@ -373,7 +381,7 @@ export async function fetchEmailContentAction(
         if (html || text) {
           console.log(`✅ Successfully extracted content from metadata: html=${!!html}, text=${!!text}`);
           // Update database with extracted content
-          if (html || text) {
+          if ((html || text) && supabase) {
             const { error: updateError } = await supabase
               .from("communications")
               .update({
@@ -400,6 +408,7 @@ export async function fetchEmailContentAction(
 
           // If not found, try to extract from provider_metadata
           if (!resendId && metadata) {
+            const fullContent = metadata.fullContent as { id?: string } | undefined;
             const fullContentId = fullContent?.id;
             if (fullContentId && typeof fullContentId === "string") {
               resendId = fullContentId;
@@ -420,11 +429,12 @@ export async function fetchEmailContentAction(
           // Fetch full email content from Resend
           const emailContent = await getReceivedEmail(resendId);
           if (!emailContent.success || !emailContent.data) {
-            console.warn("⚠️  Failed to fetch from Resend:", emailContent.error);
+            const errorMsg = "error" in emailContent ? emailContent.error : "Email not found in Resend. Content may have been deleted or expired.";
+            console.warn("⚠️  Failed to fetch from Resend:", errorMsg);
             // Don't return error - just log it, content might not be available
             return { 
               success: false, 
-              error: emailContent.error || "Email not found in Resend. Content may have been deleted or expired." 
+              error: errorMsg
             };
           }
 
@@ -443,20 +453,22 @@ export async function fetchEmailContentAction(
 
     // Update the database with the content
     // Try to update, but don't fail if the email doesn't exist - we still return the content
-    const { error: updateError } = await supabase
-      .from("communications")
-      .update({
-        body: text || "",
-        body_html: html,
-      })
-      .eq("id", emailId)
-      .eq("company_id", companyId);
+    if (supabase) {
+      const { error: updateError } = await supabase
+        .from("communications")
+        .update({
+          body: text || "",
+          body_html: html,
+        })
+        .eq("id", emailId)
+        .eq("company_id", companyId);
 
-    if (updateError) {
-      console.warn("⚠️  Failed to update email content in database (this is OK, content still returned):", updateError.message);
-      // Still return the content even if update fails - the email might not exist yet
-    } else {
-      console.log(`✅ Updated email content in database`);
+      if (updateError) {
+        console.warn("⚠️  Failed to update email content in database (this is OK, content still returned):", updateError.message);
+        // Still return the content even if update fails - the email might not exist yet
+      } else {
+        console.log(`✅ Updated email content in database`);
+      }
     }
 
     return { success: true, html, text };
@@ -474,7 +486,7 @@ export async function fetchEmailContentAction(
  * This allows emails sent to the specified address to be received via webhook
  * @deprecated Unused - use createInboundRoute from settings/communications instead
  */
-async function addInboundEmailRouteAction(
+export async function addInboundEmailRouteAction(
   routeAddress: string,
   name?: string
 ): Promise<{
@@ -573,11 +585,12 @@ export async function syncInboundRoutesToResendAction(): Promise<{
     }
 
     // Get all routes that don't have a resend_route_id
-    const { data: routes, error } = await serviceSupabase
-      .from("communication_email_inbound_routes")
+    // Note: This table may not be in the type definitions, so we use type assertion
+    const { data: routes, error } = await (serviceSupabase
+      .from("communication_email_inbound_routes" as any)
       .select("id, company_id, route_address, name, enabled")
       .is("resend_route_id", null)
-      .eq("enabled", true);
+      .eq("enabled", true) as any);
 
     if (error) {
       console.error("Failed to fetch routes:", error);
@@ -602,7 +615,7 @@ export async function syncInboundRoutesToResendAction(): Promise<{
     const errors: string[] = [];
     let synced = 0;
 
-    for (const route of routes) {
+    for (const route of (routes || []) as Array<{ id: string; company_id: string; route_address: string; name: string | null; enabled: boolean }>) {
       try {
         // Handle catch-all routes (e.g., @biezru.resend.app)
         // Resend doesn't support true catch-all, so we'll create a route for the domain

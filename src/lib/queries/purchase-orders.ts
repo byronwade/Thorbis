@@ -42,6 +42,9 @@ export async function getPurchaseOrdersPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -69,6 +72,9 @@ export async function getPurchaseOrdersPageData(
 const getPurchaseOrderComplete = cache(
 	async (purchaseOrderId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_purchase_order_complete", {
 			p_purchase_order_id: purchaseOrderId,

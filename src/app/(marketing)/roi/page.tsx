@@ -124,7 +124,7 @@ export default function RoiPage() {
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
 							<Link href="/switch">Explore migration program</Link>

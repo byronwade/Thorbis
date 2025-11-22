@@ -73,6 +73,9 @@ export const getMaterialsPageData = cache(
 		}
 
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 		const start = (Math.max(page, 1) - 1) * pageSize;
 		const end = start + pageSize - 1;
 

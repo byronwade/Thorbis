@@ -212,15 +212,15 @@ export default function AIAssistantPage() {
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
-								<Link href="/register">
-									Start 14-day Free Trial
+								<Link href="/waitlist">
+									Join Waitlist
 									<Zap className="ml-2 size-4" />
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">
+								<Link href="/demo">
 									<Phone className="mr-2 size-4" />
-									Talk to Sales
+									Watch Demo
 								</Link>
 							</Button>
 						</div>
@@ -661,8 +661,8 @@ export default function AIAssistantPage() {
 							className="bg-background text-foreground hover:bg-background/90 shadow-lg"
 							size="lg"
 						>
-							<Link href="/register">
-								Get Started Free
+							<Link href="/waitlist">
+								Join Waitlist
 								<Zap className="ml-2 size-4" />
 							</Link>
 						</Button>
@@ -672,7 +672,7 @@ export default function AIAssistantPage() {
 							size="lg"
 							variant="outline"
 						>
-							<Link href="/contact">Schedule Demo</Link>
+							<Link href="/demo">Watch Demo</Link>
 						</Button>
 					</div>
 				</div>

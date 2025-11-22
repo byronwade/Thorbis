@@ -116,7 +116,7 @@ export default async function HousecallProPage() {
 							<Link href="/contact">Talk to growth teams</Link>
 						</Button>
 						<Button asChild size="sm">
-							<Link href="/register">See upgrade path</Link>
+							<Link href="/waitlist">See upgrade path</Link>
 						</Button>
 					</div>
 				</div>
@@ -222,7 +222,7 @@ export default async function HousecallProPage() {
 						{/* Primary CTAs */}
 						<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
 							<Button asChild className="group" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									See your upgrade path
 									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 								</Link>
@@ -595,7 +595,7 @@ export default async function HousecallProPage() {
 
 						<div className="mt-6 text-center">
 							<Button asChild size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start your upgrade today
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1326,7 +1326,7 @@ export default async function HousecallProPage() {
 
 						<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
 							<Button asChild className="group" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start your upgrade
 									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 								</Link>

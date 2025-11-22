@@ -95,7 +95,9 @@ function ruleBasedSpamCheck(email: EmailContent): SpamCheckResult | null {
 	}
 	
 	// If score is high enough, mark as spam
-	if (score >= 30) {
+	// Increased threshold from 30 to 50 for less aggressive filtering during testing
+	const spamThreshold = parseInt(process.env.SPAM_FILTER_THRESHOLD || "50", 10);
+	if (score >= spamThreshold) {
 		return {
 			isSpam: true,
 			confidence: Math.min(score / 100, 0.9), // Cap at 90% for rules
@@ -106,7 +108,9 @@ function ruleBasedSpamCheck(email: EmailContent): SpamCheckResult | null {
 	}
 	
 	// If score is moderate, return null to defer to AI
-	if (score >= 15) {
+	// Increased threshold from 15 to 25 for less aggressive filtering
+	const uncertainThreshold = parseInt(process.env.SPAM_FILTER_UNCERTAIN_THRESHOLD || "25", 10);
+	if (score >= uncertainThreshold) {
 		return null; // Defer to AI for uncertain cases
 	}
 	
@@ -127,6 +131,8 @@ async function aiSpamCheck(email: EmailContent): Promise<SpamCheckResult> {
 	try {
 		const prompt = `You are an email spam detection expert. Analyze the following email and determine if it is spam.
 
+IMPORTANT: Be CONSERVATIVE. Only mark emails as spam if they are OBVIOUSLY spam (phishing, scams, promotional spam). Legitimate business communications, customer inquiries, newsletters, and transactional emails should ALWAYS be marked as NOT spam, even if they contain promotional elements.
+
 Email Subject: ${email.subject || "(no subject)"}
 From: ${email.fromName || ""} <${email.fromAddress || ""}>
 To: ${email.toAddress || ""}
@@ -144,13 +150,11 @@ Analyze this email and respond with a JSON object containing:
   "score": number (0-100, spam score)
 }
 
-Consider these factors:
-- Suspicious subject lines (urgent, winner, free money, etc.)
-- Suspicious content (phishing, scams, promotional spam)
-- Suspicious sender patterns
-- Excessive links or attachments
-- Poor grammar or formatting (common in spam)
-- Legitimate business communications should NOT be marked as spam
+Rules for classification:
+- Mark as spam ONLY if: phishing attempts, obvious scams (Nigerian prince, lottery wins, inheritance scams), obvious promotional spam with suspicious patterns
+- DO NOT mark as spam: legitimate business emails, customer inquiries, newsletters from recognized businesses, transactional emails, emails with promotional content but legitimate sender
+- When uncertain, mark as NOT spam (false positives are worse than false negatives)
+- Require HIGH confidence (>0.8) to mark as spam
 
 Respond ONLY with valid JSON, no other text.`;
 
@@ -188,12 +192,23 @@ Respond ONLY with valid JSON, no other text.`;
 			throw new Error("Invalid JSON in AI response");
 		}
 
+		const confidence = Math.max(0, Math.min(1, result.confidence || 0.5));
+		
+		// Require high confidence (>0.75) to mark as spam to reduce false positives
+		// If AI says spam but confidence is low, mark as NOT spam
+		const aiSpamThreshold = parseFloat(process.env.AI_SPAM_CONFIDENCE_THRESHOLD || "0.75");
+		const isSpam = result.isSpam && confidence >= aiSpamThreshold;
+		
 		return {
-			isSpam: result.isSpam,
-			confidence: Math.max(0, Math.min(1, result.confidence || 0.5)),
-			reason: result.reason || "AI analysis",
+			isSpam,
+			confidence,
+			reason: isSpam 
+				? result.reason || "AI analysis: High confidence spam detected"
+				: result.isSpam 
+					? `AI flagged as spam but confidence (${(confidence * 100).toFixed(1)}%) below threshold (${(aiSpamThreshold * 100).toFixed(1)}%)`
+					: result.reason || "AI analysis: Not spam",
 			method: "ai",
-			score: result.score || (result.isSpam ? 75 : 25),
+			score: result.score || (isSpam ? 75 : 25),
 		};
 	} catch (error) {
 		console.error("❌ AI spam check failed:", error);
@@ -229,16 +244,31 @@ export async function checkSpam(email: EmailContent): Promise<SpamCheckResult> {
 		
 		// Combine results if we have both
 		if (ruleResult) {
-			// Hybrid approach: average confidence, use AI decision if rules uncertain
+			// Hybrid approach: More conservative - require high confidence from both or agree
+			// Only mark as spam if BOTH agree it's spam AND both have decent confidence
+			// OR if one is very confident (>0.85) and the other agrees
+			const bothAgree = aiResult.isSpam === ruleResult.isSpam;
+			const veryConfident = aiResult.confidence > 0.85 || ruleResult.confidence > 0.85;
+			const bothConfident = aiResult.confidence > 0.7 && ruleResult.confidence > 0.7;
+			
+			// Mark as spam only if:
+			// 1. Both agree it's spam AND both are confident, OR
+			// 2. One is very confident (>0.85) that it's spam AND both agree
+			const isSpam = bothAgree && aiResult.isSpam && (bothConfident || veryConfident);
+			
 			return {
-				isSpam: aiResult.isSpam || (ruleResult.isSpam && ruleResult.confidence > 0.6),
+				isSpam,
 				confidence: (aiResult.confidence + ruleResult.confidence) / 2,
-				reason: `${aiResult.reason} (AI); ${ruleResult.reason} (Rules)`,
+				reason: isSpam
+					? `${aiResult.reason} (AI); ${ruleResult.reason} (Rules) - Both agree`
+					: `AI: ${aiResult.isSpam ? 'spam' : 'not spam'} (${(aiResult.confidence * 100).toFixed(1)}%), Rules: ${ruleResult.isSpam ? 'spam' : 'not spam'} (${(ruleResult.confidence * 100).toFixed(1)}%) - Conservative: marking as not spam`,
 				method: "hybrid",
 				score: aiResult.score || ruleResult.score,
 			};
 		}
 		
+		// If no rule result, use AI but only if confident
+		// If AI is uncertain, default to NOT spam
 		return aiResult;
 	}
 	

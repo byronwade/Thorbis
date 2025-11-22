@@ -489,7 +489,7 @@ export function Footer() {
 							<li>
 								<Link
 									className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-									href="/register"
+									href="/waitlist"
 								>
 									Create Account
 								</Link>

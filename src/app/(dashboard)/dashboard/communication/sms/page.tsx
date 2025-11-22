@@ -35,6 +35,7 @@ import {
     MessageSquare,
     MoreHorizontal,
     Paperclip,
+    Plus,
     RefreshCw,
     Reply,
     Send,
@@ -506,7 +507,7 @@ export default function SmsPage() {
         <div className="flex h-full w-full flex-col overflow-hidden bg-sidebar">
             <div className="flex flex-1 overflow-hidden min-h-0 gap-2">
                 {/* SMS List Panel */}
-                <div className={`bg-card mb-1 shadow-sm lg:h-full lg:shadow-sm flex flex-col rounded-tr-2xl overflow-hidden ${selectedSms ? "w-full md:w-[400px] lg:w-[480px]" : "w-full"}`}>
+                <div className="bg-card mb-1 w-full md:w-[400px] lg:w-[480px] shadow-sm lg:h-full lg:shadow-sm flex flex-col rounded-tr-2xl overflow-hidden">
                     <div className="w-full h-full flex flex-col">
                         <div className="sticky top-0 z-15 flex items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
                             <div className="w-full">
@@ -721,158 +722,193 @@ export default function SmsPage() {
                 </div>
 
                 {/* SMS Detail - Right Panel (iPhone-style chat interface) */}
-                {selectedSms && (
-                    <div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
-                        <div className="relative flex-1 min-h-0 flex flex-col">
-                            {/* Header */}
-                            <div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-3 border-b border-border/50 bg-card">
-                                <div className="flex flex-1 items-center gap-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                            const params = new URLSearchParams();
-                                            if (folder && folder !== "inbox") params.set("folder", folder);
-                                            router.push(`/dashboard/communication/sms?${params.toString()}`, { scroll: false });
-                                        }}
-                                        className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors"
-                                    >
-                                        <X className="h-4 w-4 text-muted-foreground" />
-                                    </Button>
-                                    <Avatar className="h-8 w-8 shrink-0">
-                                        <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
-                                            {getSenderInitial(selectedSms)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-semibold text-sm text-foreground truncate">
-                                            {getSenderName(selectedSms)}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground truncate">
-                                            {selectedSms.direction === "inbound" 
-                                                ? selectedSms.from_address || "Unknown"
-                                                : selectedSms.to_address || "Unknown"}
-                                        </div>
+                <div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
+                    <div className="relative flex-1 min-h-0 flex flex-col">
+                        {selectedSms ? (
+                            <>
+                                {/* Header Toolbar */}
+                                <div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
+                                    <div className="flex flex-1 items-center gap-2">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                const params = new URLSearchParams();
+                                                if (folder && folder !== "inbox") params.set("folder", folder);
+                                                router.push(`/dashboard/communication/sms?${params.toString()}`, { scroll: false });
+                                            }}
+                                            className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors"
+                                        >
+                                            <X className="h-4 w-4 text-muted-foreground" />
+                                        </Button>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors" title="More options">
+                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                        </Button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="More options">
-                                        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                                    </Button>
-                                </div>
-                            </div>
 
-                            {/* Messages Area - iPhone Style */}
-                            <div 
-                                ref={conversationScrollRef}
-                                className="flex-1 overflow-y-auto bg-gradient-to-b from-background to-muted/20 px-4 py-4"
-                            >
-                                {loadingConversation ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                    </div>
-                                ) : conversationMessages.length === 0 ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <div className="text-center">
-                                            <MessageSquare className="h-12 w-12 text-muted-foreground opacity-50 mx-auto mb-2" />
-                                            <p className="text-sm text-muted-foreground">No messages yet</p>
+                                {/* Contact Info Section */}
+                                <div className="border-b border-border/50 px-2 py-4 space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-9 w-9 shrink-0 rounded-md">
+                                            <AvatarFallback className="bg-muted text-muted-foreground font-semibold text-sm rounded-md">
+                                                {getSenderInitial(selectedSms)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-semibold text-sm text-foreground">
+                                                {getSenderName(selectedSms)}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {selectedSms.direction === "inbound" 
+                                                    ? selectedSms.from_address || "Unknown"
+                                                    : selectedSms.to_address || "Unknown"}
+                                            </div>
                                         </div>
                                     </div>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {conversationMessages.map((msg, index) => {
-                                            const isOutbound = msg.direction === "outbound";
-                                            const showTime = index === 0 || 
-                                                new Date(msg.created_at).getTime() - new Date(conversationMessages[index - 1].created_at).getTime() > 5 * 60 * 1000; // 5 minutes
-                                            
-                                            return (
-                                                <div key={msg.id} className="flex flex-col">
-                                                    {showTime && (
-                                                        <div className="flex justify-center my-2">
-                                                            <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                                                                {formatMessageTime(msg.created_at)}
+                                </div>
+
+                                {/* Messages Area - iPhone Style */}
+                                <div 
+                                    ref={conversationScrollRef}
+                                    className="flex-1 overflow-y-auto bg-card px-4 py-4"
+                                >
+                                    {loadingConversation ? (
+                                        <div className="flex items-center justify-center h-full">
+                                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                        </div>
+                                    ) : conversationMessages.length === 0 ? (
+                                        <div className="flex items-center justify-center h-full">
+                                            <div className="text-center">
+                                                <MessageSquare className="h-12 w-12 text-muted-foreground opacity-50 mx-auto mb-2" />
+                                                <p className="text-sm text-muted-foreground">No messages yet</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {conversationMessages.map((msg, index) => {
+                                                const isOutbound = msg.direction === "outbound";
+                                                const showTime = index === 0 || 
+                                                    new Date(msg.created_at).getTime() - new Date(conversationMessages[index - 1].created_at).getTime() > 5 * 60 * 1000; // 5 minutes
+                                                
+                                                return (
+                                                    <div key={msg.id} className="flex flex-col">
+                                                        {showTime && (
+                                                            <div className="flex justify-center my-2">
+                                                                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                                                                    {formatMessageTime(msg.created_at)}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        <div className={cn(
+                                                            "flex flex-col",
+                                                            isOutbound ? "items-end" : "items-start"
+                                                        )}>
+                                                            <div className={cn(
+                                                                "max-w-[75%] rounded-2xl px-4 py-2 shadow-sm",
+                                                                isOutbound
+                                                                    ? "bg-primary text-primary-foreground rounded-tr-sm"
+                                                                    : "bg-muted text-foreground rounded-tl-sm"
+                                                            )}>
+                                                                {/* Show attachments if present */}
+                                                                {msg.provider_metadata && typeof msg.provider_metadata === 'object' && 'attachments' in msg.provider_metadata && Array.isArray(msg.provider_metadata.attachments) && msg.provider_metadata.attachments.length > 0 && (
+                                                                    <div className={cn("mb-2 space-y-2", msg.body ? "" : "")}>
+                                                                        {msg.provider_metadata.attachments.map((att: any, attIdx: number) => {
+                                                                            const isImage = att.type === 'image' || (att.url && /\.(jpg|jpeg|png|gif|webp)$/i.test(att.url));
+                                                                            return (
+                                                                                <div key={attIdx} className="rounded-lg overflow-hidden">
+                                                                                    {isImage ? (
+                                                                                        <img
+                                                                                            src={att.url}
+                                                                                            alt={att.filename || "Image"}
+                                                                                            className="max-w-full max-h-64 object-contain rounded-lg"
+                                                                                            loading="lazy"
+                                                                                        />
+                                                                                    ) : (
+                                                                                        <a
+                                                                                            href={att.url}
+                                                                                            target="_blank"
+                                                                                            rel="noopener noreferrer"
+                                                                                            className={cn(
+                                                                                                "flex items-center gap-2 p-2 rounded-lg hover:opacity-80 transition-opacity",
+                                                                                                isOutbound ? "bg-primary-foreground/20" : "bg-background/20"
+                                                                                            )}
+                                                                                        >
+                                                                                            <Paperclip className="h-4 w-4" />
+                                                                                            <span className="text-xs truncate">{att.filename || "Attachment"}</span>
+                                                                                        </a>
+                                                                                    )}
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                )}
+                                                                {msg.body && (
+                                                                    <p className="text-sm whitespace-pre-wrap break-words">
+                                                                        {msg.body}
+                                                                    </p>
+                                                                )}
+                                                                {!msg.body && (!msg.provider_metadata || typeof msg.provider_metadata !== 'object' || !('attachments' in msg.provider_metadata) || !Array.isArray(msg.provider_metadata.attachments) || msg.provider_metadata.attachments.length === 0) && (
+                                                                    <p className="text-sm opacity-70 italic">No message content</p>
+                                                                )}
+                                                            </div>
+                                                            <span className={cn(
+                                                                "text-xs text-muted-foreground mt-0.5",
+                                                                isOutbound ? "text-right" : "text-left"
+                                                            )}>
+                                                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </span>
                                                         </div>
-                                                    )}
-                                                    <div className={cn(
-                                                        "flex flex-col",
-                                                        isOutbound ? "items-end" : "items-start"
-                                                    )}>
-                                                        <div className={cn(
-                                                            "max-w-[75%] rounded-2xl px-4 py-2 shadow-sm",
-                                                            isOutbound
-                                                                ? "bg-primary text-primary-foreground rounded-tr-sm"
-                                                                : "bg-muted text-foreground rounded-tl-sm"
-                                                        )}>
-                                                            {/* Show attachments if present */}
-                                                            {msg.provider_metadata && typeof msg.provider_metadata === 'object' && 'attachments' in msg.provider_metadata && Array.isArray(msg.provider_metadata.attachments) && msg.provider_metadata.attachments.length > 0 && (
-                                                                <div className={cn("mb-2 space-y-2", msg.body ? "" : "")}>
-                                                                    {msg.provider_metadata.attachments.map((att: any, attIdx: number) => {
-                                                                        const isImage = att.type === 'image' || (att.url && /\.(jpg|jpeg|png|gif|webp)$/i.test(att.url));
-                                                                        return (
-                                                                            <div key={attIdx} className="rounded-lg overflow-hidden">
-                                                                                {isImage ? (
-                                                                                    <img
-                                                                                        src={att.url}
-                                                                                        alt={att.filename || "Image"}
-                                                                                        className="max-w-full max-h-64 object-contain rounded-lg"
-                                                                                        loading="lazy"
-                                                                                    />
-                                                                                ) : (
-                                                                                    <a
-                                                                                        href={att.url}
-                                                                                        target="_blank"
-                                                                                        rel="noopener noreferrer"
-                                                                                        className={cn(
-                                                                                            "flex items-center gap-2 p-2 rounded-lg hover:opacity-80 transition-opacity",
-                                                                                            isOutbound ? "bg-primary-foreground/20" : "bg-background/20"
-                                                                                        )}
-                                                                                    >
-                                                                                        <Paperclip className="h-4 w-4" />
-                                                                                        <span className="text-xs truncate">{att.filename || "Attachment"}</span>
-                                                                                    </a>
-                                                                                )}
-                                                                            </div>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            )}
-                                                            {msg.body && (
-                                                                <p className="text-sm whitespace-pre-wrap break-words">
-                                                                    {msg.body}
-                                                                </p>
-                                                            )}
-                                                            {!msg.body && (!msg.provider_metadata || typeof msg.provider_metadata !== 'object' || !('attachments' in msg.provider_metadata) || !Array.isArray(msg.provider_metadata.attachments) || msg.provider_metadata.attachments.length === 0) && (
-                                                                <p className="text-sm opacity-70 italic">No message content</p>
-                                                            )}
-                                                        </div>
-                                                        <span className={cn(
-                                                            "text-xs text-muted-foreground mt-0.5",
-                                                            isOutbound ? "text-right" : "text-left"
-                                                        )}>
-                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
 
-                            {/* Message Input - iPhone Style with Emojis & Attachments */}
-                            <SmsMessageInput
-                                value={messageInput}
-                                onChange={setMessageInput}
-                                onSend={handleSendMessage}
-                                onAttach={handleAttachFiles}
-                                sending={sendingMessage}
-                                disabled={!selectedSms}
-                                placeholder="Text Message"
-                            />
-                        </div>
+                                {/* Message Input - iPhone Style with Emojis & Attachments */}
+                                <SmsMessageInput
+                                    value={messageInput}
+                                    onChange={setMessageInput}
+                                    onSend={handleSendMessage}
+                                    onAttach={handleAttachFiles}
+                                    sending={sendingMessage}
+                                    disabled={!selectedSms}
+                                    placeholder="Text Message"
+                                />
+                            </>
+                        ) : (
+                            /* Empty State - No SMS Selected */
+                            <div className="flex flex-col items-center justify-center h-full px-4 py-8">
+                                <div className="text-center space-y-4 max-w-md">
+                                    <MessageSquare className="h-16 w-16 text-muted-foreground opacity-50 mx-auto" />
+                                    <div className="space-y-2">
+                                        <h3 className="text-lg font-semibold text-foreground">No conversation selected</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Select a conversation from the list to view messages, or create a new SMS to get started.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        onClick={() => {
+                                            if (typeof window !== "undefined") {
+                                                window.dispatchEvent(new CustomEvent("open-recipient-selector", { 
+                                                    detail: { type: "sms" } 
+                                                }));
+                                            }
+                                        }}
+                                        className="mt-4"
+                                        size="lg"
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Create new SMS
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

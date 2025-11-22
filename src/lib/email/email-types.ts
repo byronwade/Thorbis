@@ -235,6 +235,11 @@ export interface VerificationCompleteProps extends BaseEmailProps {
 	messagingUrl: string;
 }
 
+// Waitlist Email Props
+export interface WaitlistSubscriptionProps extends BaseEmailProps {
+	name: string;
+}
+
 // Validation Schemas
 const emailAddressSchema = z
 	.string()
@@ -283,6 +288,10 @@ export enum EmailTemplate {
 	VERIFICATION_SUBMITTED = "verification-submitted",
 	VERIFICATION_COMPLETE = "verification-complete",
 
+	// Waitlist
+	WAITLIST_SUBSCRIPTION = "waitlist-subscription",
+
 	// Generic
 	GENERIC = "generic",
 }
+

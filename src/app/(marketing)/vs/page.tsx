@@ -96,7 +96,7 @@ export default function CompetitorOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Create your account</Link>
 						</Button>
 						<Button asChild variant="outline">
 							<Link href="/pricing">Review pricing</Link>

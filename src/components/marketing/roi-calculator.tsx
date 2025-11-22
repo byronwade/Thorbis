@@ -802,13 +802,13 @@ export function RoiCalculator() {
 										</p>
 										<div className="flex flex-wrap justify-center gap-3">
 											<Button asChild size="lg">
-												<Link href="/register">
+												<Link href="/waitlist">
 													Start 14-day Free Trial
 													<Zap className="ml-2 size-4" />
 												</Link>
 											</Button>
 											<Button asChild size="lg" variant="outline">
-												<Link href="/contact">Talk to Sales</Link>
+												<Link href="/waitlist">Join Waitlist</Link>
 											</Button>
 										</div>
 									</div>

@@ -113,7 +113,7 @@ export default async function JobberPage() {
 							<Link href="/contact">Talk to our team</Link>
 						</Button>
 						<Button asChild size="sm">
-							<Link href="/register">See the difference</Link>
+							<Link href="/waitlist">See the difference</Link>
 						</Button>
 					</div>
 				</div>
@@ -220,7 +220,7 @@ export default async function JobberPage() {
 						{/* Primary CTAs */}
 						<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
 							<Button asChild className="group" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									See what you're missing
 									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 								</Link>
@@ -578,7 +578,7 @@ export default async function JobberPage() {
 
 						<div className="mt-6 text-center">
 							<Button asChild size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Switch to Thorbis today
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
@@ -1223,7 +1223,7 @@ export default async function JobberPage() {
 
 						<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
 							<Button asChild className="group" size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Switch to Thorbis today
 									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 								</Link>

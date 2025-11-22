@@ -133,7 +133,7 @@ export async function getCompanyEmails(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers!left(id, first_name, last_name),
+			customer:customers!left(id, first_name, last_name, display_name, email, phone),
 			sent_at,
 			delivered_at,
 			status,
@@ -395,7 +395,12 @@ export async function getEmailById(
 			customer:customers(id, first_name, last_name),
 			sent_at,
 			delivered_at,
-			status
+			status,
+			is_archived,
+			deleted_at,
+			snoozed_until,
+			category,
+			tags
 		`,
 		)
 		.eq("id", emailId)

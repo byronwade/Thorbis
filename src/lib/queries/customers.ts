@@ -92,6 +92,9 @@ export async function getCustomersPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const offset = (Math.max(page, 1) - 1) * pageSize;
 
 	// Use optimized RPC function with LATERAL joins
@@ -143,25 +146,37 @@ async function getCustomerStats(): Promise<CustomerSummaryStats | null> {
 	}
 
 	const supabase = await createServiceSupabaseClient();
-	const { data, error } = await supabase.rpc("get_customer_metrics_rpc", {
-		p_company_id: companyId,
-	});
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
+	
+	// Get customer stats directly from the customers table
+	const { data, error, count } = await supabase
+		.from("customers")
+		.select("status, archived_at, deleted_at", { count: "exact" })
+		.eq("company_id", companyId)
+		.is("deleted_at", null);
 
 	if (error) {
 		throw new Error(`Failed to load customer stats: ${error.message}`);
 	}
 
-	const metrics = data?.[0];
-	if (!metrics) {
-		return null;
-	}
+	const customers = (data ?? []) as Array<{
+		status: string | null;
+		archived_at: string | null;
+		deleted_at: string | null;
+	}>;
+	
+	const active = customers.filter((c) => !c.archived_at && c.status === "active");
+	const inactive = customers.filter((c) => !c.archived_at && c.status === "inactive");
+	const prospect = customers.filter((c) => !c.archived_at && c.status === "prospect");
 
 	return {
-		total: Number(metrics.total_customers ?? 0),
-		active: Number(metrics.active_customers ?? 0),
-		inactive: Number(metrics.inactive_customers ?? 0),
-		prospect: Number(metrics.prospect_customers ?? 0),
-		totalRevenueCents: Number(metrics.total_revenue_cents ?? 0),
+		total: count ?? 0,
+		active: active.length,
+		inactive: inactive.length,
+		prospect: prospect.length,
+		totalRevenueCents: 0, // TODO: Calculate from invoices/payments
 	};
 }
 
@@ -173,6 +188,9 @@ async function getCustomerStats(): Promise<CustomerSummaryStats | null> {
 export const getCustomerComplete = cache(
 	async (customerId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_customer_complete", {
 			p_customer_id: customerId,

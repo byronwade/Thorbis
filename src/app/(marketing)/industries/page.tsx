@@ -136,8 +136,8 @@ export default function IndustriesOverviewPage() {
 
 						<div className="flex flex-wrap justify-center gap-4">
 							<Button asChild className="bg-gradient-to-r from-primary to-primary/80 shadow-lg" size="lg">
-								<Link href="/register">
-									Create Your Account
+								<Link href="/waitlist">
+									Join Waitlist
 									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 									</svg>
@@ -232,7 +232,7 @@ export default function IndustriesOverviewPage() {
 						</p>
 						<div className="flex flex-wrap justify-center gap-4">
 							<Button asChild size="lg">
-								<Link href="/register">
+								<Link href="/waitlist">
 									Start Your Free Trial
 									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -240,7 +240,7 @@ export default function IndustriesOverviewPage() {
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/contact">Talk to Sales</Link>
+								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
 						</div>
 					</section>

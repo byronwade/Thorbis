@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useChat } from "@ai-sdk/react";
-import { useChatStore, chatSelectors } from "@/lib/stores/chat-store";
+import { useChatStore, chatSelectors, type ChatStore } from "@/lib/stores/chat-store";
 import {
 	Conversation,
 	ConversationContent,
@@ -72,10 +72,17 @@ const models = [
 	},
 ];
 
+// Cache selectors at module level to ensure stable references for SSR
+// This prevents Zustand's getServerSnapshot from being recreated on each render
+const activeChatIdSelector = chatSelectors.activeChatId;
+const messagesSelector = chatSelectors.messages;
+
 export function AiChatInterface() {
-	// Use selectors directly - they're already stable references
-	const activeChatId = useChatStore(chatSelectors.activeChatId);
-	const activeChatMessages = useChatStore(chatSelectors.messages);
+	// Use cached selectors to ensure stable references for SSR compatibility
+	// This prevents "getServerSnapshot should be cached" errors
+	const activeChatId = useChatStore(activeChatIdSelector);
+	const activeChatMessages = useChatStore(messagesSelector);
+	
 	const { createChat, addMessage } = useChatStore();
 	const [showSuggestedActions, setShowSuggestedActions] = useState(true);
 

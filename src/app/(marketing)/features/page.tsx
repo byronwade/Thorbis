@@ -95,7 +95,7 @@ export default function FeaturesOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild variant="outline">
 							<Link href="/pricing">Review pricing</Link>

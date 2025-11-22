@@ -172,6 +172,7 @@ export function getEmailSidebarConfig(
 				),
 				scrollable: true,
 				scrollHeight: "h-[200px]",
+				defaultOpen: true, // Keep Folders section open by default
 			},
 		],
 	};

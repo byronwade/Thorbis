@@ -133,10 +133,10 @@ export default async function CaseStudiesPage({
 						</p>
 						<div className="mt-6 flex justify-center gap-3">
 							<Button asChild>
-								<Link href="/register">Create your account</Link>
+								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
 							<Button asChild variant="outline">
-								<Link href="/contact">Talk to sales</Link>
+								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 					</div>

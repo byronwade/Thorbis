@@ -227,6 +227,9 @@ async function uploadAvatarForNewUser(
 	file: File,
 	userId: string,
 ): Promise<string | null> {
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	if (!file.type.startsWith("image/")) {
 		throw new Error("Avatar must be an image");
 	}
@@ -395,6 +398,9 @@ const syncSignUpProfile = async ({
 			updatePayload.avatar_url = avatarUrl;
 		}
 
+		if (!adminClient) {
+			throw new Error("Admin client not configured");
+		}
 		await adminClient.from("profiles").update(updatePayload).eq("id", userId);
 	} catch (profileUpdateError) {
 		reportAuthIssue("Failed to update user profile", profileUpdateError);
@@ -406,6 +412,9 @@ const syncSignUpProfile = async ({
 
 	try {
 		const adminClient = await ensureServiceSupabase();
+		if (!adminClient) {
+			throw new Error("Admin client not configured");
+		}
 		await adminClient.auth.admin.updateUserById(userId, {
 			user_metadata: {
 				name,
@@ -588,6 +597,9 @@ const updateUserTableRecord = async ({
 
 	try {
 		const adminClient = await ensureServiceSupabase();
+		if (!adminClient) {
+			throw new Error("Admin client not configured");
+		}
 		const { error } = await adminClient
 			.from("profiles")
 			.update({
@@ -709,6 +721,9 @@ const resolveProfileRedirectPath = async ({
 	userId,
 }: ResolveProfileRedirectParams): Promise<string> => {
 	const adminClient = await ensureServiceSupabase();
+	if (!adminClient) {
+		throw new Error("Admin client not configured");
+	}
 	const { data: hasCompany } = await adminClient
 		.from("company_memberships")
 		.select("company_id")

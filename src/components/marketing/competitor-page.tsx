@@ -49,7 +49,7 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
 						<Button asChild className="group" size="lg">
-							<Link href="/register">
+							<Link href="/waitlist">
 								Start 14-day free trial
 								<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 							</Link>
@@ -361,7 +361,7 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 								Join hundreds of teams who've made the move to Thorbis
 							</p>
 							<Button asChild className="mt-6" size="lg">
-								<Link href="/register">Start your migration</Link>
+								<Link href="/waitlist">Start your migration</Link>
 							</Button>
 						</CardContent>
 					</Card>
@@ -430,7 +430,7 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
 
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
 						<Button asChild className="group" size="lg">
-							<Link href="/register">
+							<Link href="/waitlist">
 								Start your 14-day free trial
 								<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 							</Link>

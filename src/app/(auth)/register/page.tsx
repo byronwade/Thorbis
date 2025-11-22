@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -21,6 +22,12 @@ export const metadata = generateSEOMetadata({
 });
 
 export default function RegisterPage() {
+	// Redirect to waitlist in production
+	if (process.env.NODE_ENV === "production") {
+		redirect("/waitlist");
+	}
+
+	// In development, show the register form
 	return (
 		<div className="bg-background relative flex min-h-screen flex-col overflow-hidden md:items-center md:justify-center">
 			{/* Subtle Background Gradient */}

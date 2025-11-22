@@ -184,8 +184,8 @@ const COMPANY_LINKS = [
 	{ label: "Careers", href: "/careers" },
 	{ label: "Partners", href: "/partners" },
 	{ label: "Press & Media", href: "/press" },
-	{ label: "Contact Sales", href: "/contact" },
-	{ label: "Create Account", href: "/register" },
+	{ label: "Join Waitlist", href: "/waitlist" },
+	{ label: "Join Waitlist", href: "/waitlist" },
 	{ label: "Implementation & Success", href: "/implementation" },
 	{ label: "Security", href: "/security" },
 ] as const;
@@ -285,7 +285,7 @@ export default function SolutionsOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
-							<Link href="/register">Create your account</Link>
+							<Link href="/waitlist">Create your account</Link>
 						</Button>
 						<Button asChild variant="outline">
 							<Link href="/pricing">Review pricing</Link>
@@ -361,7 +361,7 @@ export default function SolutionsOverviewPage() {
 													</Link>
 												</Button>
 												<Button asChild variant="ghost">
-													<Link href="/contact">Talk to sales</Link>
+													<Link href="/waitlist">Join Waitlist</Link>
 												</Button>
 											</div>
 										</CardContent>
@@ -470,7 +470,7 @@ export default function SolutionsOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/register">Create account</Link>
+							<Link href="/waitlist">Create account</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
 							<Link href="/contact">Contact sales</Link>

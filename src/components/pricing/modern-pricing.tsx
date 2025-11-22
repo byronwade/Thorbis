@@ -276,10 +276,10 @@ export function ModernPricing() {
 						</div>
 						<div className="mt-10 flex items-center justify-center gap-4">
 							<Button asChild size="lg">
-								<Link href="/register">Start Free Trial</Link>
+								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/demo">Schedule Demo</Link>
+								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 					</div>
@@ -518,7 +518,7 @@ export function ModernPricing() {
 							Try it free for 14 days. No credit card required.
 						</p>
 						<Button asChild size="lg">
-							<Link href="/register">Start Free Trial</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 					</div>
 				</div>

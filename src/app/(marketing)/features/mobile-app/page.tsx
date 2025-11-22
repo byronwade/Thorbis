@@ -216,13 +216,13 @@ export default function MobileAppPage() {
 									className="shadow-primary/20 shadow-lg"
 									size="lg"
 								>
-									<Link href="/register">
-										Start 14-day Free Trial
+									<Link href="/waitlist">
+										Join Waitlist
 										<Zap className="ml-2 size-4" />
 									</Link>
 								</Button>
 								<Button asChild size="lg" variant="outline">
-									<Link href="/contact">Request Demo</Link>
+									<Link href="/demo">Watch Demo</Link>
 								</Button>
 							</div>
 
@@ -613,8 +613,8 @@ export default function MobileAppPage() {
 							className="bg-background text-foreground hover:bg-background/90 shadow-lg"
 							size="lg"
 						>
-							<Link href="/register">
-								Start 14-day Free Trial
+							<Link href="/waitlist">
+								Join Waitlist
 								<Zap className="ml-2 size-4" />
 							</Link>
 						</Button>
@@ -624,7 +624,7 @@ export default function MobileAppPage() {
 							size="lg"
 							variant="outline"
 						>
-							<Link href="/contact">See Mobile Demo</Link>
+							<Link href="/demo">Watch Demo</Link>
 						</Button>
 					</div>
 				</div>

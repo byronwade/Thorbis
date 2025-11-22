@@ -221,13 +221,13 @@ export default function CustomerPortalPage() {
 									className="shadow-primary/20 shadow-lg"
 									size="lg"
 								>
-									<Link href="/register">
-										Launch Your Portal
+									<Link href="/waitlist">
+										Join Waitlist
 										<Zap className="ml-2 size-4" />
 									</Link>
 								</Button>
 								<Button asChild size="lg" variant="outline">
-									<Link href="/contact">See Live Demo</Link>
+									<Link href="/demo">Watch Demo</Link>
 								</Button>
 							</div>
 
@@ -952,8 +952,8 @@ export default function CustomerPortalPage() {
 							className="bg-white text-cyan-600 shadow-lg hover:bg-white/90"
 							size="lg"
 						>
-							<Link href="/register">
-								Start 14-day Free Trial
+							<Link href="/waitlist">
+								Join Waitlist
 								<Zap className="ml-2 size-4" />
 							</Link>
 						</Button>
@@ -963,7 +963,7 @@ export default function CustomerPortalPage() {
 							size="lg"
 							variant="outline"
 						>
-							<Link href="/contact">See Live Demo</Link>
+							<Link href="/demo">Watch Demo</Link>
 						</Button>
 					</div>
 				</div>

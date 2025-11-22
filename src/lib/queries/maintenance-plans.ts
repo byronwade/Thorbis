@@ -52,6 +52,9 @@ export async function getMaintenancePlansPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -79,6 +82,9 @@ export async function getMaintenancePlansPageData(
 const getMaintenancePlanComplete = cache(
 	async (maintenancePlanId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc(
 			"get_maintenance_plan_complete",

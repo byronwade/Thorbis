@@ -303,7 +303,7 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 				</p>
 				<div className="mb-8 flex flex-wrap justify-center gap-4">
 					<Button asChild className="shadow-lg" size="lg">
-						<Link href="/register">
+						<Link href="/waitlist">
 							Start Your Free Trial
 							<ArrowRight className="ml-2 size-4" />
 						</Link>
@@ -312,7 +312,7 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 						<Link href="/demo">See Thorbis in Action</Link>
 					</Button>
 					<Button asChild size="lg" variant="outline">
-						<Link href="/contact">Talk to Sales</Link>
+						<Link href="/waitlist">Join Waitlist</Link>
 					</Button>
 				</div>
 				<div className="flex flex-wrap items-center justify-center gap-6 pt-6">

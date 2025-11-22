@@ -16,7 +16,8 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar";
-import { LucideIcon, Plus, Trash2 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { LucideIcon, ChevronRight, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ComponentProps } from "react";
@@ -52,6 +53,7 @@ export type CommunicationAdditionalSection = {
     addButton?: React.ReactNode; // Custom add button component (e.g., CreateFolderDialog)
     scrollable?: boolean;
     scrollHeight?: string;
+    defaultOpen?: boolean; // Whether the section should be open by default
 };
 
 /**
@@ -175,22 +177,36 @@ export function CommunicationSidebar({
 
                 {/* Additional Sections (Labels, Tags, etc.) */}
                 {additionalSections?.map((section, index) => (
-                    <SidebarGroup key={index}>
-                        <div className="flex items-center justify-between px-2">
-                            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-                            {section.addButton || (section.onAddClick && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={section.onAddClick}
-                                    type="button"
-                                >
-                                    <Plus className="size-4" />
-                                </Button>
-                            ))}
-                        </div>
-                        <SidebarMenu>
+                    <Collapsible
+                        key={index}
+                        defaultOpen={section.defaultOpen ?? true}
+                        className="group/collapsible"
+                    >
+                        <SidebarGroup>
+                            <CollapsibleTrigger asChild>
+                                <div className="flex items-center justify-between px-2 cursor-pointer hover:bg-sidebar-accent/50 rounded-md transition-colors">
+                                    <SidebarGroupLabel className="flex items-center gap-2">
+                                        <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        {section.label}
+                                    </SidebarGroupLabel>
+                                    {section.addButton || (section.onAddClick && (
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                section.onAddClick?.();
+                                            }}
+                                            type="button"
+                                        >
+                                            <Plus className="size-4" />
+                                        </Button>
+                                    ))}
+                                </div>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <SidebarMenu>
                             {section.scrollable ? (
                                 <ScrollArea
                                     className={section.scrollHeight || "h-[200px] w-full"}
@@ -303,9 +319,11 @@ export function CommunicationSidebar({
                                         </div>
                                     </SidebarMenuItem>
                                 ))
-                            )}
-                        </SidebarMenu>
-                    </SidebarGroup>
+                                    )}
+                                </SidebarMenu>
+                            </CollapsibleContent>
+                        </SidebarGroup>
+                    </Collapsible>
                 ))}
             </SidebarContent>
             <SidebarRail />

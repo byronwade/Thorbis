@@ -93,6 +93,9 @@ export async function getJobsPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -120,7 +123,13 @@ export async function getJobsPageData(
 	}
 
 	return {
-		jobs: data ?? [],
+		jobs: (data ?? []).map((job) => ({
+			...job,
+			metadata:
+				job.metadata && typeof job.metadata === "object" && !Array.isArray(job.metadata)
+					? (job.metadata as Record<string, unknown>)
+					: null,
+		})) as JobListRecord[],
 		totalCount: count ?? 0,
 	};
 }
@@ -150,6 +159,9 @@ export const getJobsWithTags = cache(
 		}
 
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 		const start = (Math.max(page, 1) - 1) * pageSize;
 		const end = start + pageSize - 1;
 
@@ -200,7 +212,13 @@ export const getJobsWithTags = cache(
 		}
 
 		return {
-			jobs: data ?? [],
+			jobs: (data ?? []).map((job) => ({
+				...job,
+				metadata:
+					job.metadata && typeof job.metadata === "object" && !Array.isArray(job.metadata)
+						? (job.metadata as Record<string, unknown>)
+						: null,
+			})) as JobListRecord[],
 			totalCount: count ?? 0,
 		};
 	},
@@ -213,6 +231,9 @@ export const getJobsWithTags = cache(
 const getJobComplete = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_job_complete", {
 			p_job_id: jobId,
@@ -224,6 +245,7 @@ const getJobComplete = cache(
 			return null;
 		}
 
-		return data?.[0]?.job_data || null;
+		const result = data as Array<{ job_data: unknown }> | null;
+		return result?.[0]?.job_data || null;
 	},
 );

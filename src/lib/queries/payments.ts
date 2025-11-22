@@ -72,6 +72,9 @@ export async function getPaymentsPageData(
 	}
 
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		throw new Error("Supabase client not configured");
+	}
 	const start = (Math.max(page, 1) - 1) * pageSize;
 	const end = start + pageSize - 1;
 
@@ -100,6 +103,9 @@ export async function getPaymentsPageData(
 const getPaymentComplete = cache(
 	async (paymentId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
 
 		const { data, error } = await supabase.rpc("get_payment_complete", {
 			p_payment_id: paymentId,

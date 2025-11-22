@@ -193,8 +193,8 @@ export function LinearHomepage() {
 								size="lg"
 								className="h-12 bg-primary px-8 text-base font-medium text-primary-foreground hover:bg-primary/90"
 							>
-								<Link href="/register">
-									Start Free Trial
+								<Link href="/waitlist">
+									Join Waitlist
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
 							</Button>
@@ -570,8 +570,8 @@ export function LinearHomepage() {
 								size="lg"
 								className="h-12 bg-primary px-8 text-base font-medium text-primary-foreground hover:bg-primary/90"
 							>
-								<Link href="/register">
-									Start Free Trial
+								<Link href="/waitlist">
+									Join Waitlist
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
 							</Button>
@@ -581,7 +581,7 @@ export function LinearHomepage() {
 								size="lg"
 								className="h-12 px-8 text-base font-medium text-muted-foreground hover:text-foreground"
 							>
-								<Link href="/contact">Talk to Sales</Link>
+								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 					</div>
