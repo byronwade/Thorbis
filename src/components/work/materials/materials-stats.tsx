@@ -115,7 +115,7 @@ export async function getMaterialsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function MaterialsStats() {
+async function MaterialsStats() {
 	const materialStats = await getMaterialsStatsData();
 
 	if (materialStats.length === 0) {

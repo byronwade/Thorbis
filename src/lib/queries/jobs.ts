@@ -210,7 +210,7 @@ export const getJobsWithTags = cache(
  * Fetch complete job data including customer, property, equipment, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getJobComplete = cache(
+const getJobComplete = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

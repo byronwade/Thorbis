@@ -118,7 +118,7 @@ export async function getPurchaseOrdersStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function PurchaseOrdersStats() {
+async function PurchaseOrdersStats() {
 	const purchaseOrderStats = await getPurchaseOrdersStatsData();
 
 	if (purchaseOrderStats.length === 0) {

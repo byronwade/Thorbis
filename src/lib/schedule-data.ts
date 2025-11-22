@@ -101,7 +101,7 @@ export type TechniciansLookup = {
 	byTeamMemberId: Map<string, Technician>;
 };
 
-export const UNASSIGNED_TECHNICIAN_ID = "__unassigned";
+const UNASSIGNED_TECHNICIAN_ID = "__unassigned";
 
 const scheduleSelect = `
   *,
@@ -345,7 +345,7 @@ export async function fetchScheduleData({
 	};
 }
 
-export function resolveScheduleRange(
+function resolveScheduleRange(
 	range?: Range,
 	anchor: Date = new Date(),
 ): Range {
@@ -358,7 +358,7 @@ export function resolveScheduleRange(
 	return { start, end };
 }
 
-export async function loadScheduleSnapshot(
+async function loadScheduleSnapshot(
 	params: LoadParams & { range?: Range },
 ): Promise<ScheduleHydrationPayload> {
 	const resolvedRange = resolveScheduleRange(params.range);
@@ -377,7 +377,7 @@ export async function loadScheduleSnapshot(
 	};
 }
 
-export function createTechnicianJobMap(jobs: Job[]): Record<string, Job[]> {
+function createTechnicianJobMap(jobs: Job[]): Record<string, Job[]> {
 	return jobs.reduce<Record<string, Job[]>>((acc, job) => {
 		const key = job.technicianId || UNASSIGNED_TECHNICIAN_ID;
 		if (!acc[key]) {
@@ -506,7 +506,7 @@ async function fetchPropertiesByIds(
 	return map;
 }
 
-export function mapTeamMembersToTechnicians(
+function mapTeamMembersToTechnicians(
 	teamMembers: TeamMemberRecord[],
 ): TechniciansLookup {
 	const technicians: Technician[] = [];
@@ -762,7 +762,7 @@ function mapJobStatus(value?: string | null): Job["status"] {
 	}
 }
 
-export function mapScheduleToJob(
+function mapScheduleToJob(
 	schedule: ScheduleRecord,
 	lookups: TechniciansLookup,
 	property: ScheduleProperty | null,

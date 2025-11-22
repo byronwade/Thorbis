@@ -24,7 +24,7 @@ export type RoleConfig = {
 	dashboardFeatures: string[];
 };
 
-export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
+const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
 	[USER_ROLES.OWNER]: {
 		id: "owner",
 		label: "Owner",
@@ -144,11 +144,11 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
 	},
 };
 
-export function getRoleConfig(role: UserRole): RoleConfig {
+function getRoleConfig(role: UserRole): RoleConfig {
 	return ROLE_CONFIGS[role];
 }
 
-export function hasPermission(role: UserRole, permission: string): boolean {
+function hasPermission(role: UserRole, permission: string): boolean {
 	const config = getRoleConfig(role);
 	return (
 		config.permissions.includes("*") || config.permissions.includes(permission)

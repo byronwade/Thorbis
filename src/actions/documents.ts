@@ -455,7 +455,7 @@ async function handleNonJobDocumentUpload(
 /**
  * Upload multiple documents
  */
-export async function uploadDocuments(
+async function uploadDocuments(
 	formData: FormData,
 ): Promise<ActionResult<UploadDocumentResult[]>> {
 	try {
@@ -550,7 +550,7 @@ export async function uploadDocuments(
 /**
  * Get download URL for document
  */
-export async function getDocumentDownloadUrl(
+async function getDocumentDownloadUrl(
 	attachmentId: string,
 ): Promise<ActionResult<string>> {
 	try {
@@ -628,7 +628,7 @@ export async function getDocumentDownloadUrl(
 /**
  * Delete document
  */
-export async function deleteDocument(
+async function deleteDocument(
 	attachmentId: string,
 ): Promise<ActionResult> {
 	try {
@@ -702,7 +702,7 @@ export async function deleteDocument(
 /**
  * Bulk delete documents
  */
-export async function bulkDeleteDocuments(
+async function bulkDeleteDocuments(
 	attachmentIds: string[],
 ): Promise<ActionResult<{ deleted: number; failed: number }>> {
 	try {
@@ -737,7 +737,7 @@ export async function bulkDeleteDocuments(
 /**
  * Update document metadata
  */
-export async function updateDocument(
+async function updateDocument(
 	attachmentId: string,
 	updates: {
 		description?: string;
@@ -809,7 +809,7 @@ export async function updateDocument(
 /**
  * Move document to different folder
  */
-export async function moveDocument(
+async function moveDocument(
 	attachmentId: string,
 	newFolderPath: string,
 ): Promise<ActionResult> {
@@ -880,7 +880,7 @@ export async function moveDocument(
 /**
  * List documents with filters
  */
-export async function listDocuments(
+async function listDocuments(
 	options: ListFilesOptions,
 ): Promise<ActionResult<Awaited<ReturnType<typeof listDocumentsService>>>> {
 	try {
@@ -928,7 +928,7 @@ type CreateFolderParams = {
 	contextId?: string;
 };
 
-export async function createFolder(
+async function createFolder(
 	params: CreateFolderParams,
 ): Promise<ActionResult<{ folderId: string }>> {
 	try {
@@ -1009,7 +1009,7 @@ export async function createFolder(
 /**
  * Delete a folder
  */
-export async function deleteFolder(folderId: string): Promise<ActionResult> {
+async function deleteFolder(folderId: string): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1088,7 +1088,7 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
 /**
  * Get document statistics
  */
-export async function getDocumentStatistics(
+async function getDocumentStatistics(
 	companyId: string,
 ): Promise<ActionResult<Awaited<ReturnType<typeof getDocumentStatsService>>>> {
 	try {

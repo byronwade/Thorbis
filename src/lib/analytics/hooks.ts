@@ -61,7 +61,7 @@ export function usePageView(): void {
  *   trackFormSubmit({ success: true });
  * };
  */
-export function useFormTracking(formType: string) {
+function useFormTracking(formType: string) {
 	const track = useCallback((event: AnalyticsEvent) => {
 		trackEvent(event);
 	}, []);
@@ -197,7 +197,7 @@ export function useFeatureTracking() {
  *
  * trackModalOpen("job-details");
  */
-export function useUITracking() {
+function useUITracking() {
 	const track = useCallback((event: AnalyticsEvent) => {
 		trackEvent(event);
 	}, []);

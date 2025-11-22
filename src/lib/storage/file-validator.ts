@@ -18,7 +18,7 @@
  * Blocked file extensions - Executable and potentially dangerous files
  * These can never be uploaded regardless of context
  */
-export const BLOCKED_EXTENSIONS = [
+const BLOCKED_EXTENSIONS = [
 	// Windows executables
 	".exe",
 	".bat",
@@ -117,7 +117,7 @@ export const BLOCKED_EXTENSIONS = [
 /**
  * File size limits by context (in bytes)
  */
-export const SIZE_LIMITS = {
+const SIZE_LIMITS = {
 	avatar: 5 * 1024 * 1024, // 5MB
 	image: 20 * 1024 * 1024, // 20MB
 	document: 100 * 1024 * 1024, // 100MB
@@ -131,7 +131,7 @@ export const SIZE_LIMITS = {
 /**
  * Allowed MIME types by category
  */
-export const ALLOWED_MIME_TYPES = {
+const ALLOWED_MIME_TYPES = {
 	image: [
 		"image/jpeg",
 		"image/png",
@@ -351,7 +351,7 @@ export async function validateFile(
 /**
  * Check if extension is blocked
  */
-export function isBlockedExtension(extension: string): boolean {
+function isBlockedExtension(extension: string): boolean {
 	const ext = extension.toLowerCase();
 	return BLOCKED_EXTENSIONS.includes(ext);
 }
@@ -359,7 +359,7 @@ export function isBlockedExtension(extension: string): boolean {
 /**
  * Get file extension from filename
  */
-export function getFileExtension(filename: string): string {
+function getFileExtension(filename: string): string {
 	const lastDot = filename.lastIndexOf(".");
 	if (lastDot === -1 || lastDot === filename.length - 1) {
 		return "";
@@ -518,7 +518,7 @@ export function formatFileSize(bytes: number): string {
 /**
  * Validate image file
  */
-export async function validateImage(
+async function validateImage(
 	file: File,
 	maxSize = SIZE_LIMITS.image,
 ): Promise<ValidationResult> {
@@ -534,7 +534,7 @@ export async function validateImage(
 /**
  * Validate document file
  */
-export async function validateDocument(
+async function validateDocument(
 	file: File,
 	maxSize = SIZE_LIMITS.document,
 ): Promise<ValidationResult> {
@@ -549,7 +549,7 @@ export async function validateDocument(
 /**
  * Validate video file
  */
-export async function validateVideo(
+async function validateVideo(
 	file: File,
 	maxSize = SIZE_LIMITS.video,
 ): Promise<ValidationResult> {
@@ -564,7 +564,7 @@ export async function validateVideo(
 /**
  * Validate avatar image
  */
-export async function validateAvatar(file: File): Promise<ValidationResult> {
+async function validateAvatar(file: File): Promise<ValidationResult> {
 	const result = await validateImage(file, SIZE_LIMITS.avatar);
 
 	// Additional avatar-specific validation
@@ -580,7 +580,7 @@ export async function validateAvatar(file: File): Promise<ValidationResult> {
 /**
  * Batch validate multiple files
  */
-export async function validateFiles(
+async function validateFiles(
 	files: File[],
 	options: ValidationOptions = {},
 ): Promise<Map<string, ValidationResult>> {
@@ -599,7 +599,7 @@ export async function validateFiles(
 /**
  * Check if file passes validation
  */
-export async function isValidFile(
+async function isValidFile(
 	file: File,
 	options: ValidationOptions = {},
 ): Promise<boolean> {
@@ -610,7 +610,7 @@ export async function isValidFile(
 /**
  * Get validation errors as string
  */
-export function getValidationErrorMessage(result: ValidationResult): string {
+function getValidationErrorMessage(result: ValidationResult): string {
 	if (result.valid) {
 		return "";
 	}

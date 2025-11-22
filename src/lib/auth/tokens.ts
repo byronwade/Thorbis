@@ -65,7 +65,7 @@ export async function createEmailVerificationToken(
  * @param email - User's email address
  * @param expiresInHours - Token expiration in hours (default: 1)
  */
-export async function createPasswordResetToken(
+async function createPasswordResetToken(
 	email: string,
 	expiresInHours = 1,
 ): Promise<{ token: string; expiresAt: Date }> {
@@ -98,7 +98,7 @@ export async function createPasswordResetToken(
  * @param email - User's email address
  * @param expiresInMinutes - Token expiration in minutes (default: 15)
  */
-export async function createMagicLinkToken(
+async function createMagicLinkToken(
 	email: string,
 	expiresInMinutes = 15,
 ): Promise<{ token: string; expiresAt: Date }> {
@@ -176,7 +176,7 @@ export async function verifyAndConsumeToken(
 /**
  * Delete expired tokens (cleanup)
  */
-export async function cleanupExpiredTokens() {
+async function cleanupExpiredTokens() {
 	const supabase = await createClient();
 	if (!supabase) {
 		throw new Error("Supabase client not configured");
@@ -199,7 +199,7 @@ export async function cleanupExpiredTokens() {
  * @param email - User's email address
  * @param type - Optional: specific token type to delete
  */
-export async function deleteTokensForEmail(
+async function deleteTokensForEmail(
 	email: string,
 	type?: "email_verification" | "password_reset" | "magic_link",
 ) {

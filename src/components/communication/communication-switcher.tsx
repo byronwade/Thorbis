@@ -12,6 +12,7 @@ import {
     MessageSquare,
     Phone,
     Ticket,
+    Users,
     ChevronDown,
     Check,
 } from "lucide-react";
@@ -25,28 +26,22 @@ export function CommunicationSwitcher() {
 	const channels = [
 		{
 			name: "Email",
-			url: "/dashboard/communication",
+			url: "/dashboard/communication/email?folder=inbox",
 			icon: Mail,
 			isActive: 
-				pathname === "/dashboard/communication" || 
-				pathname?.startsWith("/dashboard/communication/email") ||
-				pathname?.startsWith("/dashboard/communication/drafts") ||
-				pathname?.startsWith("/dashboard/communication/sent") ||
-				pathname?.startsWith("/dashboard/communication/archive") ||
-				pathname?.startsWith("/dashboard/communication/snoozed") ||
-				pathname?.startsWith("/dashboard/communication/spam") ||
-				pathname?.startsWith("/dashboard/communication/trash"),
+				pathname === "/dashboard/communication" || // Legacy support
+				pathname?.startsWith("/dashboard/communication/email"),
 		},
 		{
 			name: "SMS",
-			url: "/dashboard/communication/text",
+			url: "/dashboard/communication/sms",
 			icon: MessageSquare,
-			isActive: pathname?.startsWith("/dashboard/communication/text"),
+			isActive: pathname?.startsWith("/dashboard/communication/sms"),
 		},
 		{
 			name: "Teams",
-			url: "/dashboard/communication/teams",
-			icon: Phone,
+			url: "/dashboard/communication/teams?channel=general",
+			icon: Users,
 			isActive: pathname?.startsWith("/dashboard/communication/teams"),
 		},
 		{

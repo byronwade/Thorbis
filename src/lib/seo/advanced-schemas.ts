@@ -26,7 +26,7 @@ export type VideoObjectSchemaOptions = {
 	keywords?: string[];
 };
 
-export function createVideoObjectSchema(options: VideoObjectSchemaOptions) {
+function createVideoObjectSchema(options: VideoObjectSchemaOptions) {
 	const {
 		name,
 		description,
@@ -260,7 +260,7 @@ export type CourseSchemaOptions = {
 	}>;
 };
 
-export function createCourseSchema(options: CourseSchemaOptions) {
+function createCourseSchema(options: CourseSchemaOptions) {
 	const { name, description, provider, url, courseCode, hasCourseInstance } =
 		options;
 
@@ -303,7 +303,7 @@ export type PersonSchemaOptions = {
 	award?: string[]; // Awards and recognition
 };
 
-export function createPersonSchema(options: PersonSchemaOptions) {
+function createPersonSchema(options: PersonSchemaOptions) {
 	const {
 		name,
 		jobTitle,
@@ -367,7 +367,7 @@ export type CollectionPageSchemaOptions = {
 	}>;
 };
 
-export function createCollectionPageSchema(
+function createCollectionPageSchema(
 	options: CollectionPageSchemaOptions,
 ) {
 	const { name, description, url, about, hasPart } = options;
@@ -402,7 +402,7 @@ export type QAPageSchemaOptions = {
 	};
 };
 
-export function createQAPageSchema(options: QAPageSchemaOptions) {
+function createQAPageSchema(options: QAPageSchemaOptions) {
 	const { question, acceptedAnswer } = options;
 
 	return {
@@ -493,10 +493,7 @@ export function createEnhancedReviewSchema(
 	};
 
 	// Add required SoftwareApplication properties if type is SoftwareApplication
-	if (
-		itemReviewed.type === "SoftwareApplication" ||
-		!itemReviewed.type
-	) {
+	if (itemReviewed.type === "SoftwareApplication" || !itemReviewed.type) {
 		schemaBase.applicationCategory =
 			itemReviewed.applicationCategory ?? "BusinessApplication";
 		schemaBase.operatingSystem = itemReviewed.operatingSystem ?? "Web";

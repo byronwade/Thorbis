@@ -414,7 +414,7 @@ export class GenericCSVConnector extends BaseDataConnector {
  * Housecall Pro CSV Connector
  * Extends GenericCSVConnector with Housecall Pro-specific transformations
  */
-export class HousecallProConnector extends GenericCSVConnector {
+class HousecallProConnector extends GenericCSVConnector {
 	constructor(config: DataConnectorConfig, parseOptions: CSVParseOptions = {}) {
 		super(config, {
 			...parseOptions,
@@ -450,7 +450,7 @@ export class HousecallProConnector extends GenericCSVConnector {
  * Jobber CSV Connector
  * Extends GenericCSVConnector with Jobber-specific transformations
  */
-export class JobberConnector extends GenericCSVConnector {
+class JobberConnector extends GenericCSVConnector {
 	constructor(config: DataConnectorConfig, parseOptions: CSVParseOptions = {}) {
 		super(config, {
 			...parseOptions,

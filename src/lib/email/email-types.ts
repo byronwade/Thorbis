@@ -236,7 +236,7 @@ export interface VerificationCompleteProps extends BaseEmailProps {
 }
 
 // Validation Schemas
-export const emailAddressSchema = z
+const emailAddressSchema = z
 	.string()
 	.email("Invalid email address")
 	.min(1, "Email is required");

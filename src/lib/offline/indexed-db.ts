@@ -545,7 +545,7 @@ export async function getAllRecords<T>(storeName: StoreName): Promise<T[]> {
 /**
  * Get records by index
  */
-export async function getRecordsByIndex<T>(
+async function getRecordsByIndex<T>(
 	storeName: StoreName,
 	indexName: string,
 	value: any,
@@ -599,7 +599,7 @@ export async function deleteRecord(
 /**
  * Clear all records from a store
  */
-export async function clearStore(storeName: StoreName): Promise<void> {
+async function clearStore(storeName: StoreName): Promise<void> {
 	const db = await openDatabase();
 
 	return new Promise((resolve, reject) => {
@@ -659,7 +659,7 @@ export function isTempId(id: string): boolean {
 /**
  * Get unsynced records from a store
  */
-export async function getUnsyncedRecords<T extends { synced: boolean }>(
+async function getUnsyncedRecords<T extends { synced: boolean }>(
 	storeName: StoreName,
 ): Promise<T[]> {
 	return getRecordsByIndex<T>(storeName, "synced", false);
@@ -669,7 +669,7 @@ export async function getUnsyncedRecords<T extends { synced: boolean }>(
  * Clear old cached data (older than 7 days) from all stores
  * Removes synced records that are stale to free up storage space
  */
-export async function clearOldCache(): Promise<void> {
+async function clearOldCache(): Promise<void> {
 	const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 	const db = await openDatabase();
 

@@ -11,7 +11,7 @@
  * 1. Appointment Confirmation
  * Sent: Immediately after appointment is scheduled
  */
-export function smsAppointmentConfirmation(data: {
+function smsAppointmentConfirmation(data: {
 	customerName: string;
 	jobType: string;
 	scheduledDate: string;
@@ -26,7 +26,7 @@ export function smsAppointmentConfirmation(data: {
  * 2. Appointment Reminder
  * Sent: 24 hours before appointment
  */
-export function smsAppointmentReminder(data: {
+function smsAppointmentReminder(data: {
 	customerName: string;
 	jobType: string;
 	scheduledTime: string;
@@ -39,7 +39,7 @@ export function smsAppointmentReminder(data: {
  * 3. Technician En Route
  * Sent: When technician starts heading to job site
  */
-export function smsTechEnRoute(data: {
+function smsTechEnRoute(data: {
 	customerName: string;
 	technicianName: string;
 	estimatedArrival: string;
@@ -55,7 +55,7 @@ export function smsTechEnRoute(data: {
  * 4. Job Completion with Payment Link
  * Sent: After service is completed
  */
-export function smsJobComplete(data: {
+function smsJobComplete(data: {
 	customerName: string;
 	jobType: string;
 	totalAmount?: number;
@@ -71,7 +71,7 @@ export function smsJobComplete(data: {
  * 5. Verification Code (2FA)
  * Sent: For two-factor authentication or email verification
  */
-export function smsVerificationCode(data: {
+function smsVerificationCode(data: {
 	code: string;
 	expiresInMinutes: number;
 }): string {
@@ -82,7 +82,7 @@ export function smsVerificationCode(data: {
  * 6. Password Reset Code
  * Sent: For password reset verification
  */
-export function smsPasswordResetCode(data: {
+function smsPasswordResetCode(data: {
 	code: string;
 	expiresInMinutes: number;
 }): string {
@@ -93,7 +93,7 @@ export function smsPasswordResetCode(data: {
  * 7. Payment Reminder
  * Sent: 7 days after invoice is overdue
  */
-export function smsPaymentReminder(data: {
+function smsPaymentReminder(data: {
 	customerName: string;
 	invoiceNumber: string;
 	totalAmount: number;
@@ -107,7 +107,7 @@ export function smsPaymentReminder(data: {
  * 8. Service Reminder
  * Sent: Annual maintenance reminder
  */
-export function smsServiceReminder(data: {
+function smsServiceReminder(data: {
 	customerName: string;
 	serviceType: string;
 	equipmentType: string;
@@ -120,7 +120,7 @@ export function smsServiceReminder(data: {
  * 9. Schedule Change Notification
  * Sent: When appointment is rescheduled or cancelled
  */
-export function smsScheduleChange(data: {
+function smsScheduleChange(data: {
 	customerName: string;
 	changeType: "rescheduled" | "cancelled";
 	originalDate?: string;
@@ -139,7 +139,7 @@ export function smsScheduleChange(data: {
  * 10. Review Request
  * Sent: 2-3 days after job completion
  */
-export function smsReviewRequest(data: {
+function smsReviewRequest(data: {
 	customerName: string;
 	companyName: string;
 	technicianName: string;
@@ -152,7 +152,7 @@ export function smsReviewRequest(data: {
  * 11. Urgent Alert
  * Sent: For emergency situations or critical updates
  */
-export function smsUrgentAlert(data: {
+function smsUrgentAlert(data: {
 	customerName: string;
 	message: string;
 	contactNumber?: string;
@@ -168,7 +168,7 @@ export function smsUrgentAlert(data: {
  * Single segment: 160 characters
  * Multi-segment: 153 characters per segment (with concatenation header)
  */
-export function getSmsSegmentCount(message: string): number {
+function getSmsSegmentCount(message: string): number {
 	const length = message.length;
 	if (length <= 160) return 1;
 	return Math.ceil(length / 153);
@@ -178,7 +178,7 @@ export function getSmsSegmentCount(message: string): number {
  * Helper: Validate SMS message length
  * Returns true if message is within recommended limits
  */
-export function validateSmsLength(message: string): {
+function validateSmsLength(message: string): {
 	valid: boolean;
 	length: number;
 	segments: number;
@@ -213,7 +213,7 @@ export function validateSmsLength(message: string): {
  * Helper: Shorten URLs using a URL shortener service
  * (Placeholder - implement with Bitly, TinyURL, or custom shortener)
  */
-export async function shortenUrl(longUrl: string): Promise<string> {
+async function shortenUrl(longUrl: string): Promise<string> {
 	// TODO: Implement URL shortening service integration
 	// For now, return the original URL
 	return longUrl;

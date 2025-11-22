@@ -17,7 +17,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const SchoolSchema = z.object({
+const SchoolSchema = z.object({
 	name: z.string(),
 	type: z.string().optional(), // elementary, middle, high, university
 	operator: z.string().optional(), // public, private, charter
@@ -26,7 +26,7 @@ export const SchoolSchema = z.object({
 	lon: z.number(),
 });
 
-export const SchoolsDataSchema = z.object({
+const SchoolsDataSchema = z.object({
 	schools: z.array(SchoolSchema),
 	closestSchool: z.number().optional(), // meters
 	totalSchools: z.number(),
@@ -37,7 +37,7 @@ export const SchoolsDataSchema = z.object({
 export type School = z.infer<typeof SchoolSchema>;
 export type SchoolsData = z.infer<typeof SchoolsDataSchema>;
 
-export class SchoolsService {
+class SchoolsService {
 	private readonly cache: Map<
 		string,
 		{ data: SchoolsData; timestamp: number }

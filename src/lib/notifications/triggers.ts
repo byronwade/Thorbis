@@ -200,7 +200,7 @@ export async function notifyJobCreated(params: JobNotificationParams) {
 /**
  * Notify user when a job is updated
  */
-export async function notifyJobUpdated(params: JobNotificationParams) {
+async function notifyJobUpdated(params: JobNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -229,7 +229,7 @@ export async function notifyJobUpdated(params: JobNotificationParams) {
 /**
  * Notify user when a job is completed
  */
-export async function notifyJobCompleted(params: JobNotificationParams) {
+async function notifyJobCompleted(params: JobNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -294,7 +294,7 @@ export async function notifyPaymentReceived(params: PaymentNotificationParams) {
 /**
  * Notify user when an invoice payment is due soon
  */
-export async function notifyPaymentDue(
+async function notifyPaymentDue(
 	params: PaymentNotificationParams & { daysUntilDue: number },
 ) {
 	const enabled = await isNotificationEnabled(
@@ -332,7 +332,7 @@ export async function notifyPaymentDue(
 /**
  * Notify user when they receive a new message
  */
-export async function notifyNewMessage(params: MessageNotificationParams) {
+async function notifyNewMessage(params: MessageNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -362,7 +362,7 @@ export async function notifyNewMessage(params: MessageNotificationParams) {
 /**
  * Notify user when they miss a call
  */
-export async function notifyMissedCall(params: MessageNotificationParams) {
+async function notifyMissedCall(params: MessageNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -396,7 +396,7 @@ export async function notifyMissedCall(params: MessageNotificationParams) {
 /**
  * Notify user when a new team member joins
  */
-export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
+async function notifyTeamMemberAdded(params: TeamNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -426,7 +426,7 @@ export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
 /**
  * Notify user when they're assigned to a team
  */
-export async function notifyTeamAssignment(params: TeamNotificationParams) {
+async function notifyTeamAssignment(params: TeamNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -459,7 +459,7 @@ export async function notifyTeamAssignment(params: TeamNotificationParams) {
 /**
  * Notify user with a custom alert
  */
-export async function notifyAlert(params: AlertNotificationParams) {
+async function notifyAlert(params: AlertNotificationParams) {
 	const enabled = await isNotificationEnabled(
 		params.userId,
 		params.companyId,
@@ -489,7 +489,7 @@ export async function notifyAlert(params: AlertNotificationParams) {
 /**
  * Notify user with a system message
  */
-export async function notifySystem(params: SystemNotificationParams) {
+async function notifySystem(params: SystemNotificationParams) {
 	return createNotification(
 		"system",
 		params.userId,

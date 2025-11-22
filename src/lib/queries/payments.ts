@@ -97,7 +97,7 @@ export async function getPaymentsPageData(
  * Fetch complete payment data including customer, invoice, job, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getPaymentComplete = cache(
+const getPaymentComplete = cache(
 	async (paymentId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

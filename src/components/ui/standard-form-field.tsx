@@ -145,7 +145,7 @@ interface StandardFormSectionProps {
 	className?: string;
 }
 
-export function StandardFormSection({
+function StandardFormSection({
 	title,
 	description,
 	children,

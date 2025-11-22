@@ -113,7 +113,7 @@ export async function getInvoicesStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function InvoicesStats() {
+async function InvoicesStats() {
 	const invoiceStats = await getInvoicesStatsData();
 
 	if (invoiceStats.length === 0) {

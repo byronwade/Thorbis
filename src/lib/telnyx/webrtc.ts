@@ -236,14 +236,14 @@ export async function generateWebRTCToken(params: {
 /**
  * Validate WebRTC credential expiration
  */
-export function isCredentialExpired(credential: WebRTCCredential): boolean {
+function isCredentialExpired(credential: WebRTCCredential): boolean {
 	return Date.now() >= credential.expires_at;
 }
 
 /**
  * Get time until credential expires (in seconds)
  */
-export function getCredentialTimeToLive(credential: WebRTCCredential): number {
+function getCredentialTimeToLive(credential: WebRTCCredential): number {
 	const ttl = Math.floor((credential.expires_at - Date.now()) / 1000);
 	return Math.max(0, ttl);
 }
@@ -251,7 +251,7 @@ export function getCredentialTimeToLive(credential: WebRTCCredential): number {
 /**
  * Format SIP URI for calling
  */
-export function formatSIPUri(
+function formatSIPUri(
 	phoneNumber: string,
 	realm = "sip.telnyx.com",
 ): string {
@@ -293,7 +293,7 @@ export type WebRTCClientConfig = {
 /**
  * Create WebRTC client configuration
  */
-export function createWebRTCConfig(
+function createWebRTCConfig(
 	credential: WebRTCCredential,
 	debug = false,
 ): WebRTCClientConfig {
@@ -323,7 +323,7 @@ export function createWebRTCConfig(
  *
  * Provides configuration specific to React Native apps
  */
-export function createReactNativeWebRTCConfig(
+function createReactNativeWebRTCConfig(
 	credential: WebRTCCredential,
 ): WebRTCClientConfig {
 	return createWebRTCConfig(credential, true); // Enable debug for mobile
@@ -332,7 +332,7 @@ export function createReactNativeWebRTCConfig(
 /**
  * Web browser WebRTC configuration helper
  */
-export function createBrowserWebRTCConfig(
+function createBrowserWebRTCConfig(
 	credential: WebRTCCredential,
 ): WebRTCClientConfig {
 	return createWebRTCConfig(credential, false);
@@ -343,7 +343,7 @@ export function createBrowserWebRTCConfig(
  *
  * Checks if the browser/device can connect to STUN/TURN servers
  */
-export async function testWebRTCConnectivity(
+async function testWebRTCConnectivity(
 	credential: WebRTCCredential,
 ): Promise<{
 	success: boolean;

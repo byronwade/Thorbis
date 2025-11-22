@@ -14,7 +14,7 @@ import {
 /**
  * Fetch all categories for the current user's company (client-side)
  */
-export async function fetchCategoriesClient(): Promise<DatabaseCategory[]> {
+async function fetchCategoriesClient(): Promise<DatabaseCategory[]> {
 	const supabase = createBrowserClient();
 
 	if (!supabase) {

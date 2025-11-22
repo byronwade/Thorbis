@@ -99,7 +99,7 @@ export async function getCurrentUserRole() {
  * }
  * ```
  */
-export async function checkPermission(permission: Permission) {
+async function checkPermission(permission: Permission) {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -143,7 +143,7 @@ export async function checkPermission(permission: Permission) {
  * }
  * ```
  */
-export async function checkRole(role: UserRole) {
+async function checkRole(role: UserRole) {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -173,7 +173,7 @@ export async function checkRole(role: UserRole) {
  *
  * @returns true if user is owner
  */
-export async function checkIsOwner() {
+async function checkIsOwner() {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -218,7 +218,7 @@ export async function checkIsOwner() {
  * });
  * ```
  */
-export async function updateTeamMemberRole(
+async function updateTeamMemberRole(
 	input: z.infer<typeof updateRoleSchema>,
 ) {
 	return withErrorHandling(async () => {
@@ -310,7 +310,7 @@ export async function updateTeamMemberRole(
  * });
  * ```
  */
-export async function updateTeamMemberPermissions(
+async function updateTeamMemberPermissions(
 	input: z.infer<typeof updatePermissionsSchema>,
 ) {
 	return withErrorHandling(async () => {
@@ -368,7 +368,7 @@ export async function updateTeamMemberPermissions(
  *
  * @returns List of team members with roles
  */
-export async function getTeamMembersWithRoles() {
+async function getTeamMembersWithRoles() {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -424,7 +424,7 @@ export async function getTeamMembersWithRoles() {
  * });
  * ```
  */
-export async function transferOwnership(input: {
+async function transferOwnership(input: {
 	newOwnerId: string;
 	password: string;
 	reason?: string;
@@ -496,7 +496,7 @@ export async function transferOwnership(input: {
  *
  * @returns List of ownership transfers
  */
-export async function getOwnershipTransferHistory() {
+async function getOwnershipTransferHistory() {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

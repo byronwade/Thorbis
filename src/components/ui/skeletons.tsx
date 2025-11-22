@@ -6,7 +6,7 @@ import { Skeleton } from "./skeleton";
  * Used with Suspense boundaries for streaming SSR
  */
 
-export function KPICardSkeleton() {
+function KPICardSkeleton() {
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -22,7 +22,7 @@ export function KPICardSkeleton() {
 	);
 }
 
-export function ChartSkeleton({ height = "h-[300px]" }: { height?: string }) {
+function ChartSkeleton({ height = "h-[300px]" }: { height?: string }) {
 	return (
 		<Card>
 			<CardHeader>
@@ -166,7 +166,7 @@ export function DataTableListSkeleton({
  * @param rightSections - Number of sections in right column (default: 3)
  * @param showTabs - Show tab interface at bottom (default: true)
  */
-export function WorkDetailSkeleton({
+function WorkDetailSkeleton({
 	showStats = true,
 	leftSections = 3,
 	rightSections = 3,

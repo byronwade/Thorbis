@@ -210,7 +210,7 @@ function ContextMenuSeparator({
 }: React.ComponentProps<typeof ContextMenuPrimitive.Separator>) {
 	return (
 		<ContextMenuPrimitive.Separator
-			className={cn("bg-border -mx-1 my-1 h-px", className)}
+			className={cn("-mx-1 my-1 h-0", className)}
 			data-slot="context-menu-separator"
 			{...props}
 		/>
@@ -238,15 +238,15 @@ export {
 	ContextMenuTrigger,
 	ContextMenuContent,
 	ContextMenuItem,
-	ContextMenuCheckboxItem,
-	ContextMenuRadioItem,
-	ContextMenuLabel,
+	
+	
+	
 	ContextMenuSeparator,
-	ContextMenuShortcut,
-	ContextMenuGroup,
-	ContextMenuPortal,
-	ContextMenuSub,
-	ContextMenuSubContent,
-	ContextMenuSubTrigger,
-	ContextMenuRadioGroup,
+	
+	
+	
+	
+	
+	
+	
 };

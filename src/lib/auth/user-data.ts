@@ -134,7 +134,7 @@ function generateAvatar(email?: string | null): string {
  *
  * Extracts initials from user name for avatar fallback
  */
-export function getUserInitials(name: string): string {
+function getUserInitials(name: string): string {
 	return name
 		.split(" ")
 		.map((n) => n[0])
@@ -148,7 +148,7 @@ export function getUserInitials(name: string): string {
  *
  * Returns first name only for compact display
  */
-export function getUserDisplayName(name: string): string {
+function getUserDisplayName(name: string): string {
 	return name.split(" ")[0] || name;
 }
 
@@ -157,7 +157,7 @@ export function getUserDisplayName(name: string): string {
  *
  * Security check for features that require verified email
  */
-export const isUserEmailVerified = cache(async (): Promise<boolean> => {
+const isUserEmailVerified = cache(async (): Promise<boolean> => {
 	const user = await getCurrentUser();
 	if (!user) {
 		return false;
@@ -323,7 +323,7 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
  * Securely updates user profile data
  * RLS ensures users can only update their own profile
  */
-export async function updateUserProfile(
+async function updateUserProfile(
 	updates: Partial<{
 		full_name: string;
 		bio: string;

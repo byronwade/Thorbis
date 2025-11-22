@@ -369,7 +369,7 @@ export function getRelatedIntegrations(
 	return [...related, ...others];
 }
 
-export function getFeaturedIntegrations(
+function getFeaturedIntegrations(
 	slugs: string[],
 ): MarketingIntegrationContent[] {
 	return slugs

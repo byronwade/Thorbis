@@ -610,124 +610,166 @@
 	}
 }
 
-/* Email content styling */
-.email-content {
-	/* Reset common email styles */
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* Email Content Styling - Comprehensive */
+.email-content-wrapper {
+	/* Container that isolates email content from our app styles */
+	width: 100%;
+	/* Reset any inherited styles that might interfere */
 	font-size: 14px;
-	line-height: 1.5;
-	color: hsl(var(--foreground));
-
-	/* Handle dark mode */
-	.dark & {
-		color: hsl(var(--foreground));
-	}
+	line-height: 1.6;
 }
 
-.email-content * {
-	/* Reset margins and padding */
-	margin: 0;
-	padding: 0;
+/* Let email's own styles work - minimal interference */
+.email-content-html {
+	display: block;
+	width: 100%;
 	box-sizing: border-box;
+	color: hsl(var(--foreground));
 }
 
-.email-content p {
+/* Links */
+.email-content-html a {
+	color: hsl(var(--primary));
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.email-content-html a:hover {
+	text-decoration: none;
+}
+
+/* Headers - only if email doesn't specify */
+.email-content-html h1:not([style*="color"]),
+.email-content-html h2:not([style*="color"]),
+.email-content-html h3:not([style*="color"]),
+.email-content-html h4:not([style*="color"]),
+.email-content-html h5:not([style*="color"]),
+.email-content-html h6:not([style*="color"]) {
+	color: hsl(var(--foreground));
+}
+
+.email-content-html h1 { margin: 1.5em 0 0.5em; font-size: 1.5em; font-weight: 600; line-height: 1.3; }
+.email-content-html h2 { margin: 1.5em 0 0.5em; font-size: 1.3em; font-weight: 600; line-height: 1.3; }
+.email-content-html h3 { margin: 1.5em 0 0.5em; font-size: 1.1em; font-weight: 600; line-height: 1.3; }
+.email-content-html h4 { margin: 1.5em 0 0.5em; font-size: 1em; font-weight: 600; line-height: 1.3; }
+.email-content-html h5 { margin: 1.5em 0 0.5em; font-size: 0.9em; font-weight: 600; line-height: 1.3; }
+.email-content-html h6 { margin: 1.5em 0 0.5em; font-size: 0.85em; font-weight: 600; line-height: 1.3; }
+
+/* Paragraphs - only if email doesn't specify */ .email-content-html p:not([style*="color"]) {
+	color: hsl(var(--foreground));
+}
+
+.email-content-html p {
 	margin-bottom: 1em;
-	line-height: 1.5;
+	line-height: 1.6;
 }
 
-.email-content h1,
-.email-content h2,
-.email-content h3,
-.email-content h4,
-.email-content h5,
-.email-content h6 {
-	margin: 1.5em 0 0.5em 0;
-	font-weight: 600;
-	line-height: 1.2;
+.email-content-html p:last-child {
+	margin-bottom: 0;
 }
 
-.email-content h1 { font-size: 1.5em; }
-.email-content h2 { font-size: 1.25em; }
-.email-content h3 { font-size: 1.125em; }
-.email-content h4 { font-size: 1em; }
-.email-content h5 { font-size: 0.875em; }
-.email-content h6 { font-size: 0.75em; }
-
-.email-content ul,
-.email-content ol {
+/* Lists */
+.email-content-html ul,
+.email-content-html ol {
 	margin: 1em 0;
 	padding-left: 2em;
 }
 
-.email-content li {
-	margin-bottom: 0.5em;
+.email-content-html li:not([style*="color"]) {
+	color: hsl(var(--foreground));
 }
 
-.email-content blockquote {
-	border-left: 4px solid hsl(var(--border));
+.email-content-html li {
+	margin-bottom: 0.25em;
+	line-height: 1.6;
+}
+
+/* Blockquotes */
+.email-content-html blockquote {
+	border-left: 3px solid hsl(var(--border));
 	padding-left: 1em;
 	margin: 1em 0;
-	font-style: italic;
 	color: hsl(var(--muted-foreground));
+	font-style: italic;
 }
 
-.email-content a {
-	color: hsl(var(--primary));
-	text-decoration: underline;
+/* Code */
+.email-content-html code {
+	background-color: hsl(var(--muted));
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 0.9em;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-.email-content a:hover {
-	color: hsl(var(--primary));
-	text-decoration: none;
-}
-
-.email-content img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 4px;
+.email-content-html pre {
+	background-color: hsl(var(--muted));
+	padding: 1em;
+	border-radius: 6px;
+	overflow-x: auto;
 	margin: 1em 0;
 }
 
-.email-content table {
+.email-content-html pre code {
+	background-color: transparent;
+	padding: 0;
+}
+
+/* Tables */
+.email-content-html table {
 	width: 100%;
+	max-width: 100%;
 	border-collapse: collapse;
 	margin: 1em 0;
+	table-layout: auto;
 }
 
-.email-content th,
-.email-content td {
-	border: 1px solid hsl(var(--border));
+.email-content-html th,
+.email-content-html td {
 	padding: 0.5em;
 	text-align: left;
 }
 
-.email-content th {
-	background-color: hsl(var(--muted));
+.email-content-html th {
 	font-weight: 600;
 }
 
-.email-content pre {
-	background-color: hsl(var(--muted));
-	padding: 1em;
-	border-radius: 4px;
-	overflow-x: auto;
-	margin: 1em 0;
-	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-	font-size: 0.875em;
-	line-height: 1.4;
+/* Images - Safety: Prevent images from breaking layout */
+.email-content-html img {
+	max-width: 100%;
+	height: auto;
+	display: block;
 }
 
-.email-content code {
-	background-color: hsl(var(--muted));
-	padding: 0.125em 0.25em;
-	border-radius: 3px;
-	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-	font-size: 0.875em;
-}
-
-.email-content hr {
+/* Horizontal rules */
+.email-content-html hr {
 	border: none;
 	border-top: 1px solid hsl(var(--border));
 	margin: 2em 0;
+}
+
+/* Strong/Bold */
+.email-content-html strong,
+.email-content-html b {
+	font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.email-content-html em,
+.email-content-html i {
+	font-style: italic;
+}
+
+/* Safety: Prevent long words/URLs from breaking layout */
+.email-content-html * {
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	box-sizing: border-box;
+}
+
+/* Text content fallback */
+.text-content {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	line-height: 1.6;
 }

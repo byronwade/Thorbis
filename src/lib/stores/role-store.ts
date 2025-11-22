@@ -121,7 +121,7 @@ export const useRoleStore = create<RoleStore>()(
  * }, []);
  * ```
  */
-export async function initializeRoleFromDatabase() {
+async function initializeRoleFromDatabase() {
 	try {
 		// Import dynamically to avoid circular dependencies
 		const { getCurrentUserRole } = await import("@/actions/roles");

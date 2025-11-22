@@ -230,7 +230,7 @@ export async function checkProductionReadiness(): Promise<ProductionReadinessSta
 /**
  * Get production readiness summary for display
  */
-export function getProductionReadinessSummary(
+function getProductionReadinessSummary(
 	status: ProductionReadinessStatus,
 ): string {
 	const lines: string[] = [];

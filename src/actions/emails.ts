@@ -116,7 +116,7 @@ export async function sendPasswordChanged(
 /**
  * Send magic link for passwordless authentication
  */
-export async function sendMagicLink(
+async function sendMagicLink(
 	to: string,
 	props: MagicLinkProps,
 ): Promise<EmailSendResult> {
@@ -135,7 +135,7 @@ export async function sendMagicLink(
 /**
  * Send job confirmation email
  */
-export async function sendJobConfirmation(
+async function sendJobConfirmation(
 	to: string,
 	props: JobConfirmationProps,
 ): Promise<EmailSendResult> {
@@ -151,7 +151,7 @@ export async function sendJobConfirmation(
 /**
  * Send appointment reminder (24h before)
  */
-export async function sendAppointmentReminder(
+async function sendAppointmentReminder(
 	to: string,
 	props: AppointmentReminderProps,
 ): Promise<EmailSendResult> {
@@ -166,7 +166,7 @@ export async function sendAppointmentReminder(
 /**
  * Send technician en route notification
  */
-export async function sendTechEnRoute(
+async function sendTechEnRoute(
 	to: string,
 	props: TechEnRouteProps,
 ): Promise<EmailSendResult> {
@@ -181,7 +181,7 @@ export async function sendTechEnRoute(
 /**
  * Send job completion notification
  */
-export async function sendJobComplete(
+async function sendJobComplete(
 	to: string,
 	props: JobCompleteProps,
 ): Promise<EmailSendResult> {
@@ -201,7 +201,7 @@ export async function sendJobComplete(
 /**
  * Send invoice to customer
  */
-export async function sendInvoice(
+async function sendInvoice(
 	to: string,
 	props: InvoiceSentProps,
 ): Promise<EmailSendResult> {
@@ -220,7 +220,7 @@ export async function sendInvoice(
 /**
  * Send payment confirmation
  */
-export async function sendPaymentReceived(
+async function sendPaymentReceived(
 	to: string,
 	props: PaymentReceivedProps,
 ): Promise<EmailSendResult> {
@@ -239,7 +239,7 @@ export async function sendPaymentReceived(
 /**
  * Send payment reminder for overdue invoice
  */
-export async function sendPaymentReminder(
+async function sendPaymentReminder(
 	to: string,
 	props: PaymentReminderProps,
 ): Promise<EmailSendResult> {
@@ -258,7 +258,7 @@ export async function sendPaymentReminder(
 /**
  * Send estimate/quote to customer
  */
-export async function sendEstimate(
+async function sendEstimate(
 	to: string,
 	props: EstimateSentProps,
 ): Promise<EmailSendResult> {
@@ -281,7 +281,7 @@ export async function sendEstimate(
 /**
  * Send review request after job completion
  */
-export async function sendReviewRequest(
+async function sendReviewRequest(
 	to: string,
 	props: ReviewRequestProps,
 ): Promise<EmailSendResult> {
@@ -297,7 +297,7 @@ export async function sendReviewRequest(
 /**
  * Send service/maintenance reminder
  */
-export async function sendServiceReminder(
+async function sendServiceReminder(
 	to: string,
 	props: ServiceReminderProps,
 ): Promise<EmailSendResult> {
@@ -312,7 +312,7 @@ export async function sendServiceReminder(
 /**
  * Send welcome email to new customer
  */
-export async function sendWelcomeCustomer(
+async function sendWelcomeCustomer(
 	to: string,
 	props: WelcomeCustomerProps,
 ): Promise<EmailSendResult> {

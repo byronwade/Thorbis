@@ -51,7 +51,7 @@ function createWidget(
  * HVAC Contractor Layout
  * Focus: Equipment specs, system sizing, property details
  */
-export const hvacPreset: LayoutPreset = {
+const hvacPreset: LayoutPreset = {
 	id: "hvac-preset",
 	name: "HVAC Contractor",
 	description:
@@ -109,7 +109,7 @@ export const hvacPreset: LayoutPreset = {
  * Plumbing Contractor Layout
  * Focus: Fixtures, permits, property details
  */
-export const plumbingPreset: LayoutPreset = {
+const plumbingPreset: LayoutPreset = {
 	id: "plumbing-preset",
 	name: "Plumbing Contractor",
 	description: "Optimized for plumbing jobs with fixture and permit tracking",
@@ -149,7 +149,7 @@ export const plumbingPreset: LayoutPreset = {
  * Electrical Contractor Layout
  * Focus: Panels, circuits, permits, code compliance
  */
-export const electricalPreset: LayoutPreset = {
+const electricalPreset: LayoutPreset = {
 	id: "electrical-preset",
 	name: "Electrical Contractor",
 	description: "Optimized for electrical work with panel and circuit tracking",
@@ -189,7 +189,7 @@ export const electricalPreset: LayoutPreset = {
  * Roofing Contractor Layout
  * Focus: Materials, weather, photos
  */
-export const roofingPreset: LayoutPreset = {
+const roofingPreset: LayoutPreset = {
 	id: "roofing-preset",
 	name: "Roofing Contractor",
 	description: "Optimized for roofing jobs with material and weather tracking",
@@ -229,7 +229,7 @@ export const roofingPreset: LayoutPreset = {
  * Landscaping Contractor Layout
  * Focus: Zones, materials, property details
  */
-export const landscapingPreset: LayoutPreset = {
+const landscapingPreset: LayoutPreset = {
 	id: "landscaping-preset",
 	name: "Landscaping Contractor",
 	description:
@@ -262,7 +262,7 @@ export const landscapingPreset: LayoutPreset = {
  * General Contractor Layout
  * Focus: Comprehensive overview with all key information
  */
-export const generalContractorPreset: LayoutPreset = {
+const generalContractorPreset: LayoutPreset = {
 	id: "general-contractor-preset",
 	name: "General Contractor",
 	description: "Comprehensive layout for general construction projects",
@@ -296,7 +296,7 @@ export const generalContractorPreset: LayoutPreset = {
  * Remodeling Contractor Layout
  * Focus: Before/after photos, change orders, detailed costing
  */
-export const remodelingPreset: LayoutPreset = {
+const remodelingPreset: LayoutPreset = {
 	id: "remodeling-preset",
 	name: "Remodeling Contractor",
 	description: "Optimized for remodeling projects with detailed photo tracking",
@@ -320,7 +320,7 @@ export const remodelingPreset: LayoutPreset = {
  * Commercial Construction Layout
  * Focus: Complex project management, multiple teams, detailed tracking
  */
-export const commercialPreset: LayoutPreset = {
+const commercialPreset: LayoutPreset = {
 	id: "commercial-preset",
 	name: "Commercial Construction",
 	description: "Comprehensive layout for large commercial projects",
@@ -378,7 +378,7 @@ export const ALL_PRESETS: LayoutPreset[] = [
 /**
  * Get preset by industry type
  */
-export function getPresetByIndustry(
+function getPresetByIndustry(
 	industry: IndustryType,
 ): LayoutPreset | undefined {
 	return ALL_PRESETS.find((preset) => preset.industry === industry);
@@ -387,7 +387,7 @@ export function getPresetByIndustry(
 /**
  * Get all presets for a specific category
  */
-export function getPresetsByCategory(
+function getPresetsByCategory(
 	category: "residential" | "commercial" | "specialty",
 ): LayoutPreset[] {
 	const residentialIndustries: IndustryType[] = [

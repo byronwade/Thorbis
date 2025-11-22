@@ -45,7 +45,7 @@ export async function getJobsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function JobsStats() {
+async function JobsStats() {
 	const jobStats = await getJobsStatsData();
 	return <StatusPipeline compact stats={jobStats} />;
 }

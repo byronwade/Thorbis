@@ -10,7 +10,7 @@ import type { StatCard } from "@/components/ui/stats-cards";
 /**
  * Format currency from cents to string
  */
-export function formatCurrency(cents: number): string {
+function formatCurrency(cents: number): string {
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -22,21 +22,21 @@ export function formatCurrency(cents: number): string {
 /**
  * Format hours to string
  */
-export function formatHours(hours: number): string {
+function formatHours(hours: number): string {
 	return `${hours.toFixed(1)}h`;
 }
 
 /**
  * Format percentage to string
  */
-export function formatPercentage(value: number): string {
+function formatPercentage(value: number): string {
 	return `${value.toFixed(0)}%`;
 }
 
 /**
  * Generate job stats from metrics
  */
-export function generateJobStats(metrics: {
+function generateJobStats(metrics: {
 	totalAmount: number; // in cents
 	paidAmount: number; // in cents
 	totalLaborHours: number; // decimal hours
@@ -589,7 +589,7 @@ export function generateTeamMemberStatsSimple(metrics: {
 /**
  * Generate contract stats from metrics
  */
-export function generateContractStats(metrics: {
+function generateContractStats(metrics: {
 	status: string;
 	signedAt?: string | null;
 	sentAt?: string | null;
@@ -713,7 +713,7 @@ export function generatePaymentStats(metrics: {
 /**
  * Generate team member stats from metrics (detailed version)
  */
-export function generateTeamMemberStats(
+function generateTeamMemberStats(
 	metrics:
 		| {
 				activeJobsCount: number;

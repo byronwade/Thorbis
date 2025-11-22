@@ -150,7 +150,7 @@ export async function getEquipmentStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function EquipmentStats() {
+async function EquipmentStats() {
 	const equipmentStats = await getEquipmentStatsData();
 
 	if (equipmentStats.length === 0) {

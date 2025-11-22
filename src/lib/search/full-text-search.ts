@@ -157,7 +157,7 @@ export async function searchJobsFullText(
  * Searches across: name, address, city, state, zip_code, notes
  * Returns results ordered by relevance
  */
-export async function searchPropertiesFullText(
+async function searchPropertiesFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
@@ -206,7 +206,7 @@ export async function searchPropertiesFullText(
  * Searches across: name, sku, supplier_sku, description, category, subcategory
  * Returns results ordered by relevance
  */
-export async function searchPriceBookItemsFullText(
+async function searchPriceBookItemsFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
@@ -258,7 +258,7 @@ export async function searchPriceBookItemsFullText(
  * Searches across: equipment_number, name, type, manufacturer, model, serial_number
  * Returns results ordered by relevance
  */
-export async function searchEquipmentFullText(
+async function searchEquipmentFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
@@ -308,7 +308,7 @@ export async function searchEquipmentFullText(
  * Returns combined results from customers, jobs, properties, equipment, etc.
  * Useful for global search functionality
  */
-export async function searchAllEntities(
+async function searchAllEntities(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,

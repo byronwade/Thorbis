@@ -110,7 +110,7 @@ export async function sendVerificationSubmittedEmail(
  * @param recipientEmail - Email address to send to
  * @param verificationTypes - Array of verification types that completed (["toll-free", "10dlc"])
  */
-export async function sendVerificationCompleteEmail(
+async function sendVerificationCompleteEmail(
 	companyId: string,
 	recipientEmail: string,
 	verificationTypes: string[],

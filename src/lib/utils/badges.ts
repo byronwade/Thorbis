@@ -51,7 +51,7 @@ export function getJobStatusBadgeConfig(status: string): BadgeConfig {
 /**
  * Invoice status badge configurations
  */
-export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
+function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		paid: {
 			className:
@@ -97,7 +97,7 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 /**
  * Estimate status badge configurations
  */
-export function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
+function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		accepted: {
 			className: "bg-green-500 hover:bg-green-600 text-white",
@@ -131,7 +131,7 @@ export function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
 /**
  * Contract status badge configurations
  */
-export function getContractStatusBadgeConfig(status: string): BadgeConfig {
+function getContractStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		signed: {
 			className:
@@ -176,7 +176,7 @@ export function getContractStatusBadgeConfig(status: string): BadgeConfig {
 /**
  * Customer status badge configurations
  */
-export function getCustomerStatusBadgeConfig(status: string): BadgeConfig {
+function getCustomerStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		active: {
 			className:

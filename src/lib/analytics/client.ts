@@ -78,7 +78,7 @@ export function trackEvent(event: AnalyticsEvent): void {
 /**
  * Track multiple events in batch
  */
-export function trackEvents(events: AnalyticsEvent[]): void {
+function trackEvents(events: AnalyticsEvent[]): void {
 	for (const event of events) {
 		trackEvent(event);
 	}

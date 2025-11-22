@@ -137,7 +137,7 @@ export async function getAppointmentStats(companyIdOverride?: string) {
  * Fetch complete appointment data including customer, property, job, assigned_user, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getAppointmentComplete = cache(
+const getAppointmentComplete = cache(
 	async (appointmentId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

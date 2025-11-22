@@ -18,7 +18,7 @@ import { z } from "zod";
 // Types and Schemas
 // ============================================================================
 
-export const SocialEnrichmentSchema = z.object({
+const SocialEnrichmentSchema = z.object({
 	profiles: z.object({
 		linkedin: z
 			.object({
@@ -59,7 +59,7 @@ export type SocialEnrichment = z.infer<typeof SocialEnrichmentSchema>;
 // Social Enrichment Service
 // ============================================================================
 
-export class SocialEnrichmentService {
+class SocialEnrichmentService {
 	private readonly rapidApiKey: string | undefined;
 	private readonly twitterBearerToken: string | undefined;
 	private readonly facebookAppId: string | undefined;

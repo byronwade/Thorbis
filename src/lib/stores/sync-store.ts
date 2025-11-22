@@ -206,18 +206,18 @@ export const useSyncStore = create<SyncState>()(
 );
 
 // Hook to get active operations count
-export const useActiveOperationsCount = () =>
+const useActiveOperationsCount = () =>
 	useSyncStore(
 		(state) =>
 			state.operations.filter((op) => op.status === "in_progress").length,
 	);
 
 // Hook to get queued operations count
-export const useQueuedOperationsCount = () =>
+const useQueuedOperationsCount = () =>
 	useSyncStore((state) => state.offlineQueue.length);
 
 // Hook to get if syncing
-export const useIsSyncing = () =>
+const useIsSyncing = () =>
 	useSyncStore((state) =>
 		state.operations.some((op) => op.status === "in_progress"),
 	);

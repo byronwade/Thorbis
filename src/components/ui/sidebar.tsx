@@ -323,12 +323,6 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 			className={cn(
 				"bg-background relative flex w-full flex-col overflow-hidden rounded-tl-xl",
 				"h-full",
-				// Base inset styles (removed left margin classes)
-				"md:peer-data-[variant=inset]:border-border/50 md:peer-data-[variant=inset]:mb-4 md:peer-data-[variant=inset]:rounded-2xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:shadow-sm",
-				// Right margin only
-				"md:peer-data-[variant=inset]:mr-4",
-				// Remove right margin when right sidebar is present
-				"md:peer-data-[variant=inset]:data-[has-right-sidebar]:mr-0",
 				className,
 			)}
 			data-slot="sidebar-inset"
@@ -729,24 +723,25 @@ export {
 	SidebarContent,
 	SidebarFooter,
 	SidebarGroup,
-	SidebarGroupAction,
+	
 	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarHeader,
-	SidebarInput,
+	
 	SidebarInset,
 	SidebarMenu,
 	SidebarMenuAction,
 	SidebarMenuBadge,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarMenuSkeleton,
+	
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 	SidebarProvider,
 	SidebarRail,
-	SidebarSeparator,
+	
 	SidebarTrigger,
 	useSidebar,
+	
 };

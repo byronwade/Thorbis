@@ -429,7 +429,7 @@ export function getWebRTCService(): WebRTCService {
  *
  * Should be called during application startup, but failures won't block the app.
  */
-export async function startWebRTCService(): Promise<boolean> {
+async function startWebRTCService(): Promise<boolean> {
 	try {
 		const service = getWebRTCService();
 		await service.start();
@@ -446,7 +446,7 @@ export async function startWebRTCService(): Promise<boolean> {
  *
  * Should be called during application shutdown.
  */
-export async function stopWebRTCService(): Promise<void> {
+async function stopWebRTCService(): Promise<void> {
 	if (webrtcServiceInstance) {
 		await webrtcServiceInstance.stop();
 		webrtcServiceInstance = null;

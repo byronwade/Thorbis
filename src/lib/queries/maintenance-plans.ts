@@ -76,7 +76,7 @@ export async function getMaintenancePlansPageData(
  * Fetch complete maintenance plan data including customer, property, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getMaintenancePlanComplete = cache(
+const getMaintenancePlanComplete = cache(
 	async (maintenancePlanId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

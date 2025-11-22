@@ -89,7 +89,7 @@ export type RoleConfig = {
  * Complete role configurations with their permissions
  * Used for UI display and permission reference
  */
-export const ROLES: Record<UserRole, RoleConfig> = {
+const ROLES: Record<UserRole, RoleConfig> = {
 	owner: {
 		id: "owner",
 		label: "Owner",
@@ -322,7 +322,7 @@ export async function hasRole(
  * );
  * ```
  */
-export async function hasAnyRole(
+async function hasAnyRole(
 	supabase: SupabaseClient,
 	userId: string,
 	roles: UserRole[],
@@ -457,7 +457,7 @@ export async function isCompanyOwner(
  * console.log(managerPerms); // ["view_reports", "manage_team", ...]
  * ```
  */
-export function getRolePermissions(role: UserRole): Permission[] {
+function getRolePermissions(role: UserRole): Permission[] {
 	return ROLES[role]?.permissions || [];
 }
 
@@ -473,7 +473,7 @@ export function getRolePermissions(role: UserRole): Permission[] {
  * const canDelete = roleHasPermission("manager", "delete_jobs");
  * ```
  */
-export function roleHasPermission(
+function roleHasPermission(
 	role: UserRole,
 	permission: Permission,
 ): boolean {
@@ -492,6 +492,6 @@ export function roleHasPermission(
  * console.log(config.label); // "Manager"
  * ```
  */
-export function getRoleConfig(role: UserRole): RoleConfig {
+function getRoleConfig(role: UserRole): RoleConfig {
 	return ROLES[role];
 }

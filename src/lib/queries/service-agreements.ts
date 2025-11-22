@@ -81,7 +81,7 @@ export async function getServiceAgreementsPageData(
  * Fetch complete service agreement data including customer, property, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getServiceAgreementComplete = cache(
+const getServiceAgreementComplete = cache(
 	async (serviceAgreementId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

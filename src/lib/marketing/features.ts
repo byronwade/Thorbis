@@ -1,6 +1,6 @@
 import type { MarketingFeatureContent } from "./types";
 
-export const FEATURE_CONTENT: MarketingFeatureContent[] = [
+const FEATURE_CONTENT: MarketingFeatureContent[] = [
 	{
 		kind: "feature",
 		slug: "ai-assistant",

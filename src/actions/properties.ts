@@ -232,7 +232,7 @@ export async function findOrCreateProperty(
 /**
  * Create a new property for a customer
  */
-export async function createProperty(
+async function createProperty(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -577,7 +577,7 @@ export async function archiveProperty(
 /**
  * Restore archived property
  */
-export async function _restoreProperty(
+async function _restoreProperty(
 	propertyId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -660,7 +660,7 @@ export async function _restoreProperty(
  * Delete property (legacy - deprecated)
  * @deprecated Use archiveProperty() instead
  */
-export async function _deleteProperty(
+async function _deleteProperty(
 	propertyId: string,
 ): Promise<ActionResult<void>> {
 	return archiveProperty(propertyId);
@@ -673,7 +673,7 @@ export async function _deleteProperty(
 /**
  * Get all properties for a customer
  */
-export async function _getCustomerProperties(
+async function _getCustomerProperties(
 	customerId: string,
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
@@ -743,7 +743,7 @@ export async function _getCustomerProperties(
 /**
  * Get property with equipment count
  */
-export async function _getPropertyWithDetails(
+async function _getPropertyWithDetails(
 	propertyId: string,
 ): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
@@ -828,7 +828,7 @@ export async function _getPropertyWithDetails(
  * Set property as primary for customer
  * This is useful when a customer has multiple properties
  */
-export async function _setPrimaryProperty(
+async function _setPrimaryProperty(
 	customerId: string,
 	propertyId: string,
 ): Promise<ActionResult<void>> {
@@ -917,4 +917,4 @@ export async function _setPrimaryProperty(
 }
 
 // Alias for backward compatibility
-export { _updateProperty as updateProperty };
+;

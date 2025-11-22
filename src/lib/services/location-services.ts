@@ -21,7 +21,7 @@ const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 // Types and Schemas
 // ============================================================================
 
-export const GeocodingResultSchema = z.object({
+const GeocodingResultSchema = z.object({
 	lat: z.number(),
 	lon: z.number(),
 	displayName: z.string(),
@@ -37,7 +37,7 @@ export const GeocodingResultSchema = z.object({
 		.optional(),
 });
 
-export const CountyDataSchema = z.object({
+const CountyDataSchema = z.object({
 	countyFips: z.string(),
 	countyName: z.string(),
 	stateFips: z.string(),
@@ -45,7 +45,7 @@ export const CountyDataSchema = z.object({
 	blockFips: z.string().optional(),
 });
 
-export const FloodZoneSchema = z.object({
+const FloodZoneSchema = z.object({
 	inFloodZone: z.boolean(),
 	zone: z.string().optional(),
 	floodway: z.boolean().optional(),
@@ -53,7 +53,7 @@ export const FloodZoneSchema = z.object({
 	description: z.string(),
 });
 
-export const LocationIntelligenceSchema = z.object({
+const LocationIntelligenceSchema = z.object({
 	coordinates: z.object({
 		lat: z.number(),
 		lon: z.number(),
@@ -72,7 +72,7 @@ export type LocationIntelligence = z.infer<typeof LocationIntelligenceSchema>;
 // Location Services
 // ============================================================================
 
-export class LocationServices {
+class LocationServices {
 	private readonly cache: Map<string, { data: any; timestamp: number }> =
 		new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days

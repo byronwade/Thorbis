@@ -21,7 +21,7 @@ import { z } from "zod";
 // CUSTOMERS
 // ============================================================================
 
-export const customerInsertSchema = z.object({
+const customerInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	user_id: z.string().uuid().optional().nullable(),
 	type: z
@@ -69,11 +69,11 @@ export const customerInsertSchema = z.object({
 	marketing_opt_in: z.boolean().default(true),
 });
 
-export const customerUpdateSchema = customerInsertSchema
+const customerUpdateSchema = customerInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const customerSelectSchema = customerInsertSchema.extend({
+const customerSelectSchema = customerInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -85,7 +85,7 @@ export const customerSelectSchema = customerInsertSchema.extend({
 // COMMUNICATIONS
 // ============================================================================
 
-export const communicationInsertSchema = z.object({
+const communicationInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	customer_id: z.string().uuid().optional().nullable(),
 	job_id: z.string().uuid().optional().nullable(),
@@ -124,11 +124,11 @@ export const communicationInsertSchema = z.object({
 	metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-export const communicationUpdateSchema = communicationInsertSchema
+const communicationUpdateSchema = communicationInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const communicationSelectSchema = communicationInsertSchema.extend({
+const communicationSelectSchema = communicationInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -204,7 +204,7 @@ export const paymentUpdateSchema = paymentInsertSchema
 	.partial()
 	.omit({ company_id: true, payment_number: true });
 
-export const paymentSelectSchema = paymentInsertSchema.extend({
+const paymentSelectSchema = paymentInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -216,7 +216,7 @@ export const paymentSelectSchema = paymentInsertSchema.extend({
 // EQUIPMENT
 // ============================================================================
 
-export const equipmentInsertSchema = z.object({
+const equipmentInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	customer_id: z.string().uuid(),
 	property_id: z.string().uuid().optional().nullable(),
@@ -255,11 +255,11 @@ export const equipmentInsertSchema = z.object({
 	metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
-export const equipmentUpdateSchema = equipmentInsertSchema
+const equipmentUpdateSchema = equipmentInsertSchema
 	.partial()
 	.omit({ company_id: true, equipment_number: true });
 
-export const equipmentSelectSchema = equipmentInsertSchema.extend({
+const equipmentSelectSchema = equipmentInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -271,7 +271,7 @@ export const equipmentSelectSchema = equipmentInsertSchema.extend({
 // SCHEDULES
 // ============================================================================
 
-export const scheduleInsertSchema = z.object({
+const scheduleInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	customer_id: z.string().uuid().optional().nullable(),
 	job_id: z.string().uuid().optional().nullable(),
@@ -316,11 +316,11 @@ export const scheduleInsertSchema = z.object({
 	actual_duration: z.number().int().optional().nullable(),
 });
 
-export const scheduleUpdateSchema = scheduleInsertSchema
+const scheduleUpdateSchema = scheduleInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const scheduleSelectSchema = scheduleInsertSchema.extend({
+const scheduleSelectSchema = scheduleInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -332,7 +332,7 @@ export const scheduleSelectSchema = scheduleInsertSchema.extend({
 // TAGS
 // ============================================================================
 
-export const tagInsertSchema = z.object({
+const tagInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	name: z.string().min(1, "Tag name is required").max(50),
 	slug: z.string().min(1).max(60),
@@ -352,11 +352,11 @@ export const tagInsertSchema = z.object({
 	is_active: z.boolean().default(true),
 });
 
-export const tagUpdateSchema = tagInsertSchema
+const tagUpdateSchema = tagInsertSchema
 	.partial()
 	.omit({ company_id: true, slug: true });
 
-export const tagSelectSchema = tagInsertSchema.extend({
+const tagSelectSchema = tagInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -366,7 +366,7 @@ export const tagSelectSchema = tagInsertSchema.extend({
 // ATTACHMENTS
 // ============================================================================
 
-export const attachmentInsertSchema = z.object({
+const attachmentInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	entity_type: z.enum([
 		"job",
@@ -397,11 +397,11 @@ export const attachmentInsertSchema = z.object({
 	uploaded_at: z.date().optional().nullable(),
 });
 
-export const attachmentUpdateSchema = attachmentInsertSchema
+const attachmentUpdateSchema = attachmentInsertSchema
 	.partial()
 	.omit({ company_id: true, entity_type: true, entity_id: true });
 
-export const attachmentSelectSchema = attachmentInsertSchema.extend({
+const attachmentSelectSchema = attachmentInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -445,7 +445,7 @@ export type AttachmentSelect = z.infer<typeof attachmentSelectSchema>;
 // JOB TIME ENTRIES
 // ============================================================================
 
-export const jobTimeEntryInsertSchema = z.object({
+const jobTimeEntryInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	user_id: z.string().uuid(),
@@ -479,11 +479,11 @@ export const jobTimeEntryInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobTimeEntryUpdateSchema = jobTimeEntryInsertSchema
+const jobTimeEntryUpdateSchema = jobTimeEntryInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true, user_id: true });
 
-export const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
+const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
 	id: z.string().uuid(),
 	total_hours: z.number().optional().nullable(),
 	created_at: z.date(),
@@ -494,7 +494,7 @@ export const jobTimeEntrySelectSchema = jobTimeEntryInsertSchema.extend({
 // JOB PHOTOS
 // ============================================================================
 
-export const jobPhotoInsertSchema = z.object({
+const jobPhotoInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	uploaded_by: z.string().uuid(),
@@ -535,11 +535,11 @@ export const jobPhotoInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobPhotoUpdateSchema = jobPhotoInsertSchema
+const jobPhotoUpdateSchema = jobPhotoInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true, uploaded_by: true });
 
-export const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
+const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -549,7 +549,7 @@ export const jobPhotoSelectSchema = jobPhotoInsertSchema.extend({
 // JOB WORKFLOW STAGES
 // ============================================================================
 
-export const jobWorkflowStageInsertSchema = z.object({
+const jobWorkflowStageInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	stage_name: z.string().min(1, "Stage name is required").max(100),
 	stage_key: z.string().min(1, "Stage key is required").max(100),
@@ -574,11 +574,11 @@ export const jobWorkflowStageInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema
+const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
+const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
 	{
 		id: z.string().uuid(),
 		created_at: z.date(),
@@ -590,7 +590,7 @@ export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
 // JOB SIGNATURES
 // ============================================================================
 
-export const jobSignatureInsertSchema = z.object({
+const jobSignatureInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	signature_type: z.enum([
@@ -635,11 +635,11 @@ export const jobSignatureInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobSignatureUpdateSchema = jobSignatureInsertSchema
+const jobSignatureUpdateSchema = jobSignatureInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
+const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 });
@@ -666,7 +666,7 @@ export const jobSignatureSelectSchema = jobSignatureInsertSchema.extend({
  *
  * See /src/lib/validations/job-domain-schemas.ts for domain schemas
  */
-export const jobInsertSchema = z.object({
+const jobInsertSchema = z.object({
 	// Core identity
 	company_id: z.string().uuid(),
 	job_number: z.string().min(1, "Job number is required").max(50),
@@ -703,11 +703,11 @@ export const jobInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobUpdateSchema = jobInsertSchema
+const jobUpdateSchema = jobInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const jobSelectSchema = jobInsertSchema.extend({
+const jobSelectSchema = jobInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -795,7 +795,7 @@ export const vendorUpdateSchema = vendorInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const vendorSelectSchema = vendorInsertSchema.extend({
+const vendorSelectSchema = vendorInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -807,7 +807,7 @@ export const vendorSelectSchema = vendorInsertSchema.extend({
 // PURCHASE ORDERS
 // ============================================================================
 
-export const purchaseOrderLineItemSchema = z.object({
+const purchaseOrderLineItemSchema = z.object({
 	id: z.string().uuid().optional(),
 	description: z.string().min(1, "Description is required"),
 	quantity: z.number().positive("Quantity must be positive"),
@@ -856,11 +856,11 @@ export const purchaseOrderInsertSchema = z.object({
 	auto_generated: z.boolean().default(false),
 });
 
-export const purchaseOrderUpdateSchema = purchaseOrderInsertSchema
+const purchaseOrderUpdateSchema = purchaseOrderInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const purchaseOrderSelectSchema = purchaseOrderInsertSchema.extend({
+const purchaseOrderSelectSchema = purchaseOrderInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),

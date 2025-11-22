@@ -14,3 +14,6 @@ export function TicketsSidebar(props: ComponentProps<typeof Sidebar>) {
 	return <CommunicationSidebar config={ticketsSidebarConfig} {...props} />;
 }
 
+
+
+

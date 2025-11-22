@@ -139,7 +139,7 @@ export type EEATSignals = {
 	medicalReviewRequired?: boolean;
 };
 
-export function generateEEATMetadata(signals: EEATSignals) {
+function generateEEATMetadata(signals: EEATSignals) {
 	const metadata: Record<string, string> = {};
 
 	if (signals.author) {
@@ -170,7 +170,7 @@ export function generateEEATMetadata(signals: EEATSignals) {
  * Voice Search Optimization
  * Generates question-based variants for voice queries
  */
-export function generateVoiceSearchVariants(topic: string): string[] {
+function generateVoiceSearchVariants(topic: string): string[] {
 	const questionWords = ["what", "how", "why", "when", "where", "who"];
 	const variants: string[] = [];
 
@@ -205,7 +205,7 @@ export type AIOverviewOptimization = {
 	}>;
 };
 
-export function generateAIOverviewMetadata(
+function generateAIOverviewMetadata(
 	optimization: AIOverviewOptimization,
 ) {
 	return {
@@ -221,7 +221,7 @@ export function generateAIOverviewMetadata(
 /**
  * Semantic HTML hints for better AI understanding
  */
-export const semanticElements = {
+const semanticElements = {
 	// Main content structure
 	MAIN_CONTENT: "main",
 	ARTICLE: "article",
@@ -273,7 +273,7 @@ export type BreadcrumbItem = {
 	path: string;
 };
 
-export function generateBreadcrumbPath(
+function generateBreadcrumbPath(
 	items: BreadcrumbItem[],
 ): Array<{ name: string; url: string }> {
 	return items.map((item, index) => ({
@@ -309,7 +309,7 @@ export type ContentQualitySignals = {
 	};
 };
 
-export function calculateContentQualityScore(
+function calculateContentQualityScore(
 	signals: ContentQualitySignals,
 ): number {
 	let score = 0;
@@ -352,7 +352,7 @@ export function calculateContentQualityScore(
  * Generate meta description optimized for AI Overviews
  * Target: 150-160 characters with semantic keywords
  */
-export function generateAIOptimizedMetaDescription(
+function generateAIOptimizedMetaDescription(
 	topic: string,
 	benefit: string,
 	cta?: string,
@@ -394,7 +394,7 @@ export type FeaturedSnippetContent = {
 	context?: string;
 };
 
-export function formatForFeaturedSnippet(
+function formatForFeaturedSnippet(
 	content: FeaturedSnippetContent,
 ): string {
 	switch (content.type) {

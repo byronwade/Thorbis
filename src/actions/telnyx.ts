@@ -499,7 +499,7 @@ export async function getCompanyPhoneNumbers(companyId: string) {
 /**
  * Update phone number configuration
  */
-export async function updatePhoneNumber(params: {
+async function updatePhoneNumber(params: {
 	phoneNumberId: string;
 	routingRuleId?: string;
 	forwardToNumber?: string;
@@ -546,7 +546,7 @@ export async function updatePhoneNumber(params: {
 /**
  * Release (delete) a phone number
  */
-export async function deletePhoneNumber(phoneNumberId: string) {
+async function deletePhoneNumber(phoneNumberId: string) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -722,7 +722,7 @@ export async function makeCall(params: {
 		const { data, error } = await supabase
 			.from("communications")
 			.insert({
-				company_id: params.companyId,
+				company_id: companyId,
 				customer_id: params.customerId,
 				job_id: params.jobId ?? null,
 				property_id: params.propertyId ?? null,
@@ -779,7 +779,7 @@ export async function makeCall(params: {
 /**
  * Answer an incoming call
  */
-export async function acceptCall(callControlId: string) {
+async function acceptCall(callControlId: string) {
 	try {
 		const telnyxWebhookUrl = await getTelnyxWebhookUrl();
 		if (!telnyxWebhookUrl) {
@@ -806,7 +806,7 @@ export async function acceptCall(callControlId: string) {
 /**
  * Reject an incoming call
  */
-export async function declineCall(callControlId: string) {
+async function declineCall(callControlId: string) {
 	try {
 		const result = await rejectCall({
 			callControlId,
@@ -825,7 +825,7 @@ export async function declineCall(callControlId: string) {
 /**
  * End an active call
  */
-export async function endCall(callControlId: string) {
+async function endCall(callControlId: string) {
 	try {
 		const result = await hangupCall({ callControlId });
 
@@ -978,29 +978,38 @@ export async function sendTextMessage(params: {
 	to: string;
 	from: string;
 	text: string;
-	companyId: string;
+	companyId?: string; // Optional - will be fetched if not provided
 	customerId?: string;
 	jobId?: string;
 	invoiceId?: string;
 	estimateId?: string;
 }) {
 	try {
-		console.log("📱 SMS Send Request:", {
-			to: params.to,
-			from: params.from,
-			companyId: params.companyId,
-		});
-
 		const supabase = await createClient();
 		if (!supabase) {
 			console.error("❌ Supabase client unavailable");
 			return { success: false, error: "Service unavailable" };
 		}
-		console.log("✅ Supabase client created");
+
+		// Get company ID if not provided
+		let companyId = params.companyId;
+		if (!companyId) {
+			const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+			companyId = await getActiveCompanyId();
+			if (!companyId) {
+				return { success: false, error: "No active company found" };
+			}
+		}
+
+		console.log("📱 SMS Send Request:", {
+			to: params.to,
+			from: params.from,
+			companyId,
+		});
 
 		const companySettings = await getCompanyTelnyxSettings(
 			supabase,
-			params.companyId,
+			companyId,
 		);
 		if (!companySettings) {
 			console.error("❌ Company settings not found");
@@ -1017,7 +1026,7 @@ export async function sendTextMessage(params: {
 
 		await ensurePhoneNumberRecordExists(
 			supabase,
-			params.companyId,
+			companyId,
 			companySettings.default_outbound_number,
 		);
 
@@ -1065,7 +1074,7 @@ export async function sendTextMessage(params: {
 
 		const fromAddress = await resolveOutboundPhoneNumber(
 			supabase,
-			params.companyId,
+			companyId,
 			params.from,
 			companySettings.default_outbound_number,
 		);
@@ -1095,7 +1104,7 @@ export async function sendTextMessage(params: {
 		}
 		console.log("✅ SMS capability verified");
 
-		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);
+		const webhookUrl = await getTelnyxWebhookUrl(companyId);
 		if (!webhookUrl) {
 			console.error("❌ No webhook URL");
 			return {
@@ -1136,7 +1145,7 @@ export async function sendTextMessage(params: {
 				);
 
 				const registrationResult = await registerCompanyFor10DLC(
-					params.companyId,
+					companyId,
 				);
 
 				if (registrationResult.success) {
@@ -1180,7 +1189,7 @@ export async function sendTextMessage(params: {
 		const { data, error } = await supabase
 			.from("communications")
 			.insert({
-				company_id: params.companyId,
+				company_id: companyId,
 				customer_id: params.customerId,
 				job_id: params.jobId ?? null,
 				invoice_id: params.invoiceId ?? null,
@@ -1240,7 +1249,7 @@ export async function sendMMSMessage(params: {
 	from: string;
 	text?: string;
 	mediaUrls: string[];
-	companyId: string;
+	companyId?: string; // Optional - will be fetched if not provided
 	customerId?: string;
 	jobId?: string;
 	propertyId?: string;
@@ -1253,9 +1262,19 @@ export async function sendMMSMessage(params: {
 			return { success: false, error: "Service unavailable" };
 		}
 
+		// Get company ID if not provided
+		let companyId = params.companyId;
+		if (!companyId) {
+			const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+			companyId = await getActiveCompanyId();
+			if (!companyId) {
+				return { success: false, error: "No active company found" };
+			}
+		}
+
 		const companySettings = await getCompanyTelnyxSettings(
 			supabase,
-			params.companyId,
+			companyId,
 		);
 		if (!companySettings) {
 			return {
@@ -1267,7 +1286,7 @@ export async function sendMMSMessage(params: {
 
 		await ensurePhoneNumberRecordExists(
 			supabase,
-			params.companyId,
+			companyId,
 			companySettings.default_outbound_number,
 		);
 
@@ -1295,7 +1314,7 @@ export async function sendMMSMessage(params: {
 
 		const fromAddress = await resolveOutboundPhoneNumber(
 			supabase,
-			params.companyId,
+			companyId,
 			params.from,
 			companySettings.default_outbound_number,
 		);
@@ -1308,7 +1327,7 @@ export async function sendMMSMessage(params: {
 		}
 		const toAddress = normalizePhoneNumber(params.to);
 
-		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);
+		const webhookUrl = await getTelnyxWebhookUrl(companyId);
 		if (!webhookUrl) {
 			return {
 				success: false,
@@ -1353,7 +1372,7 @@ export async function sendMMSMessage(params: {
 		const { data, error } = await supabase
 			.from("communications")
 			.insert({
-				company_id: params.companyId,
+				company_id: companyId,
 				customer_id: params.customerId,
 				job_id: params.jobId ?? null,
 				property_id: params.propertyId ?? null,
@@ -1489,7 +1508,7 @@ export async function getWebRTCCredentials() {
 /**
  * Get all voicemails for a company
  */
-export async function getVoicemails(companyId: string) {
+async function getVoicemails(companyId: string) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1529,7 +1548,7 @@ export async function getVoicemails(companyId: string) {
 /**
  * Mark voicemail as read
  */
-export async function markVoicemailAsRead(voicemailId: string, userId: string) {
+async function markVoicemailAsRead(voicemailId: string, userId: string) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1571,7 +1590,7 @@ export async function markVoicemailAsRead(voicemailId: string, userId: string) {
 /**
  * Delete voicemail
  */
-export async function deleteVoicemail(voicemailId: string, userId: string) {
+async function deleteVoicemail(voicemailId: string, userId: string) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1651,7 +1670,7 @@ export async function getCallRoutingRules(companyId: string) {
 /**
  * Create a new call routing rule
  */
-export async function createCallRoutingRule(params: {
+async function createCallRoutingRule(params: {
 	companyId: string;
 	userId: string;
 	name: string;
@@ -1939,7 +1958,7 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
 /**
  * Get usage statistics for a phone number
  */
-export async function getPhoneNumberUsageStats(
+async function getPhoneNumberUsageStats(
 	phoneNumberId: string,
 	days = 30,
 ) {
@@ -2018,7 +2037,7 @@ export async function getPhoneNumberUsageStats(
 /**
  * Get company-wide usage statistics
  */
-export async function getCompanyUsageStats(companyId: string, days = 30) {
+async function getCompanyUsageStats(companyId: string, days = 30) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {

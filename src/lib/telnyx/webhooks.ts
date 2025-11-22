@@ -246,14 +246,14 @@ export function isMessageEvent(eventType: WebhookEventType): boolean {
 /**
  * Type guard for number events
  */
-export function isNumberEvent(eventType: WebhookEventType): boolean {
+function isNumberEvent(eventType: WebhookEventType): boolean {
 	return eventType.startsWith("number_");
 }
 
 /**
  * Calculate call duration from start and end times
  */
-export function calculateCallDuration(
+function calculateCallDuration(
 	startTime: string,
 	endTime: string,
 ): number {

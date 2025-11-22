@@ -250,7 +250,7 @@ export function validateCallConfig(): {
 /**
  * Get formatted error message for display to users
  */
-export function getFormattedErrorMessage(validation: ValidationResult): string {
+function getFormattedErrorMessage(validation: ValidationResult): string {
 	if (validation.valid) {
 		return "";
 	}

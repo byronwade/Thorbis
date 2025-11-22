@@ -1,6 +1,6 @@
 import type { MarketingIndustryContent } from "./types";
 
-export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
+const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 	{
 		kind: "industry",
 		slug: "hvac",

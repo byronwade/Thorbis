@@ -38,7 +38,7 @@ function calculateSimilarity(tags1: string[], tags2: string[]): number {
  * @param maxResults - Maximum number of recommendations
  * @returns Array of related items sorted by similarity
  */
-export function getRelatedByTags(
+function getRelatedByTags(
 	currentItem: RelatedContentItem,
 	allItems: RelatedContentItem[],
 	maxResults: number = 6,
@@ -69,7 +69,7 @@ export function getRelatedByTags(
  * @param maxResults - Maximum number of recommendations
  * @returns Array of items in the same category
  */
-export function getRelatedByCategory(
+function getRelatedByCategory(
 	currentCategory: string,
 	allItems: RelatedContentItem[],
 	maxResults: number = 6,
@@ -84,7 +84,7 @@ export function getRelatedByCategory(
  *
  * All feature pages with tags for smart recommendations.
  */
-export const FEATURE_PAGES: RelatedContentItem[] = [
+const FEATURE_PAGES: RelatedContentItem[] = [
 	{
 		id: "scheduling",
 		title: "Scheduling & Dispatch",
@@ -156,7 +156,7 @@ export const FEATURE_PAGES: RelatedContentItem[] = [
  *
  * All industry-specific pages with tags for smart recommendations.
  */
-export const INDUSTRY_PAGES: RelatedContentItem[] = [
+const INDUSTRY_PAGES: RelatedContentItem[] = [
 	{
 		id: "hvac",
 		title: "HVAC Software",
@@ -297,7 +297,7 @@ export function getRelatedIndustries(
  * @param maxResults - Maximum number of items
  * @returns Array of popular feature pages
  */
-export function getPopularFeatures(
+function getPopularFeatures(
 	maxResults: number = 4,
 ): RelatedContentItem[] {
 	// Return most important features in priority order
@@ -315,7 +315,7 @@ export function getPopularFeatures(
  * @param maxResults - Maximum number of items
  * @returns Array of popular industry pages
  */
-export function getPopularIndustries(
+function getPopularIndustries(
 	maxResults: number = 4,
 ): RelatedContentItem[] {
 	// Return most important industries in priority order

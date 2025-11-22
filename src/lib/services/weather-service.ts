@@ -19,7 +19,7 @@ const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 // Types and Schemas
 // ============================================================================
 
-export const WeatherAlertSchema = z.object({
+const WeatherAlertSchema = z.object({
 	event: z.string(),
 	headline: z.string(),
 	description: z.string(),
@@ -30,7 +30,7 @@ export const WeatherAlertSchema = z.object({
 	instruction: z.string().nullable().optional(),
 });
 
-export const WeatherPeriodSchema = z.object({
+const WeatherPeriodSchema = z.object({
 	number: z.number(),
 	name: z.string(),
 	temperature: z.number(),
@@ -43,7 +43,7 @@ export const WeatherPeriodSchema = z.object({
 	endTime: z.string(),
 });
 
-export const WeatherDataSchema = z.object({
+const WeatherDataSchema = z.object({
 	location: z.object({
 		lat: z.number(),
 		lon: z.number(),

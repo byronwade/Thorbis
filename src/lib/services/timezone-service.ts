@@ -16,7 +16,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const TimeZoneSchema = z.object({
+const TimeZoneSchema = z.object({
 	timeZoneId: z.string(), // e.g., "America/New_York"
 	timeZoneName: z.string(), // e.g., "Eastern Daylight Time"
 	rawOffset: z.number(), // Offset from UTC in seconds (not including DST)
@@ -36,7 +36,7 @@ const MS_TO_SECONDS = 1000;
 const COORDINATE_PRECISION = 4;
 
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
-export class TimeZoneService {
+class TimeZoneService {
 	private readonly apiKey: string | undefined;
 	private readonly cache: Map<
 		string,

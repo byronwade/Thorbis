@@ -40,8 +40,8 @@ import { ScheduleToolbarTitle } from "@/components/schedule/schedule-toolbar-tit
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import type { StatCard } from "@/components/ui/stats-cards";
-import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
 import { AppointmentDetailToolbarActions } from "@/components/work/appointments/appointment-detail-toolbar-actions";
+import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
 import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
 import { ContractDetailToolbarActions } from "@/components/work/contracts/contract-detail-toolbar-actions";
 import { EquipmentDetailToolbarActions } from "@/components/work/equipment-detail-toolbar-actions";
@@ -54,8 +54,8 @@ import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detai
 import { MaintenancePlanToolbarActions } from "@/components/work/maintenance-plan-toolbar-actions";
 import { MaintenancePlanDetailToolbarActions } from "@/components/work/maintenance-plans/maintenance-plan-detail-toolbar-actions";
 import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
-import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
 import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
+import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
 import { PurchaseOrderDetailToolbarActions } from "@/components/work/purchase-orders/purchase-order-detail-toolbar-actions";
@@ -73,7 +73,7 @@ import type { SidebarConfig } from "@/lib/sidebar/types";
 // Single source of truth - no duplication!
 // ============================================================================
 
-export const ROUTE_PATTERNS = {
+const ROUTE_PATTERNS = {
 	// Dashboard root
 	DASHBOARD_ROOT: /^\/dashboard$/,
 
@@ -140,12 +140,13 @@ export const ROUTE_PATTERNS = {
 		/^\/dashboard\/work\/(?!invoices|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team|vendors)([^/]+)$/,
 
 	// Communication
-	EMAIL: /^\/dashboard\/communication(\/(email|drafts|sent|archive|snoozed|spam|trash))?$/,
-	TEXT: /^\/dashboard\/communication\/text/,
+	EMAIL:
+		/^\/dashboard\/communication(\/(email|drafts|sent|archive|snoozed|spam|trash))?$/,
+	SMS: /^\/dashboard\/communication\/sms/,
 	TEAMS: /^\/dashboard\/communication\/teams/,
 	TICKETS: /^\/dashboard\/communication\/tickets/,
 	COMMUNICATION_DETAIL:
-		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|feed|teams|tickets|text|drafts|sent|snoozed|email)[^/]+$/,
+		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|feed|teams|tickets|sms|drafts|sent|snoozed|email)[^/]+$/,
 	COMMUNICATION: /^\/dashboard\/communication/,
 
 	// Customers
@@ -438,7 +439,7 @@ const DETAIL_PAGE_STRUCTURE: PageStructureConfig = {
 // All layout configurations in priority order
 // ============================================================================
 
-export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
+const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 	// ========================================
 	// SPECIAL CASES (Highest Priority: 100+)
 	// ========================================
@@ -1766,7 +1767,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 	},
 
 	{
-		pattern: ROUTE_PATTERNS.TEXT,
+		pattern: ROUTE_PATTERNS.SMS,
 		config: {
 			structure: FULL_WIDTH_STRUCTURE,
 			header: DEFAULT_HEADER,
@@ -1779,7 +1780,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 68,
-		description: "Text/SMS main page with sidebar",
+		description: "SMS main page with sidebar",
 	},
 
 	{
@@ -1837,6 +1838,23 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 		},
 		priority: 66,
 		description: "Email/message detail view with back button",
+	},
+
+	// Communication command center (exact match - highest priority)
+	{
+		pattern: /^\/dashboard\/communication$/,
+		config: {
+			structure: FULL_WIDTH_STRUCTURE,
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: false, // Command center - no toolbar
+			},
+			sidebar: {
+				show: false, // Command center - no sidebar
+			},
+		},
+		priority: 70, // Higher priority than EMAIL pattern
+		description: "Communication command center - no sidebar or toolbar",
 	},
 
 	{
@@ -2048,14 +2066,14 @@ function recordLayoutDebug(info: LayoutMatchDebugInfo) {
 	globalThis.__THORBIS_LAST_LAYOUT_DEBUG__ = info;
 }
 
-export function clearUnifiedLayoutCache() {
+function clearUnifiedLayoutCache() {
 	LAYOUT_CONFIG_CACHE.clear();
 	if (process.env.NODE_ENV !== "production") {
 		globalThis.__THORBIS_LAST_LAYOUT_DEBUG__ = null;
 	}
 }
 
-export function getLayoutDebugSnapshot(): LayoutMatchDebugInfo | null {
+function getLayoutDebugSnapshot(): LayoutMatchDebugInfo | null {
 	if (process.env.NODE_ENV === "production") {
 		return null;
 	}
@@ -2127,7 +2145,7 @@ export function getUnifiedLayoutConfig(pathname: string): UnifiedLayoutConfig {
 // HELPER FUNCTIONS (from old layout-config.ts)
 // ============================================================================
 
-export function getMaxWidthClass(
+function getMaxWidthClass(
 	maxWidth: PageStructureConfig["maxWidth"],
 ): string {
 	switch (maxWidth) {
@@ -2158,7 +2176,7 @@ export function getMaxWidthClass(
 	}
 }
 
-export function getPaddingClass(
+function getPaddingClass(
 	padding: PageStructureConfig["padding"],
 	paddingX?: PageStructureConfig["paddingX"],
 	paddingY?: PageStructureConfig["paddingY"],
@@ -2217,7 +2235,7 @@ function getPaddingYClass(
 	}
 }
 
-export function getGapClass(gap: PageStructureConfig["gap"]): string {
+function getGapClass(gap: PageStructureConfig["gap"]): string {
 	switch (gap) {
 		case "none":
 			return "gap-0";
@@ -2232,7 +2250,7 @@ export function getGapClass(gap: PageStructureConfig["gap"]): string {
 	}
 }
 
-export function getBackgroundClass(
+function getBackgroundClass(
 	background: PageStructureConfig["background"],
 ): string {
 	switch (background) {
@@ -2247,7 +2265,7 @@ export function getBackgroundClass(
 	}
 }
 
-export function getInsetPaddingClass(
+function getInsetPaddingClass(
 	insetPadding: PageStructureConfig["insetPadding"],
 ): string {
 	switch (insetPadding) {

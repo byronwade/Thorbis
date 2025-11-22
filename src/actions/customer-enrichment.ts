@@ -264,7 +264,7 @@ export async function checkEnrichmentQuota(): Promise<
 /**
  * Update enrichment tier limits (admin only)
  */
-export async function updateEnrichmentTier(
+async function updateEnrichmentTier(
 	tier: "free" | "pro" | "enterprise",
 ): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {
@@ -305,7 +305,7 @@ export async function updateEnrichmentTier(
 /**
  * Delete enrichment data for a customer
  */
-export async function deleteEnrichmentData(
+async function deleteEnrichmentData(
 	customerId: string,
 ): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {

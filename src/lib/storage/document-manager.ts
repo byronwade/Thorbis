@@ -145,7 +145,7 @@ function selectBucket(
  * Generate storage path based on context
  * Format: {companyId}/{contextType}/{entityId?}/{folder?}/{timestamp}-{filename}
  */
-export function generateStoragePath(
+function generateStoragePath(
 	companyId: string,
 	context: DocumentContext,
 	fileName: string,
@@ -781,4 +781,4 @@ export async function getDocumentStats(companyId: string): Promise<{
 	}
 }
 
-export { formatFileSize };
+;

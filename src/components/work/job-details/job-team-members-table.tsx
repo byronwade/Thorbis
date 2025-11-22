@@ -67,11 +67,11 @@ export function JobTeamMembersTable({
 	const router = useRouter();
 	const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
 	const [isRemoving, setIsRemoving] = useState(false);
-	
+
 	// Guard against infinite refresh loops
 	const lastRefreshTimeRef = useRef<number>(0);
 	const REFRESH_COOLDOWN_MS = 1000; // Minimum 1 second between refreshes
-	
+
 	const safeRefresh = useCallback(() => {
 		const now = Date.now();
 		if (now - lastRefreshTimeRef.current < REFRESH_COOLDOWN_MS) {

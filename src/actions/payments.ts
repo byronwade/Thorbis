@@ -196,7 +196,7 @@ async function createPaymentFromForm(
 // READ
 // ============================================================================
 
-export async function getPayment(
+async function getPayment(
 	paymentId: string,
 ): Promise<{ success: boolean; error?: string; payment?: any }> {
 	try {
@@ -226,7 +226,7 @@ export async function getPayment(
 	}
 }
 
-export async function getPayments(filters?: {
+async function getPayments(filters?: {
 	paymentMethod?: string;
 	status?: string;
 	customerId?: string;
@@ -286,7 +286,7 @@ export async function getPayments(filters?: {
 // UPDATE
 // ============================================================================
 
-export async function updatePayment(
+async function updatePayment(
 	paymentId: string,
 	data: PaymentUpdate,
 ): Promise<{ success: boolean; error?: string }> {
@@ -323,7 +323,7 @@ export async function updatePayment(
 // REFUND
 // ============================================================================
 
-export async function refundPayment(
+async function refundPayment(
 	paymentId: string,
 	refundAmount: number,
 	refundReason?: string,
@@ -417,7 +417,7 @@ export async function refundPayment(
 // RECONCILIATION
 // ============================================================================
 
-export async function reconcilePayment(
+async function reconcilePayment(
 	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -459,7 +459,7 @@ export async function reconcilePayment(
 	}
 }
 
-export async function unreconcilePayment(
+async function unreconcilePayment(
 	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -497,7 +497,7 @@ export async function unreconcilePayment(
 // DELETE
 // ============================================================================
 
-export async function deletePayment(
+async function deletePayment(
 	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {

@@ -16,7 +16,7 @@
  */
 
 // Window configuration - Opens as new tab
-export const POP_OUT_CONFIG = {
+const POP_OUT_CONFIG = {
 	target: "_blank", // Opens in new tab
 	features: "noopener,noreferrer", // Security features
 } as const;
@@ -137,7 +137,7 @@ export type PopOutMessage =
 /**
  * Creates a call window in a new browser tab
  */
-export function createPopOutWindow(callId: string): Window | null {
+function createPopOutWindow(callId: string): Window | null {
 	const { target, features } = POP_OUT_CONFIG;
 
 	try {
@@ -160,7 +160,7 @@ export function createPopOutWindow(callId: string): Window | null {
 /**
  * Sends a message to a pop-out window with security verification
  */
-export function sendToPopOut(
+function sendToPopOut(
 	popOutWindow: Window | null,
 	message: PopOutMessage,
 ): boolean {
@@ -232,7 +232,7 @@ export function isPopOutMessage(data: unknown): data is PopOutMessage {
 /**
  * Monitors a pop-out window and calls callback when it closes
  */
-export function monitorPopOutWindow(
+function monitorPopOutWindow(
 	popOutWindow: Window,
 	onClose: () => void,
 	intervalMs = 500,
@@ -251,7 +251,7 @@ export function monitorPopOutWindow(
 /**
  * Waits for pop-out window to be ready and sends initial data
  */
-export function waitForPopOutReady(
+function waitForPopOutReady(
 	popOutWindow: Window,
 	callId: string,
 	onReady: () => void,
@@ -294,7 +294,7 @@ export function waitForPopOutReady(
 /**
  * Closes a pop-out window safely
  */
-export function closePopOutWindow(popOutWindow: Window | null): void {
+function closePopOutWindow(popOutWindow: Window | null): void {
 	if (popOutWindow && !popOutWindow.closed) {
 		try {
 			popOutWindow.close();
@@ -305,7 +305,7 @@ export function closePopOutWindow(popOutWindow: Window | null): void {
 /**
  * Focuses a pop-out window (brings to front)
  */
-export function focusPopOutWindow(popOutWindow: Window | null): void {
+function focusPopOutWindow(popOutWindow: Window | null): void {
 	if (popOutWindow && !popOutWindow.closed) {
 		try {
 			popOutWindow.focus();
@@ -316,7 +316,7 @@ export function focusPopOutWindow(popOutWindow: Window | null): void {
 /**
  * Returns whether the current window is a pop-out (has an opener)
  */
-export function isPopOutWindow(): boolean {
+function isPopOutWindow(): boolean {
 	return window.opener !== null && window.opener !== window;
 }
 

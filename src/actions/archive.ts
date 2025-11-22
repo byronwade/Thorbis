@@ -160,7 +160,7 @@ const getArchivedItemsSchema = z.object({
 /**
  * Get archived items with filters
  */
-export async function getArchivedItems(
+async function getArchivedItems(
 	options: z.infer<typeof getArchivedItemsSchema>,
 ): Promise<ActionResult<ArchivedItem[]>> {
 	return await withErrorHandling(async () => {
@@ -410,7 +410,7 @@ function getDisplayName(
 /**
  * Get archive statistics
  */
-export async function getArchiveStats(): Promise<
+async function getArchiveStats(): Promise<
 	ActionResult<Record<ArchivableEntityType, number>>
 > {
 	return await withErrorHandling(async () => {
@@ -483,7 +483,7 @@ export async function getArchiveStats(): Promise<
 /**
  * Bulk restore multiple items
  */
-export async function bulkRestore(
+async function bulkRestore(
 	itemIds: string[],
 	entityType: ArchivableEntityType,
 ): Promise<ActionResult<{ restored: number; failed: number }>> {
@@ -654,7 +654,7 @@ export async function bulkArchive(
 /**
  * Permanent delete (hard delete) - Admin only, after 90 days
  */
-export async function permanentDelete(
+async function permanentDelete(
 	itemId: string,
 	entityType: ArchivableEntityType,
 ): Promise<ActionResult<void>> {

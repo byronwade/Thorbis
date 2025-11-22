@@ -1,57 +1,70 @@
+import { Archive, MessageSquare, Plus, Send, Users } from "lucide-react";
 import type { CommunicationSidebarConfig } from "@/components/communication/communication-sidebar";
-import {
-    MessageSquare,
-    Send,
-    Archive,
-    Plus,
-    Users,
-} from "lucide-react";
+
+type SmsFolderCounts = {
+	inbox?: number;
+	sent?: number;
+	archive?: number;
+	trash?: number;
+	[label: string]: number | undefined;
+};
 
 /**
- * Text/SMS sidebar configuration
- * Defines the navigation structure and actions for the text communication page
+ * Get SMS sidebar configuration with dynamic folder counts
+ * Similar to getEmailSidebarConfig but for SMS
  */
-export const textSidebarConfig: CommunicationSidebarConfig = {
-    navGroups: [
-        {
-            label: "Core",
-            items: [
-                {
-                    title: "Inbox",
-                    url: "/dashboard/communication/text",
-                    icon: MessageSquare,
-                    badge: 3,
-                },
-                {
-                    title: "Sent",
-                    url: "/dashboard/communication/text/sent",
-                    icon: Send,
-                },
-                {
-                    title: "Archive",
-                    url: "/dashboard/communication/text/archive",
-                    icon: Archive,
-                },
-            ],
-        },
-        {
-            label: "Groups",
-            items: [
-                {
-                    title: "All Groups",
-                    url: "/dashboard/communication/text/groups",
-                    icon: Users,
-                },
-            ],
-        },
-    ],
-    primaryAction: {
-        label: "New text",
-        icon: Plus,
-        onClick: () => {
-            // TODO: Implement new text action
-            console.log("New text clicked");
-        },
-    },
-};
+export function getSmsSidebarConfig(counts?: SmsFolderCounts): CommunicationSidebarConfig {
+	return {
+		navGroups: [
+			{
+				label: "Core",
+				items: [
+					{
+						title: "Inbox",
+						url: "/dashboard/communication/sms?folder=inbox",
+						icon: MessageSquare,
+						badge: counts?.inbox ?? 0,
+					},
+					{
+						title: "Sent",
+						url: "/dashboard/communication/sms?folder=sent",
+						icon: Send,
+						badge: counts?.sent ?? 0,
+					},
+					{
+						title: "Archive",
+						url: "/dashboard/communication/sms?folder=archive",
+						icon: Archive,
+						badge: counts?.archive ?? 0,
+					},
+				],
+			},
+			{
+				label: "Groups",
+				items: [
+					{
+						title: "All Groups",
+						url: "/dashboard/communication/sms?folder=groups",
+						icon: Users,
+					},
+				],
+			},
+		],
+		primaryAction: {
+			label: "New text",
+			icon: Plus,
+			onClick: () => {
+				// This will be handled by the TextSidebar component
+				// which will open the RecipientSelector
+				if (typeof window !== "undefined") {
+					window.dispatchEvent(new CustomEvent("open-recipient-selector", { 
+						detail: { type: "sms" } 
+					}));
+				}
+			},
+		},
+	};
+}
+
+
 

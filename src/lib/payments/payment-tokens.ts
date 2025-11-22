@@ -182,7 +182,7 @@ export async function markTokenAsUsed(
  * @param invoiceId - UUID of the invoice
  * @returns Array of active payment tokens
  */
-export async function getInvoicePaymentTokens(
+async function getInvoicePaymentTokens(
 	invoiceId: string,
 ): Promise<PaymentToken[]> {
 	try {

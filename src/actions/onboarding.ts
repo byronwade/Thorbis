@@ -515,7 +515,7 @@ async function updateOnboardingProgressRecord(
 /**
  * Check database connection
  */
-export async function checkDatabaseConnection(): Promise<boolean> {
+async function checkDatabaseConnection(): Promise<boolean> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -589,7 +589,7 @@ function extractTeamMembers(formData: FormData): TeamMemberProgressInput[] {
 	);
 }
 
-export async function saveOnboardingProgress(
+async function saveOnboardingProgress(
 	formData: FormData,
 	existingCompanyId?: string,
 	step?: number,
@@ -865,7 +865,7 @@ export async function saveOnboardingProgress(
 	}
 }
 
-export async function completeOnboarding(
+async function completeOnboarding(
 	formData: FormData,
 ): Promise<OnboardingResult> {
 	const result = await saveOnboardingProgress(formData);
@@ -897,7 +897,7 @@ export async function completeOnboarding(
  * @param stepData - The data to save for this step
  * @returns Promise resolving to OnboardingResult
  */
-export async function saveOnboardingStepProgress(
+async function saveOnboardingStepProgress(
 	companyId: string,
 	step: number,
 	stepData: Record<string, unknown>,
@@ -985,7 +985,7 @@ export async function saveOnboardingStepProgress(
 /**
  * Purchase a phone number during onboarding
  */
-export async function purchaseOnboardingPhoneNumber(
+async function purchaseOnboardingPhoneNumber(
 	formData: FormData,
 ): Promise<{
 	success: boolean;
@@ -1225,7 +1225,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 /**
  * Save notification settings during onboarding
  */
-export async function saveOnboardingNotificationSettings(
+async function saveOnboardingNotificationSettings(
 	formData: FormData,
 ): Promise<{
 	success: boolean;
@@ -1246,7 +1246,7 @@ export async function saveOnboardingNotificationSettings(
 	}
 }
 
-export async function archiveIncompleteCompany(
+async function archiveIncompleteCompany(
 	companyId: string,
 ): Promise<OnboardingResult> {
 	try {

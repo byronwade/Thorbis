@@ -384,7 +384,7 @@ export class DataValidator {
 /**
  * Quick validation helper for common patterns
  */
-export const ValidationHelpers = {
+const ValidationHelpers = {
 	isValidEmail: (email: string): boolean => {
 		return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/.test(email);
 	},

@@ -135,7 +135,7 @@ export const authRateLimiter = {
  * Use for: General API endpoints
  * Limit: 100 requests per minute per identifier
  */
-export const apiRateLimiter = {
+const apiRateLimiter = {
 	limit: (identifier: string) => apiRateLimiterInstance.limit(identifier),
 	reset: (identifier: string) => apiRateLimiterInstance.reset(identifier),
 };
@@ -199,7 +199,7 @@ export async function checkRateLimit(
  * Extracts IP from request headers for rate limiting.
  * Supports various proxy headers.
  */
-export function getClientIP(request: Request): string {
+function getClientIP(request: Request): string {
 	const headers = new Headers(request.headers);
 
 	// Check common proxy headers

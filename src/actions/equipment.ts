@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Fetch all equipment for a customer/property
  */
-export async function getCustomerEquipment(customerId: string) {
+async function getCustomerEquipment(customerId: string) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -41,7 +41,7 @@ export async function getCustomerEquipment(customerId: string) {
 /**
  * Fetch all equipment for a property
  */
-export async function getPropertyEquipment(propertyId: string) {
+async function getPropertyEquipment(propertyId: string) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -71,7 +71,7 @@ export async function getPropertyEquipment(propertyId: string) {
 /**
  * Fetch equipment serviced on a specific job
  */
-export async function getJobEquipment(jobId: string) {
+async function getJobEquipment(jobId: string) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -107,7 +107,7 @@ export async function getJobEquipment(jobId: string) {
 /**
  * Create new customer equipment
  */
-export async function createEquipment(formData: FormData) {
+async function createEquipment(formData: FormData) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -198,7 +198,7 @@ export async function createEquipment(formData: FormData) {
 /**
  * Link equipment to a job (equipment was serviced on this job)
  */
-export async function addEquipmentToJob(formData: FormData) {
+async function addEquipmentToJob(formData: FormData) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -256,7 +256,7 @@ export async function addEquipmentToJob(formData: FormData) {
 /**
  * Update equipment service details on a job
  */
-export async function updateJobEquipment(
+async function updateJobEquipment(
 	jobEquipmentId: string,
 	formData: FormData,
 ) {
@@ -336,7 +336,7 @@ export async function archiveEquipment(
 /**
  * Fetch materials used on a job
  */
-export async function getJobMaterials(jobId: string) {
+async function getJobMaterials(jobId: string) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -364,7 +364,7 @@ export async function getJobMaterials(jobId: string) {
 /**
  * Add material to a job
  */
-export async function addMaterialToJob(formData: FormData) {
+async function addMaterialToJob(formData: FormData) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -421,7 +421,7 @@ export async function addMaterialToJob(formData: FormData) {
  * Deletes the job_equipment junction table record
  * Bidirectional operation - updates both equipment and job views
  */
-export async function removeEquipmentFromJob(
+async function removeEquipmentFromJob(
 	jobEquipmentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -476,7 +476,7 @@ export async function removeEquipmentFromJob(
  * Deletes the job_materials junction table record
  * Updates job page view
  */
-export async function removeJobMaterial(
+async function removeJobMaterial(
 	jobMaterialId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {

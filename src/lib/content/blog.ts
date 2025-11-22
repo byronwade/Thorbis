@@ -293,7 +293,7 @@ export async function getBlogAuthors(): Promise<BlogAuthor[]> {
 		[]) as BlogAuthor[];
 }
 
-export async function getFeaturedBlogPosts(limit = 3): Promise<BlogPost[]> {
+async function getFeaturedBlogPosts(limit = 3): Promise<BlogPost[]> {
 	const { data } = await getBlogPosts({
 		limit,
 		featured: true,

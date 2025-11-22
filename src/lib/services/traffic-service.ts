@@ -11,7 +11,7 @@ import { z } from "zod";
 // Types and Schemas
 // ============================================================================
 
-export const TrafficIncidentSchema = z.object({
+const TrafficIncidentSchema = z.object({
 	type: z.enum([
 		"crash",
 		"construction",
@@ -34,7 +34,7 @@ export const TrafficIncidentSchema = z.object({
 	enrichedAt: z.string(), // ISO timestamp
 });
 
-export const TrafficDataSchema = z.object({
+const TrafficDataSchema = z.object({
 	incidents: z.array(TrafficIncidentSchema),
 	totalIncidents: z.number(),
 	nearbyIncidents: z.number(), // Within 5 miles

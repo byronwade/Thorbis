@@ -52,7 +52,7 @@ type SmsSettingsClientProps = {
 	initialSettings: Partial<SmsSettingsState> | null;
 };
 
-export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
+function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 	const {
 		settings,
 		isLoading,

@@ -62,7 +62,7 @@ export function filterByArchiveStatus<
  * Build Supabase query filter for archive status
  * Use this to filter at the database level (more efficient)
  */
-export function getArchiveQueryFilter(filter: ArchiveFilter): {
+function getArchiveQueryFilter(filter: ArchiveFilter): {
 	column: "archived_at";
 	operator: "is" | "not.is";
 	value: null;
@@ -82,7 +82,7 @@ export function getArchiveQueryFilter(filter: ArchiveFilter): {
 /**
  * Format archive date for display
  */
-export function formatArchiveDate(
+function formatArchiveDate(
 	archivedAt: string | null | undefined,
 ): string {
 	if (!archivedAt) {
@@ -100,7 +100,7 @@ export function formatArchiveDate(
 /**
  * Get archive badge variant
  */
-export function getArchiveBadgeVariant(
+function getArchiveBadgeVariant(
 	isArchived: boolean,
 ): "outline" | "secondary" {
 	return isArchived ? "outline" : "secondary";

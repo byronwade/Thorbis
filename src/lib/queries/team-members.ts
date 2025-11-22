@@ -155,14 +155,12 @@ export const getTeamMembersPageData = cache(
 		}
 
 		// Create a map of user_id -> profile
-		const profilesMap = new Map(
-			(profiles ?? []).map((p) => [p.id, p]),
-		);
+		const profilesMap = new Map((profiles ?? []).map((p) => [p.id, p]));
 
 		// Merge profile data with members
 		const normalizedMembers: TeamMemberRecord[] = members.map((member) => ({
 			...member,
-			user: member.user_id ? profilesMap.get(member.user_id) ?? null : null,
+			user: member.user_id ? (profilesMap.get(member.user_id) ?? null) : null,
 		}));
 
 		return {

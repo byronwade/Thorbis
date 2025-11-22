@@ -13,7 +13,7 @@
 
 import { z } from "zod";
 
-export const StreetViewSchema = z.object({
+const StreetViewSchema = z.object({
 	mainView: z.string(), // URL to street view image
 	alternateViews: z.array(z.string()).optional(), // URLs from different angles
 	heading: z.number().optional(), // Camera heading (0-360)
@@ -29,7 +29,7 @@ export type StreetView = z.infer<typeof StreetViewSchema>;
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 90; // 90 days
 
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
-export class GoogleStreetViewService {
+class GoogleStreetViewService {
 	private readonly apiKey: string | undefined;
 	private readonly cache: Map<string, { data: StreetView; timestamp: number }> =
 		new Map();

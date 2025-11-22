@@ -200,7 +200,7 @@ const bookkeepingSettingsSchema = z.object({
 	allowManualJournalEntries: z.boolean().default(false),
 });
 
-export async function updateBookkeepingSettings(
+async function updateBookkeepingSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -274,7 +274,7 @@ export async function updateBookkeepingSettings(
 	});
 }
 
-export async function getBookkeepingSettings(): Promise<ActionResult<any>> {
+async function getBookkeepingSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -326,7 +326,7 @@ const bankAccountSchema = z.object({
 	isPrimary: z.boolean().default(false),
 });
 
-export async function createBankAccount(
+async function createBankAccount(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -381,7 +381,7 @@ export async function createBankAccount(
 	});
 }
 
-export async function updateBankAccount(
+async function updateBankAccount(
 	accountId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -440,7 +440,7 @@ export async function updateBankAccount(
 	});
 }
 
-export async function deleteBankAccount(
+async function deleteBankAccount(
 	accountId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -479,7 +479,7 @@ export async function deleteBankAccount(
 /**
  * Get the current user's company ID
  */
-export async function getUserCompanyId(): Promise<ActionResult<string>> {
+async function getUserCompanyId(): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -499,7 +499,7 @@ export async function getUserCompanyId(): Promise<ActionResult<string>> {
 	});
 }
 
-export async function getBankAccounts(): Promise<ActionResult<any[]>> {
+async function getBankAccounts(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -547,7 +547,7 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
 /**
  * Get the primary bank account for a company
  */
-export async function getPrimaryBankAccount(): Promise<ActionResult<any>> {
+async function getPrimaryBankAccount(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -611,7 +611,7 @@ const businessFinancingSchema = z.object({
 	maxAcceptableApr: z.coerce.number().optional(),
 });
 
-export async function updateBusinessFinancingSettings(
+async function updateBusinessFinancingSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -682,7 +682,7 @@ export async function updateBusinessFinancingSettings(
 	});
 }
 
-export async function getBusinessFinancingSettings(): Promise<
+async function getBusinessFinancingSettings(): Promise<
 	ActionResult<any>
 > {
 	return withErrorHandling(async () => {
@@ -744,7 +744,7 @@ const consumerFinancingSchema = z.object({
 		.default("Finance your service with flexible payment plans"),
 });
 
-export async function updateConsumerFinancingSettings(
+async function updateConsumerFinancingSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -823,7 +823,7 @@ export async function updateConsumerFinancingSettings(
 	});
 }
 
-export async function getConsumerFinancingSettings(): Promise<
+async function getConsumerFinancingSettings(): Promise<
 	ActionResult<any>
 > {
 	return withErrorHandling(async () => {
@@ -863,7 +863,7 @@ export async function getConsumerFinancingSettings(): Promise<
 // DEBIT CARD SETTINGS
 // ============================================================================
 
-export async function getDebitCards(): Promise<ActionResult<any[]>> {
+async function getDebitCards(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -901,7 +901,7 @@ export async function getDebitCards(): Promise<ActionResult<any[]>> {
 // GAS CARD SETTINGS
 // ============================================================================
 
-export async function getGasCards(): Promise<ActionResult<any[]>> {
+async function getGasCards(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -961,7 +961,7 @@ const giftCardSettingsSchema = z.object({
 	trackRedemptionAnalytics: z.boolean().default(true),
 });
 
-export async function updateGiftCardSettings(
+async function updateGiftCardSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -1046,7 +1046,7 @@ export async function updateGiftCardSettings(
 	});
 }
 
-export async function getGiftCardSettings(): Promise<ActionResult<any>> {
+async function getGiftCardSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1101,7 +1101,7 @@ const virtualBucketSettingsSchema = z.object({
 	notifyBucketGoalsMet: z.boolean().default(true),
 });
 
-export async function updateVirtualBucketSettings(
+async function updateVirtualBucketSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -1165,7 +1165,7 @@ export async function updateVirtualBucketSettings(
 	});
 }
 
-export async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
+async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1199,7 +1199,7 @@ export async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
 	});
 }
 
-export async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
+async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

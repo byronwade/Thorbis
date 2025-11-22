@@ -108,7 +108,7 @@ export function detectDuplicates(
 /**
  * Calculate similarity score between two records
  */
-export function calculateSimilarity(
+function calculateSimilarity(
 	a: Customer,
 	b: Customer,
 	options: Required<DuplicateDetectionOptions>,
@@ -348,7 +348,7 @@ function levenshteinDistance(a: string, b: string): number {
 /**
  * Find duplicates of a single record against a dataset
  */
-export function findDuplicatesOfRecord(
+function findDuplicatesOfRecord(
 	record: Customer,
 	dataset: Customer[],
 	options: DuplicateDetectionOptions = {},
@@ -378,7 +378,7 @@ export function findDuplicatesOfRecord(
 /**
  * Merge duplicate records (keeps first, adds missing data from others)
  */
-export function mergeDuplicateRecords(records: Customer[]): Customer {
+function mergeDuplicateRecords(records: Customer[]): Customer {
 	if (records.length === 0) {
 		throw new Error("No records to merge");
 	}

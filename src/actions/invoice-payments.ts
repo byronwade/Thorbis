@@ -423,7 +423,7 @@ function buildPaymentInsertPayload(params: PaymentInsertParams) {
 /**
  * Check if payment requires approval before processing
  */
-export async function checkPaymentApproval(
+async function checkPaymentApproval(
 	invoiceId: string,
 	amount?: number,
 ): Promise<{
@@ -471,7 +471,7 @@ export async function checkPaymentApproval(
 /**
  * Get payment processor status for an invoice
  */
-export async function getInvoicePaymentProcessorStatus(
+async function getInvoicePaymentProcessorStatus(
 	invoiceId: string,
 ): Promise<{
 	success: boolean;
@@ -537,7 +537,7 @@ export async function getInvoicePaymentProcessorStatus(
  * @param invoicePaymentId - ID of the invoice_payments junction table record
  * @returns Promise<{ success: boolean; error?: string }>
  */
-export async function removePaymentFromInvoice(
+async function removePaymentFromInvoice(
 	invoicePaymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {

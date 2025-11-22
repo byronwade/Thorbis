@@ -339,7 +339,7 @@ export async function createAppointment(
 /**
  * Update an existing appointment
  */
-export async function updateAppointment(
+async function updateAppointment(
 	appointmentId: string,
 	formData: FormData,
 ): Promise<ActionResult<boolean>> {
@@ -439,7 +439,7 @@ export async function updateAppointment(
 /**
  * Reschedule an appointment
  */
-export async function rescheduleAppointment(
+async function rescheduleAppointment(
 	appointmentId: string,
 	formData: FormData,
 ): Promise<ActionResult<boolean>> {
@@ -511,7 +511,7 @@ export async function rescheduleAppointment(
 /**
  * Cancel an appointment
  */
-export async function cancelAppointment(
+async function cancelAppointment(
 	appointmentId: string,
 	reason?: string,
 ): Promise<ActionResult<boolean>> {
@@ -557,7 +557,7 @@ export async function cancelAppointment(
 /**
  * Complete an appointment
  */
-export async function completeAppointment(
+async function completeAppointment(
 	appointmentId: string,
 	actualEnd?: string,
 ): Promise<ActionResult<boolean>> {
@@ -647,7 +647,7 @@ export async function archiveAppointment(
 /**
  * Delete an appointment (hard delete)
  */
-export async function deleteAppointment(
+async function deleteAppointment(
 	appointmentId: string,
 ): Promise<ActionResult<boolean>> {
 	return await withErrorHandling(async () => {
@@ -688,7 +688,7 @@ export async function deleteAppointment(
 /**
  * Search appointments
  */
-export async function searchAppointments(
+async function searchAppointments(
 	searchQuery: string,
 	options?: {
 		limit?: number;
@@ -732,7 +732,7 @@ export async function searchAppointments(
  * Removes the job association (sets job_id to NULL)
  * Bidirectional operation - updates both appointment and job views
  */
-export async function unlinkScheduleFromJob(
+async function unlinkScheduleFromJob(
 	appointmentId: string,
 ): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {

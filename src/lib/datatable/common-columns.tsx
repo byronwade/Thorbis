@@ -40,7 +40,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
  * @example
  * useDateColumn<Job>("scheduled_date", "Scheduled", (job) => job.scheduled_date)
  */
-export function useDateColumn<T>(
+function useDateColumn<T>(
 	key: string,
 	header: string,
 	getValue: (item: T) => string | Date | null | undefined,
@@ -95,7 +95,7 @@ export function useDateColumn<T>(
  * @example
  * useCurrencyColumn<Invoice>("total", "Total", (invoice) => invoice.total)
  */
-export function useCurrencyColumn<T>(
+function useCurrencyColumn<T>(
 	key: string,
 	header: string,
 	getValue: (item: T) => number | null | undefined,
@@ -150,7 +150,7 @@ export function useCurrencyColumn<T>(
  * @example
  * useJobStatusColumn<Job>("status", "Status", (job) => job.status)
  */
-export function useJobStatusColumn<T>(
+function useJobStatusColumn<T>(
 	key: string,
 	header: string,
 	getValue: (item: T) => string | null | undefined,
@@ -234,7 +234,7 @@ export function useCustomerStatusColumn<T>(
  * @example
  * usePriorityColumn<Job>("priority", "Priority", (job) => job.priority)
  */
-export function usePriorityColumn<T>(
+function usePriorityColumn<T>(
 	key: string,
 	header: string,
 	getValue: (
@@ -292,7 +292,7 @@ export function usePriorityColumn<T>(
  *   handleDelete
  * )
  */
-export function useActionsColumn<T>(
+function useActionsColumn<T>(
 	getViewHref: (item: T) => string,
 	getEditHref?: (item: T) => string,
 	onArchive?: (item: T) => void,
@@ -385,7 +385,7 @@ export function useActionsColumn<T>(
  *   (customer) => `/customers/${customer.id}`
  * )
  */
-export function useLinkColumn<T>(
+function useLinkColumn<T>(
 	key: string,
 	header: string,
 	getLabel: (item: T) => string | React.ReactNode,
@@ -441,7 +441,7 @@ export function useLinkColumn<T>(
  * @example
  * useTextColumn<Customer>("email", "Email", (customer) => customer.email)
  */
-export function useTextColumn<T>(
+function useTextColumn<T>(
 	key: string,
 	header: string,
 	getValue: (item: T) => string | null | undefined,
@@ -505,7 +505,7 @@ export function useTextColumn<T>(
  * @example
  * useNumberColumn<Invoice>("invoice_number", "#", (invoice) => invoice.invoice_number)
  */
-export function useNumberColumn<T>(
+function useNumberColumn<T>(
 	key: string,
 	header: string,
 	getValue: (item: T) => number | null | undefined,

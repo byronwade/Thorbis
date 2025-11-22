@@ -15,7 +15,7 @@ const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 // Types and Schemas
 // ============================================================================
 
-export const BuildingDataSchema = z.object({
+const BuildingDataSchema = z.object({
 	// Building geometry
 	footprint: z
 		.object({
@@ -58,7 +58,7 @@ export type BuildingData = z.infer<typeof BuildingDataSchema>;
 // Building Data Service
 // ============================================================================
 
-export class BuildingDataService {
+class BuildingDataService {
 	private readonly cache: Map<
 		string,
 		{ data: BuildingData; timestamp: number }

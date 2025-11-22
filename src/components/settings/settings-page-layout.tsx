@@ -227,7 +227,7 @@ type SettingsInfoBannerProps = {
 	variant?: "blue" | "amber" | "red" | "green";
 };
 
-export function SettingsInfoBanner({
+function SettingsInfoBanner({
 	icon: Icon,
 	title,
 	description,

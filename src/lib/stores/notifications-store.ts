@@ -401,25 +401,25 @@ if (typeof window !== "undefined") {
 /**
  * Get only unread notifications
  */
-export const selectUnreadNotifications = (state: NotificationsState) =>
+const selectUnreadNotifications = (state: NotificationsState) =>
 	state.notifications.filter((n) => !n.read);
 
 /**
  * Get notifications by type
  */
-export const selectNotificationsByType =
+const selectNotificationsByType =
 	(type: NotificationType) => (state: NotificationsState) =>
 		state.notifications.filter((n) => n.type === type);
 
 /**
  * Get notifications by priority
  */
-export const selectNotificationsByPriority =
+const selectNotificationsByPriority =
 	(priority: NotificationPriority) => (state: NotificationsState) =>
 		state.notifications.filter((n) => n.priority === priority);
 
 /**
  * Get urgent unread notifications
  */
-export const selectUrgentUnreadNotifications = (state: NotificationsState) =>
+const selectUrgentUnreadNotifications = (state: NotificationsState) =>
 	state.notifications.filter((n) => !n.read && n.priority === "urgent");

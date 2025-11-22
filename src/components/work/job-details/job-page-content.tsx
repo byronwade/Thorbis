@@ -5,6 +5,48 @@
 
 "use client";
 
+import {
+	Activity,
+	AlertCircle,
+	Building2,
+	Calendar,
+	Camera,
+	CheckCircle,
+	ChevronRight,
+	DollarSign,
+	Download,
+	ExternalLink,
+	FileText,
+	Globe,
+	Link2,
+	Mail,
+	MapPin,
+	MessageSquare,
+	Package,
+	Phone,
+	Plus,
+	Receipt,
+	Save,
+	ShieldCheck,
+	Sparkles,
+	StickyNote,
+	Tag,
+	Upload,
+	User,
+	Users,
+	Wrench,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import {
 	archiveJob,
@@ -93,40 +135,6 @@ import {
 	getCustomerProperties,
 	searchCustomersForJob,
 } from "@/queries/customers-search";
-import {
-	Activity,
-	AlertCircle,
-	Building2,
-	Calendar,
-	Camera,
-	CheckCircle,
-	ChevronRight,
-	DollarSign,
-	Download,
-	ExternalLink,
-	FileText,
-	Globe,
-	Link2,
-	Mail,
-	MapPin,
-	MessageSquare,
-	Package,
-	Phone,
-	Plus,
-	Receipt,
-	Save,
-	ShieldCheck,
-	Sparkles,
-	StickyNote,
-	Tag,
-	Upload,
-	User,
-	Users,
-	Wrench
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { type ReactNode, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { AIJobAssistantHeader } from "./ai-job-assistant-header";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
 import { JobActivityTimeline } from "./job-activity-timeline";
@@ -179,11 +187,11 @@ export function JobPageContent({
 	const router = useRouter();
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
-	
+
 	// Guard against infinite refresh loops
 	const lastRefreshTimeRef = useRef<number>(0);
 	const REFRESH_COOLDOWN_MS = 1000; // Minimum 1 second between refreshes
-	
+
 	const safeRefresh = useCallback(() => {
 		const now = Date.now();
 		if (now - lastRefreshTimeRef.current < REFRESH_COOLDOWN_MS) {
@@ -195,7 +203,7 @@ export function JobPageContent({
 			router.refresh();
 		});
 	}, [router]);
-	
+
 	const [localJob, setLocalJob] = useState(() => {
 		if (!jobData?.job) {
 			return { priority: "medium" };
@@ -331,9 +339,7 @@ export function JobPageContent({
 			);
 		const paymentsChanged =
 			initialPayments.length !== prevPaymentsRef.current.length ||
-			initialPayments.some(
-				(p, i) => p?.id !== prevPaymentsRef.current[i]?.id,
-			);
+			initialPayments.some((p, i) => p?.id !== prevPaymentsRef.current[i]?.id);
 		const equipmentChanged =
 			initialJobEquipment.length !== prevJobEquipmentRef.current.length ||
 			initialJobEquipment.some(
@@ -341,14 +347,10 @@ export function JobPageContent({
 			);
 		const tasksChanged =
 			initialTasks.length !== prevTasksRef.current.length ||
-			initialTasks.some(
-				(t, i) => t?.id !== prevTasksRef.current[i]?.id,
-			);
+			initialTasks.some((t, i) => t?.id !== prevTasksRef.current[i]?.id);
 		const notesChanged =
 			initialJobNotes.length !== prevJobNotesRef.current.length ||
-			initialJobNotes.some(
-				(n, i) => n?.id !== prevJobNotesRef.current[i]?.id,
-			);
+			initialJobNotes.some((n, i) => n?.id !== prevJobNotesRef.current[i]?.id);
 
 		if (estimatesChanged) {
 			setEstimates(initialEstimates);
@@ -963,12 +965,15 @@ export function JobPageContent({
 			}
 		} catch (error) {
 			console.error("Failed to assign team member:", error);
-			const errorMessage = error instanceof Error ? error.message : "Failed to assign team member";
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to assign team member";
 			toast.error(errorMessage);
 		}
 	};
 
-	const handleRemoveTeamMember = async (teamMemberId: string): Promise<{ success: boolean; error?: string }> => {
+	const handleRemoveTeamMember = async (
+		teamMemberId: string,
+	): Promise<{ success: boolean; error?: string }> => {
 		try {
 			const result = await removeTeamMemberFromJob({
 				jobId: job.id,
@@ -986,7 +991,8 @@ export function JobPageContent({
 			}
 		} catch (error) {
 			console.error("Failed to remove team member:", error);
-			const errorMessage = error instanceof Error ? error.message : "Failed to remove team member";
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to remove team member";
 			toast.error(errorMessage);
 			return { success: false, error: errorMessage };
 		}
@@ -2051,7 +2057,9 @@ export function JobPageContent({
 								<PopoverContent className="w-64" align="start">
 									<div className="space-y-2">
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Name</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Name
+											</div>
 											<Link
 												href={`/dashboard/customers/${customer.id}`}
 												className="text-sm font-medium text-primary hover:underline"
@@ -2062,7 +2070,9 @@ export function JobPageContent({
 										</div>
 										{customer.phone && (
 											<div>
-												<div className="text-xs text-muted-foreground mb-1">Phone</div>
+												<div className="text-xs text-muted-foreground mb-1">
+													Phone
+												</div>
 												<a
 													href={`tel:${customer.phone}`}
 													className="text-sm text-primary hover:underline"
@@ -2073,7 +2083,9 @@ export function JobPageContent({
 										)}
 										{customer.email && (
 											<div>
-												<div className="text-xs text-muted-foreground mb-1">Email</div>
+												<div className="text-xs text-muted-foreground mb-1">
+													Email
+												</div>
 												<a
 													href={`mailto:${customer.email}`}
 													className="text-sm text-primary hover:underline"
@@ -2083,7 +2095,9 @@ export function JobPageContent({
 											</div>
 										)}
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Type</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Type
+											</div>
 											<Badge variant="outline" className="text-xs">
 												{customer.type || "residential"}
 											</Badge>
@@ -2113,10 +2127,13 @@ export function JobPageContent({
 								<PopoverContent className="w-64" align="start">
 									<div className="space-y-2">
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Address</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Address
+											</div>
 											<div className="text-sm">
 												{property.address}
-												{property.address_line2 && `, ${property.address_line2}`}
+												{property.address_line2 &&
+													`, ${property.address_line2}`}
 												<br />
 												{property.city}, {property.state} {property.zip}
 											</div>
@@ -2134,19 +2151,25 @@ export function JobPageContent({
 										</div>
 										<div className="grid grid-cols-2 gap-2">
 											<div>
-												<div className="text-xs text-muted-foreground mb-1">Type</div>
+												<div className="text-xs text-muted-foreground mb-1">
+													Type
+												</div>
 												<Badge variant="outline" className="text-xs">
 													{property.property_type || "Unknown"}
 												</Badge>
 											</div>
 											<div>
-												<div className="text-xs text-muted-foreground mb-1">Access</div>
+												<div className="text-xs text-muted-foreground mb-1">
+													Access
+												</div>
 												{property.access_code ? (
 													<code className="text-xs bg-muted px-1.5 py-0.5 rounded">
 														{property.access_code}
 													</code>
 												) : (
-													<span className="text-xs text-muted-foreground">None</span>
+													<span className="text-xs text-muted-foreground">
+														None
+													</span>
 												)}
 											</div>
 										</div>
@@ -2166,18 +2189,24 @@ export function JobPageContent({
 									{localJob.scheduled_start ? (
 										<>
 											<div className="text-xs font-medium">
-												{new Date(localJob.scheduled_start).toLocaleTimeString("en-US", {
-													hour: "numeric",
-													minute: "2-digit",
-													hour12: true,
-												})}
+												{new Date(localJob.scheduled_start).toLocaleTimeString(
+													"en-US",
+													{
+														hour: "numeric",
+														minute: "2-digit",
+														hour12: true,
+													},
+												)}
 											</div>
 											<div className="text-[10px] text-muted-foreground">
-												{teamAssignments?.length || 0} tech{teamAssignments?.length !== 1 ? "s" : ""}
+												{teamAssignments?.length || 0} tech
+												{teamAssignments?.length !== 1 ? "s" : ""}
 											</div>
 										</>
 									) : (
-										<div className="text-xs text-muted-foreground">Not scheduled</div>
+										<div className="text-xs text-muted-foreground">
+											Not scheduled
+										</div>
 									)}
 								</button>
 							</PopoverTrigger>
@@ -2185,7 +2214,9 @@ export function JobPageContent({
 								<div className="space-y-2">
 									<div className="grid grid-cols-2 gap-2">
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Start</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Start
+											</div>
 											<div className="text-sm">
 												{localJob.scheduled_start
 													? formatDate(localJob.scheduled_start)
@@ -2193,7 +2224,9 @@ export function JobPageContent({
 											</div>
 										</div>
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">End</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												End
+											</div>
 											<div className="text-sm">
 												{localJob.scheduled_end
 													? formatDate(localJob.scheduled_end)
@@ -2203,10 +2236,16 @@ export function JobPageContent({
 									</div>
 									{teamAssignments && teamAssignments.length > 0 && (
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Team ({teamAssignments.length})</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Team ({teamAssignments.length})
+											</div>
 											<div className="flex flex-wrap gap-1">
 												{teamAssignments.map((assignment: any) => (
-													<Badge key={assignment.id} variant="secondary" className="text-xs">
+													<Badge
+														key={assignment.id}
+														variant="secondary"
+														className="text-xs"
+													>
 														{assignment.user?.name || "Unknown"}
 													</Badge>
 												))}
@@ -2243,14 +2282,18 @@ export function JobPageContent({
 							<PopoverContent className="w-64" align="start">
 								<div className="space-y-2">
 									<div>
-										<div className="text-xs text-muted-foreground mb-1">Job Value</div>
+										<div className="text-xs text-muted-foreground mb-1">
+											Job Value
+										</div>
 										<div className="text-sm font-semibold">
 											{formatCurrency(localJob.total_amount || 0)}
 										</div>
 									</div>
 									<div className="grid grid-cols-2 gap-2">
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Payments</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Payments
+											</div>
 											<div className="text-sm font-semibold text-green-600 dark:text-green-400">
 												{payments && payments.length > 0
 													? formatCurrency(
@@ -2262,11 +2305,14 @@ export function JobPageContent({
 													: "$0"}
 											</div>
 											<div className="text-[10px] text-muted-foreground">
-												{payments?.length || 0} payment{payments?.length !== 1 ? "s" : ""}
+												{payments?.length || 0} payment
+												{payments?.length !== 1 ? "s" : ""}
 											</div>
 										</div>
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Estimates</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Estimates
+											</div>
 											<div className="text-sm">{estimates?.length || 0}</div>
 											{estimates && estimates.length > 0 && (
 												<Badge
@@ -2284,7 +2330,9 @@ export function JobPageContent({
 											)}
 										</div>
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Invoices</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Invoices
+											</div>
 											<div className="text-sm">{invoices?.length || 0}</div>
 										</div>
 									</div>
@@ -2301,35 +2349,48 @@ export function JobPageContent({
 										Activity
 									</div>
 									<div className="text-xs font-medium">
-										{(communications?.length || 0) + (jobNotes?.length || 0) + (photos?.length || 0) + (documents?.length || 0)} items
+										{(communications?.length || 0) +
+											(jobNotes?.length || 0) +
+											(photos?.length || 0) +
+											(documents?.length || 0)}{" "}
+										items
 									</div>
 									<div className="text-[10px] text-muted-foreground">
-										{communications?.length || 0} msg • {jobNotes?.length || 0} notes
+										{communications?.length || 0} msg • {jobNotes?.length || 0}{" "}
+										notes
 									</div>
 								</button>
 							</PopoverTrigger>
 							<PopoverContent className="w-64" align="start">
 								<div className="grid grid-cols-2 gap-2">
 									<div>
-										<div className="text-xs text-muted-foreground mb-1">Messages</div>
+										<div className="text-xs text-muted-foreground mb-1">
+											Messages
+										</div>
 										<div className="text-sm font-semibold">
 											{communications?.length || 0}
 										</div>
 									</div>
 									<div>
-										<div className="text-xs text-muted-foreground mb-1">Notes</div>
+										<div className="text-xs text-muted-foreground mb-1">
+											Notes
+										</div>
 										<div className="text-sm font-semibold">
 											{jobNotes?.length || 0}
 										</div>
 									</div>
 									<div>
-										<div className="text-xs text-muted-foreground mb-1">Photos</div>
+										<div className="text-xs text-muted-foreground mb-1">
+											Photos
+										</div>
 										<div className="text-sm font-semibold">
 											{photos?.length || 0}
 										</div>
 									</div>
 									<div>
-										<div className="text-xs text-muted-foreground mb-1">Documents</div>
+										<div className="text-xs text-muted-foreground mb-1">
+											Documents
+										</div>
 										<div className="text-sm font-semibold">
 											{documents?.length || 0}
 										</div>
@@ -2356,7 +2417,11 @@ export function JobPageContent({
 							</CollapsibleTrigger>
 							<CollapsibleContent className="mt-2">
 								<div className="space-y-2 p-2 bg-muted/30 rounded-md">
-									<StandardFormField label="Service Type" htmlFor="service-type" className="mb-0">
+									<StandardFormField
+										label="Service Type"
+										htmlFor="service-type"
+										className="mb-0"
+									>
 										<Input
 											id="service-type"
 											onChange={(e) =>
@@ -2369,10 +2434,16 @@ export function JobPageContent({
 									</StandardFormField>
 									{jobEquipment && jobEquipment.length > 0 && (
 										<div>
-											<div className="text-xs text-muted-foreground mb-1">Equipment</div>
+											<div className="text-xs text-muted-foreground mb-1">
+												Equipment
+											</div>
 											<div className="flex flex-wrap gap-1.5">
 												{jobEquipment.map((eq: any) => (
-													<Badge key={eq.id} variant="outline" className="text-xs">
+													<Badge
+														key={eq.id}
+														variant="outline"
+														className="text-xs"
+													>
 														{eq.equipment?.name || eq.equipment_id}
 													</Badge>
 												))}
@@ -3004,8 +3075,12 @@ export function JobPageContent({
 				}
 
 				// Handle both user (single) and users (array) formats
-				const user = teamMember.user || teamMember.users?.[0] || assignment?.user || assignment?.assigned_user;
-				
+				const user =
+					teamMember.user ||
+					teamMember.users?.[0] ||
+					assignment?.user ||
+					assignment?.assigned_user;
+
 				// Get user ID from various possible locations
 				const userId = user?.id || teamMember.user_id || assignment.user_id;
 				if (!userId) {
@@ -3017,7 +3092,9 @@ export function JobPageContent({
 				if (user?.name) {
 					userName = user.name;
 				} else if (user?.first_name || user?.last_name) {
-					userName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+					userName = [user.first_name, user.last_name]
+						.filter(Boolean)
+						.join(" ");
 				} else if (teamMember.user?.name) {
 					userName = teamMember.user.name;
 				} else if (user?.email) {
@@ -3028,35 +3105,49 @@ export function JobPageContent({
 					id: assignment.id || assignment.team_member_id || teamMember.id,
 					user_id: userId,
 					team_member: {
-						job_title: teamMember.job_title || assignment.job_title || undefined,
+						job_title:
+							teamMember.job_title || assignment.job_title || undefined,
 						user: {
 							name: userName || undefined,
 							email: user?.email || teamMember.email || undefined,
-							avatar_url: user?.avatar_url || user?.avatar || teamMember.avatar || undefined,
-							first_name: user?.first_name || (userName ? userName.split(" ")[0] : undefined),
-							last_name: user?.last_name || (userName && userName.includes(" ") ? userName.split(" ").slice(1).join(" ") : undefined),
+							avatar_url:
+								user?.avatar_url ||
+								user?.avatar ||
+								teamMember.avatar ||
+								undefined,
+							first_name:
+								user?.first_name ||
+								(userName ? userName.split(" ")[0] : undefined),
+							last_name:
+								user?.last_name ||
+								(userName && userName.includes(" ")
+									? userName.split(" ").slice(1).join(" ")
+									: undefined),
 						},
 					},
-					assigned_at: assignment.assigned_at || assignment.assignedAt || new Date().toISOString(),
+					assigned_at:
+						assignment.assigned_at ||
+						assignment.assignedAt ||
+						new Date().toISOString(),
 					role: assignment.role || "crew",
 				};
 			})
 			.filter((member) => member !== null) as Array<{
-				id: string;
-				user_id: string;
-				team_member: {
-					job_title?: string;
-					user: {
-						name?: string;
-						email?: string;
-						avatar_url?: string;
-						first_name?: string;
-						last_name?: string;
-					};
+			id: string;
+			user_id: string;
+			team_member: {
+				job_title?: string;
+				user: {
+					name?: string;
+					email?: string;
+					avatar_url?: string;
+					first_name?: string;
+					last_name?: string;
 				};
-				assigned_at: string;
-				role?: string;
-			}>;
+			};
+			assigned_at: string;
+			role?: string;
+		}>;
 	}, [teamAssignments]);
 
 	sections.push({
@@ -3073,8 +3164,8 @@ export function JobPageContent({
 		),
 		content: (
 			<UnifiedAccordionContent className="overflow-x-auto p-0 sm:p-0">
-				<JobTeamMembersTable 
-					teamMembers={transformedTeamMembers} 
+				<JobTeamMembersTable
+					teamMembers={transformedTeamMembers}
 					onRemoveMember={handleRemoveTeamMember}
 				/>
 			</UnifiedAccordionContent>

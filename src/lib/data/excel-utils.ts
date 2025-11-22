@@ -137,7 +137,7 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 /**
  * Parse Excel file
  */
-export async function parseExcelFile(file: File): Promise<unknown[]> {
+async function parseExcelFile(file: File): Promise<unknown[]> {
 	try {
 		// Read file as ArrayBuffer
 		const arrayBuffer = await file.arrayBuffer();
@@ -168,7 +168,7 @@ export async function parseExcelFile(file: File): Promise<unknown[]> {
 /**
  * Create Excel file from data
  */
-export function createExcelFile(data: unknown[], headers?: string[]): Blob {
+function createExcelFile(data: unknown[], headers?: string[]): Blob {
 	try {
 		// Create workbook
 		const workbook = XLSX.utils.book_new();
@@ -198,7 +198,7 @@ export function createExcelFile(data: unknown[], headers?: string[]): Blob {
 /**
  * Create CSV file from data
  */
-export function createCSVFile(data: unknown[]): Blob {
+function createCSVFile(data: unknown[]): Blob {
 	if (data.length === 0) {
 		return new Blob([""], { type: "text/csv" });
 	}

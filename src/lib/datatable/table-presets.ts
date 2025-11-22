@@ -251,7 +251,7 @@ export const TablePresets = {
  *   { onRowClick: handleCustomerClick }
  * );
  */
-export function mergePreset<T>(
+function mergePreset<T>(
 	preset: Partial<FullWidthDataTableProps<T>>,
 	customProps: Partial<FullWidthDataTableProps<T>>,
 ): Partial<FullWidthDataTableProps<T>> {

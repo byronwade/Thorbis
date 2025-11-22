@@ -35,7 +35,7 @@ export function generateInvitationToken(payload: {
 /**
  * Verify an invitation token
  */
-export function verifyInvitationToken(token: string): {
+function verifyInvitationToken(token: string): {
 	valid: boolean;
 	payload?: { email: string; companyId: string; role: string; exp: number };
 	error?: string;

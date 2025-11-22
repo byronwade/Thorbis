@@ -44,6 +44,7 @@ type CompanyEmailOptions = {
 		| "general";
 	replyTo?: string;
 	tags?: { name: string; value: string }[];
+	communicationId?: string;
 };
 
 type EmailOptions = PlatformEmailOptions | CompanyEmailOptions;
@@ -75,7 +76,7 @@ type EmailOptions = PlatformEmailOptions | CompanyEmailOptions;
  * });
  * ```
  */
-export async function routeEmail(options: EmailOptions) {
+async function routeEmail(options: EmailOptions) {
 	if (options.category === "platform") {
 		// Use Thorbis platform email system
 		return await sendEmail({
@@ -99,6 +100,7 @@ export async function routeEmail(options: EmailOptions) {
 			subject: options.subject,
 			html,
 			replyTo: options.replyTo,
+			communicationId: options.communicationId,
 		});
 	}
 }

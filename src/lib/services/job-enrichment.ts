@@ -31,7 +31,7 @@ import { weatherService } from "./weather-service";
 // Types and Schemas
 // ============================================================================
 
-export const JobEnrichmentSchema = z.object({
+const JobEnrichmentSchema = z.object({
 	jobId: z.string().uuid(),
 
 	// Property location data
@@ -116,7 +116,7 @@ const enrichmentCache = new Map<
 >();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-export class JobEnrichmentService {
+class JobEnrichmentService {
 	/**
 	 * Get cache key for job enrichment
 	 */

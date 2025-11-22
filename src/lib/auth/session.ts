@@ -70,7 +70,7 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
  * Returns the current session or null if not authenticated.
  * Cached per request to avoid multiple database calls.
  */
-export const getSession = cache(async (): Promise<Session | null> => {
+const getSession = cache(async (): Promise<Session | null> => {
 	try {
 		const supabase = await createClient();
 
@@ -114,7 +114,7 @@ export async function requireUser(): Promise<User> {
  *
  * Use this when you need both user and session data (e.g., access token).
  */
-export async function requireSession(): Promise<Session> {
+async function requireSession(): Promise<Session> {
 	const session = await getSession();
 
 	if (!session) {
@@ -130,7 +130,7 @@ export async function requireSession(): Promise<Session> {
  * Returns true if user is authenticated, false otherwise.
  * Useful for conditional rendering in Server Components.
  */
-export async function isAuthenticated(): Promise<boolean> {
+async function isAuthenticated(): Promise<boolean> {
 	const user = await getCurrentUser();
 	return user !== null;
 }
@@ -141,7 +141,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * Returns user metadata from Supabase Auth.
  * Useful for accessing additional user properties stored in auth.users.
  */
-export async function getUserMetadata<
+async function getUserMetadata<
 	T = Record<string, any>,
 >(): Promise<T | null> {
 	const user = await getCurrentUser();
@@ -158,7 +158,7 @@ export async function getUserMetadata<
  *
  * Returns true if user's email is verified, false otherwise.
  */
-export async function isEmailVerified(): Promise<boolean> {
+async function isEmailVerified(): Promise<boolean> {
 	const user = await getCurrentUser();
 
 	if (!user) {
@@ -174,7 +174,7 @@ export async function isEmailVerified(): Promise<boolean> {
  * Returns the user's ID or null if not authenticated.
  * Convenient helper for getting just the user ID.
  */
-export async function getUserId(): Promise<string | null> {
+async function getUserId(): Promise<string | null> {
 	const user = await getCurrentUser();
 	return user?.id || null;
 }
@@ -184,7 +184,7 @@ export async function getUserId(): Promise<string | null> {
  *
  * Returns the user's email or null if not authenticated.
  */
-export async function getUserEmail(): Promise<string | null> {
+async function getUserEmail(): Promise<string | null> {
 	const user = await getCurrentUser();
 	return user?.email || null;
 }
@@ -195,7 +195,7 @@ export async function getUserEmail(): Promise<string | null> {
  * Returns the current access token for API calls.
  * Useful for calling external APIs that require authentication.
  */
-export async function getAccessToken(): Promise<string | null> {
+async function getAccessToken(): Promise<string | null> {
 	const session = await getSession();
 	return session?.access_token || null;
 }
@@ -206,7 +206,7 @@ export async function getAccessToken(): Promise<string | null> {
  * Manually refresh the session to get a new access token.
  * Usually not needed as Supabase handles this automatically.
  */
-export async function refreshSession(): Promise<Session | null> {
+async function refreshSession(): Promise<Session | null> {
 	try {
 		const supabase = await createClient();
 

@@ -133,7 +133,7 @@ export async function getVendorsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function VendorsStats() {
+async function VendorsStats() {
 	const vendorStats = await getVendorsStatsData();
 
 	if (vendorStats.length === 0) {

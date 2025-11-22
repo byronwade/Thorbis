@@ -18,7 +18,7 @@ const ChartLoadingSkeleton = () => (
 	</div>
 );
 
-export const LazyLineChart = dynamic(
+const LazyLineChart = dynamic(
 	() => import("recharts").then((mod) => mod.LineChart),
 	{
 		ssr: false,
@@ -26,7 +26,7 @@ export const LazyLineChart = dynamic(
 	},
 );
 
-export const LazyBarChart = dynamic(
+const LazyBarChart = dynamic(
 	() => import("recharts").then((mod) => mod.BarChart),
 	{
 		ssr: false,
@@ -42,7 +42,7 @@ export const LazyAreaChart = dynamic(
 	},
 );
 
-export const LazyPieChart = dynamic(
+const LazyPieChart = dynamic(
 	() => import("recharts").then((mod) => mod.PieChart),
 	{
 		ssr: false,
@@ -50,7 +50,7 @@ export const LazyPieChart = dynamic(
 	},
 );
 
-export const LazyRadarChart = dynamic(
+const LazyRadarChart = dynamic(
 	() => import("recharts").then((mod) => mod.RadarChart),
 	{
 		ssr: false,
@@ -61,14 +61,14 @@ export const LazyRadarChart = dynamic(
 // Export other recharts components for use with lazy charts
 export {
 	Area,
-	Bar,
-	CartesianGrid,
-	Legend,
-	Line,
-	Pie,
-	Radar,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 } from "recharts";

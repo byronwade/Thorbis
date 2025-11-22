@@ -1,5 +1,4 @@
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
 import { cache } from "react";
 
 /**
@@ -18,15 +17,37 @@ export const createClient = cache(async () => {
 		return null;
 	}
 
+	// Dynamic import of next/headers to prevent bundling in client components
+	const { cookies, headers } = await import("next/headers");
+
 	let cookieStore;
+
+	// Check if we're in a prerendering context by looking at headers
+	let headersStore;
+	try {
+		headersStore = await headers();
+		// If we can get headers and there's no x-prerender header, we might be safe
+		if (headersStore.get('x-prerender')) {
+			return null;
+		}
+	} catch {
+		// If headers() fails, we're likely in prerendering
+		return null;
+	}
+
 	try {
 		cookieStore = await cookies();
 	} catch (error) {
 		// During prerendering, cookies() may reject - return null
 		// This allows PPR to work correctly
-		if (error instanceof Error && error.message.includes("prerendering")) {
+		if (error instanceof Error && (
+			error.message.includes("During prerendering") ||
+			error.message.includes("prerendering") ||
+			error.message.includes("cookies()")
+		)) {
 			return null;
 		}
+		// For other errors, rethrow
 		throw error;
 	}
 

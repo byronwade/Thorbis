@@ -215,27 +215,27 @@ export const Workflow = dynamic(() =>
 export const Database = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Database),
 );
-export const Lock = dynamic(() =>
+const Lock = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Lock),
 );
-export const KeyRound = dynamic(() =>
+const KeyRound = dynamic(() =>
 	import("lucide-react").then((mod) => mod.KeyRound),
 );
-export const Heart = dynamic(() =>
+const Heart = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Heart),
 );
-export const Gift = dynamic(() =>
+const Gift = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Gift),
 );
-export const Folder = dynamic(() =>
+const Folder = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Folder),
 );
-export const Store = dynamic(() =>
+const Store = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Store),
 );
-export const PiggyBank = dynamic(() =>
+const PiggyBank = dynamic(() =>
 	import("lucide-react").then((mod) => mod.PiggyBank),
 );
-export const Landmark = dynamic(() =>
+const Landmark = dynamic(() =>
 	import("lucide-react").then((mod) => mod.Landmark),
 );

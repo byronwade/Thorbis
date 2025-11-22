@@ -290,7 +290,7 @@ export class DataTransformer {
 /**
  * Batch transformation with progress tracking
  */
-export async function transformBatchWithProgress(
+async function transformBatchWithProgress(
 	records: Record<string, unknown>[],
 	mappings: FieldMapping[],
 	onProgress?: (processed: number, total: number) => void,

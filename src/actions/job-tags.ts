@@ -100,7 +100,7 @@ const COMMON_TAGS_LIMIT = 20;
 /**
  * Get commonly used tags for a company
  */
-export async function getCommonTags(companyId: string) {
+async function getCommonTags(companyId: string) {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

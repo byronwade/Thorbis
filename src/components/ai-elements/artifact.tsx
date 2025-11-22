@@ -40,7 +40,7 @@ export const ArtifactHeader = ({
 
 export type ArtifactCloseProps = ComponentProps<typeof Button>;
 
-export const ArtifactClose = ({
+const ArtifactClose = ({
   className,
   children,
   size = "sm",
@@ -73,7 +73,7 @@ export const ArtifactTitle = ({ className, ...props }: ArtifactTitleProps) => (
 
 export type ArtifactDescriptionProps = HTMLAttributes<HTMLParagraphElement>;
 
-export const ArtifactDescription = ({
+const ArtifactDescription = ({
   className,
   ...props
 }: ArtifactDescriptionProps) => (
@@ -82,7 +82,7 @@ export const ArtifactDescription = ({
 
 export type ArtifactActionsProps = HTMLAttributes<HTMLDivElement>;
 
-export const ArtifactActions = ({
+const ArtifactActions = ({
   className,
   ...props
 }: ArtifactActionsProps) => (
@@ -95,7 +95,7 @@ export type ArtifactActionProps = ComponentProps<typeof Button> & {
   icon?: LucideIcon;
 };
 
-export const ArtifactAction = ({
+const ArtifactAction = ({
   tooltip,
   label,
   icon: Icon,

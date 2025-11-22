@@ -50,7 +50,7 @@ export const DEFAULT_CSR_REMINDERS: CSRReminder[] = [
 /**
  * Additional optional reminders that can be enabled
  */
-export const OPTIONAL_CSR_REMINDERS: CSRReminder[] = [
+const OPTIONAL_CSR_REMINDERS: CSRReminder[] = [
 	{
 		id: "upsell",
 		text: "Mention maintenance plans or additional services",

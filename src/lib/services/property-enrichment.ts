@@ -27,7 +27,7 @@ import { z } from "zod";
 /**
  * Property enrichment data from external APIs
  */
-export const PropertyEnrichmentSchema = z.object({
+const PropertyEnrichmentSchema = z.object({
 	// Basic property details
 	propertyId: z.string(),
 	address: z.object({
@@ -139,7 +139,7 @@ type PropertyDataProvider = {
 // Property Enrichment Service
 // ============================================================================
 
-export class PropertyEnrichmentService {
+class PropertyEnrichmentService {
 	private readonly providers: Map<string, PropertyDataProvider> = new Map();
 	private readonly cache: Map<string, PropertyEnrichment> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days

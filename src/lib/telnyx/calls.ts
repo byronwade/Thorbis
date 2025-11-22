@@ -270,7 +270,7 @@ export async function stopRecording(params: { callControlId: string }) {
 /**
  * Play audio to the call
  */
-export async function playAudio(params: {
+async function playAudio(params: {
 	callControlId: string;
 	audioUrl: string;
 	loop?: number;
@@ -300,7 +300,7 @@ export async function playAudio(params: {
 /**
  * Speak text to the call using text-to-speech
  */
-export async function speakText(params: {
+async function speakText(params: {
 	callControlId: string;
 	text: string;
 	voice?: "male" | "female";
@@ -362,7 +362,7 @@ export async function transferCall(params: {
 /**
  * Send DTMF tones (phone keypad presses)
  */
-export async function sendDTMF(params: {
+async function sendDTMF(params: {
 	callControlId: string;
 	digits: string;
 }) {
@@ -390,7 +390,7 @@ export async function sendDTMF(params: {
 /**
  * Gather user input using audio prompts
  */
-export async function gatherInput(params: {
+async function gatherInput(params: {
 	callControlId: string;
 	audioUrl?: string;
 	speakText?: string;

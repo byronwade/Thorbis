@@ -14,7 +14,7 @@ import {
 /**
  * Fetch all categories for the current user's company (server-side)
  */
-export async function fetchCategoriesServer(): Promise<DatabaseCategory[]> {
+async function fetchCategoriesServer(): Promise<DatabaseCategory[]> {
 	const supabase = await createServerClient();
 
 	if (!supabase) {

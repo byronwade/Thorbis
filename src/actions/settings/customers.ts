@@ -61,7 +61,7 @@ const customerPreferenceSchema = z.object({
 	autoTagCustomers: z.boolean().default(false),
 });
 
-export async function updateCustomerPreferences(
+async function updateCustomerPreferences(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -119,7 +119,7 @@ export async function updateCustomerPreferences(
 	});
 }
 
-export async function getCustomerPreferences(): Promise<ActionResult<any>> {
+async function getCustomerPreferences(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -401,7 +401,7 @@ const loyaltySettingsSchema = z.object({
 	notifyOnPointsEarned: z.boolean().default(true),
 });
 
-export async function updateLoyaltySettings(
+async function updateLoyaltySettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -466,7 +466,7 @@ export async function updateLoyaltySettings(
 	});
 }
 
-export async function getLoyaltySettings(): Promise<ActionResult<any>> {
+async function getLoyaltySettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -516,7 +516,7 @@ const privacySettingsSchema = z.object({
 	enableDataExport: z.boolean().default(true),
 });
 
-export async function updatePrivacySettings(
+async function updatePrivacySettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -574,7 +574,7 @@ export async function updatePrivacySettings(
 	});
 }
 
-export async function getPrivacySettings(): Promise<ActionResult<any>> {
+async function getPrivacySettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -633,7 +633,7 @@ const portalSettingsSchema = z.object({
 	notifyOnAppointment: z.boolean().default(true),
 });
 
-export async function updatePortalSettings(
+async function updatePortalSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -700,7 +700,7 @@ export async function updatePortalSettings(
 	});
 }
 
-export async function getPortalSettings(): Promise<ActionResult<any>> {
+async function getPortalSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -752,7 +752,7 @@ const intakeSettingsSchema = z.object({
 	welcomeEmailTemplateId: z.string().optional(),
 });
 
-export async function updateIntakeSettings(
+async function updateIntakeSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -824,7 +824,7 @@ export async function updateIntakeSettings(
 	});
 }
 
-export async function getIntakeSettings(): Promise<ActionResult<any>> {
+async function getIntakeSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

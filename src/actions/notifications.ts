@@ -187,7 +187,7 @@ export async function getNotifications(
  *
  * @returns Number of unread notifications
  */
-export async function getUnreadCount() {
+async function getUnreadCount() {
 	try {
 		const { userId, supabase } = await getAuthContext();
 
@@ -223,7 +223,7 @@ export async function getUnreadCount() {
  * @param input - Notification data
  * @returns Created notification
  */
-export async function createNotification(input: CreateNotificationInput) {
+async function createNotification(input: CreateNotificationInput) {
 	try {
 		const { supabase } = await getAuthContext();
 
@@ -352,7 +352,7 @@ export async function markAllAsRead() {
  * @param notificationId - ID of the notification to mark as unread
  * @returns Success status
  */
-export async function markAsUnread(notificationId: string) {
+async function markAsUnread(notificationId: string) {
 	try {
 		const { userId, supabase } = await getAuthContext();
 
@@ -439,7 +439,7 @@ export async function deleteNotification(notificationId: string) {
  *
  * @returns Array of notification preferences
  */
-export async function getNotificationPreferences() {
+async function getNotificationPreferences() {
 	try {
 		const { userId, companyId, supabase } = await getAuthContext();
 
@@ -473,7 +473,7 @@ export async function getNotificationPreferences() {
  * @param preferences - Array of notification preference settings
  * @returns Success status
  */
-export async function updateNotificationPreferences(
+async function updateNotificationPreferences(
 	preferences: NotificationPreference[],
 ) {
 	try {

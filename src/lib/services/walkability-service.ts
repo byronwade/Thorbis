@@ -14,7 +14,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const WalkabilitySchema = z.object({
+const WalkabilitySchema = z.object({
 	score: z.number(), // 0-100
 	category: z.string(), // Car-Dependent, Somewhat Walkable, Very Walkable, Walker's Paradise
 	nearbyAmenities: z.object({
@@ -32,7 +32,7 @@ export const WalkabilitySchema = z.object({
 
 export type Walkability = z.infer<typeof WalkabilitySchema>;
 
-export class WalkabilityService {
+class WalkabilityService {
 	private readonly cache: Map<
 		string,
 		{ data: Walkability; timestamp: number }

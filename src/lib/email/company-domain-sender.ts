@@ -28,7 +28,7 @@ type EmailType =
  * Get the verified email domain for a company
  * Returns null if no domain is verified
  */
-export async function getCompanyVerifiedDomain(
+async function getCompanyVerifiedDomain(
 	companyId: string,
 ): Promise<CompanyDomain | null> {
 	const supabase = await createServiceSupabaseClient();
@@ -65,7 +65,7 @@ export async function getCompanyVerifiedDomain(
 /**
  * Get the appropriate sending address for a specific email type
  */
-export function getSendingAddress(
+function getSendingAddress(
 	domain: CompanyDomain,
 	type: EmailType,
 	companyName: string,
@@ -98,6 +98,7 @@ export async function sendCompanyEmail({
 	text,
 	replyTo,
 	attachments,
+	communicationId,
 }: {
 	companyId: string;
 	companyName: string;
@@ -111,6 +112,7 @@ export async function sendCompanyEmail({
 		filename: string;
 		content: string;
 	}>;
+	communicationId?: string;
 }) {
 	// 1. Get company's verified domain
 	const domain = await getCompanyVerifiedDomain(companyId);
@@ -128,13 +130,20 @@ export async function sendCompanyEmail({
 	const replyToAddress =
 		replyTo || domain.reply_to_email || `office@${domain.full_domain}`;
 
-	// 4. Send email via Resend
+	// 4. Add email tracking if communicationId is provided
+	let trackedHtml = html;
+	if (communicationId) {
+		const { addEmailTracking } = await import("./email-tracking");
+		trackedHtml = addEmailTracking(html, communicationId);
+	}
+
+	// 5. Send email via Resend
 	try {
 		const { data, error } = await resend.emails.send({
 			from: fromAddress,
 			to,
 			subject,
-			html,
+			html: trackedHtml,
 			text,
 			replyTo: replyToAddress,
 			attachments,
@@ -154,7 +163,7 @@ export async function sendCompanyEmail({
 /**
  * Check if company can send emails (has verified domain)
  */
-export async function canCompanySendEmail(companyId: string): Promise<boolean> {
+async function canCompanySendEmail(companyId: string): Promise<boolean> {
 	const domain = await getCompanyVerifiedDomain(companyId);
 	return domain !== null && domain.status === "verified";
 }
@@ -162,7 +171,7 @@ export async function canCompanySendEmail(companyId: string): Promise<boolean> {
 /**
  * Get company's email sending status and instructions
  */
-export async function getCompanyEmailStatus(companyId: string): Promise<{
+async function getCompanyEmailStatus(companyId: string): Promise<{
 	canSend: boolean;
 	domain?: CompanyDomain;
 	message: string;

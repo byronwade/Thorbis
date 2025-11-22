@@ -533,7 +533,7 @@ export function calculateJobMetrics(input: JobMetricsInput): JobMetrics {
 /**
  * Format currency for display
  */
-export function formatCurrency(cents: number): string {
+function formatCurrency(cents: number): string {
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -543,7 +543,7 @@ export function formatCurrency(cents: number): string {
 /**
  * Format hours for display
  */
-export function formatHours(hours: number): string {
+function formatHours(hours: number): string {
 	if (hours < 1) {
 		return `${Math.round(hours * 60)}m`;
 	}
@@ -555,14 +555,14 @@ export function formatHours(hours: number): string {
 /**
  * Format percentage for display
  */
-export function formatPercentage(percentage: number, decimals = 1): string {
+function formatPercentage(percentage: number, decimals = 1): string {
 	return `${percentage.toFixed(decimals)}%`;
 }
 
 /**
  * Get health color for UI
  */
-export function getHealthColor(
+function getHealthColor(
 	health: JobMetrics["summary"]["health"],
 ): string {
 	switch (health) {
@@ -584,7 +584,7 @@ export function getHealthColor(
 /**
  * Get priority color for UI
  */
-export function getPriorityColor(priority: string): string {
+function getPriorityColor(priority: string): string {
 	switch (priority.toLowerCase()) {
 		case "urgent":
 			return "text-red-600 bg-red-50";

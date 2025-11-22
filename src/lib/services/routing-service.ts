@@ -35,7 +35,7 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour cache for supplier data
 // Types and Schemas
 // ============================================================================
 
-export const RouteSchema = z.object({
+const RouteSchema = z.object({
 	distance: z.number(), // meters
 	duration: z.number(), // seconds
 	from: z.object({
@@ -48,7 +48,7 @@ export const RouteSchema = z.object({
 	}),
 });
 
-export const NearbySupplierSchema = z.object({
+const NearbySupplierSchema = z.object({
 	id: z.number(),
 	name: z.string().optional(),
 	lat: z.number(),
@@ -64,7 +64,7 @@ export type NearbySupplier = z.infer<typeof NearbySupplierSchema>;
 // Routing Service
 // ============================================================================
 
-export class RoutingService {
+class RoutingService {
 	private readonly orsApiKey: string | undefined;
 	private overpassCache: Map<
 		string,

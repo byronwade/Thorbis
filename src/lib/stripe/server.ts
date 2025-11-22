@@ -42,7 +42,7 @@ export const stripe = getStripeServer();
  * Creates a customer in Stripe if they don't have one yet
  * Links customer to user via metadata
  */
-export async function getOrCreateStripeCustomer(
+async function getOrCreateStripeCustomer(
 	userId: string,
 	email: string,
 	name?: string,
@@ -83,7 +83,7 @@ export async function getOrCreateStripeCustomer(
  * For first organization: Base plan
  * For additional organizations: Base plan + Additional org addon
  */
-export async function createCheckoutSession({
+async function createCheckoutSession({
 	customerId,
 	companyId,
 	isAdditionalOrg,
@@ -155,7 +155,7 @@ export async function createCheckoutSession({
  *
  * Allows users to manage their subscription, payment methods, and billing history
  */
-export async function createBillingPortalSession(
+async function createBillingPortalSession(
 	customerId: string,
 	returnUrl: string,
 ): Promise<string | null> {
@@ -180,7 +180,7 @@ export async function createBillingPortalSession(
  *
  * Cancels subscription at the end of the current billing period
  */
-export async function cancelSubscription(
+async function cancelSubscription(
 	subscriptionId: string,
 ): Promise<boolean> {
 	if (!stripe) {
@@ -203,7 +203,7 @@ export async function cancelSubscription(
  *
  * Removes the cancellation flag from a subscription
  */
-export async function reactivateSubscription(
+async function reactivateSubscription(
 	subscriptionId: string,
 ): Promise<boolean> {
 	if (!stripe) {
@@ -224,7 +224,7 @@ export async function reactivateSubscription(
 /**
  * Get subscription details
  */
-export async function getSubscription(
+async function getSubscription(
 	subscriptionId: string,
 ): Promise<Stripe.Subscription | null> {
 	if (!stripe) {
@@ -242,7 +242,7 @@ export async function getSubscription(
 /**
  * List all subscriptions for a customer
  */
-export async function listCustomerSubscriptions(
+async function listCustomerSubscriptions(
 	customerId: string,
 ): Promise<Stripe.Subscription[]> {
 	if (!stripe) {
@@ -267,7 +267,7 @@ export async function listCustomerSubscriptions(
  * Attaches a payment method collected via Stripe Elements to a customer
  * and sets it as the default payment method
  */
-export async function attachPaymentMethodToCustomer(
+async function attachPaymentMethodToCustomer(
 	paymentMethodId: string,
 	customerId: string,
 ): Promise<boolean> {

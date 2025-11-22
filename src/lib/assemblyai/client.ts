@@ -125,7 +125,7 @@ export async function submitTranscription(
  * }
  * ```
  */
-export async function getTranscription(
+async function getTranscription(
 	transcriptionId: string,
 ): Promise<{ success: boolean; data?: TranscriptionResponse; error?: string }> {
 	try {
@@ -196,7 +196,7 @@ export function formatTranscriptWithSpeakers(
  *
  * AssemblyAI Pricing: $0.25/hour = $0.004167/minute = $0.00006944/second
  */
-export function estimateTranscriptionCost(durationSeconds: number): number {
+function estimateTranscriptionCost(durationSeconds: number): number {
 	const COST_PER_SECOND = 0.000_069_44; // $0.25/hour
 	return durationSeconds * COST_PER_SECOND;
 }

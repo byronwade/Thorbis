@@ -218,7 +218,7 @@ export class ProgressTracker {
 /**
  * Subscribe to import progress updates (client-side)
  */
-export function subscribeToImportProgress(
+function subscribeToImportProgress(
 	importId: string,
 	onProgress: (progress: ImportProgress) => void,
 	onError?: (error: Error) => void,

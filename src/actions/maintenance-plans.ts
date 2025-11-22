@@ -205,7 +205,7 @@ function validateMaintenancePlanDates(
 /**
  * Create a new maintenance plan
  */
-export async function createMaintenancePlan(
+async function createMaintenancePlan(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -338,7 +338,7 @@ export async function createMaintenancePlan(
 /**
  * Update an existing maintenance plan
  */
-export async function updateMaintenancePlan(
+async function updateMaintenancePlan(
 	planId: string,
 	formData: FormData,
 ): Promise<ActionResult<boolean>> {
@@ -458,7 +458,7 @@ export async function updateMaintenancePlan(
 /**
  * Activate a maintenance plan
  */
-export async function activateMaintenancePlan(
+async function activateMaintenancePlan(
 	planId: string,
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
@@ -504,7 +504,7 @@ export async function activateMaintenancePlan(
 /**
  * Pause a maintenance plan
  */
-export async function pauseMaintenancePlan(
+async function pauseMaintenancePlan(
 	planId: string,
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
@@ -550,7 +550,7 @@ export async function pauseMaintenancePlan(
 /**
  * Cancel a maintenance plan
  */
-export async function cancelMaintenancePlan(
+async function cancelMaintenancePlan(
 	planId: string,
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
@@ -596,7 +596,7 @@ export async function cancelMaintenancePlan(
 /**
  * Delete a maintenance plan
  */
-export async function deleteMaintenancePlan(
+async function deleteMaintenancePlan(
 	planId: string,
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
@@ -641,7 +641,7 @@ export async function deleteMaintenancePlan(
 /**
  * Search maintenance plans
  */
-export async function searchMaintenancePlans(
+async function searchMaintenancePlans(
 	searchQuery: string,
 	options?: {
 		limit?: number;

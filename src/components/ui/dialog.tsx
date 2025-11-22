@@ -134,10 +134,10 @@ function DialogDescription({
 
 export {
 	Dialog,
-	DialogPortal,
-	DialogOverlay,
+	
+	
 	DialogTrigger,
-	DialogClose,
+	
 	DialogContent,
 	DialogHeader,
 	DialogFooter,

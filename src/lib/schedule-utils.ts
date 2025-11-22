@@ -17,7 +17,7 @@ import type {
 // CONFLICT DETECTION
 // ============================================
 
-export function hasTimeConflict(
+function hasTimeConflict(
 	job1Start: Date | string,
 	job1End: Date | string,
 	job2Start: Date | string,
@@ -35,7 +35,7 @@ export function hasTimeConflict(
 	);
 }
 
-export function findConflictingJobs(
+function findConflictingJobs(
 	jobs: Job[],
 	technicianId: string,
 	startTime: Date,
@@ -58,7 +58,7 @@ export function findConflictingJobs(
 // MIGRATION UTILITIES
 // ============================================
 
-export function legacyJobToJob(legacy: LegacyJob, technicianId: string): Job {
+function legacyJobToJob(legacy: LegacyJob, technicianId: string): Job {
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
 
@@ -142,7 +142,7 @@ export function legacyJobToJob(legacy: LegacyJob, technicianId: string): Job {
 // TIME CALCULATIONS
 // ============================================
 
-export function calculateDuration(
+function calculateDuration(
 	startTime: Date | string,
 	endTime: Date | string,
 ): number {
@@ -151,7 +151,7 @@ export function calculateDuration(
 	return Math.round((end.getTime() - start.getTime()) / (1000 * 60)); // minutes
 }
 
-export function formatDuration(minutes: number): string {
+function formatDuration(minutes: number): string {
 	if (minutes < 60) {
 		return `${minutes}m`;
 	}
@@ -162,7 +162,7 @@ export function formatDuration(minutes: number): string {
 	return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
-export function addMinutes(date: Date, minutes: number): Date {
+function addMinutes(date: Date, minutes: number): Date {
 	return new Date(date.getTime() + minutes * 60 * 1000);
 }
 
@@ -170,7 +170,7 @@ export function addMinutes(date: Date, minutes: number): Date {
 // WORK HOURS CALCULATIONS
 // ============================================
 
-export function calculateWorkload(
+function calculateWorkload(
 	jobs: Job[],
 	technicianSchedule: TechnicianSchedule,
 	date: Date,
@@ -213,7 +213,7 @@ export function calculateWorkload(
 // DATE UTILITIES
 // ============================================
 
-export function isSameDay(date1: Date, date2: Date): boolean {
+function isSameDay(date1: Date, date2: Date): boolean {
 	return (
 		date1.getFullYear() === date2.getFullYear() &&
 		date1.getMonth() === date2.getMonth() &&
@@ -221,7 +221,7 @@ export function isSameDay(date1: Date, date2: Date): boolean {
 	);
 }
 
-export function isToday(date: Date): boolean {
+function isToday(date: Date): boolean {
 	return isSameDay(date, new Date());
 }
 
@@ -241,7 +241,7 @@ export function endOfDay(date: Date): Date {
 // RECURRING JOBS
 // ============================================
 
-export function generateRecurringJobInstances(
+function generateRecurringJobInstances(
 	baseJob: Job,
 	startDate: Date,
 	endDate: Date,
@@ -381,7 +381,7 @@ export function sortJobsByStartTime(jobs: Job[]): Job[] {
 	});
 }
 
-export function sortTechniciansByName(technicians: Technician[]): Technician[] {
+function sortTechniciansByName(technicians: Technician[]): Technician[] {
 	return [...technicians].sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -389,7 +389,7 @@ export function sortTechniciansByName(technicians: Technician[]): Technician[] {
 // VALIDATION
 // ============================================
 
-export function validateJobTimes(
+function validateJobTimes(
 	startTime: Date,
 	endTime: Date,
 ): {
@@ -414,7 +414,7 @@ export function validateJobTimes(
 	return { valid: true };
 }
 
-export function validateJob(job: Partial<Job>): {
+function validateJob(job: Partial<Job>): {
 	valid: boolean;
 	errors: string[];
 } {

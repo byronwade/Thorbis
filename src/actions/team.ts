@@ -305,7 +305,7 @@ export async function createTeamMemberDirect(
 /**
  * Invite team member
  */
-export async function inviteTeamMember(
+async function inviteTeamMember(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -472,7 +472,7 @@ export async function inviteTeamMember(
 /**
  * Update team member
  */
-export async function updateTeamMember(
+async function updateTeamMember(
 	memberId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -593,7 +593,7 @@ export async function updateTeamMember(
 /**
  * Remove team member
  */
-export async function removeTeamMember(
+async function removeTeamMember(
 	memberId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -1222,7 +1222,7 @@ export async function canManageTeamMember(
  * Get team member permissions and settings
  * Only accessible by owners and managers
  */
-export async function getTeamMemberPermissions(memberId: string): Promise<
+async function getTeamMemberPermissions(memberId: string): Promise<
 	ActionResult<{
 		role: string;
 		permissions: Record<string, boolean>;
@@ -1281,7 +1281,7 @@ export async function getTeamMemberPermissions(memberId: string): Promise<
  * Update team member permissions
  * Only accessible by owners and managers
  */
-export async function updateTeamMemberPermissions(
+async function updateTeamMemberPermissions(
 	memberId: string,
 	newRole: string,
 ): Promise<ActionResult<void>> {
@@ -1392,7 +1392,7 @@ export async function updateTeamMemberPermissions(
 /**
  * Create role
  */
-export async function createRole(
+async function createRole(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -1479,7 +1479,7 @@ export async function createRole(
 /**
  * Update role
  */
-export async function updateRole(
+async function updateRole(
 	roleId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -1573,7 +1573,7 @@ export async function updateRole(
 /**
  * Delete role
  */
-export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
+async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1672,7 +1672,7 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 /**
  * Create department
  */
-export async function createDepartment(
+async function createDepartment(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -1752,7 +1752,7 @@ export async function createDepartment(
 /**
  * Update department
  */
-export async function updateDepartment(
+async function updateDepartment(
 	departmentId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -1832,7 +1832,7 @@ export async function updateDepartment(
 /**
  * Delete department
  */
-export async function deleteDepartment(
+async function deleteDepartment(
 	departmentId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -1965,7 +1965,7 @@ export type TeamMemberWithDetails = {
 /**
  * Get all team members for current user's company
  */
-export async function getTeamMembers() {
+async function getTeamMembers() {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -2090,7 +2090,7 @@ export async function getTeamMembers() {
 /**
  * Get all roles for current user's company
  */
-export async function getRoles(): Promise<
+async function getRoles(): Promise<
 	ActionResult<
 		Array<{
 			id: string;
@@ -2177,7 +2177,7 @@ export async function getRoles(): Promise<
 	});
 }
 
-export async function getRoleDetails(roleId: string): Promise<
+async function getRoleDetails(roleId: string): Promise<
 	ActionResult<{
 		id: string;
 		name: string;
@@ -2257,7 +2257,7 @@ export async function getRoleDetails(roleId: string): Promise<
 /**
  * Get all departments for current user's company
  */
-export async function getDepartments(): Promise<
+async function getDepartments(): Promise<
 	ActionResult<
 		Array<{
 			id: string;
@@ -2370,7 +2370,7 @@ export type TeamOverviewSnapshot = {
 	};
 };
 
-export async function getTeamOverview(): Promise<
+async function getTeamOverview(): Promise<
 	ActionResult<TeamOverviewSnapshot>
 > {
 	return withErrorHandling(async () => {

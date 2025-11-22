@@ -12,6 +12,7 @@ import { NotificationsDropdown } from "./notifications-dropdown";
 import { PhoneDropdown } from "./phone-dropdown";
 import { QuickAddDropdown } from "./quick-add-dropdown";
 import { UserMenu } from "./user-menu";
+import { getTotalUnreadCountAction } from "@/actions/email-actions";
 
 /**
  * AppHeaderClient - Client Component (Minimal Interactivity Only)
@@ -207,6 +208,30 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
 	);
 }
 
+function formatBadgeCount(count: number): string {
+	if (count <= 9) {
+		return count.toString();
+	}
+	if (count <= 99) {
+		return "99+";
+	}
+	if (count <= 999) {
+		return "999+";
+	}
+	return "1K+";
+}
+
+function UnreadBadge({ count }: { count: number }) {
+	if (count === 0) {
+		return null;
+	}
+	return (
+		<span className="absolute -top-1.5 right-0 rounded bg-red-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white shadow-sm whitespace-nowrap">
+			{formatBadgeCount(count)}
+		</span>
+	);
+}
+
 export function AppHeaderClient({
 	userProfile,
 	companies,
@@ -230,6 +255,29 @@ export function AppHeaderClient({
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 	const mobileMenuRef = useRef<HTMLDivElement>(null);
+	const [unreadCount, setUnreadCount] = useState(0);
+
+	// Fetch unread count on mount, when pathname changes, and periodically
+	useEffect(() => {
+		const fetchUnreadCount = async () => {
+			try {
+				const result = await getTotalUnreadCountAction();
+				if (result.success && result.count !== undefined) {
+					setUnreadCount(result.count);
+				}
+			} catch (error) {
+				console.error("Failed to fetch unread count:", error);
+			}
+		};
+
+		// Fetch immediately
+		fetchUnreadCount();
+
+		// Refresh every 30 seconds
+		const interval = setInterval(fetchUnreadCount, 30000);
+
+		return () => clearInterval(interval);
+	}, [pathname]); // Refresh when pathname changes (e.g., navigating to/from communication page)
 
 	// Handle closing animation
 	const ANIMATION_DURATION = 300; // Match the duration of the animation
@@ -341,6 +389,9 @@ export function AppHeaderClient({
 									{item.label}
 								</Link>
 								<StatusIndicator status={item.status} />
+								{item.href === "/dashboard/communication" && (
+									<UnreadBadge count={unreadCount} />
+								)}
 							</div>
 						);
 					})}
@@ -488,7 +539,12 @@ export function AppHeaderClient({
 																<MobileStatusBadge status={item.status} />
 															</div>
 														)}
-														{isActive && (
+														{item.href === "/dashboard/communication" && unreadCount > 0 && (
+															<div className="absolute top-2 right-2">
+																<UnreadBadge count={unreadCount} />
+															</div>
+														)}
+														{isActive && unreadCount === 0 && (
 															<div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
 														)}
 													</Link>

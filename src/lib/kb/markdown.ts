@@ -16,7 +16,7 @@ import type { KBArticleFrontmatter } from "./types";
 /**
  * Parse markdown file with frontmatter
  */
-export function parseMarkdown(content: string): {
+function parseMarkdown(content: string): {
 	frontmatter: KBArticleFrontmatter;
 	content: string;
 } {

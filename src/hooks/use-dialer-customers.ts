@@ -101,7 +101,7 @@ export function useDialerCustomers(shouldFetch = false) {
 }
 
 // Helper to invalidate cache (call after creating/updating customers)
-export function invalidateDialerCustomersCache() {
+function invalidateDialerCustomersCache() {
 	cachedCustomers = null;
 	cacheTimestamp = 0;
 }

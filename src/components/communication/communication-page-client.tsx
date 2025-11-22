@@ -120,7 +120,10 @@ type CommunicationPageClientProps = {
 	companyPhones: CompanyPhone[];
 };
 
-export function CommunicationPageClient({
+/**
+ * @deprecated Unused
+ */
+function CommunicationPageClient({
 	communications,
 	emails,
 	emailStats,

@@ -11,7 +11,7 @@ import {
 	purchaseAdditionalNumbers,
 } from "@/lib/telnyx/provision-company";
 
-export async function provisionCompanyTelnyx(companyId: string) {
+async function provisionCompanyTelnyx(companyId: string) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Service unavailable" };
@@ -29,7 +29,7 @@ export async function provisionCompanyTelnyx(companyId: string) {
 	return result;
 }
 
-export async function purchaseCompanyPhoneNumbers(
+async function purchaseCompanyPhoneNumbers(
 	companyId: string,
 	quantity: number,
 	areaCode?: string,

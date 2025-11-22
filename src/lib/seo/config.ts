@@ -181,7 +181,7 @@ export function buildShareImageUrl({
 /**
  * Format a slug/identifier into a human-readable breadcrumb label.
  */
-export function formatBreadcrumbLabel(input: string): string {
+function formatBreadcrumbLabel(input: string): string {
 	return toTitleCase(input.replace(/[-_/]+/g, " "));
 }
 

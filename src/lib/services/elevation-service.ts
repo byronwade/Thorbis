@@ -13,7 +13,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const ElevationSchema = z.object({
+const ElevationSchema = z.object({
 	elevationFeet: z.number(),
 	elevationMeters: z.number(),
 	dataSource: z.string(),
@@ -22,7 +22,7 @@ export const ElevationSchema = z.object({
 
 export type Elevation = z.infer<typeof ElevationSchema>;
 
-export class ElevationService {
+class ElevationService {
 	private readonly cache: Map<string, { data: Elevation; timestamp: number }> =
 		new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 365; // 1 year (elevation doesn't change)

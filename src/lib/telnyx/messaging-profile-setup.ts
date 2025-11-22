@@ -31,6 +31,12 @@ function getWebhookUrl(): string | undefined {
 		process.env.NEXT_PUBLIC_APP_URL,
 		process.env.APP_URL,
 	];
+	
+	const isDevelopment = 
+		process.env.NODE_ENV === "development" ||
+		process.env.VERCEL_ENV !== "production" ||
+		process.env.DEPLOYMENT_ENV !== "production";
+	
 	for (const candidate of candidates) {
 		if (candidate && candidate.trim()) {
 			const trimmed = candidate.trim();
@@ -38,12 +44,17 @@ function getWebhookUrl(): string | undefined {
 				trimmed.includes("localhost") ||
 				trimmed.includes("127.0.0.1") ||
 				trimmed.includes("0.0.0.0");
-			if (!isLocal) {
-				const normalized = trimmed.startsWith("http")
-					? trimmed
-					: `https://${trimmed}`;
-				return `${normalized.replace(/\/+$/, "")}/api/webhooks/telnyx`;
+			
+			// In development, allow localhost URLs (useful for testing with ngrok or similar)
+			// In production, reject localhost
+			if (isLocal && !isDevelopment) {
+				continue; // Skip localhost in production
 			}
+			
+			const normalized = trimmed.startsWith("http")
+				? trimmed
+				: `https://${trimmed}`;
+			return `${normalized.replace(/\/+$/, "")}/api/webhooks/telnyx`;
 		}
 	}
 	return undefined;
@@ -93,9 +104,20 @@ export async function verifyMessagingProfile(
 		// Check webhook URL
 		const expectedWebhookUrl = getWebhookUrl();
 		if (!expectedWebhookUrl) {
-			status.issues.push(
-				"NEXT_PUBLIC_SITE_URL is not set to a valid production URL",
-			);
+			const isDevelopment = 
+				process.env.NODE_ENV === "development" ||
+				process.env.VERCEL_ENV !== "production" ||
+				process.env.DEPLOYMENT_ENV !== "production";
+			
+			if (isDevelopment) {
+				status.issues.push(
+					"NEXT_PUBLIC_SITE_URL is not set. Set it to your production URL (e.g., https://yourdomain.com) or use a tool like ngrok for local testing.",
+				);
+			} else {
+				status.issues.push(
+					"NEXT_PUBLIC_SITE_URL is not set to a valid production URL. Set it to your production domain (e.g., https://yourdomain.com) in your environment variables.",
+				);
+			}
 			status.needsFix = true;
 		} else if (!status.webhookUrl) {
 			status.issues.push(
@@ -249,7 +271,7 @@ export async function fixMessagingProfile(
 /**
  * Get messaging profile details
  */
-export async function getMessagingProfileDetails(
+async function getMessagingProfileDetails(
 	messagingProfileId?: string,
 ): Promise<{
 	success: boolean;

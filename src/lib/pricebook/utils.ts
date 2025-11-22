@@ -9,7 +9,7 @@
  * Convert category name to URL-safe slug
  * Example: "Heat Pumps" -> "heat-pumps"
  */
-export function categoryToSlug(name: string): string {
+function categoryToSlug(name: string): string {
 	return name.toLowerCase().replace(/\s+/g, "-");
 }
 
@@ -17,7 +17,7 @@ export function categoryToSlug(name: string): string {
  * Convert URL slug back to category name
  * Example: "heat-pumps" -> "Heat Pumps"
  */
-export function slugToCategory(slug: string): string {
+function slugToCategory(slug: string): string {
 	return slug
 		.split("-")
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -39,6 +39,6 @@ export function buildCategoryUrl(path: string[]): string {
  * Parse category path from URL slug array
  * Example: ["hvac", "heating"] -> ["HVAC", "Heating"]
  */
-export function parseCategoryPath(slugs: string[]): string[] {
+function parseCategoryPath(slugs: string[]): string[] {
 	return slugs.map(slugToCategory);
 }

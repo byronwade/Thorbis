@@ -46,7 +46,7 @@ type MerchantBoardingData = {
 /**
  * Submit merchant boarding application to Payrix
  */
-export async function submitPayrixMerchantBoarding(data: MerchantBoardingData) {
+async function submitPayrixMerchantBoarding(data: MerchantBoardingData) {
 	try {
 		const supabase = await createClient();
 
@@ -215,7 +215,7 @@ export async function submitPayrixMerchantBoarding(data: MerchantBoardingData) {
 /**
  * Check Payrix merchant account status
  */
-export async function checkPayrixMerchantStatus(companyId: string) {
+async function checkPayrixMerchantStatus(companyId: string) {
 	try {
 		const supabase = await createClient();
 

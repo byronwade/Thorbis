@@ -266,7 +266,7 @@ export async function initiatePorting(params: {
 /**
  * Get porting order status
  */
-export async function getPortingStatus(portingOrderId: string) {
+async function getPortingStatus(portingOrderId: string) {
 	try {
 		const order = await (telnyxClient as any).numberPortouts.retrieve(
 			portingOrderId,
@@ -289,7 +289,7 @@ export async function getPortingStatus(portingOrderId: string) {
 /**
  * Estimate number costs
  */
-export async function estimateNumberCost(params: {
+async function estimateNumberCost(params: {
 	countryCode: string;
 	numberType: NumberType;
 }) {
@@ -342,7 +342,7 @@ export async function estimateNumberCost(params: {
 /**
  * Validate if a number can be ported
  */
-export async function validatePortability(phoneNumber: string) {
+async function validatePortability(phoneNumber: string) {
 	try {
 		// This would typically call Telnyx's LNP (Local Number Portability) check API
 		// For now, we'll do basic validation

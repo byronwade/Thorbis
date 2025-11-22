@@ -83,7 +83,7 @@ export function generateExcelTemplate(dataType: string): Blob {
 /**
  * Trigger download of Excel template
  */
-export function downloadExcelTemplate(dataType: string) {
+function downloadExcelTemplate(dataType: string) {
 	const blob = generateExcelTemplate(dataType);
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");

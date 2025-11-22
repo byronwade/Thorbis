@@ -210,7 +210,7 @@ export async function sendBulkEmails(
  * @param config - Batch configuration
  * @returns Estimated time in milliseconds
  */
-export function estimateBulkSendTime(
+function estimateBulkSendTime(
 	emailCount: number,
 	config: BulkEmailConfig = {},
 ): number {
@@ -231,7 +231,7 @@ export function estimateBulkSendTime(
  * @param milliseconds - Time in milliseconds
  * @returns Human-readable time string
  */
-export function formatEstimatedTime(milliseconds: number): string {
+function formatEstimatedTime(milliseconds: number): string {
 	const seconds = Math.ceil(milliseconds / 1000);
 
 	if (seconds < 60) {

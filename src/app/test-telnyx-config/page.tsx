@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 
+// Force dynamic rendering - this is a test/debug page with database queries
+export const dynamic = "force-dynamic";
+
 const TEST_COMPANY_ID = "2b88a305-0ecd-4bff-9898-b166cc7937c4";
 
 export default async function TestTelnyxConfig() {

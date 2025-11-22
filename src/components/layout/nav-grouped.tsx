@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import Link from "next/link";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -11,6 +9,8 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 type NavItem = {
 	title: string;
@@ -33,10 +33,12 @@ type NavGroup = {
 export function NavGrouped({
 	groups,
 	pathname = "/dashboard",
+	searchParams,
 	className,
 }: {
 	groups: NavGroup[];
 	pathname?: string;
+	searchParams?: URLSearchParams;
 	className?: string;
 }) {
 	const safePathname = pathname || "/dashboard";
@@ -78,8 +80,30 @@ export function NavGrouped({
 						)}
 						<SidebarMenu>
 							{group.items.map((item) => {
+								// Extract pathname and query params from item.url
+								const itemUrl = new URL(item.url, 'http://localhost');
+								const itemPathname = itemUrl.pathname;
+								const itemSearchParams = itemUrl.searchParams;
+								
+								// Check if pathname matches
+								const pathnameMatches = safePathname === itemPathname;
+								
+								// Check if query params match (if item has query params)
+								let queryParamsMatch = true;
+								if (itemSearchParams.toString() && searchParams) {
+									for (const [key, value] of itemSearchParams.entries()) {
+										if (searchParams.get(key) !== value) {
+											queryParamsMatch = false;
+											break;
+										}
+									}
+								} else if (itemSearchParams.toString() && !searchParams) {
+									// Item has query params but current page doesn't
+									queryParamsMatch = false;
+								}
+								
 								// Check if current path matches this item or its detail pages
-								const isExactMatch = safePathname === item.url;
+								const isExactMatch = pathnameMatches && queryParamsMatch;
 
 								// Special handling for Jobs (/dashboard/work) to exclude known work subpaths
 								let isDetailPage = safePathname.startsWith(`${item.url}/`);

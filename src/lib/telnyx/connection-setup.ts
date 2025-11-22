@@ -258,7 +258,7 @@ export async function fixConnection(
 /**
  * Get connection details
  */
-export async function getConnectionDetails(connectionId?: string): Promise<{
+async function getConnectionDetails(connectionId?: string): Promise<{
 	success: boolean;
 	data?: any;
 	error?: string;

@@ -19,7 +19,7 @@ const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 // Types and Schemas
 // ============================================================================
 
-export const AddressValidationSchema = z.object({
+const AddressValidationSchema = z.object({
 	isValid: z.boolean(),
 	input: z.object({
 		address1: z.string().optional(),
@@ -51,7 +51,7 @@ export type AddressValidation = z.infer<typeof AddressValidationSchema>;
 // Address Validation Service
 // ============================================================================
 
-export class AddressValidationService {
+class AddressValidationService {
 	private readonly uspsUserId: string | undefined;
 
 	constructor() {

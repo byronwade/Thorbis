@@ -1,8 +1,11 @@
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { ExportPageContent } from "./export-page-content";
 import { ExportPageSkeleton } from "./export-page-skeleton";
+
+// Force dynamic rendering - this page requires authentication
+export const dynamic = "force-dynamic";
 
 export const metadata = {
 	title: "Export Data - Stratos",

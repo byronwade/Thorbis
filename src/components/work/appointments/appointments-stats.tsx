@@ -62,7 +62,7 @@ export async function getAppointmentsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function AppointmentsStats() {
+async function AppointmentsStats() {
 	const appointmentStats = await getAppointmentsStatsData();
 
 	if (appointmentStats.length === 0) {

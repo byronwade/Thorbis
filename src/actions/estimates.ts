@@ -128,7 +128,7 @@ function calculateTotals(
 /**
  * Create a new estimate
  */
-export async function createEstimate(
+async function createEstimate(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -187,7 +187,7 @@ export async function createEstimate(
 /**
  * Update an estimate
  */
-export async function updateEstimate(
+async function updateEstimate(
 	estimateId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -431,7 +431,7 @@ function buildUpdateEstimatePayload(
 /**
  * Send estimate to customer
  */
-export async function sendEstimate(
+async function sendEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -505,7 +505,7 @@ export async function sendEstimate(
 /**
  * Mark estimate as viewed (customer opened it)
  */
-export async function markEstimateViewed(
+async function markEstimateViewed(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -553,7 +553,7 @@ export async function markEstimateViewed(
 /**
  * Accept estimate (customer approval)
  */
-export async function acceptEstimate(
+async function acceptEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -614,7 +614,7 @@ export async function acceptEstimate(
 /**
  * Reject estimate (customer rejection)
  */
-export async function rejectEstimate(
+async function rejectEstimate(
 	estimateId: string,
 	reason?: string,
 ): Promise<ActionResult<void>> {
@@ -673,7 +673,7 @@ export async function rejectEstimate(
 /**
  * Convert estimate to job
  */
-export async function convertEstimateToJob(
+async function convertEstimateToJob(
 	estimateId: string,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -876,7 +876,7 @@ export async function archiveEstimate(
 /**
  * Restore archived estimate
  */
-export async function restoreEstimate(
+async function restoreEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -1014,7 +1014,7 @@ export async function unlinkJobFromEstimate(
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */
-export async function deleteEstimate(
+async function deleteEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return archiveEstimate(estimateId);

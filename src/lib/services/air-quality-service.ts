@@ -14,7 +14,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const AirQualitySchema = z.object({
+const AirQualitySchema = z.object({
 	aqi: z.number(), // 0-500 scale
 	category: z.string(), // Good, Moderate, Unhealthy, etc.
 	categoryNumber: z.number(), // 1-6
@@ -28,7 +28,7 @@ export const AirQualitySchema = z.object({
 
 export type AirQuality = z.infer<typeof AirQualitySchema>;
 
-export class AirQualityService {
+class AirQualityService {
 	private readonly apiKey: string | undefined;
 	private readonly cache: Map<string, { data: AirQuality; timestamp: number }> =
 		new Map();

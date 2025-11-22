@@ -219,7 +219,7 @@ export async function checkWebhookHealth(): Promise<WebhookHealthStatus> {
 /**
  * Get webhook health summary
  */
-export function getWebhookHealthSummary(status: WebhookHealthStatus): {
+function getWebhookHealthSummary(status: WebhookHealthStatus): {
 	healthy: boolean;
 	summary: string;
 	recommendations: string[];

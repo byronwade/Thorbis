@@ -109,7 +109,7 @@ export async function getPaymentsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function PaymentsStats() {
+async function PaymentsStats() {
 	const paymentStats = await getPaymentsStatsData();
 
 	if (paymentStats.length === 0) {

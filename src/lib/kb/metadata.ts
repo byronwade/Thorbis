@@ -126,7 +126,7 @@ export function generateBreadcrumbStructuredData(
 /**
  * Generate FAQ structured data
  */
-export function generateFAQStructuredData(
+function generateFAQStructuredData(
 	questions: Array<{ question: string; answer: string }>,
 ): object {
 	return createFAQSchema(questions);

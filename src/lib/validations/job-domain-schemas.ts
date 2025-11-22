@@ -15,7 +15,7 @@ import { z } from "zod";
 // JOB_FINANCIAL - Financial and billing information
 // ============================================================================
 
-export const jobFinancialInsertSchema = z.object({
+const jobFinancialInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	total_amount: z.number().int().default(0),
@@ -27,11 +27,11 @@ export const jobFinancialInsertSchema = z.object({
 	invoice_generated_at: z.date().optional().nullable(),
 });
 
-export const jobFinancialUpdateSchema = jobFinancialInsertSchema
+const jobFinancialUpdateSchema = jobFinancialInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobFinancialSelectSchema = jobFinancialInsertSchema.extend({
+const jobFinancialSelectSchema = jobFinancialInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -45,7 +45,7 @@ export type JobFinancialSelect = z.infer<typeof jobFinancialSelectSchema>;
 // JOB_WORKFLOW - Workflow and template information
 // ============================================================================
 
-export const jobWorkflowInsertSchema = z.object({
+const jobWorkflowInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	template_id: z.string().uuid().optional().nullable(),
@@ -54,11 +54,11 @@ export const jobWorkflowInsertSchema = z.object({
 	workflow_stage_changed_at: z.date().optional().nullable(),
 });
 
-export const jobWorkflowUpdateSchema = jobWorkflowInsertSchema
+const jobWorkflowUpdateSchema = jobWorkflowInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobWorkflowSelectSchema = jobWorkflowInsertSchema.extend({
+const jobWorkflowSelectSchema = jobWorkflowInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -72,7 +72,7 @@ export type JobWorkflowSelect = z.infer<typeof jobWorkflowSelectSchema>;
 // JOB_TIME_TRACKING - Time tracking and labor hours
 // ============================================================================
 
-export const jobTimeTrackingInsertSchema = z.object({
+const jobTimeTrackingInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	technician_clock_in: z.date().optional().nullable(),
@@ -84,11 +84,11 @@ export const jobTimeTrackingInsertSchema = z.object({
 	break_time_minutes: z.number().int().default(0),
 });
 
-export const jobTimeTrackingUpdateSchema = jobTimeTrackingInsertSchema
+const jobTimeTrackingUpdateSchema = jobTimeTrackingInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobTimeTrackingSelectSchema = jobTimeTrackingInsertSchema.extend({
+const jobTimeTrackingSelectSchema = jobTimeTrackingInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -102,7 +102,7 @@ export type JobTimeTrackingSelect = z.infer<typeof jobTimeTrackingSelectSchema>;
 // JOB_CUSTOMER_APPROVAL - Customer signatures and approval
 // ============================================================================
 
-export const jobCustomerApprovalInsertSchema = z.object({
+const jobCustomerApprovalInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	customer_signature: z.any().optional().nullable(),
@@ -113,11 +113,11 @@ export const jobCustomerApprovalInsertSchema = z.object({
 	customer_notes: z.string().optional().nullable(),
 });
 
-export const jobCustomerApprovalUpdateSchema = jobCustomerApprovalInsertSchema
+const jobCustomerApprovalUpdateSchema = jobCustomerApprovalInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobCustomerApprovalSelectSchema =
+const jobCustomerApprovalSelectSchema =
 	jobCustomerApprovalInsertSchema.extend({
 		id: z.string().uuid(),
 		created_at: z.date(),
@@ -138,7 +138,7 @@ export type JobCustomerApprovalSelect = z.infer<
 // JOB_EQUIPMENT_SERVICE - Equipment service tracking
 // ============================================================================
 
-export const jobEquipmentServiceInsertSchema = z.object({
+const jobEquipmentServiceInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	primary_equipment_id: z.string().uuid().optional().nullable(),
@@ -149,11 +149,11 @@ export const jobEquipmentServiceInsertSchema = z.object({
 	job_recurrence_id: z.string().uuid().optional().nullable(),
 });
 
-export const jobEquipmentServiceUpdateSchema = jobEquipmentServiceInsertSchema
+const jobEquipmentServiceUpdateSchema = jobEquipmentServiceInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobEquipmentServiceSelectSchema =
+const jobEquipmentServiceSelectSchema =
 	jobEquipmentServiceInsertSchema.extend({
 		id: z.string().uuid(),
 		created_at: z.date(),
@@ -174,7 +174,7 @@ export type JobEquipmentServiceSelect = z.infer<
 // JOB_DISPATCH - Dispatch and routing information
 // ============================================================================
 
-export const jobDispatchInsertSchema = z.object({
+const jobDispatchInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	dispatch_zone: z.string().max(100).optional().nullable(),
@@ -184,11 +184,11 @@ export const jobDispatchInsertSchema = z.object({
 	next_job_id: z.string().uuid().optional().nullable(),
 });
 
-export const jobDispatchUpdateSchema = jobDispatchInsertSchema
+const jobDispatchUpdateSchema = jobDispatchInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobDispatchSelectSchema = jobDispatchInsertSchema.extend({
+const jobDispatchSelectSchema = jobDispatchInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -202,7 +202,7 @@ export type JobDispatchSelect = z.infer<typeof jobDispatchSelectSchema>;
 // JOB_QUALITY - Quality metrics and inspections
 // ============================================================================
 
-export const jobQualityInsertSchema = z.object({
+const jobQualityInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	inspection_required: z.boolean().default(false),
@@ -219,11 +219,11 @@ export const jobQualityInsertSchema = z.object({
 	internal_priority_score: z.number().int().optional().nullable(),
 });
 
-export const jobQualityUpdateSchema = jobQualityInsertSchema
+const jobQualityUpdateSchema = jobQualityInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobQualitySelectSchema = jobQualityInsertSchema.extend({
+const jobQualitySelectSchema = jobQualityInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -237,7 +237,7 @@ export type JobQualitySelect = z.infer<typeof jobQualitySelectSchema>;
 // JOB_SAFETY - Safety and compliance information
 // ============================================================================
 
-export const jobSafetyInsertSchema = z.object({
+const jobSafetyInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	requires_permit: z.boolean().default(false),
@@ -246,11 +246,11 @@ export const jobSafetyInsertSchema = z.object({
 	safety_notes: z.string().optional().nullable(),
 });
 
-export const jobSafetyUpdateSchema = jobSafetyInsertSchema
+const jobSafetyUpdateSchema = jobSafetyInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobSafetySelectSchema = jobSafetyInsertSchema.extend({
+const jobSafetySelectSchema = jobSafetyInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -264,7 +264,7 @@ export type JobSafetySelect = z.infer<typeof jobSafetySelectSchema>;
 // JOB_AI_ENRICHMENT - AI-powered analysis
 // ============================================================================
 
-export const jobAiEnrichmentInsertSchema = z.object({
+const jobAiEnrichmentInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	ai_categories: z.any().optional().nullable(),
@@ -275,11 +275,11 @@ export const jobAiEnrichmentInsertSchema = z.object({
 	ai_processed_at: z.date().optional().nullable(),
 });
 
-export const jobAiEnrichmentUpdateSchema = jobAiEnrichmentInsertSchema
+const jobAiEnrichmentUpdateSchema = jobAiEnrichmentInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobAiEnrichmentSelectSchema = jobAiEnrichmentInsertSchema.extend({
+const jobAiEnrichmentSelectSchema = jobAiEnrichmentInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -293,7 +293,7 @@ export type JobAiEnrichmentSelect = z.infer<typeof jobAiEnrichmentSelectSchema>;
 // JOB_MULTI_ENTITY - Multi-customer/property support
 // ============================================================================
 
-export const jobMultiEntityInsertSchema = z.object({
+const jobMultiEntityInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	primary_customer_id: z.string().uuid().optional().nullable(),
@@ -304,11 +304,11 @@ export const jobMultiEntityInsertSchema = z.object({
 	permanent_delete_scheduled_at: z.date().optional().nullable(),
 });
 
-export const jobMultiEntityUpdateSchema = jobMultiEntityInsertSchema
+const jobMultiEntityUpdateSchema = jobMultiEntityInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobMultiEntitySelectSchema = jobMultiEntityInsertSchema.extend({
+const jobMultiEntitySelectSchema = jobMultiEntityInsertSchema.extend({
 	id: z.string().uuid(),
 	created_at: z.date(),
 	updated_at: z.date(),
@@ -322,7 +322,7 @@ export type JobMultiEntitySelect = z.infer<typeof jobMultiEntitySelectSchema>;
 // COMPOSITE TYPE - Complete job with all domains
 // ============================================================================
 
-export const jobCompleteSchema = z.object({
+const jobCompleteSchema = z.object({
 	// Core job
 	id: z.string().uuid(),
 	company_id: z.string().uuid(),
@@ -385,7 +385,7 @@ export type JobComplete = z.infer<typeof jobCompleteSchema>;
  *   .single();
  * ```
  */
-export function getJobCompleteSelect(): string {
+function getJobCompleteSelect(): string {
 	return `
 		*,
 		financial:job_financial(*),
@@ -407,7 +407,7 @@ export function getJobCompleteSelect(): string {
  * Get a minimal job select (for list views)
  * Only includes core fields + financial for display
  */
-export function getJobListSelect(): string {
+function getJobListSelect(): string {
 	return `
 		*,
 		financial:job_financial(total_amount, paid_amount)

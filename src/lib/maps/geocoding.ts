@@ -27,7 +27,7 @@ type GeocodeResponse = {
  * @param country - Country (defaults to "USA")
  * @returns Coordinates {lat, lon} or null if geocoding fails
  */
-export async function geocodeAddress(
+async function geocodeAddress(
 	address: string,
 	city: string,
 	state: string,

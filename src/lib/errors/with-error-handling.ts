@@ -126,7 +126,7 @@ export async function withErrorHandling<T>(
  *
  * Helper to create consistent success responses
  */
-export function successResult<T>(data: T, message?: string): ActionResult<T> {
+function successResult<T>(data: T, message?: string): ActionResult<T> {
 	return {
 		success: true,
 		data,
@@ -139,7 +139,7 @@ export function successResult<T>(data: T, message?: string): ActionResult<T> {
  *
  * Helper to create consistent error responses
  */
-export function errorResult(
+function errorResult(
 	error: string,
 	code?: string,
 	details?: Record<string, any>,
@@ -209,7 +209,7 @@ export function assertExists<T>(
  *
  * Helper to check permissions and throw ActionError if not authorized
  */
-export function assertPermission(
+function assertPermission(
 	hasPermission: boolean,
 	resourceName: string,
 ): asserts hasPermission {

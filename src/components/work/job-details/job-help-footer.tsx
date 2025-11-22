@@ -1,9 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
 	ArrowRight,
 	Calendar,
@@ -15,9 +11,13 @@ import {
 	Pause,
 	Play,
 	Send,
-	X
+	X,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface StatusStep {
 	status: string;
@@ -348,7 +348,6 @@ function SupportForm() {
 		</form>
 	);
 }
-
 
 export function JobHelpFooter() {
 	return null;

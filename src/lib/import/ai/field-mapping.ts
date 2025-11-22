@@ -232,7 +232,7 @@ function generateValidationRules(
 /**
  * Validate a field mapping
  */
-export function validateMapping(
+function validateMapping(
 	mapping: FieldMapping,
 	sourceData: Record<string, unknown>,
 ): { valid: boolean; errors: string[] } {
@@ -345,7 +345,7 @@ export function applyTransformation(
 /**
  * Calculate mapping similarity score
  */
-export function calculateMappingSimilarity(
+function calculateMappingSimilarity(
 	sourceField: string,
 	targetField: string,
 ): number {

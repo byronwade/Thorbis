@@ -68,7 +68,7 @@ export async function switchCompany(
  *
  * @returns ActionResult indicating success or failure
  */
-export async function clearCompany(): Promise<ActionResult<void>> {
+async function clearCompany(): Promise<ActionResult<void>> {
 	try {
 		await clearActiveCompany();
 		revalidatePath("/", "layout");
@@ -96,7 +96,7 @@ export async function clearCompany(): Promise<ActionResult<void>> {
  *
  * @returns ActionResult with array of companies
  */
-export async function getCompanies(): Promise<
+async function getCompanies(): Promise<
 	ActionResult<Array<{ id: string; name: string; logo?: string | null }>>
 > {
 	try {
@@ -121,7 +121,7 @@ export async function getCompanies(): Promise<
  *
  * @returns ActionResult with company details or null
  */
-export async function getActiveCompanyDetails(): Promise<
+async function getActiveCompanyDetails(): Promise<
 	ActionResult<{ id: string; name: string; logo?: string | null } | null>
 > {
 	try {

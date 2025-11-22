@@ -17,7 +17,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const PlaceSchema = z.object({
+const PlaceSchema = z.object({
 	name: z.string(),
 	placeId: z.string(),
 	rating: z.number().optional(), // 1.0 to 5.0
@@ -35,7 +35,7 @@ export const PlaceSchema = z.object({
 	website: z.string().optional(),
 });
 
-export const GooglePlacesSchema = z.object({
+const GooglePlacesSchema = z.object({
 	places: z.array(PlaceSchema),
 	totalResults: z.number(),
 	dataSource: z.string(),
@@ -49,7 +49,7 @@ const CACHE_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
 const _EARTH_RADIUS_METERS = 6_371_000;
 
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
-export class GooglePlacesService {
+class GooglePlacesService {
 	private readonly apiKey: string | undefined;
 	private readonly cache: Map<
 		string,

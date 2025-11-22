@@ -12,7 +12,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true, // Enables faster builds by ensuring each file can be transpiled independently
 		"jsx": "react-jsx",
-		"incremental": true, // Enable incremental compilation for faster rebuilds
+		"incremental": false, // DISABLED: May cause hangs - disable incremental compilation
 		"plugins": [
 			{
 				"name": "next"
@@ -23,7 +23,7 @@
 		},
 		"strictNullChecks": true,
 		// Build performance optimizations
-		"assumeChangesOnlyAffectDirectDependencies": true // Faster incremental builds
+		"assumeChangesOnlyAffectDirectDependencies": false // DISABLED: May cause hangs
 	},
 	"include": [
 		"next-env.d.ts",

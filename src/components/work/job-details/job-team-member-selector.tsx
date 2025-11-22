@@ -116,8 +116,8 @@ export function JobTeamMemberSelector({
 	};
 
 	return (
-		<Popover 
-			open={open} 
+		<Popover
+			open={open}
 			onOpenChange={(newOpen) => {
 				setOpen(newOpen);
 				// Reset selection when closing
@@ -136,10 +136,7 @@ export function JobTeamMemberSelector({
 					</Button>
 				)}
 			</PopoverTrigger>
-			<PopoverContent 
-				className="w-[400px] p-0" 
-				align="start"
-			>
+			<PopoverContent className="w-[400px] p-0" align="start">
 				<Command shouldFilter={false}>
 					<CommandInput
 						placeholder="Search team members..."

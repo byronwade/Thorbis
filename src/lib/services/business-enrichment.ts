@@ -18,7 +18,7 @@ import { z } from "zod";
 // Types and Schemas
 // ============================================================================
 
-export const BusinessEnrichmentSchema = z.object({
+const BusinessEnrichmentSchema = z.object({
 	// Basic info
 	businessName: z.string(),
 	businessType: z.string().optional(),
@@ -100,7 +100,7 @@ export type BusinessEnrichment = z.infer<typeof BusinessEnrichmentSchema>;
 // Business Enrichment Service
 // ============================================================================
 
-export class BusinessEnrichmentService {
+class BusinessEnrichmentService {
 	private readonly googlePlacesApiKey: string | undefined;
 	private readonly openCorporatesApiKey: string | undefined;
 

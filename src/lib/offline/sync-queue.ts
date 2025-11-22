@@ -32,7 +32,7 @@ const MAX_RETRIES = 3;
 /**
  * Add an operation to the sync queue
  */
-export async function addToSyncQueue(
+async function addToSyncQueue(
 	operation: "INSERT" | "UPDATE" | "DELETE",
 	table: string,
 	data: any,
@@ -202,7 +202,7 @@ function getStoreNameFromTable(table: string): StoreName | null {
 /**
  * Clear failed operations from queue (manual intervention)
  */
-export async function clearFailedOperations(): Promise<void> {
+async function clearFailedOperations(): Promise<void> {
 	const operations = await getAllRecords<SyncOperation>("sync-queue");
 	const failedOps = operations.filter((op) => op.retry_count >= MAX_RETRIES);
 
@@ -214,7 +214,7 @@ export async function clearFailedOperations(): Promise<void> {
 /**
  * Get failed operations for manual review
  */
-export async function getFailedOperations(): Promise<SyncOperation[]> {
+async function getFailedOperations(): Promise<SyncOperation[]> {
 	const operations = await getAllRecords<SyncOperation>("sync-queue");
 	return operations.filter((op) => op.retry_count >= MAX_RETRIES);
 }
@@ -222,7 +222,7 @@ export async function getFailedOperations(): Promise<SyncOperation[]> {
 /**
  * Retry a specific failed operation
  */
-export async function retryOperation(operationId: string): Promise<boolean> {
+async function retryOperation(operationId: string): Promise<boolean> {
 	const operation = await getRecord<SyncOperation>("sync-queue", operationId);
 	if (!operation) {
 		return false;

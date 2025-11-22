@@ -38,7 +38,7 @@ const CSRF_FORM_FIELD = "csrf_token";
 /**
  * CSRF Error
  */
-export class CSRFError extends Error {
+class CSRFError extends Error {
 	constructor(message: string) {
 		super(message);
 		this.name = "CSRFError";
@@ -53,7 +53,7 @@ export class CSRFError extends Error {
  *
  * @returns The generated CSRF token (for including in forms)
  */
-export async function generateCSRFToken(): Promise<string> {
+async function generateCSRFToken(): Promise<string> {
 	const token = randomBytes(32).toString("hex");
 	const cookieStore = await cookies();
 
@@ -76,7 +76,7 @@ export async function generateCSRFToken(): Promise<string> {
  *
  * @returns Current CSRF token or new token if none exists
  */
-export async function getCSRFToken(): Promise<string> {
+async function getCSRFToken(): Promise<string> {
 	const cookieStore = await cookies();
 	const existingToken = cookieStore.get(CSRF_TOKEN_COOKIE)?.value;
 
@@ -104,7 +104,7 @@ export async function getCSRFToken(): Promise<string> {
  *   // Your logic here
  * }
  */
-export async function verifyCSRFToken(formData?: FormData): Promise<void> {
+async function verifyCSRFToken(formData?: FormData): Promise<void> {
 	const cookieStore = await cookies();
 	const headersList = await headers();
 
@@ -183,7 +183,7 @@ function constantTimeCompare(a: string, b: string): boolean {
  * );
  * ```
  */
-export function withCSRFProtection<T extends any[], R>(
+function withCSRFProtection<T extends any[], R>(
 	fn: (...args: T) => Promise<R>,
 ): (...args: T) => Promise<R> {
 	return async (...args: T): Promise<R> => {
@@ -203,7 +203,7 @@ export function withCSRFProtection<T extends any[], R>(
  *
  * @returns New CSRF token
  */
-export async function rotateCSRFToken(): Promise<string> {
+async function rotateCSRFToken(): Promise<string> {
 	return generateCSRFToken();
 }
 

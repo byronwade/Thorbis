@@ -407,7 +407,7 @@ const SETTINGS_CLUSTER_LOOKUP = new Map(
 	SETTINGS_INFORMATION_ARCHITECTURE.map((cluster) => [cluster.slug, cluster]),
 );
 
-export function getSettingsClusterDefinition(
+function getSettingsClusterDefinition(
 	slug: SettingsClusterSlug,
 ): SettingsClusterDefinition | undefined {
 	return SETTINGS_CLUSTER_LOOKUP.get(slug);

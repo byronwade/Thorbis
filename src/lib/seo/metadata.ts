@@ -174,13 +174,13 @@ export function generateMetadata(config: SEOConfig): Metadata {
 
 export const siteUrl = SEO_URLS.site;
 export const siteName = SEO_BRAND.company;
-export const siteDescription = SEO_COPY.defaultDescription;
-export const siteImage = buildShareImageUrl();
-export const twitterHandle = SEO_SOCIAL.twitterHandle;
+const siteDescription = SEO_COPY.defaultDescription;
+const siteImage = buildShareImageUrl();
+const twitterHandle = SEO_SOCIAL.twitterHandle;
 export const generateOrganizationStructuredData = createOrganizationSchema;
-export const generateWebSiteStructuredData = createWebsiteSchema;
+const generateWebSiteStructuredData = createWebsiteSchema;
 export const generateBreadcrumbStructuredData = createBreadcrumbSchema;
 export const generateFAQStructuredData = createFAQSchema;
-export const generateSoftwareApplicationStructuredData =
+const generateSoftwareApplicationStructuredData =
 	createSoftwareApplicationSchema;
 export const generateServiceStructuredData = createServiceSchema;

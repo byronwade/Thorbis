@@ -98,10 +98,10 @@ export function TableFilters({
 									<div className="flex items-center gap-2">
 										<div
 											className={cn(
-												"flex h-4 w-4 items-center justify-center rounded-sm border",
+												"flex h-4 w-4 items-center justify-center rounded-sm shadow-xs",
 												isActive
-													? "border-primary bg-primary text-primary-foreground"
-													: "border-input",
+													? "bg-primary text-primary-foreground"
+													: "bg-muted/90 dark:bg-muted/80",
 											)}
 										>
 											{isActive && <Check className="h-3 w-3" />}

@@ -186,7 +186,7 @@ export async function getResourceItems(
 	};
 }
 
-export async function getResourceItemBySlug(
+async function getResourceItemBySlug(
 	slug: string,
 	options: { includeUnpublished?: boolean } = {},
 ): Promise<ResourceItem | null> {
@@ -221,7 +221,7 @@ export async function getResourceItemBySlug(
 	return mapResourceItem(data as any);
 }
 
-export async function getResourceItemsByType(
+async function getResourceItemsByType(
 	type: ResourceType,
 	limit = 6,
 ): Promise<ResourceItem[]> {
@@ -232,7 +232,7 @@ export async function getResourceItemsByType(
 	return data;
 }
 
-export async function getFeaturedResources(limit = 4): Promise<ResourceItem[]> {
+async function getFeaturedResources(limit = 4): Promise<ResourceItem[]> {
 	const { data } = await getResourceItems({
 		featured: true,
 		limit,

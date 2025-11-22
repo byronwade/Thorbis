@@ -15,7 +15,7 @@ import { z } from "zod";
 
 const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 
-export const DemographicsSchema = z.object({
+const DemographicsSchema = z.object({
 	population: z.number().optional(),
 	populationDensity: z.number().optional(), // per sq mile
 	medianHouseholdIncome: z.number().optional(),
@@ -31,7 +31,7 @@ export const DemographicsSchema = z.object({
 
 export type Demographics = z.infer<typeof DemographicsSchema>;
 
-export class DemographicsService {
+class DemographicsService {
 	private readonly cache: Map<
 		string,
 		{ data: Demographics; timestamp: number }

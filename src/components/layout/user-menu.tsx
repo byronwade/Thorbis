@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { StatusIndicator } from "@/components/ui/status-indicator";
@@ -149,7 +148,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-72 rounded-lg p-0">
 				{/* User Profile Section */}
-				<div className="p-4 pb-3">
+				<div className="p-4 pb-4">
 					<div className="flex items-center gap-3">
 						<div className="relative">
 							<Avatar className="size-12 rounded-lg">
@@ -176,205 +175,193 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						</div>
 					</div>
 				</div>
-				<DropdownMenuSeparator />
 
 				{/* Status Selector */}
-				<div className="p-2">
-					<div className="px-2 py-1">
-						<p className="text-xs font-medium text-muted-foreground mb-2">Status</p>
-						<div className="grid grid-cols-3 gap-1">
-							<button
-								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
-									userStatus === "online" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-								}`}
-								disabled={isUpdatingStatus}
-								onClick={() => handleStatusChange("online")}
-								type="button"
-							>
-								<div className="size-2 rounded-full bg-green-500" />
-								<span>Online</span>
-							</button>
-							<button
-								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
-									userStatus === "available" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-								}`}
-								disabled={isUpdatingStatus}
-								onClick={() => handleStatusChange("available")}
-								type="button"
-							>
-								<div className="size-2 rounded-full bg-yellow-500" />
-								<span>Available</span>
-							</button>
-							<button
-								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
-									userStatus === "busy" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-								}`}
-								disabled={isUpdatingStatus}
-								onClick={() => handleStatusChange("busy")}
-								type="button"
-							>
-								<div className="size-2 rounded-full bg-red-500" />
-								<span>Busy</span>
-							</button>
-						</div>
+				<div className="px-4 pb-4">
+					<p className="text-xs font-medium text-muted-foreground mb-2 px-2">Status</p>
+					<div className="grid grid-cols-3 gap-1.5">
+						<button
+							className={`flex flex-col items-center gap-2 rounded-md px-2 py-2.5 text-xs transition-colors hover:bg-accent ${
+								userStatus === "online" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+							}`}
+							disabled={isUpdatingStatus}
+							onClick={() => handleStatusChange("online")}
+							type="button"
+						>
+							<div className="size-2 rounded-full bg-green-500" />
+							<span>Online</span>
+						</button>
+						<button
+							className={`flex flex-col items-center gap-2 rounded-md px-2 py-2.5 text-xs transition-colors hover:bg-accent ${
+								userStatus === "available" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+							}`}
+							disabled={isUpdatingStatus}
+							onClick={() => handleStatusChange("available")}
+							type="button"
+						>
+							<div className="size-2 rounded-full bg-yellow-500" />
+							<span>Available</span>
+						</button>
+						<button
+							className={`flex flex-col items-center gap-2 rounded-md px-2 py-2.5 text-xs transition-colors hover:bg-accent ${
+								userStatus === "busy" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+							}`}
+							disabled={isUpdatingStatus}
+							onClick={() => handleStatusChange("busy")}
+							type="button"
+						>
+							<div className="size-2 rounded-full bg-red-500" />
+							<span>Busy</span>
+						</button>
 					</div>
 				</div>
-				<DropdownMenuSeparator />
 
 				{/* Organizations */}
-				<div className="p-2">
-					<div className="px-2 py-1">
-						<p className="text-xs font-medium text-muted-foreground mb-2">Organizations</p>
-						<div className="space-y-1">
-							{/* Add business button at top */}
-							<Link href="/dashboard/welcome?new=true">
-								<button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground h-10" type="button">
-									<div className="flex size-6 items-center justify-center rounded-md border border-border/50">
-										<Plus className="size-4" />
-									</div>
-									<span className="text-sm">Add new business</span>
-								</button>
-							</Link>
+				<div className="px-4 pb-4">
+					<p className="text-xs font-medium text-muted-foreground mb-2 px-2">Organizations</p>
+					<div className="space-y-1">
+						{/* Add business button at top */}
+						<Link href="/dashboard/welcome?new=true">
+							<button className="flex w-full items-center gap-3 rounded-md px-2 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground h-10" type="button">
+								<div className="flex size-6 items-center justify-center rounded-md bg-muted/90 shadow-xs">
+									<Plus className="size-4" />
+								</div>
+								<span className="text-sm">Add new business</span>
+							</button>
+						</Link>
 
-							{/* Scrollable company list */}
-							<div className="max-h-32 overflow-y-auto space-y-1">
-								{teams.map((team, index) => {
-									const isActive = activeTeam?.id === team.id;
-									return (
-										<button
-											className={`flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent h-10 ${
-												isActive ? "bg-accent" : ""
-											}`}
-											key={team.id}
-											onClick={() => handleCompanySwitch(team)}
-											type="button"
-										>
-											<div className="flex size-6 items-center justify-center rounded-md border border-border/50 bg-muted">
-												{team.logo ? (
-													<Image
-														src={team.logo}
-														alt={`${team.name} logo`}
-														width={16}
-														height={16}
-														className="size-4 shrink-0 object-contain"
-													/>
+						{/* Scrollable company list */}
+						<div className="max-h-32 overflow-y-auto space-y-1">
+							{teams.map((team, index) => {
+								const isActive = activeTeam?.id === team.id;
+								return (
+									<button
+										className={`flex w-full items-center gap-4 rounded-md px-2 py-2.5 text-sm transition-colors hover:bg-accent h-10 ${
+											isActive ? "bg-accent" : ""
+										}`}
+										key={team.id}
+										onClick={() => handleCompanySwitch(team)}
+										type="button"
+									>
+										<div className="flex size-6 items-center justify-center rounded-md bg-muted/90 shadow-xs">
+											{team.logo ? (
+												<Image
+													src={team.logo}
+													alt={`${team.name} logo`}
+													width={16}
+													height={16}
+													className="size-4 shrink-0 object-contain"
+												/>
+											) : (
+												<GalleryVerticalEnd className="size-4 shrink-0" />
+											)}
+										</div>
+										<div className="flex flex-1 flex-col items-start text-left min-w-0">
+											<span className="text-sm font-medium truncate">{team.name}</span>
+											<div className="flex items-center gap-1">
+												{team.onboardingComplete !== undefined ? (
+													team.onboardingComplete ? (
+														<div className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+															<div className="mr-1 size-1 rounded-full bg-green-500" />
+															<span className="text-[10px]">Complete</span>
+														</div>
+													) : (
+														<div className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+															<div className="mr-1 size-1 rounded-full bg-amber-500" />
+															<span className="text-[10px]">Setup</span>
+														</div>
+													)
 												) : (
-													<GalleryVerticalEnd className="size-4 shrink-0" />
+													<span className="text-muted-foreground text-xs">
+														{team.plan}
+													</span>
 												)}
 											</div>
-											<div className="flex flex-1 flex-col items-start text-left min-w-0">
-												<span className="text-sm font-medium truncate">{team.name}</span>
-												<div className="flex items-center gap-1">
-													{team.onboardingComplete !== undefined ? (
-														team.onboardingComplete ? (
-															<div className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-																<div className="mr-1 size-1 rounded-full bg-green-500" />
-																<span className="text-[10px]">Complete</span>
-															</div>
-														) : (
-															<div className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-																<div className="mr-1 size-1 rounded-full bg-amber-500" />
-																<span className="text-[10px]">Setup</span>
-															</div>
-														)
-													) : (
-														<span className="text-muted-foreground text-xs">
-															{team.plan}
-														</span>
-													)}
-												</div>
-											</div>
-											{isActive && (
-												<div className="bg-primary ml-auto size-2 rounded-full" />
-											)}
-										</button>
-									);
-								})}
-							</div>
+										</div>
+										{isActive && (
+											<div className="bg-primary ml-auto size-2 rounded-full" />
+										)}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 				</div>
-				<DropdownMenuSeparator />
 
 				{/* Quick Actions */}
-				<div className="p-2">
-					<div className="flex gap-1">
+				<div className="px-4 pb-4">
+					<div className="flex gap-1.5">
 						<Link href="/dashboard/settings/profile/personal" className="flex-1">
-							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14" type="button">
 								<BadgeCheck className="size-5" />
 								<span>Account</span>
 							</button>
 						</Link>
 						<Link href="/dashboard/settings/billing" className="flex-1">
-							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14" type="button">
 								<CreditCard className="size-5" />
 								<span>Billing</span>
 							</button>
 						</Link>
 						<Link href="/dashboard/shop" className="flex-1">
-							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14" type="button">
 								<ShoppingCart className="size-5" />
 								<span>Shop</span>
 							</button>
 						</Link>
 						<Link href="/dashboard/settings" className="flex-1">
-							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14" type="button">
 								<Settings className="size-5" />
 								<span>Settings</span>
 							</button>
 						</Link>
 					</div>
 				</div>
-				<DropdownMenuSeparator />
 
 				{/* Theme Toggle */}
-				<div className="p-2">
-					<div className="px-2 py-1">
-						<p className="text-xs font-medium text-muted-foreground mb-2">Theme</p>
-						<div className="flex gap-1">
-							<button
-								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
-									getCurrentTheme() === "light" ? "bg-accent" : ""
-								}`}
-								disabled={!mounted}
-								onClick={() => setTheme("light")}
-								type="button"
-							>
-								<Sun className="size-5" />
-								<span>Light</span>
-							</button>
-							<button
-								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
-									getCurrentTheme() === "dark" ? "bg-accent" : ""
-								}`}
-								disabled={!mounted}
-								onClick={() => setTheme("dark")}
-								type="button"
-							>
-								<Moon className="size-5" />
-								<span>Dark</span>
-							</button>
-							<button
-								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
-									getCurrentTheme() === "system" ? "bg-accent" : ""
-								}`}
-								disabled={!mounted}
-								onClick={() => setTheme("system")}
-								type="button"
-							>
-								<Monitor className="size-5" />
-								<span>System</span>
-							</button>
-						</div>
+				<div className="px-4 pb-4">
+					<p className="text-xs font-medium text-muted-foreground mb-2 px-2">Theme</p>
+					<div className="flex gap-1.5">
+						<button
+							className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14 ${
+								getCurrentTheme() === "light" ? "bg-accent" : ""
+							}`}
+							disabled={!mounted}
+							onClick={() => setTheme("light")}
+							type="button"
+						>
+							<Sun className="size-5" />
+							<span>Light</span>
+						</button>
+						<button
+							className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14 ${
+								getCurrentTheme() === "dark" ? "bg-accent" : ""
+							}`}
+							disabled={!mounted}
+							onClick={() => setTheme("dark")}
+							type="button"
+						>
+							<Moon className="size-5" />
+							<span>Dark</span>
+						</button>
+						<button
+							className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2.5 text-xs transition-colors hover:bg-accent h-14 ${
+								getCurrentTheme() === "system" ? "bg-accent" : ""
+							}`}
+							disabled={!mounted}
+							onClick={() => setTheme("system")}
+							type="button"
+						>
+							<Monitor className="size-5" />
+							<span>System</span>
+						</button>
 					</div>
 				</div>
 
-				<DropdownMenuSeparator />
-
 				{/* Logout */}
-				<div className="p-1">
+				<div className="px-4 pb-3">
 					<button
-						className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10"
+						className="flex w-full items-center gap-2 rounded-md px-2 py-2.5 text-sm text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10"
 						onClick={handleLogout}
 						type="button"
 					>

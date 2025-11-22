@@ -66,7 +66,7 @@ export async function getPurchaseOrdersPageData(
  * Fetch complete purchase order data including vendor, job, and tags
  * Uses React.cache() for request-level deduplication
  */
-export const getPurchaseOrderComplete = cache(
+const getPurchaseOrderComplete = cache(
 	async (purchaseOrderId: string, companyId: string) => {
 		const supabase = await createServiceSupabaseClient();
 

@@ -343,7 +343,7 @@ export abstract class BaseDataConnector implements IDataConnector {
 /**
  * Factory function to create connectors
  */
-export async function createConnector(
+async function createConnector(
 	config: DataConnectorConfig,
 ): Promise<IDataConnector> {
 	// Dynamic import to avoid circular dependencies

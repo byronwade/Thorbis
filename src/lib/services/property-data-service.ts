@@ -18,7 +18,7 @@ const _USER_AGENT = "ThorbisFieldService/1.0";
 // Types and Schemas
 // ============================================================================
 
-export const PropertyDataSchema = z.object({
+const PropertyDataSchema = z.object({
 	// Basic property info
 	address: z.object({
 		full: z.string(),
@@ -88,7 +88,7 @@ export type PropertyData = z.infer<typeof PropertyDataSchema>;
 // Property Data Service
 // ============================================================================
 
-export class PropertyDataService {
+class PropertyDataService {
 	private readonly rentcastApiKey: string | undefined;
 	private readonly attomApiKey: string | undefined; // Optional fallback
 	private readonly cache: Map<

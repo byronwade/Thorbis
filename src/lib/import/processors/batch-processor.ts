@@ -312,7 +312,7 @@ export class BatchProcessor {
  * Optimized bulk insert using PostgreSQL COPY (for very large datasets)
  * Note: Requires direct PostgreSQL access (not available through Supabase client)
  */
-export async function bulkInsertWithCopy(
+async function bulkInsertWithCopy(
 	records: Record<string, unknown>[],
 	tableName: string,
 	columns: string[],
@@ -345,7 +345,7 @@ export async function bulkInsertWithCopy(
 /**
  * Parallel batch processing using multiple workers
  */
-export async function processBatchesInParallel(
+async function processBatchesInParallel(
 	records: Record<string, unknown>[],
 	entityType: EntityType,
 	companyId: string,

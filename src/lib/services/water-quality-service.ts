@@ -18,7 +18,7 @@ const USER_AGENT = "Thorbis-FMS/1.0 (support@thorbis.app)";
 // Types and Schemas
 // ============================================================================
 
-export const WaterQualitySchema = z.object({
+const WaterQualitySchema = z.object({
 	location: z.object({
 		lat: z.number(),
 		lon: z.number(),
@@ -45,7 +45,7 @@ export type WaterQuality = z.infer<typeof WaterQualitySchema>;
 // Water Quality Service
 // ============================================================================
 
-export class WaterQualityService {
+class WaterQualityService {
 	private readonly cache: Map<
 		string,
 		{ data: WaterQuality; timestamp: number }

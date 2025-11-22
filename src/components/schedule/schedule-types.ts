@@ -174,7 +174,7 @@ export type LegacyJob = {
 // ============================================
 
 /** @deprecated Use generateMockScheduleData from @/lib/mock-schedule-data instead */
-export const mockTechnicians: any[] = [
+const mockTechnicians: any[] = [
 	{
 		id: "1",
 		name: "John Doe",

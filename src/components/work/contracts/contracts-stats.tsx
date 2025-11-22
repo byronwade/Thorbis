@@ -96,7 +96,7 @@ export async function getContractsStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function ContractsStats() {
+async function ContractsStats() {
 	const contractStats = await getContractsStatsData();
 
 	if (contractStats.length === 0) {

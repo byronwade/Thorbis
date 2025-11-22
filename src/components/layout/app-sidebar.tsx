@@ -11,7 +11,6 @@
  */
 
 import { CommunicationSwitcher } from "@/components/communication/communication-switcher";
-import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
 import { EmailSidebar } from "@/components/communication/email-sidebar";
 import { TextSidebar } from "@/components/communication/text-sidebar";
 import { TeamsSidebar } from "@/components/communication/teams-sidebar";
@@ -2242,19 +2241,10 @@ const JOB_DETAILS_PATTERN =
 	/^\/dashboard\/work\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 // Match communication detail pages (e.g., /dashboard/communication/123)
-// Exclude special routes like unread, starred, archive, trash, spam, teams, feed
-const COMMUNICATION_DETAIL_PATTERN =
-	/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|teams|feed)[^/]+$/;
-
 // Function to determine current section based on pathname
 function getCurrentSection(pathname: string): keyof typeof navigationSections {
 	if (pathname === "/dashboard") {
 		return "today";
-	}
-	// Check for communication detail page before general communication check
-	// Communication detail pages should use the communication sidebar
-	if (pathname.match(COMMUNICATION_DETAIL_PATTERN)) {
-		return "communication";
 	}
 	if (pathname.startsWith("/dashboard/communication")) {
 		return "communication";
@@ -2311,7 +2301,10 @@ export function AppSidebar({
 }: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
-	const hideSidebar = pathname.startsWith("/dashboard/communication/messages");
+	// Hide sidebar for command center (exact match) and messages pages
+	const hideSidebar = 
+		pathname === "/dashboard/communication" || 
+		pathname.startsWith("/dashboard/communication/messages");
 
 	if (hideSidebar) {
 		return null;
@@ -2323,8 +2316,7 @@ export function AppSidebar({
 	const isAISection = currentSection === "ai";
 	const isReportingSection = currentSection === "reporting";
 	const isJobDetailsSection = currentSection === "jobDetails";
-	const isCommunicationDetail =
-		pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
+	// Removed isCommunicationDetail - detail pages should use EmailSidebar like main pages
 
 	// Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
 	const useGroupedNav =
@@ -2348,24 +2340,18 @@ export function AppSidebar({
 	const useCustomSidebar = navItems === "custom";
 
 	// Check for communication-specific sidebars
-	// Email page is the default at /dashboard/communication and all email sub-routes
+	// Email page is at /dashboard/communication/email (with query params for folder filtering)
 	const isEmailPage = 
-		pathname === "/dashboard/communication" || 
-		pathname?.startsWith("/dashboard/communication/email") ||
-		pathname?.startsWith("/dashboard/communication/drafts") ||
-		pathname?.startsWith("/dashboard/communication/sent") ||
-		pathname?.startsWith("/dashboard/communication/archive") ||
-		pathname?.startsWith("/dashboard/communication/snoozed") ||
-		pathname?.startsWith("/dashboard/communication/spam") ||
-		pathname?.startsWith("/dashboard/communication/trash");
-	const isTextPage = pathname?.startsWith("/dashboard/communication/text");
+		pathname === "/dashboard/communication" || // Legacy support
+		pathname?.startsWith("/dashboard/communication/email");
+	const isSmsPage = pathname?.startsWith("/dashboard/communication/sms");
 	const isTeamsPage = pathname?.startsWith("/dashboard/communication/teams");
 	const isTicketsPage = pathname?.startsWith("/dashboard/communication/tickets");
 
 	if (isEmailPage) {
 		return <EmailSidebar {...props} />;
 	}
-	if (isTextPage) {
+	if (isSmsPage) {
 		return <TextSidebar {...props} />;
 	}
 	if (isTeamsPage) {
@@ -2382,17 +2368,14 @@ export function AppSidebar({
 
 	return (
 		<Sidebar collapsible="offcanvas" variant="inset" {...props}>
-			{currentSection === "communication" && !isCommunicationDetail && (
+			{currentSection === "communication" && (
 				<div className="px-3 pt-2 pb-1">
 					<CommunicationSwitcher />
 				</div>
 			)}
 			<SidebarContent>
 
-				{isCommunicationDetail ? (
-					// Use custom sidebar for email/message detail view
-					<EmailDetailSidebar />
-				) : isReportingSection ? (
+				{isReportingSection ? (
 					// Use custom collapsible navigation for reporting
 					<ReportingSidebarNav />
 				) : isJobDetailsSection ? (

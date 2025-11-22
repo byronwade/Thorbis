@@ -11,14 +11,14 @@ import type { AnalyticsEvent } from "./types";
  * Create a tracking event that should be fired after a server action completes
  * This is returned from server actions and tracked by client components
  */
-export function createTrackingEvent(event: AnalyticsEvent): AnalyticsEvent {
+function createTrackingEvent(event: AnalyticsEvent): AnalyticsEvent {
 	return event;
 }
 
 /**
  * Helper to create job tracking events
  */
-export function trackJobCreated(
+function trackJobCreated(
 	jobId: string,
 	properties?: {
 		customerId?: string;
@@ -36,7 +36,7 @@ export function trackJobCreated(
 	};
 }
 
-export function trackJobUpdated(
+function trackJobUpdated(
 	jobId: string,
 	properties?: {
 		field?: string;
@@ -53,7 +53,7 @@ export function trackJobUpdated(
 	};
 }
 
-export function trackJobStatusChanged(
+function trackJobStatusChanged(
 	jobId: string,
 	oldStatus: string,
 	newStatus: string,
@@ -71,7 +71,7 @@ export function trackJobStatusChanged(
 /**
  * Helper to create customer tracking events
  */
-export function trackCustomerCreated(
+function trackCustomerCreated(
 	customerId: string,
 	properties?: {
 		source?: "manual" | "import" | "api";
@@ -91,7 +91,7 @@ export function trackCustomerCreated(
 /**
  * Helper to create invoice tracking events
  */
-export function trackInvoiceCreated(
+function trackInvoiceCreated(
 	invoiceId: string,
 	properties?: {
 		jobId?: string;
@@ -109,7 +109,7 @@ export function trackInvoiceCreated(
 	};
 }
 
-export function trackInvoiceSent(
+function trackInvoiceSent(
 	invoiceId: string,
 	method: "email" | "sms" | "link",
 ): AnalyticsEvent {
@@ -122,7 +122,7 @@ export function trackInvoiceSent(
 	};
 }
 
-export function trackInvoicePaid(
+function trackInvoicePaid(
 	invoiceId: string,
 	properties?: {
 		amount?: number;

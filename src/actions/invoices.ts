@@ -119,7 +119,7 @@ function calculateTotals(
 /**
  * Create a new invoice
  */
-export async function createInvoice(
+async function createInvoice(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -231,7 +231,7 @@ export async function createInvoice(
 /**
  * Update an invoice
  */
-export async function updateInvoice(
+async function updateInvoice(
 	invoiceId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -366,7 +366,7 @@ export async function updateInvoice(
 /**
  * Send invoice to customer
  */
-export async function sendInvoice(
+async function sendInvoice(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -449,7 +449,7 @@ export async function sendInvoice(
 /**
  * Mark invoice as viewed (customer opened it)
  */
-export async function markInvoiceViewed(
+async function markInvoiceViewed(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -496,7 +496,7 @@ export async function markInvoiceViewed(
 /**
  * Record a payment for an invoice
  */
-export async function recordPayment(
+async function recordPayment(
 	invoiceId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -621,7 +621,7 @@ export async function recordPayment(
 /**
  * Mark invoice as overdue (automated or manual)
  */
-export async function markInvoiceOverdue(
+async function markInvoiceOverdue(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -707,7 +707,7 @@ export async function markInvoiceOverdue(
 /**
  * Cancel invoice
  */
-export async function cancelInvoice(
+async function cancelInvoice(
 	invoiceId: string,
 	reason?: string,
 ): Promise<ActionResult<void>> {
@@ -891,7 +891,7 @@ export async function archiveInvoice(
  *
  * Restores an archived invoice back to its previous status (draft/sent/viewed/etc.)
  */
-export async function restoreInvoice(
+async function restoreInvoice(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -971,7 +971,7 @@ export async function restoreInvoice(
  * Delete invoice (legacy - deprecated, use archiveInvoice instead)
  * @deprecated Use archiveInvoice() instead
  */
-export async function deleteInvoice(
+async function deleteInvoice(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	// Redirect to archive function
@@ -983,7 +983,7 @@ export async function deleteInvoice(
  *
  * Saves the TipTap editor content for the invoice
  */
-export async function updateInvoiceContent(
+async function updateInvoiceContent(
 	invoiceId: string,
 	content: any,
 ): Promise<ActionResult<void>> {
@@ -1057,7 +1057,7 @@ export async function updateInvoiceContent(
  *
  * Fetches all payments applied to an invoice via the invoice_payments junction table
  */
-export async function getInvoicePayments(
+async function getInvoicePayments(
 	invoiceId: string,
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
@@ -1163,7 +1163,7 @@ export async function getInvoicePayments(
  * Generates a PDF from the invoice TipTap content
  * Returns a URL to the generated PDF
  */
-export async function generateInvoicePDF(
+async function generateInvoicePDF(
 	invoiceId: string,
 ): Promise<ActionResult<{ pdfUrl: string; invoice: any }>> {
 	return withErrorHandling(async () => {
@@ -1306,7 +1306,7 @@ export async function unlinkInvoiceFromJob(
  * @param invoiceId - ID of the invoice to unlink from its job
  * @returns Promise<ActionResult<void>>
  */
-export async function unlinkJobFromInvoice(
+async function unlinkJobFromInvoice(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	// Just call the main function - same implementation

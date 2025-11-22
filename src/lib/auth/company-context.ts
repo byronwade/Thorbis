@@ -14,11 +14,11 @@
  * redundant database queries across components in the same request.
  */
 
-import { cookies } from "next/headers";
-import { cache } from "react";
+
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { cache } from "react";
 import { getCurrentUser } from "./session";
 
 const ACTIVE_COMPANY_COOKIE = "active_company_id";
@@ -44,7 +44,22 @@ export type CompanyInfo = {
  * @returns Company ID string or null if user has no companies
  */
 export const getActiveCompanyId = cache(async (): Promise<string | null> => {
-	const cookieStore = await cookies();
+	const { cookies } = await import("next/headers");
+	let cookieStore;
+	try {
+		cookieStore = await cookies();
+	} catch (error) {
+		// During prerendering, cookies() may reject - return null
+		// This allows PPR to work correctly
+		if (error instanceof Error && (
+			error.message.includes("During prerendering") ||
+			error.message.includes("prerendering") ||
+			error.message.includes("cookies()")
+		)) {
+			return null;
+		}
+		throw error;
+	}
 	const activeCompanyId = cookieStore.get(ACTIVE_COMPANY_COOKIE)?.value;
 
 	if (activeCompanyId) {
@@ -105,6 +120,7 @@ export async function setActiveCompany(companyId: string): Promise<void> {
 		throw new Error("You don't have access to this company");
 	}
 
+	const { cookies } = await import("next/headers");
 	const cookieStore = await cookies();
 	cookieStore.set(ACTIVE_COMPANY_COOKIE, companyId, {
 		httpOnly: true,
@@ -121,6 +137,7 @@ export async function setActiveCompany(companyId: string): Promise<void> {
  * Removes the active company cookie.
  */
 export async function clearActiveCompany(): Promise<void> {
+	const { cookies } = await import("next/headers");
 	const cookieStore = await cookies();
 	cookieStore.delete(ACTIVE_COMPANY_COOKIE);
 }
@@ -261,7 +278,7 @@ export async function requireActiveCompany(): Promise<string> {
  *
  * @returns true if user has 2+ companies, false otherwise
  */
-export async function hasMultipleCompanies(): Promise<boolean> {
+async function hasMultipleCompanies(): Promise<boolean> {
 	const companies = await getUserCompanies();
 	return companies.length > 1;
 }

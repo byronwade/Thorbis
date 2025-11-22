@@ -15,7 +15,7 @@ import { z } from "zod";
 // Types and Schemas
 // ============================================================================
 
-export const PersonEnrichmentSchema = z.object({
+const PersonEnrichmentSchema = z.object({
 	// Basic info
 	fullName: z.string().optional(),
 	firstName: z.string().optional(),
@@ -71,7 +71,7 @@ export type PersonEnrichment = z.infer<typeof PersonEnrichmentSchema>;
 // Person Enrichment Service
 // ============================================================================
 
-export class PersonEnrichmentService {
+class PersonEnrichmentService {
 	private readonly hunterApiKey: string | undefined;
 
 	constructor() {

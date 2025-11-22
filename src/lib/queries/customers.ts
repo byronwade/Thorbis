@@ -134,7 +134,7 @@ export type CustomerSummaryStats = {
  * Aggregated customer metrics used by dashboard stats cards.
  * Uses optimized RPC with LATERAL joins for fast metric computation.
  */
-export async function getCustomerStats(): Promise<CustomerSummaryStats | null> {
+async function getCustomerStats(): Promise<CustomerSummaryStats | null> {
 	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
 	// which uses cookies(). The query is already fast enough without page-level caching.
 	const companyId = await getActiveCompanyId();

@@ -326,7 +326,7 @@ export function formatDateRange(
  * formatPercentage(45.5) // "46%"
  * formatPercentage(45.5, 1) // "45.5%"
  */
-export function formatPercentage(
+function formatPercentage(
 	value: number | null | undefined,
 	decimals = 0,
 ): string {
@@ -347,7 +347,7 @@ export function formatPercentage(
  * formatHours(2.5) // "2h 30m"
  * formatHours(1.25) // "1h 15m"
  */
-export function formatHours(hours: number | null | undefined): string {
+function formatHours(hours: number | null | undefined): string {
 	if (hours === null || hours === undefined) {
 		return "0h";
 	}
@@ -373,7 +373,7 @@ export function formatHours(hours: number | null | undefined): string {
  * formatNumber(1234567) // "1,234,567"
  * formatNumber(1234.56, 2) // "1,234.56"
  */
-export function formatNumber(
+function formatNumber(
 	value: number | null | undefined,
 	decimals = 0,
 ): string {

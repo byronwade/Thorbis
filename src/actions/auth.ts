@@ -1109,7 +1109,7 @@ export async function signInWithOAuth(
  * - Secure token generation via Supabase
  * - Custom email template with security information
  */
-export async function forgotPassword(
+async function forgotPassword(
 	formData: FormData,
 ): Promise<AuthActionResult> {
 	try {
@@ -1216,7 +1216,7 @@ export async function forgotPassword(
  * - Invalidates reset token after use
  * - Sends custom password changed confirmation via Resend
  */
-export async function resetPassword(
+async function resetPassword(
 	formData: FormData,
 ): Promise<AuthActionResult> {
 	try {
@@ -1312,7 +1312,7 @@ export async function resetPassword(
  * - Returns null if not authenticated
  * - Can be used in Server Components
  */
-export async function getCurrentUser() {
+async function getCurrentUser() {
 	try {
 		const supabase = await createClient();
 
@@ -1339,7 +1339,7 @@ export async function getCurrentUser() {
  * - Returns null if no active session
  * - Can be used in Server Components
  */
-export async function getSession() {
+async function getSession() {
 	try {
 		const supabase = await createClient();
 
@@ -1437,7 +1437,7 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
  * - Deletes old tokens for the email
  * - Sends fresh verification email
  */
-export async function resendVerificationEmail(
+async function resendVerificationEmail(
 	email: string,
 ): Promise<AuthActionResult> {
 	try {

@@ -196,14 +196,14 @@ export function getAllowedNextStatuses(currentStatus: JobStatus): JobStatus[] {
 /**
  * Get required fields for a status
  */
-export function getRequiredFieldsForStatus(status: JobStatus): string[] {
+function getRequiredFieldsForStatus(status: JobStatus): string[] {
 	return REQUIRED_FIELDS[status] || [];
 }
 
 /**
  * Check if a specific transition is valid (simple check without context)
  */
-export function isTransitionAllowed(from: JobStatus, to: JobStatus): boolean {
+function isTransitionAllowed(from: JobStatus, to: JobStatus): boolean {
 	if (from === to) return true;
 	return VALID_TRANSITIONS[from]?.includes(to) || false;
 }

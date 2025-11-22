@@ -187,7 +187,7 @@ export async function sendMMS(params: {
 /**
  * Retrieve message by ID
  */
-export async function getMessage(messageId: string) {
+async function getMessage(messageId: string) {
 	try {
 		const message = await telnyxRequest(`/messages/${messageId}`);
 
@@ -207,7 +207,7 @@ export async function getMessage(messageId: string) {
 /**
  * List messages with optional filtering
  */
-export async function listMessages(params?: {
+async function listMessages(params?: {
 	pageSize?: number;
 	pageNumber?: number;
 	filterFrom?: string;
@@ -241,7 +241,7 @@ export async function listMessages(params?: {
 /**
  * Send a bulk SMS message to multiple recipients
  */
-export async function sendBulkSMS(params: {
+async function sendBulkSMS(params: {
 	to: string[];
 	from: string;
 	text: string;
@@ -280,7 +280,7 @@ export async function sendBulkSMS(params: {
 /**
  * Validate a phone number for SMS capability
  */
-export async function validatePhoneNumber(phoneNumber: string) {
+async function validatePhoneNumber(phoneNumber: string) {
 	try {
 		// Remove any formatting from phone number
 		const cleanNumber = phoneNumber.replace(/\D/g, "");

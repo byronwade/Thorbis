@@ -11,7 +11,7 @@ import { z } from "zod";
 // SCHEMAS
 // ============================================================================
 
-export const NotificationTypeSchema = z.enum([
+const NotificationTypeSchema = z.enum([
 	"message",
 	"alert",
 	"payment",
@@ -20,7 +20,7 @@ export const NotificationTypeSchema = z.enum([
 	"system",
 ]);
 
-export const NotificationPrioritySchema = z.enum([
+const NotificationPrioritySchema = z.enum([
 	"low",
 	"medium",
 	"high",

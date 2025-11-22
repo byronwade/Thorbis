@@ -274,7 +274,7 @@ function fallbackDetection(
 /**
  * Validate detection result
  */
-export function validateDetectionResult(result: FormatDetectionResult): {
+function validateDetectionResult(result: FormatDetectionResult): {
 	valid: boolean;
 	errors: string[];
 } {
@@ -310,7 +310,7 @@ export function validateDetectionResult(result: FormatDetectionResult): {
 /**
  * Get platform-specific templates to improve detection
  */
-export function getPlatformTemplate(platform: SupportedPlatform): {
+function getPlatformTemplate(platform: SupportedPlatform): {
 	name: string;
 	commonHeaders: string[];
 	identifyingFields: string[];

@@ -95,7 +95,7 @@ export function OfflineIndicator() {
 /**
  * Detailed sync status for settings/debug pages
  */
-export function SyncStatusDetail() {
+function SyncStatusDetail() {
 	const { isOnline, pendingOperations, isSyncing, lastSync } =
 		useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
@@ -170,7 +170,7 @@ export function SyncStatusDetail() {
 /**
  * Badge variant for compact display
  */
-export function OfflineBadge() {
+function OfflineBadge() {
 	const { isOnline, pendingOperations } = useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 

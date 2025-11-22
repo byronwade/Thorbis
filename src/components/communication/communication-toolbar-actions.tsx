@@ -13,13 +13,16 @@
 
 import { MessageSquare, Pencil, Phone, Plus, Ticket } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
+import { RecipientSelector } from "@/components/communication/recipient-selector";
 
 export function CommunicationToolbarActions() {
 	const activeFilter = useCommunicationStore((state) => state.activeFilter);
-	const openComposer = useCommunicationStore((state) => state.openComposer);
 	const router = useRouter();
+	const [showRecipientSelector, setShowRecipientSelector] = useState(false);
+	const [recipientType, setRecipientType] = useState<"email" | "sms">("email");
 
 	// Return appropriate button based on active filter
 	let buttonContent;
@@ -28,12 +31,10 @@ export function CommunicationToolbarActions() {
 		case "email":
 			buttonContent = (
 				<Button
-					onClick={() =>
-						openComposer("email", {
-							customerName: "Customer",
-							email: "",
-						})
-					}
+					onClick={() => {
+						setRecipientType("email");
+						setShowRecipientSelector(true);
+					}}
 					size="sm"
 					variant="default"
 				>
@@ -46,9 +47,10 @@ export function CommunicationToolbarActions() {
 		case "sms":
 			buttonContent = (
 				<Button
-					onClick={() =>
-						router.push("/dashboard/communication/messages?compose=1")
-					}
+					onClick={() => {
+						setRecipientType("sms");
+						setShowRecipientSelector(true);
+					}}
 					size="sm"
 					variant="default"
 				>
@@ -94,5 +96,14 @@ export function CommunicationToolbarActions() {
 			);
 	}
 
-	return <div className="flex items-center gap-1">{buttonContent}</div>;
+	return (
+		<>
+			<div className="flex items-center gap-1">{buttonContent}</div>
+			<RecipientSelector
+				open={showRecipientSelector}
+				onOpenChange={setShowRecipientSelector}
+				recipientType={recipientType}
+			/>
+		</>
+	);
 }

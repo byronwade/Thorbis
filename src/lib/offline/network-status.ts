@@ -143,14 +143,14 @@ export function useNetworkStatus(): NetworkStatus {
 /**
  * Get current online status (synchronous)
  */
-export function isOnline(): boolean {
+function isOnline(): boolean {
 	return typeof navigator !== "undefined" ? navigator.onLine : true;
 }
 
 /**
  * Wait for network connection
  */
-export function waitForOnline(): Promise<void> {
+function waitForOnline(): Promise<void> {
 	return new Promise((resolve) => {
 		if (navigator.onLine) {
 			resolve();
@@ -167,7 +167,7 @@ export function waitForOnline(): Promise<void> {
 /**
  * Execute a function when online
  */
-export async function executeWhenOnline<T>(fn: () => Promise<T>): Promise<T> {
+async function executeWhenOnline<T>(fn: () => Promise<T>): Promise<T> {
 	if (!navigator.onLine) {
 		await waitForOnline();
 	}

@@ -121,7 +121,7 @@ Best regards,
 /**
  * Save the invoice email template for the current company
  */
-export async function saveInvoiceEmailTemplate(
+async function saveInvoiceEmailTemplate(
 	template: InvoiceEmailTemplate,
 ): Promise<ActionResult<void>> {
 	try {

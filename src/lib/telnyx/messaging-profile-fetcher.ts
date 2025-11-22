@@ -24,7 +24,7 @@ export type ListMessagingProfilesResult = {
 /**
  * List all messaging profiles from Telnyx
  */
-export async function listMessagingProfiles(): Promise<ListMessagingProfilesResult> {
+async function listMessagingProfiles(): Promise<ListMessagingProfilesResult> {
 	try {
 		const response = await telnyxClient.messagingProfiles.list();
 		const profiles = (response.data || []) as any[];
@@ -97,7 +97,7 @@ export async function getDefaultMessagingProfile(): Promise<{
 /**
  * Get messaging profile by ID
  */
-export async function getMessagingProfileById(profileId: string): Promise<{
+async function getMessagingProfileById(profileId: string): Promise<{
 	success: boolean;
 	profile?: MessagingProfile;
 	error?: string;

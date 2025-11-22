@@ -1,4 +1,3 @@
-import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
@@ -32,130 +31,26 @@ const nextConfig: NextConfig = {
 				: false,
 	},
 
-	// TypeScript optimizations
+	// TypeScript optimizations - temporarily ignore errors to test if TS is causing hang
 	typescript: {
-		// Speed up builds by skipping type checking during build (use CI/CD for type checking)
-		// Set to false if you want Next.js to type-check during build (slower)
-		ignoreBuildErrors: true, // Enabled to allow build completion - fix type errors separately
+		ignoreBuildErrors: true, // TEMPORARILY ENABLED to diagnose build hang
 	},
 
-	// ENABLED: Cache Components (Next.js 16+)
-	// Required for "use cache" directive
-	// This is different from PPR - it's for explicit caching only
-	cacheComponents: true,
+	// DISABLED: Cache Components (Next.js 16+) - Temporarily disabled to fix build hang
+	// cacheComponents: true,
 
-	// Configure cache lifetimes for different data types
-	cacheLife: {
-		// Static data - rarely changes (product catalog, settings)
-		static: {
-			stale: THIRTY_DAYS_IN_SECONDS,
-			revalidate: THIRTY_DAYS_IN_SECONDS,
-			expire: THIRTY_DAYS_IN_SECONDS,
-		},
-		// Marketing - high-frequency pages (pricing, features, homepage)
-		marketing: {
-			stale: ONE_DAY_IN_SECONDS, // 24 hours
-			revalidate: ONE_DAY_IN_SECONDS,
-			expire: ONE_DAY_IN_SECONDS * 2, // 48 hours max
-		},
-		// Marketing Weekly - medium-frequency pages (blog, case studies)
-		marketingWeekly: {
-			stale: 7 * ONE_DAY_IN_SECONDS, // 7 days
-			revalidate: 7 * ONE_DAY_IN_SECONDS,
-			expire: 14 * ONE_DAY_IN_SECONDS, // 14 days max
-		},
-		// Default - business data (contracts, jobs, invoices)
-		default: {
-			stale: 15 * 60, // 15 minutes (Next.js default)
-			revalidate: 15 * 60,
-			expire: 30 * 60, // 30 minutes max
-		},
-		// Short-lived - frequently changing (notifications, real-time stats)
-		minutes: {
-			stale: 60, // 1 minute
-			revalidate: 60,
-			expire: 5 * 60, // 5 minutes max
-		},
-		// Real-time - very short cache for live data
-		seconds: {
-			stale: 10, // 10 seconds
-			revalidate: 10,
-			expire: 60, // 1 minute max
-		},
-	},
+	// DISABLED: Complex cacheLife config - temporarily disabled for testing
+	// cacheLife: { ... },
 
-	// Enable experimental features for better performance
-	experimental: {
-		// Optimize package imports to reduce bundle size
-		// This enables tree-shaking for these packages
-		optimizePackageImports: [
-			// Icons and utilities
-			"lucide-react",
-			"date-fns",
-			"zod",
+	// DISABLED: Experimental features - temporarily disabled for testing
+	// experimental: {
+	// 	optimizePackageImports: [ ... ],
+	// 	optimizeCss: true,
+	// },
 
-			// Heavy dependencies
-			"recharts",
-			"@react-pdf/renderer",
-			"@tiptap/react",
-			"@tiptap/core",
-			"@tiptap/starter-kit",
-			"@tiptap/extension-link",
-			"@tiptap/extension-image",
-			"@tiptap/extension-table",
-
-			// Supabase
-			"@supabase/supabase-js",
-			"@supabase/ssr",
-
-			// All Radix UI components (complete list)
-			"@radix-ui/react-accordion",
-			"@radix-ui/react-alert-dialog",
-			"@radix-ui/react-aspect-ratio",
-			"@radix-ui/react-avatar",
-			"@radix-ui/react-checkbox",
-			"@radix-ui/react-collapsible",
-			"@radix-ui/react-context-menu",
-			"@radix-ui/react-dialog",
-			"@radix-ui/react-dropdown-menu",
-			"@radix-ui/react-hover-card",
-			"@radix-ui/react-label",
-			"@radix-ui/react-menubar",
-			"@radix-ui/react-navigation-menu",
-			"@radix-ui/react-popover",
-			"@radix-ui/react-progress",
-			"@radix-ui/react-radio-group",
-			"@radix-ui/react-scroll-area",
-			"@radix-ui/react-select",
-			"@radix-ui/react-separator",
-			"@radix-ui/react-slider",
-			"@radix-ui/react-slot",
-			"@radix-ui/react-switch",
-			"@radix-ui/react-tabs",
-			"@radix-ui/react-toggle",
-			"@radix-ui/react-toggle-group",
-			"@radix-ui/react-tooltip",
-
-			// Form libraries
-			"react-hook-form",
-
-			// Other heavy dependencies
-			"framer-motion",
-			"@dnd-kit/core",
-			"@dnd-kit/sortable",
-			"@uidotdev/usehooks",
-			"jotai",
-			"ai",
-		],
-		// Enable faster refresh for better DX
-		optimizeCss: true,
-	},
-
-	// Turbopack configuration for faster dev builds
+	// Turbopack config - required for Next.js 16 when webpack config is present
 	turbopack: {
-		// Enable module resolution caching for faster rebuilds
 		resolveAlias: {
-			// Map commonly used paths to reduce resolution time
 			"@": "./src",
 		},
 	},
@@ -191,106 +86,50 @@ const nextConfig: NextConfig = {
 	// Build output optimizations
 	poweredByHeader: false, // Remove X-Powered-By header
 	compress: true, // Enable gzip compression
+	transpilePackages: ["shiki"], // Transpile shiki to fix external warnings
 	webpack: (webpackConfig) => {
 		// Keep webpack running to display all errors instead of bailing on the first failure
 		webpackConfig.bail = false;
+		// Optimize webpack performance
+		webpackConfig.cache = {
+			type: "filesystem",
+			buildDependencies: {
+				config: [__filename],
+			},
+		};
 		return webpackConfig;
 	},
 
-	// CDN Caching Headers (Phase 3.1)
-	// Optimized cache control for different asset types
-	async headers() {
-		return [
-			{
-				// Static assets (JS, CSS, fonts, etc.) - Immutable with content hash
-				source: "/_next/static/:path*",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "public, max-age=31536000, immutable",
-					},
-				],
-			},
-			{
-				// Public folder static assets - Long-term caching
-				source: "/static/:path*",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "public, max-age=31536000, immutable",
-					},
-				],
-			},
-			{
-				// Images from public folder - Long-term caching
-				source: "/:all*.(svg|jpg|jpeg|png|gif|ico|webp|avif)",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "public, max-age=31536000, immutable",
-					},
-				],
-			},
-			{
-				// Optimized Next.js images - Stale-while-revalidate
-				source: "/_next/image/:path*",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "public, max-age=3600, stale-while-revalidate=86400",
-					},
-				],
-			},
-			{
-				// API routes - No caching (always fresh)
-				source: "/api/:path*",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "no-store, must-revalidate",
-					},
-				],
-			},
-			{
-				// HTML pages - Stale-while-revalidate for instant loading
-				source: "/:path*",
-				headers: [
-					{
-						key: "Cache-Control",
-						value:
-							"public, max-age=0, stale-while-revalidate=60, must-revalidate",
-					},
-					{
-						key: "X-Content-Type-Options",
-						value: "nosniff",
-					},
-					{
-						key: "X-Frame-Options",
-						value: "DENY",
-					},
-					{
-						key: "X-XSS-Protection",
-						value: "1; mode=block",
-					},
-				],
-			},
-		];
+	// Optimize build output
+	outputFileTracingExcludes: {
+		"*": [
+			"node_modules/@swc/core*",
+			"node_modules/webpack",
+		],
 	},
+
+	// DISABLED: Complex headers - temporarily disabled for testing
+	// async headers() { ... },
 };
 
 // Conditionally wrap configs only when needed
 let mergedConfig = nextConfig;
 
-// Only apply bundle analyzer when ANALYZE=true
-mergedConfig = withBundleAnalyzer(mergedConfig);
+// DISABLED: Bundle analyzer - temporarily disabled for testing
+// mergedConfig = withBundleAnalyzer(mergedConfig);
 
 // DISABLED: Vercel Workflow was causing 123-second hangs and Turbopack crashes
 // "Discovering workflow directives" was taking 50-123 seconds per build
 // Re-enable only if needed for specific workflow features
 // const workflowEnabledConfig = withWorkflow(mergedConfig);
 
+// TEMPORARILY DISABLED: withBotId to diagnose build hang
 // Wrap with BotID protection (outermost wrapper for security)
-export default withBotId(async (phase, config) =>
-	// Use mergedConfig directly instead of workflowEnabledConfig
-	Promise.resolve(mergedConfig),
-);
+// Use function form to ensure proper initialization
+// export default withBotId((phase, defaultConfig) => {
+// 	// Return config synchronously to prevent build hangs
+// 	return mergedConfig;
+// });
+
+// Temporary: Export config directly without withBotId to test if it's causing the hang
+export default mergedConfig;

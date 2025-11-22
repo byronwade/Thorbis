@@ -307,7 +307,7 @@ export async function sendSingleTeamInvitation(
 /**
  * Cancel/revoke an invitation
  */
-export async function cancelTeamInvitation(
+async function cancelTeamInvitation(
 	invitationId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {

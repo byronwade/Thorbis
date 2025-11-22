@@ -98,7 +98,13 @@ export async function sendEmail({
 		}
 
 		// Render template to HTML
-		const html = await render(template);
+		let html = await render(template);
+
+		// Add email tracking if communicationId is provided
+		if (communicationId) {
+			const { addEmailTracking } = await import("./email-tracking");
+			html = addEmailTracking(html, communicationId);
+		}
 
 		const sendTags = [
 			...tags,
@@ -197,7 +203,7 @@ export async function sendEmail({
  * - Sends multiple emails
  * - Returns results for each email
  */
-export async function sendBatchEmails(
+async function sendBatchEmails(
 	emails: SendEmailOptions[],
 ): Promise<EmailSendResult[]> {
 	if (emails.length > 100) {
@@ -222,7 +228,7 @@ export async function sendBatchEmails(
  * - Sends test email to specified address
  * - Returns detailed error information
  */
-export async function testEmailConfiguration(
+async function testEmailConfiguration(
 	testEmailAddress: string,
 ): Promise<EmailSendResult> {
 	try {

@@ -93,7 +93,7 @@ export function formatTranscriptForExtraction(
 		.join("\n");
 }
 
-export function getJobTypeFromDescription(description: string): string {
+function getJobTypeFromDescription(description: string): string {
 	const lower = description.toLowerCase();
 
 	// HVAC

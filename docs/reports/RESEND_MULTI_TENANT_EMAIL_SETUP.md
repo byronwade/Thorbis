@@ -228,6 +228,131 @@ if (status.data.verified) {
 - `/src/app/api/cron/resend-domain-sync/route.ts` - Auto-sync cron
 - `/supabase/migrations/20251118225303_create_company_email_domains.sql` - Database schema
 
+## Multi-Tenant Catch-All Routing
+
+Each company can configure their own email domain for receiving emails at any address on that domain.
+
+### Architecture
+
+The system supports multiple companies, each with their own verified domain:
+- Company A: `companyA.com` → All emails to `*@companyA.com` route to Company A
+- Company B: `companyB.com` → All emails to `*@companyB.com` route to Company B
+- Webhook handler automatically routes based on domain lookup
+
+### 1. Register Company Domain
+
+Companies must first register their domain in the system:
+
+```typescript
+import { setupCompanyEmailDomain } from "@/actions/company-email-domains";
+
+const result = await setupCompanyEmailDomain(companyId, "company.com");
+if (result.success) {
+  console.log("DNS records to configure:", result.data.dnsRecords);
+}
+```
+
+### 2. Verify Domain
+
+Add the DNS records to your domain and verify:
+
+```typescript
+import { syncDomainVerificationStatus } from "@/actions/company-email-domains";
+
+const status = await syncDomainVerificationStatus(domainId);
+if (status.data.verified) {
+  console.log("Domain verified!");
+}
+```
+
+### 3. Create Catch-All Route
+
+Once domain is verified, create the catch-all inbound route:
+
+```typescript
+import { setupCatchAllInboundRouteAction } from "@/actions/email-actions";
+
+const result = await setupCatchAllInboundRouteAction("company.com");
+if (result.success) {
+  console.log("✅ Catch-all route created:", result.route);
+} else {
+  console.error("❌ Failed:", result.error);
+}
+```
+
+Or use the setup script:
+
+```bash
+pnpm tsx scripts/setup-email-catchall.ts company.com
+```
+
+### 4. Configure in Resend Dashboard
+
+Each company needs their own inbound route in Resend:
+
+1. Go to [Resend Dashboard → Inbound](https://resend.com/inbound)
+2. Create a new inbound route
+3. Set recipients to: `*@company.com` (wildcard for all addresses)
+4. Set webhook URL to: `https://your-app.com/api/webhooks/resend`
+5. Copy the route ID
+6. Enable the route
+
+**Important**: The webhook handler will automatically route emails to the correct company based on the domain. You don't need separate webhooks for each company.
+
+### 5. Test Email Reception
+
+Send a test email to any address at the domain:
+
+```bash
+# Send to any address
+echo "Test email body" | mail -s "Test Subject" test123@company.com
+```
+
+Verify the email appears in the correct company's communications:
+
+```sql
+SELECT id, subject, from_address, to_address, company_id, created_at 
+FROM communications 
+WHERE channel = 'resend' 
+  AND direction = 'inbound'
+  AND to_address LIKE '%@company.com'
+ORDER BY created_at DESC 
+LIMIT 5;
+```
+
+### Troubleshooting
+
+**Email not received?**
+1. **Check domain registration**: Ensure domain is registered in `communication_email_domains` table
+2. **Verify domain status**: Domain must have `status = 'verified'`
+3. **Check inbound route**: Ensure `@company.com` exists in `communication_email_inbound_routes`
+4. **Verify webhook logs**: Look for errors in application logs
+5. **Check Resend dashboard**: Verify webhook delivery status
+
+**"Domain not registered" error?**
+- Register the domain first via Settings → Email Domains
+- Ensure DNS records are configured
+- Verify the domain status is "verified"
+
+**"Domain already configured for another company" error?**
+- Each domain can only be used by one company
+- Check if another company already owns this domain
+- Use a subdomain if needed (e.g., `support.company.com`)
+
+**Webhook signature verification failing?**
+- Ensure `RESEND_WEBHOOK_SECRET` matches the Resend dashboard
+- Verify webhook URL uses HTTPS in production
+- Check that the secret hasn't been rotated
+
+### Multi-Tenant Isolation
+
+The system ensures proper tenant isolation:
+
+1. **Domain Registration**: Each domain can only be registered to one company
+2. **Route Lookup**: Webhook handler looks up company by domain
+3. **Data Storage**: Emails are stored with `company_id` for RLS enforcement
+4. **Access Control**: Row Level Security ensures users only see their company's emails
+
 ## References
 
 - [Resend API Documentation](https://resend.com/docs/api-reference/domains)

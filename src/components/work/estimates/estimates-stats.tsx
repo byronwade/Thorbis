@@ -106,7 +106,7 @@ export async function getEstimatesStatsData(): Promise<StatCard[]> {
  *
  * Expected render time: 0-5ms (cached, was 200-400ms)
  */
-export async function EstimatesStats() {
+async function EstimatesStats() {
 	const estimateStats = await getEstimatesStatsData();
 
 	if (estimateStats.length === 0) {

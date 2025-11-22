@@ -251,7 +251,7 @@ async function createRecurringJobs(
  * Create a new job
  * ✅ ALREADY MIGRATED - Creates core job + all 10 domain records in parallel
  */
-export async function createJob(
+async function createJob(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -524,7 +524,7 @@ export async function createJob(
  * Get a single job by ID
  * ✅ ALREADY MIGRATED - Fetches job with all domain data
  */
-export async function getJob(jobId: string): Promise<ActionResult<any>> {
+async function getJob(jobId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -915,7 +915,7 @@ export async function updateJob(
  * Update job with data object (easier for programmatic use)
  * Used by job editor for in-place updates
  */
-export async function updateJobData(
+async function updateJobData(
 	jobId: string,
 	data: Partial<UpdateJobData>,
 ): Promise<ActionResult<void>> {
@@ -1111,7 +1111,7 @@ export async function updateJobStatus(
  * Assign job to a technician
  * ✅ NO CHANGES NEEDED - Only updates jobs.assigned_to
  */
-export async function assignJob(
+async function assignJob(
 	jobId: string,
 	technicianId: string,
 ): Promise<ActionResult<void>> {
@@ -1197,7 +1197,7 @@ export async function assignJob(
  * Schedule a job
  * ✅ NO CHANGES NEEDED - Only updates jobs table scheduling fields
  */
-export async function scheduleJob(
+async function scheduleJob(
 	jobId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -1456,7 +1456,7 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
  * Cancel a job
  * ✅ NO CHANGES NEEDED - Only updates jobs.status and jobs.notes
  */
-export async function cancelJob(
+async function cancelJob(
 	jobId: string,
 	reason?: string,
 ): Promise<ActionResult<void>> {
@@ -1542,7 +1542,7 @@ export async function cancelJob(
  * Search jobs with full-text search and ranking
  * ✅ NO CHANGES NEEDED - Only searches jobs table
  */
-export async function searchJobs(
+async function searchJobs(
 	searchTerm: string,
 	options?: { limit?: number; offset?: number },
 ): Promise<ActionResult<any[]>> {
@@ -1592,7 +1592,7 @@ export async function searchJobs(
  * Universal search across all entities
  * ✅ NO CHANGES NEEDED - Only searches jobs table
  */
-export async function searchAll(
+async function searchAll(
 	searchTerm: string,
 ): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
@@ -1750,7 +1750,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
  * Restore archived job
  * 🔧 REFACTORED - Now clears job_multi_entity.deleted_by and permanent_delete_scheduled_at
  */
-export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
+async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -1844,7 +1844,7 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
  * Remove team assignment from job
  * ✅ NO CHANGES NEEDED - Only deletes from job_team_assignments junction table
  */
-export async function removeTeamAssignment(
+async function removeTeamAssignment(
 	assignmentId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {

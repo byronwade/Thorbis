@@ -749,7 +749,7 @@ export function getImplementationStats() {
 /**
  * Get incomplete notifications (partial or missing implementations)
  */
-export function getIncompleteNotifications(): NotificationDefinition[] {
+function getIncompleteNotifications(): NotificationDefinition[] {
 	return NOTIFICATION_REGISTRY.filter((notification) => {
 		return Object.values(notification.channels).some(
 			(channel) =>

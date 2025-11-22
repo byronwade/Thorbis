@@ -19,7 +19,7 @@ export type AIConfig = {
 /**
  * Get AI configuration from environment variables
  */
-export function getAIConfig(): AIConfig {
+function getAIConfig(): AIConfig {
 	const provider = (process.env.AI_PROVIDER || "openai") as AIProvider;
 	const model = process.env.AI_MODEL || getDefaultModel(provider);
 	const gatewayUrl = process.env.AI_GATEWAY_URL;
@@ -82,7 +82,7 @@ export function createAIProvider(config?: Partial<AIConfig>) {
 /**
  * Create provider-specific client for direct API access
  */
-export function createProviderClient(provider?: AIProvider) {
+function createProviderClient(provider?: AIProvider) {
 	const selectedProvider = provider || getAIConfig().provider;
 	const config = getAIConfig();
 
@@ -111,7 +111,7 @@ export function createProviderClient(provider?: AIProvider) {
 /**
  * Available models by provider
  */
-export const AVAILABLE_MODELS = {
+const AVAILABLE_MODELS = {
 	openai: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"],
 	anthropic: [
 		"claude-3-5-sonnet-20241022",

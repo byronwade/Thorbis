@@ -45,14 +45,14 @@ function initializePlaidClient() {
 }
 
 // Lazy getters that initialize on first access
-export function getPlaidClient(): PlaidApi {
+function getPlaidClient(): PlaidApi {
 	if (!_plaidClient) {
 		initializePlaidClient();
 	}
 	return _plaidClient!;
 }
 
-export function getPlaidEnvironment(): keyof typeof PlaidEnvironments {
+function getPlaidEnvironment(): keyof typeof PlaidEnvironments {
 	if (!_plaidEnvironment) {
 		initializePlaidClient();
 	}
@@ -66,7 +66,7 @@ export const plaidClient = new Proxy({} as PlaidApi, {
 	},
 });
 
-export const plaidEnvironment = new Proxy(
+const plaidEnvironment = new Proxy(
 	{} as keyof typeof PlaidEnvironments,
 	{
 		get() {

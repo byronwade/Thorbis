@@ -238,7 +238,7 @@ const reportContractIssue = (_message: string, _error?: unknown) => {
 /**
  * Create a new contract
  */
-export async function createContract(
+async function createContract(
 	formData: FormData,
 ): Promise<{ success: boolean; error?: string; contractId?: string }> {
 	try {
@@ -303,7 +303,7 @@ export async function createContract(
 /**
  * Update an existing contract
  */
-export async function updateContract(
+async function updateContract(
 	contractId: string,
 	formData: FormData,
 ): Promise<{ success: boolean; error?: string }> {
@@ -422,7 +422,7 @@ export async function archiveContract(
 /**
  * Restore archived contract
  */
-export async function restoreContract(
+async function restoreContract(
 	contractId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -471,7 +471,7 @@ export async function restoreContract(
  * Delete a contract (legacy - deprecated)
  * @deprecated Use archiveContract() instead
  */
-export async function deleteContract(
+async function deleteContract(
 	contractId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	return archiveContract(contractId);
@@ -480,7 +480,7 @@ export async function deleteContract(
 /**
  * Send contract for signature
  */
-export async function sendContract(
+async function sendContract(
 	contractId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -573,7 +573,7 @@ export async function signContract(
 /**
  * Reject a contract
  */
-export async function rejectContract(
+async function rejectContract(
 	contractId: string,
 	reason?: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -607,7 +607,7 @@ export async function rejectContract(
 /**
  * Track contract view (when customer opens the contract)
  */
-export async function trackContractView(
+async function trackContractView(
 	contractId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {

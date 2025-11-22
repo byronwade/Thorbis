@@ -332,7 +332,7 @@ export function useSchedule() {
  * Hook for real-time schedule updates
  * TODO: Implement WebSocket connection
  */
-export function useScheduleRealtime() {
+function useScheduleRealtime() {
 	const scheduleStore = useScheduleStore();
 
 	useEffect(() => {
@@ -354,7 +354,7 @@ export function useScheduleRealtime() {
 /**
  * Hook for schedule statistics
  */
-export function useScheduleStats() {
+function useScheduleStats() {
 	const { technicians, jobs, visibleJobs } = useSchedule();
 
 	const stats = {

@@ -24,7 +24,7 @@ import { socialEnrichmentService } from "./social-enrichment";
 // Types and Schemas
 // ============================================================================
 
-export const CustomerEnrichmentSchema = z.object({
+const CustomerEnrichmentSchema = z.object({
 	customerId: z.string().uuid(),
 
 	// Person data
@@ -53,7 +53,7 @@ export type CustomerEnrichment = z.infer<typeof CustomerEnrichmentSchema>;
 // Customer Enrichment Service
 // ============================================================================
 
-export class CustomerEnrichmentService {
+class CustomerEnrichmentService {
 	private cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 	/**

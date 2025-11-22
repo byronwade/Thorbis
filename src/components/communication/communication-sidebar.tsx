@@ -11,14 +11,15 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
+    SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar";
-import { LucideIcon, Plus } from "lucide-react";
+import { LucideIcon, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { ComponentProps, ReactNode } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import type { ComponentProps } from "react";
 
 /**
  * Navigation group configuration for communication sidebar
@@ -42,8 +43,13 @@ export type CommunicationAdditionalSection = {
         title: string;
         icon?: LucideIcon;
         onClick?: () => void;
+        url?: string;
+        badge?: number | string;
+        folderId?: string; // For delete functionality
+        onDelete?: (folderId: string) => void; // Delete handler
     }>;
     onAddClick?: () => void;
+    addButton?: React.ReactNode; // Custom add button component (e.g., CreateFolderDialog)
     scrollable?: boolean;
     scrollHeight?: string;
 };
@@ -110,7 +116,31 @@ export function CommunicationSidebar({
     ...props
 }: CommunicationSidebarProps) {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { navGroups, primaryAction, additionalSections } = config;
+    
+    // Helper to check if URL matches current pathname + searchParams
+    const isUrlActive = (url: string): boolean => {
+        const urlObj = new URL(url, 'http://localhost');
+        const urlPathname = urlObj.pathname;
+        const urlSearchParams = urlObj.searchParams;
+        
+        // Check pathname match
+        if (pathname !== urlPathname) {
+            return false;
+        }
+        
+        // If URL has query params, check if they match
+        if (urlSearchParams.toString()) {
+            for (const [key, value] of urlSearchParams.entries()) {
+                if (searchParams.get(key) !== value) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    };
 
     return (
         <Sidebar collapsible="offcanvas" variant="inset" {...props}>
@@ -141,14 +171,14 @@ export function CommunicationSidebar({
 
             <SidebarContent>
                 {/* Navigation Groups */}
-                <NavGrouped groups={navGroups} pathname={pathname ?? undefined} />
+                <NavGrouped groups={navGroups} pathname={pathname ?? undefined} searchParams={searchParams} />
 
                 {/* Additional Sections (Labels, Tags, etc.) */}
                 {additionalSections?.map((section, index) => (
                     <SidebarGroup key={index}>
                         <div className="flex items-center justify-between px-2">
                             <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-                            {section.onAddClick && (
+                            {section.addButton || (section.onAddClick && (
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -158,7 +188,7 @@ export function CommunicationSidebar({
                                 >
                                     <Plus className="size-4" />
                                 </Button>
-                            )}
+                            ))}
                         </div>
                         <SidebarMenu>
                             {section.scrollable ? (
@@ -167,26 +197,110 @@ export function CommunicationSidebar({
                                 >
                                     {section.items.map((item, itemIndex) => (
                                         <SidebarMenuItem key={itemIndex}>
-                                            <SidebarMenuButton
-                                                onClick={item.onClick}
-                                                type={item.onClick ? "button" : undefined}
-                                            >
-                                                {item.icon && <item.icon className="size-4" />}
-                                                <span>{item.title}</span>
-                                            </SidebarMenuButton>
+                                            <div className="group/item flex items-center w-full">
+                                                {item.url ? (
+                                                    <SidebarMenuButton asChild className="flex-1">
+                                                        <Link href={item.url}>
+                                                            {item.icon && <item.icon className="size-4" />}
+                                                            <span>{item.title}</span>
+                                                            {item.badge !== undefined && (
+                                                                <SidebarMenuBadge>
+                                                                    {typeof item.badge === "number"
+                                                                        ? item.badge.toLocaleString()
+                                                                        : item.badge}
+                                                                </SidebarMenuBadge>
+                                                            )}
+                                                        </Link>
+                                                    </SidebarMenuButton>
+                                                ) : (
+                                                    <SidebarMenuButton
+                                                        onClick={item.onClick}
+                                                        type={item.onClick ? "button" : undefined}
+                                                        className="flex-1"
+                                                    >
+                                                        {item.icon && <item.icon className="size-4" />}
+                                                        <span>{item.title}</span>
+                                                        {item.badge !== undefined && item.badge > 0 && (
+                                                            <SidebarMenuBadge>
+                                                                {typeof item.badge === "number"
+                                                                    ? item.badge.toLocaleString()
+                                                                    : item.badge}
+                                                            </SidebarMenuBadge>
+                                                        )}
+                                                    </SidebarMenuButton>
+                                                )}
+                                                {item.folderId && item.onDelete && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-6 w-6 opacity-0 group-hover/item:opacity-100 transition-opacity ml-auto"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
+                                                                item.onDelete?.(item.folderId!);
+                                                            }
+                                                        }}
+                                                        title="Delete folder"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </SidebarMenuItem>
                                     ))}
                                 </ScrollArea>
                             ) : (
                                 section.items.map((item, itemIndex) => (
                                     <SidebarMenuItem key={itemIndex}>
-                                        <SidebarMenuButton
-                                            onClick={item.onClick}
-                                            type={item.onClick ? "button" : undefined}
-                                        >
-                                            {item.icon && <item.icon className="size-4" />}
-                                            <span>{item.title}</span>
-                                        </SidebarMenuButton>
+                                        <div className="group/item flex items-center w-full">
+                                            {item.url ? (
+                                                <SidebarMenuButton asChild className="flex-1">
+                                                    <Link href={item.url}>
+                                                        {item.icon && <item.icon className="size-4" />}
+                                                        <span>{item.title}</span>
+                                                        {item.badge !== undefined && item.badge > 0 && (
+                                                            <SidebarMenuBadge>
+                                                                {typeof item.badge === "number"
+                                                                    ? item.badge.toLocaleString()
+                                                                    : item.badge}
+                                                            </SidebarMenuBadge>
+                                                        )}
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            ) : (
+                                                <SidebarMenuButton
+                                                    onClick={item.onClick}
+                                                    type={item.onClick ? "button" : undefined}
+                                                    className="flex-1"
+                                                >
+                                                    {item.icon && <item.icon className="size-4" />}
+                                                    <span>{item.title}</span>
+                                                    {item.badge !== undefined && (
+                                                        <span className="ml-auto text-xs text-muted-foreground">
+                                                            {item.badge}
+                                                        </span>
+                                                    )}
+                                                </SidebarMenuButton>
+                                            )}
+                                            {item.folderId && item.onDelete && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 opacity-0 group-hover/item:opacity-100 transition-opacity ml-auto"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
+                                                            item.onDelete?.(item.folderId!);
+                                                        }
+                                                    }}
+                                                    title="Delete folder"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                </Button>
+                                            )}
+                                        </div>
                                     </SidebarMenuItem>
                                 ))
                             )}

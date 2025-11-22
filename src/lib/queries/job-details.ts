@@ -105,7 +105,7 @@ export const getJobComplete = cache(
  *
  * Result: Only 1 DB query despite 2 calls
  */
-export const getJobAppointments = cache(
+const getJobAppointments = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -126,7 +126,7 @@ export const getJobAppointments = cache(
 /**
  * Get invoices for a job (cached)
  */
-export const getJobInvoices = cache(
+const getJobInvoices = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -146,7 +146,7 @@ export const getJobInvoices = cache(
 /**
  * Get estimates for a job (cached)
  */
-export const getJobEstimates = cache(
+const getJobEstimates = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -166,7 +166,7 @@ export const getJobEstimates = cache(
 /**
  * Get payments for a job (cached)
  */
-export const getJobPayments = cache(
+const getJobPayments = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -186,7 +186,7 @@ export const getJobPayments = cache(
 /**
  * Get purchase orders for a job (cached)
  */
-export const getJobPurchaseOrders = cache(
+const getJobPurchaseOrders = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -206,7 +206,7 @@ export const getJobPurchaseOrders = cache(
 /**
  * Get activity log for a job (cached)
  */
-export const getJobActivityLog = cache(
+const getJobActivityLog = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -235,7 +235,7 @@ export const getJobActivityLog = cache(
 /**
  * Get job notes (cached)
  */
-export const getJobNotes = cache(async (jobId: string, companyId: string) => {
+const getJobNotes = cache(async (jobId: string, companyId: string) => {
 	const supabase = await createClient();
 	if (!supabase) return { data: null, error: new Error("No supabase client") };
 
@@ -253,7 +253,7 @@ export const getJobNotes = cache(async (jobId: string, companyId: string) => {
 /**
  * Get customer notes for a job's customer (cached)
  */
-export const getCustomerNotes = cache(
+const getCustomerNotes = cache(
 	async (customerId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase)
@@ -277,7 +277,7 @@ export const getCustomerNotes = cache(
  * This is a complex query that fetches appointments with their nested relationships.
  * Uses React.cache() for deduplication across the component tree.
  */
-export const getEnrichedJobAppointments = cache(
+const getEnrichedJobAppointments = cache(
 	async (jobId: string, companyId: string) => {
 		const supabase = await createClient();
 		if (!supabase) return [];

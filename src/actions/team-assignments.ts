@@ -75,7 +75,7 @@ export type TeamMemberAssignment = {
 /**
  * Get team assignments for a job
  */
-export async function getJobTeamAssignments(
+async function getJobTeamAssignments(
 	jobId: string,
 ): Promise<ActionResult<TeamMemberAssignment[]>> {
 	return withErrorHandling(async () => {
@@ -721,7 +721,7 @@ export async function removeTeamMemberFromJob(
 /**
  * Bulk assign team members to a job
  */
-export async function bulkAssignTeamMembers(
+async function bulkAssignTeamMembers(
 	input: z.infer<typeof bulkAssignTeamMembersSchema>,
 ): Promise<ActionResult<{ assigned: number }>> {
 	return withErrorHandling(async () => {
@@ -816,7 +816,7 @@ export async function bulkAssignTeamMembers(
 /**
  * Update team member role on a job
  */
-export async function updateTeamMemberRole(
+async function updateTeamMemberRole(
 	jobId: string,
 	teamMemberId: string,
 	newRole: "primary" | "assistant" | "crew" | "supervisor",

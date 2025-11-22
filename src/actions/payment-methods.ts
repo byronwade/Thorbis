@@ -40,7 +40,7 @@ const removePaymentMethodSchema = z.object({
  * Save a payment method to the database
  * Called after Stripe payment is complete
  */
-export async function savePaymentMethod(formData: FormData) {
+async function savePaymentMethod(formData: FormData) {
 	try {
 		// Get authenticated user
 		const supabase = await createClient();
@@ -170,7 +170,7 @@ export async function savePaymentMethod(formData: FormData) {
 /**
  * Set a payment method as default
  */
-export async function setDefaultPaymentMethod(formData: FormData) {
+async function setDefaultPaymentMethod(formData: FormData) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -254,7 +254,7 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 /**
  * Remove a payment method
  */
-export async function removePaymentMethod(formData: FormData) {
+async function removePaymentMethod(formData: FormData) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {

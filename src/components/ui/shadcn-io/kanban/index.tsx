@@ -314,7 +314,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 	);
 }
 
-export function useKanbanContext<T extends KanbanItemBase>() {
+function useKanbanContext<T extends KanbanItemBase>() {
 	const context = useContext(KanbanContext) as KanbanContextValue<T> | null;
 
 	if (!context) {
@@ -450,7 +450,7 @@ export function KanbanCard({ itemId, children, className }: KanbanCardProps) {
 	);
 }
 
-export function useKanbanColumn() {
+function useKanbanColumn() {
 	const context = useContext(KanbanColumnContext);
 	if (!context) {
 		throw new Error("useKanbanColumn must be used within a KanbanBoard");
