@@ -73,12 +73,9 @@ const models = [
 ];
 
 export function AiChatInterface() {
-	// Memoize selectors to ensure stable references for SSR
-	const activeChatIdSelector = useMemo(() => chatSelectors.activeChatId, []);
-	const messagesSelector = useMemo(() => chatSelectors.messages, []);
-	
-	const activeChatId = useChatStore(activeChatIdSelector);
-	const activeChatMessages = useChatStore(messagesSelector);
+	// Use selectors directly - they're already stable references
+	const activeChatId = useChatStore(chatSelectors.activeChatId);
+	const activeChatMessages = useChatStore(chatSelectors.messages);
 	const { createChat, addMessage } = useChatStore();
 	const [showSuggestedActions, setShowSuggestedActions] = useState(true);
 
