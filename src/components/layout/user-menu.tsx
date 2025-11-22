@@ -1,40 +1,33 @@
 "use client";
 
-import {
-	BadgeCheck,
-	CheckCircle2,
-	CreditCard,
-	LogOut,
-	type LucideIcon,
-	Moon,
-	Plus,
-	Settings,
-	ShoppingCart,
-	Sun,
-	Wrench,
-	XCircle,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
 import { type UserStatus, updateUserStatus } from "@/actions/user-status";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuSeparator,
-	DropdownMenuShortcut,
-	DropdownMenuTrigger,
+	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { StatusIndicator } from "@/components/ui/status-indicator";
-import { Switch } from "@/components/ui/switch";
+import {
+	BadgeCheck,
+	CreditCard,
+	GalleryVerticalEnd,
+	LogOut,
+	Monitor,
+	Moon,
+	Plus,
+	Settings,
+	ShoppingCart,
+	Sun
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 /**
  * UserMenu - Client Component
@@ -57,7 +50,7 @@ type UserMenuProps = {
 	teams: {
 		id: string;
 		name: string;
-		logo: LucideIcon;
+		logo?: string | null;
 		plan: string;
 		onboardingComplete?: boolean;
 		hasPayment?: boolean;
@@ -115,14 +108,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 		}
 	};
 
-	const isDark =
-		mounted &&
-		(theme === "dark" ||
-			(theme === "system" &&
-				window.matchMedia("(prefers-color-scheme: dark)").matches));
-
-	const toggleTheme = () => {
-		setTheme(isDark ? "light" : "dark");
+	const getCurrentTheme = () => {
+		if (!mounted) return "system";
+		if (theme === "light") return "light";
+		if (theme === "dark") return "dark";
+		return "system";
 	};
 
 	return (
@@ -149,7 +139,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							<StatusIndicator size="sm" status={userStatus} />
 						</div>
 					</div>
-					<span className="hidden text-sm font-medium md:inline-block">
+					<span className="hidden text-sm font-medium md:inline-block truncate max-w-32">
 						{user.name
 							? user.name.split(" ")[0]
 							: user.email?.split("@")[0] || "User"}
@@ -157,13 +147,14 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 					<span className="sr-only">User menu</span>
 				</button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-64 rounded-lg">
-				<DropdownMenuLabel className="p-0 font-normal">
-					<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+			<DropdownMenuContent align="end" className="w-72 rounded-lg p-0">
+				{/* User Profile Section */}
+				<div className="p-4 pb-3">
+					<div className="flex items-center gap-3">
 						<div className="relative">
-							<Avatar className="size-8 rounded-lg">
+							<Avatar className="size-12 rounded-lg">
 								<AvatarImage alt={user.name || user.email} src={user.avatar} />
-								<AvatarFallback className="rounded-lg">
+								<AvatarFallback className="rounded-lg text-sm">
 									{user.name
 										? user.name
 												.split(" ")
@@ -176,192 +167,221 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 								<StatusIndicator size="md" status={userStatus} />
 							</div>
 						</div>
-						<div className="grid flex-1 text-left text-sm leading-tight">
-							<span className="truncate font-semibold">
+						<div className="grid flex-1 text-left leading-tight">
+							<span className="truncate text-sm font-semibold">
 								{user.name || user.email?.split("@")[0] || "User"}
 							</span>
-							<span className="truncate text-xs">{user.email}</span>
+							<span className="truncate text-xs text-muted-foreground">{user.email}</span>
+							<span className="text-xs text-muted-foreground capitalize">{userStatus}</span>
 						</div>
 					</div>
-				</DropdownMenuLabel>
+				</div>
 				<DropdownMenuSeparator />
 
 				{/* Status Selector */}
-				<DropdownMenuLabel className="text-muted-foreground text-xs">
-					Status
-				</DropdownMenuLabel>
-				<div className="px-2 pb-2">
-					<div className="space-y-1">
-						<button
-							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-								userStatus === "online" ? "bg-accent" : ""
-							}`}
-							disabled={isUpdatingStatus}
-							onClick={() => handleStatusChange("online")}
-							type="button"
-						>
-							<StatusIndicator size="md" status="online" />
-							<span>Online</span>
-							{userStatus === "online" && (
-								<div className="bg-primary ml-auto size-2 rounded-full" />
-							)}
-						</button>
-						<button
-							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-								userStatus === "available" ? "bg-accent" : ""
-							}`}
-							disabled={isUpdatingStatus}
-							onClick={() => handleStatusChange("available")}
-							type="button"
-						>
-							<StatusIndicator size="md" status="available" />
-							<span>Available</span>
-							{userStatus === "available" && (
-								<div className="bg-primary ml-auto size-2 rounded-full" />
-							)}
-						</button>
-						<button
-							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-								userStatus === "busy" ? "bg-accent" : ""
-							}`}
-							disabled={isUpdatingStatus}
-							onClick={() => handleStatusChange("busy")}
-							type="button"
-						>
-							<StatusIndicator size="md" status="busy" />
-							<span>Busy</span>
-							{userStatus === "busy" && (
-								<div className="bg-primary ml-auto size-2 rounded-full" />
-							)}
-						</button>
-					</div>
-				</div>
-				<DropdownMenuSeparator />
-
-				{/* Teams */}
-				<DropdownMenuLabel className="text-muted-foreground text-xs">
-					Organizations
-				</DropdownMenuLabel>
-				{teams.map((team, index) => {
-					const isActive = activeTeam?.id === team.id;
-					return (
-						<DropdownMenuItem
-							className={`gap-2 p-2 ${isActive ? "bg-accent" : ""}`}
-							key={team.id}
-							onClick={() => handleCompanySwitch(team)}
-						>
-							<div className="flex size-6 items-center justify-center rounded-sm border">
-								<team.logo className="size-4 shrink-0" />
-							</div>
-							<div className="flex flex-1 flex-col">
-								<span className="text-sm font-medium">{team.name}</span>
-								<div className="flex items-center gap-2">
-									{team.onboardingComplete !== undefined ? (
-										team.onboardingComplete ? (
-											<Badge
-												className="h-4 px-1.5 text-[10px]"
-												variant="default"
-											>
-												<CheckCircle2 className="mr-1 size-3" />
-												Complete
-											</Badge>
-										) : (
-											<Badge
-												className="h-4 px-1.5 text-[10px]"
-												variant="secondary"
-											>
-												<XCircle className="mr-1 size-3" />
-												{team.plan === "Incomplete Onboarding"
-													? "Incomplete Onboarding"
-													: "Not Complete"}
-											</Badge>
-										)
-									) : (
-										<span className="text-muted-foreground text-xs">
-											{team.plan}
-										</span>
-									)}
-								</div>
-							</div>
-							{isActive && (
-								<div className="bg-primary ml-auto size-2 rounded-full" />
-							)}
-							<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-						</DropdownMenuItem>
-					);
-				})}
-				<DropdownMenuItem asChild className="gap-2 p-2">
-					<Link href="/dashboard/welcome?new=true">
-						<div className="flex size-6 items-center justify-center rounded-md border">
-							<Plus className="size-4" />
+				<div className="p-2">
+					<div className="px-2 py-1">
+						<p className="text-xs font-medium text-muted-foreground mb-2">Status</p>
+						<div className="grid grid-cols-3 gap-1">
+							<button
+								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
+									userStatus === "online" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+								}`}
+								disabled={isUpdatingStatus}
+								onClick={() => handleStatusChange("online")}
+								type="button"
+							>
+								<div className="size-2 rounded-full bg-green-500" />
+								<span>Online</span>
+							</button>
+							<button
+								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
+									userStatus === "available" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+								}`}
+								disabled={isUpdatingStatus}
+								onClick={() => handleStatusChange("available")}
+								type="button"
+							>
+								<div className="size-2 rounded-full bg-yellow-500" />
+								<span>Available</span>
+							</button>
+							<button
+								className={`flex flex-col items-center gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-accent ${
+									userStatus === "busy" ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+								}`}
+								disabled={isUpdatingStatus}
+								onClick={() => handleStatusChange("busy")}
+								type="button"
+							>
+								<div className="size-2 rounded-full bg-red-500" />
+								<span>Busy</span>
+							</button>
 						</div>
-						<span className="text-muted-foreground font-medium">
-							Add new business
-						</span>
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuSeparator />
-
-				{/* User Actions */}
-				<DropdownMenuGroup>
-					<DropdownMenuItem asChild>
-						<Link href="/dashboard/settings/profile/personal">
-							<BadgeCheck />
-							Account
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href="/dashboard/settings/billing">
-							<CreditCard />
-							Billing
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href="/dashboard/shop">
-							<ShoppingCart />
-							Shop
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href="/tools">
-							<Wrench />
-							Tools
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href="/dashboard/settings">
-							<Settings />
-							Settings
-						</Link>
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<div className="flex items-center justify-between px-2 py-2">
-					<div className="flex items-center gap-2">
-						<Sun className="text-muted-foreground size-4" />
-						<span className="text-sm">Theme</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<span className="text-muted-foreground text-xs">
-							{mounted ? (isDark ? "Dark" : "Light") : "..."}
-						</span>
-						<Switch
-							aria-label="Toggle theme"
-							checked={isDark}
-							disabled={!mounted}
-							onCheckedChange={toggleTheme}
-						/>
-						<Moon className="text-muted-foreground size-4" />
 					</div>
 				</div>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem
-					className="hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive"
-					onClick={handleLogout}
-				>
-					<LogOut className="text-destructive" />
-					Log out
-				</DropdownMenuItem>
+
+				{/* Organizations */}
+				<div className="p-2">
+					<div className="px-2 py-1">
+						<p className="text-xs font-medium text-muted-foreground mb-2">Organizations</p>
+						<div className="space-y-1">
+							{/* Add business button at top */}
+							<Link href="/dashboard/welcome?new=true">
+								<button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground h-10" type="button">
+									<div className="flex size-6 items-center justify-center rounded-md border border-border/50">
+										<Plus className="size-4" />
+									</div>
+									<span className="text-sm">Add new business</span>
+								</button>
+							</Link>
+
+							{/* Scrollable company list */}
+							<div className="max-h-32 overflow-y-auto space-y-1">
+								{teams.map((team, index) => {
+									const isActive = activeTeam?.id === team.id;
+									return (
+										<button
+											className={`flex w-full items-center gap-4 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent h-10 ${
+												isActive ? "bg-accent" : ""
+											}`}
+											key={team.id}
+											onClick={() => handleCompanySwitch(team)}
+											type="button"
+										>
+											<div className="flex size-6 items-center justify-center rounded-md border border-border/50 bg-muted">
+												{team.logo ? (
+													<Image
+														src={team.logo}
+														alt={`${team.name} logo`}
+														width={16}
+														height={16}
+														className="size-4 shrink-0 object-contain"
+													/>
+												) : (
+													<GalleryVerticalEnd className="size-4 shrink-0" />
+												)}
+											</div>
+											<div className="flex flex-1 flex-col items-start text-left min-w-0">
+												<span className="text-sm font-medium truncate">{team.name}</span>
+												<div className="flex items-center gap-1">
+													{team.onboardingComplete !== undefined ? (
+														team.onboardingComplete ? (
+															<div className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+																<div className="mr-1 size-1 rounded-full bg-green-500" />
+																<span className="text-[10px]">Complete</span>
+															</div>
+														) : (
+															<div className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+																<div className="mr-1 size-1 rounded-full bg-amber-500" />
+																<span className="text-[10px]">Setup</span>
+															</div>
+														)
+													) : (
+														<span className="text-muted-foreground text-xs">
+															{team.plan}
+														</span>
+													)}
+												</div>
+											</div>
+											{isActive && (
+												<div className="bg-primary ml-auto size-2 rounded-full" />
+											)}
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					</div>
+				</div>
+				<DropdownMenuSeparator />
+
+				{/* Quick Actions */}
+				<div className="p-2">
+					<div className="flex gap-1">
+						<Link href="/dashboard/settings/profile/personal" className="flex-1">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+								<BadgeCheck className="size-5" />
+								<span>Account</span>
+							</button>
+						</Link>
+						<Link href="/dashboard/settings/billing" className="flex-1">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+								<CreditCard className="size-5" />
+								<span>Billing</span>
+							</button>
+						</Link>
+						<Link href="/dashboard/shop" className="flex-1">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+								<ShoppingCart className="size-5" />
+								<span>Shop</span>
+							</button>
+						</Link>
+						<Link href="/dashboard/settings" className="flex-1">
+							<button className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14" type="button">
+								<Settings className="size-5" />
+								<span>Settings</span>
+							</button>
+						</Link>
+					</div>
+				</div>
+				<DropdownMenuSeparator />
+
+				{/* Theme Toggle */}
+				<div className="p-2">
+					<div className="px-2 py-1">
+						<p className="text-xs font-medium text-muted-foreground mb-2">Theme</p>
+						<div className="flex gap-1">
+							<button
+								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
+									getCurrentTheme() === "light" ? "bg-accent" : ""
+								}`}
+								disabled={!mounted}
+								onClick={() => setTheme("light")}
+								type="button"
+							>
+								<Sun className="size-5" />
+								<span>Light</span>
+							</button>
+							<button
+								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
+									getCurrentTheme() === "dark" ? "bg-accent" : ""
+								}`}
+								disabled={!mounted}
+								onClick={() => setTheme("dark")}
+								type="button"
+							>
+								<Moon className="size-5" />
+								<span>Dark</span>
+							</button>
+							<button
+								className={`flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md px-1.5 py-2 text-xs transition-colors hover:bg-accent h-14 ${
+									getCurrentTheme() === "system" ? "bg-accent" : ""
+								}`}
+								disabled={!mounted}
+								onClick={() => setTheme("system")}
+								type="button"
+							>
+								<Monitor className="size-5" />
+								<span>System</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<DropdownMenuSeparator />
+
+				{/* Logout */}
+				<div className="p-1">
+					<button
+						className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10"
+						onClick={handleLogout}
+						type="button"
+					>
+						<LogOut className="size-4" />
+						Log out
+					</button>
+				</div>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

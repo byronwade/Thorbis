@@ -2,6 +2,8 @@ import { getPayrixMerchantAccount } from "@/actions/payrix";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
+import { getUnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
+import { headers } from "next/headers";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -27,6 +29,9 @@ import { AppHeaderClient } from "./app-header-client";
  */
 
 export async function AppHeader() {
+	// For now, always pass null - the client component will handle sub-header detection
+	const subHeaderComponent = null;
+
 	// Fetch user profile and companies on server (cached with React cache())
 	// This runs on server BEFORE sending HTML to client
 	// Handle prerender cookie access gracefully
@@ -99,6 +104,7 @@ export async function AppHeader() {
 			hasPhoneNumbers={hasPhoneNumbers}
 			hasPayrixAccount={hasPayrixAccount}
 			payrixStatus={payrixStatus}
+			subHeader={subHeaderComponent}
 		/>
 	);
 }

@@ -151,7 +151,7 @@ export function JobDetailToolbar({
 	const handleEmail = () => {
 		if (customer?.email) {
 			router.push(
-				`/dashboard/communication/email?email=${customer.email}&customerId=${customer.id}`,
+				`/dashboard/communication?email=${customer.email}&customerId=${customer.id}`,
 			);
 		} else {
 			toast.error("No email address available");

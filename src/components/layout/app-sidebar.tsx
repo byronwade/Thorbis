@@ -10,9 +10,12 @@
  * - Only loads icons needed for current page section
  */
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { CommunicationSwitcher } from "@/components/communication/communication-switcher";
 import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
+import { EmailSidebar } from "@/components/communication/email-sidebar";
+import { TextSidebar } from "@/components/communication/text-sidebar";
+import { TeamsSidebar } from "@/components/communication/teams-sidebar";
+import { TicketsSidebar } from "@/components/communication/tickets-sidebar";
 import { NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
@@ -20,90 +23,85 @@ import { NavMain } from "@/components/layout/nav-main";
 import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
 import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav";
 import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
 } from "@/components/ui/sidebar";
 import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import {
-	Archive,
-	ArrowDownToLine,
-	ArrowLeft,
-	ArrowUpFromLine,
-	BadgeCheck,
-	BarChart,
-	Bell,
-	Book,
-	BookOpen,
-	Box,
-	Briefcase,
-	Bug,
-	Building2,
-	Calculator,
-	Calendar,
-	Camera,
-	CheckCircle2,
-	ClipboardList,
-	Clock,
-	CreditCard,
-	Database,
-	DollarSign,
-	FileEdit,
-	FileSignature,
-	FileSpreadsheet,
-	FileText,
-	Folder,
-	Gift,
-	Globe,
-	GraduationCap,
-	Hash,
-	Heart,
-	Home,
-	Inbox,
-	KeyRound,
-	Landmark,
-	List,
-	Lock,
-	Mail,
-	MailOpen,
-	MapPin,
-	Megaphone,
-	MessageSquare,
-	Package,
-	Palette,
-	Paperclip,
-	Phone,
-	PiggyBank,
-	QrCode,
-	Receipt,
-	Repeat,
-	Search,
-	Settings,
-	Shield,
-	ShieldAlert,
-	ShieldCheck,
-	ShoppingCart,
-	Sliders,
-	Sparkles,
-	Star,
-	Store,
-	Tag,
-	Target,
-	Ticket,
-	Trash,
-	TrendingUp,
-	Trophy,
-	User,
-	UserCog,
-	UserPlus,
-	Users,
-	Wallet,
-	Workflow,
-	Wrench,
-	X,
-	Zap,
+    Archive,
+    ArrowDownToLine,
+    ArrowLeft,
+    ArrowUpFromLine,
+    BadgeCheck,
+    BarChart,
+    Bell,
+    Book,
+    BookOpen,
+    Box,
+    Briefcase,
+    Bug,
+    Building2,
+    Calculator,
+    Calendar,
+    Camera,
+    CheckCircle2,
+    ClipboardList,
+    Clock,
+    CreditCard,
+    Database,
+    DollarSign,
+    FileEdit,
+    FileSignature,
+    FileSpreadsheet,
+    FileText,
+    Globe,
+    GraduationCap,
+    Hash,
+    Home,
+    Inbox,
+    List,
+    Mail,
+    MailOpen,
+    MapPin,
+    Megaphone,
+    MessageSquare,
+    Package,
+    Palette,
+    Paperclip,
+    Phone,
+    QrCode,
+    Receipt,
+    Repeat,
+    Search,
+    Settings,
+    Shield,
+    ShieldAlert,
+    ShieldCheck,
+    ShoppingCart,
+    Sliders,
+    Sparkles,
+    Star,
+    Tag,
+    Target,
+    Ticket,
+    Trash,
+    TrendingUp,
+    Trophy,
+    User,
+    UserCog,
+    UserPlus,
+    Users,
+    Wallet,
+    Workflow,
+    Wrench,
+    X,
+    Zap
 } from "@/lib/icons/icon-registry";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Navigation sections for each route
 const navigationSections = {
@@ -180,32 +178,8 @@ const navigationSections = {
 				},
 			],
 		},
-		{
-			label: "Channels",
-			items: [
-				{
-					title: "Email",
-					url: "/dashboard/communication/email",
-					icon: Mail,
-				},
-				{
-					title: "Phone & VoIP",
-					url: "/dashboard/communication/calls",
-					icon: Phone,
-				},
-				{
-					title: "SMS & Text",
-					url: "/dashboard/communication/sms",
-					icon: MessageSquare,
-				},
-				{
-					title: "Support Tickets",
-					url: "/dashboard/communication/tickets",
-					icon: Ticket,
-				},
-			],
-		},
 	],
+
 	work: [
 		{
 			label: "Work Management",
@@ -2373,6 +2347,34 @@ export function AppSidebar({
 	// Check if using custom sidebar component
 	const useCustomSidebar = navItems === "custom";
 
+	// Check for communication-specific sidebars
+	// Email page is the default at /dashboard/communication and all email sub-routes
+	const isEmailPage = 
+		pathname === "/dashboard/communication" || 
+		pathname?.startsWith("/dashboard/communication/email") ||
+		pathname?.startsWith("/dashboard/communication/drafts") ||
+		pathname?.startsWith("/dashboard/communication/sent") ||
+		pathname?.startsWith("/dashboard/communication/archive") ||
+		pathname?.startsWith("/dashboard/communication/snoozed") ||
+		pathname?.startsWith("/dashboard/communication/spam") ||
+		pathname?.startsWith("/dashboard/communication/trash");
+	const isTextPage = pathname?.startsWith("/dashboard/communication/text");
+	const isTeamsPage = pathname?.startsWith("/dashboard/communication/teams");
+	const isTicketsPage = pathname?.startsWith("/dashboard/communication/tickets");
+
+	if (isEmailPage) {
+		return <EmailSidebar {...props} />;
+	}
+	if (isTextPage) {
+		return <TextSidebar {...props} />;
+	}
+	if (isTeamsPage) {
+		return <TeamsSidebar {...props} />;
+	}
+	if (isTicketsPage) {
+		return <TicketsSidebar {...props} />;
+	}
+
 	// For pricebook, return tree sidebar
 	if (useCustomSidebar && currentSection === "pricebook") {
 		return <PriceBookTreeSidebar {...props} />;
@@ -2380,7 +2382,13 @@ export function AppSidebar({
 
 	return (
 		<Sidebar collapsible="offcanvas" variant="inset" {...props}>
+			{currentSection === "communication" && !isCommunicationDetail && (
+				<div className="px-3 pt-2 pb-1">
+					<CommunicationSwitcher />
+				</div>
+			)}
 			<SidebarContent>
+
 				{isCommunicationDetail ? (
 					// Use custom sidebar for email/message detail view
 					<EmailDetailSidebar />
@@ -2408,6 +2416,7 @@ export function AppSidebar({
 				{/* Chat History for AI section */}
 				{isAISection && !hasCustomConfig && <NavChatHistory />}
 			</SidebarContent>
+
 			<SidebarFooter>
 				<div className="group border-border from-primary/5 via-primary/10 to-primary/5 hover:border-primary/30 relative flex flex-col gap-2 overflow-hidden rounded-lg border bg-gradient-to-br p-4 transition-all hover:shadow-md">
 					<Link className="absolute inset-0 z-0" href="/changelog" />

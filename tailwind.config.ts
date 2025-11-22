@@ -63,6 +63,10 @@ const config = {
 			animation: {
 				"spring-in": "spring-in 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
 				"slide-in-bottom": "slide-in-bottom 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"slide-in-from-bottom": "slide-in-from-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"slide-out-to-bottom": "slide-out-to-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"fade-in": "fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"fade-out": "fade-out 300ms cubic-bezier(0.4, 0, 0.2, 1)",
 			},
 			keyframes: {
 				"spring-in": {
@@ -73,6 +77,22 @@ const config = {
 				"slide-in-bottom": {
 					from: { transform: "translateY(8px)", opacity: "0" },
 					to: { transform: "translateY(0)", opacity: "1" },
+				},
+				"slide-in-from-bottom": {
+					from: { transform: "translateY(100%)", opacity: "0" },
+					to: { transform: "translateY(0)", opacity: "1" },
+				},
+				"slide-out-to-bottom": {
+					from: { transform: "translateY(0)", opacity: "1" },
+					to: { transform: "translateY(100%)", opacity: "0" },
+				},
+				"fade-in": {
+					from: { opacity: "0" },
+					to: { opacity: "1" },
+				},
+				"fade-out": {
+					from: { opacity: "1" },
+					to: { opacity: "0" },
 				},
 			},
 			transitionDuration: {

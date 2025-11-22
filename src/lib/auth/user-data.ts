@@ -182,6 +182,7 @@ export const getUserCompanies = cache(
 		Array<{
 			id: string;
 			name: string;
+			logo?: string | null;
 			plan: string;
 			onboardingComplete?: boolean;
 			hasPayment?: boolean;
@@ -207,6 +208,7 @@ export const getUserCompanies = cache(
         companies!inner (
           id,
           name,
+          logo,
           stripe_subscription_status,
           onboarding_progress,
           onboarding_completed_at,
@@ -229,6 +231,7 @@ export const getUserCompanies = cache(
 				{
 					id: string;
 					name: string;
+					logo?: string | null;
 					plan: string;
 					onboardingComplete: boolean;
 					hasPayment: boolean;
@@ -261,6 +264,7 @@ export const getUserCompanies = cache(
 					companyMap.set(companyId, {
 						id: companyId,
 						name: m.companies.name,
+						logo: m.companies.logo,
 						plan: planLabel,
 						onboardingComplete,
 						hasPayment,

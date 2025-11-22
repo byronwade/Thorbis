@@ -4,6 +4,7 @@ import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarMenu,
+	SidebarMenuBadge,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarMenuSub,
@@ -16,6 +17,7 @@ type NavItem = {
 	url: string;
 	icon?: LucideIcon;
 	highlight?: "yellow";
+	badge?: number | string;
 	onClick?: () => void;
 	items?: {
 		title: string;
@@ -31,9 +33,11 @@ type NavGroup = {
 export function NavGrouped({
 	groups,
 	pathname = "/dashboard",
+	className,
 }: {
 	groups: NavGroup[];
 	pathname?: string;
+	className?: string;
 }) {
 	const safePathname = pathname || "/dashboard";
 
@@ -68,7 +72,7 @@ export function NavGrouped({
 				}
 
 				return (
-					<SidebarGroup key={`${group.label || "group"}-${groupIndex}`}>
+					<SidebarGroup key={`${group.label || "group"}-${groupIndex}`} className={className}>
 						{group.label && (
 							<SidebarGroupLabel>{group.label}</SidebarGroupLabel>
 						)}
@@ -156,6 +160,13 @@ export function NavGrouped({
 												{item.icon && <item.icon />}
 												<span>{item.title}</span>
 											</SidebarMenuButton>
+											{item.badge !== undefined && (
+												<SidebarMenuBadge>
+													{typeof item.badge === "number"
+														? item.badge.toLocaleString()
+														: item.badge}
+												</SidebarMenuBadge>
+											)}
 										</SidebarMenuItem>
 									);
 								}
@@ -180,6 +191,13 @@ export function NavGrouped({
 												</Link>
 											)}
 										</SidebarMenuButton>
+										{item.badge !== undefined && (
+											<SidebarMenuBadge>
+												{typeof item.badge === "number"
+													? item.badge.toLocaleString()
+													: item.badge}
+											</SidebarMenuBadge>
+										)}
 									</SidebarMenuItem>
 								);
 							})}

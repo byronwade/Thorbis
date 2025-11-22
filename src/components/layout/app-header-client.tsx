@@ -1,6 +1,6 @@
 "use client";
 
-import { GalleryVerticalEnd, Menu, Tv, X } from "lucide-react";
+import { GalleryVerticalEnd, HelpCircle, Menu, Settings, Tv, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -46,6 +46,7 @@ type AppHeaderClientProps = {
 	hasPhoneNumbers?: boolean;
 	hasPayrixAccount?: boolean;
 	payrixStatus?: string | null;
+	subHeader?: React.ReactNode;
 };
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -215,6 +216,7 @@ export function AppHeaderClient({
 	hasPhoneNumbers = false,
 	hasPayrixAccount = false,
 	payrixStatus = null,
+	subHeader: _subHeader, // Ignore the server-passed subHeader
 }: AppHeaderClientProps) {
 	const pathname = usePathname();
 
@@ -265,11 +267,12 @@ export function AppHeaderClient({
 	}
 
 	return (
-		<header className="safe-top bg-header-bg sticky top-0 z-50 w-full">
-			<div className="flex h-14 items-center gap-2 px-4 md:px-6">
+		<>
+			<header className="safe-top bg-header-bg sticky top-0 z-50 w-full">
+				<div className="flex h-14 items-center gap-2 px-4 md:px-6">
 				{/* Mobile menu button */}
 				<button
-					className="touch-target no-select native-transition hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex items-center justify-center rounded-md border border-transparent outline-none focus-visible:ring-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
+					className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
 					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 					type="button"
 				>
@@ -343,48 +346,59 @@ export function AppHeaderClient({
 					})}
 				</nav>
 
-				{/* Mobile Navigation Sheet */}
+				{/* Modern Mobile Navigation Bottom Sheet */}
 				{isMobileMenuOpen && (
 					<>
-						{/* Overlay */}
+						{/* Backdrop */}
 						<button
 							aria-label="Close mobile menu"
-							className={`bg-foreground/60 dark:bg-background/80 fixed inset-0 z-40 backdrop-blur-sm duration-300 lg:hidden ${
+							className={`bg-foreground/50 dark:bg-background/90 fixed inset-0 z-40 backdrop-blur-md duration-300 lg:hidden ${
 								isClosing ? "fade-out animate-out" : "fade-in animate-in"
 							}`}
 							onClick={closeMobileMenu}
 							type="button"
 						/>
 
-						{/* Sidebar Sheet */}
+						{/* Bottom Sheet */}
 						<div
-							className={`safe-top safe-bottom safe-left bg-background fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] shadow-2xl duration-300 lg:hidden ${
+							className={`safe-bottom bg-background fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl border-t border-border-subtle shadow-2xl duration-300 lg:hidden ${
 								isClosing
-									? "slide-out-to-left animate-out"
-									: "slide-in-from-left animate-in"
+									? "slide-out-to-bottom animate-out"
+									: "slide-in-from-bottom animate-in"
 							}`}
 							ref={mobileMenuRef}
 						>
-							{/* Header with close button */}
-							<div className="flex items-center justify-between border-b-hairline border-border-subtle p-4">
-								<h2 className="text-lg font-semibold">Navigation</h2>
+							{/* Handle indicator */}
+							<div className="flex justify-center py-4">
+								<div className="bg-border-subtle h-1.5 w-10 rounded-full" />
+							</div>
+
+							{/* Header */}
+							<div className="flex items-center justify-between px-6 pb-6">
+								<div className="flex flex-col">
+									<h2 className="text-xl font-bold tracking-tight">Navigation</h2>
+									<p className="text-muted-foreground text-sm mt-1">
+										Access your workspace features
+									</p>
+								</div>
 								<button
-									className="touch-target no-select native-transition hover:bg-accent flex items-center justify-center rounded-md active:scale-95"
+									className="hover:bg-accent/80 flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
 									onClick={closeMobileMenu}
 									type="button"
 								>
-									<X className="size-4" />
+									<X className="h-5 w-5" />
+									<span className="sr-only">Close menu</span>
 								</button>
 							</div>
 
 							{/* Scrollable content */}
-							<div className="momentum-scroll flex-1 overflow-y-auto">
-								<div className="flex flex-col space-y-1 p-4">
-									{/* AI Section */}
-									<div className="mb-4">
-										<h3 className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
-											AI Assistant
-										</h3>
+							<div className="max-h-[50vh] overflow-y-auto px-4 pb-4">
+								{/* AI Assistant Section */}
+								<div className="mb-6">
+									<h3 className="text-muted-foreground mb-3 px-1 text-xs font-bold uppercase tracking-wider">
+										AI Assistant
+									</h3>
+									<div className="grid grid-cols-1 gap-2">
 										{navigationItems
 											.filter((item) => item.isSpecial)
 											.map((item) => {
@@ -394,38 +408,49 @@ export function AppHeaderClient({
 														: pathname?.startsWith(item.href);
 												return (
 													<Link
-														className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+														className={`group relative flex items-center gap-3 rounded-xl border p-3 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
 															isActive
-																? "bg-primary/15 text-primary shadow-sm"
-																: "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
+																? "border-primary/30 bg-primary/8 text-primary shadow-md shadow-primary/10"
+																: "border-border-subtle bg-card text-card-foreground hover:border-primary/20 hover:bg-primary/5"
 														}`}
 														href={item.href}
 														key={item.href}
 														onClick={closeMobileMenu}
 													>
-														<div className="flex items-center gap-3">
-															<div
-																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
+														<div
+															className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200 ${item.mobileIconBg} ${
+																isActive ? "scale-105" : "group-hover:scale-102"
+															}`}
+														>
+															<span
+																className={`text-sm font-bold ${item.mobileIconColor}`}
 															>
-																<span
-																	className={`text-xs font-bold ${item.mobileIconColor}`}
-																>
-																	{item.mobileIcon}
-																</span>
-															</div>
-															<span>{item.label}</span>
+																{item.mobileIcon}
+															</span>
 														</div>
-														<MobileStatusBadge status={item.status} />
+														<div className="flex-1">
+															<span className="font-medium text-sm">{item.label}</span>
+															{item.status && (
+																<div className="mt-1">
+																	<MobileStatusBadge status={item.status} />
+																</div>
+															)}
+														</div>
+														{isActive && (
+															<div className="ml-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+														)}
 													</Link>
 												);
 											})}
 									</div>
+								</div>
 
-									{/* Main Navigation */}
-									<div className="mb-4">
-										<h3 className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
-											Main Navigation
-										</h3>
+								{/* Main Navigation Grid */}
+								<div className="mb-4">
+									<h3 className="text-muted-foreground mb-3 px-1 text-xs font-bold uppercase tracking-wider">
+										Navigate
+									</h3>
+									<div className="grid grid-cols-2 gap-3">
 										{navigationItems
 											.filter((item) => !item.isSpecial)
 											.map((item) => {
@@ -435,31 +460,66 @@ export function AppHeaderClient({
 														: pathname?.startsWith(item.href);
 												return (
 													<Link
-														className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+														className={`group relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
 															isActive
-																? "bg-primary/15 text-primary shadow-sm"
-																: "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
+																? "border-primary/30 bg-primary/8 text-primary shadow-md shadow-primary/10"
+																: "border-border-subtle bg-card text-card-foreground hover:border-primary/20 hover:bg-primary/5"
 														}`}
 														href={item.href}
 														key={item.href}
 														onClick={closeMobileMenu}
 													>
-														<div className="flex items-center gap-3">
-															<div
-																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
+														<div
+															className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200 ${item.mobileIconBg} ${
+																isActive ? "scale-105" : "group-hover:scale-102"
+															}`}
+														>
+															<span
+																className={`text-sm font-bold ${item.mobileIconColor}`}
 															>
-																<span
-																	className={`text-xs font-bold ${item.mobileIconColor}`}
-																>
-																	{item.mobileIcon}
-																</span>
-															</div>
-															<span>{item.label}</span>
+																{item.mobileIcon}
+															</span>
 														</div>
-														<MobileStatusBadge status={item.status} />
+														<span className="text-xs font-medium leading-tight">
+															{item.label}
+														</span>
+														{item.status && (
+															<div className="mt-1">
+																<MobileStatusBadge status={item.status} />
+															</div>
+														)}
+														{isActive && (
+															<div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+														)}
 													</Link>
 												);
 											})}
+									</div>
+								</div>
+
+								{/* User Actions */}
+								<div className="border-t border-border-subtle pt-4">
+									<div className="grid grid-cols-2 gap-3">
+										<Link
+											className="group flex flex-col items-center gap-2 rounded-xl border border-border-subtle bg-card p-4 text-center transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] hover:border-primary/20 hover:bg-primary/5"
+											href="/dashboard/settings"
+											onClick={closeMobileMenu}
+										>
+											<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50">
+												<Settings className="h-4 w-4 text-muted-foreground" />
+											</div>
+											<span className="text-xs font-medium">Settings</span>
+										</Link>
+										<Link
+											className="group flex flex-col items-center gap-2 rounded-xl border border-border-subtle bg-card p-4 text-center transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] hover:border-primary/20 hover:bg-primary/5"
+											href="/help"
+											onClick={closeMobileMenu}
+										>
+											<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50">
+												<HelpCircle className="h-4 w-4 text-muted-foreground" />
+											</div>
+											<span className="text-xs font-medium">Help</span>
+										</Link>
 									</div>
 								</div>
 							</div>
@@ -510,7 +570,7 @@ export function AppHeaderClient({
 									{
 										id: company.id,
 										name: company.name,
-										logo: defaultLogo,
+										logo: company.logo,
 										plan: company.plan,
 										onboardingComplete: company.onboardingComplete,
 										hasPayment: company.hasPayment,
@@ -528,5 +588,6 @@ export function AppHeaderClient({
 				</div>
 			</div>
 		</header>
+	</>
 	);
 }

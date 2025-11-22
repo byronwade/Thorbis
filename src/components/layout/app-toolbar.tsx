@@ -87,12 +87,12 @@ export function AppToolbar({
 
 	return (
 		<header
-			className="border-border-subtle bg-background/80 sticky top-0 z-40 flex w-full shrink-0 border-b-hairline backdrop-blur-xl shadow-overlay-xs md:rounded-t-2xl supports-[backdrop-filter]:bg-background/60"
+			className="bg-background/80 sticky top-0 z-40 flex w-full shrink-0 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
 			data-app-toolbar
 			data-app-toolbar-scope={scope}
 		>
 			{/* Desktop/Tablet Layout */}
-			<div className="hidden md:flex h-14 w-full items-center gap-3 px-4 lg:px-6">
+			<div className="hidden md:flex h-14 w-full items-center gap-3 px-6">
 				{/* Left Section: Navigation + Context */}
 				<div className="flex items-center gap-3 min-w-0 flex-1">
 					{/* Navigation */}
@@ -216,7 +216,7 @@ export function AppToolbar({
 			</div>
 
 			{/* Mobile Layout */}
-			<div className="flex md:hidden h-14 w-full items-center gap-2 px-3">
+			<div className="flex md:hidden h-14 w-full items-center gap-2 px-6">
 				{/* Left: Sidebar + Title */}
 				<div className="flex items-center gap-2 min-w-0 flex-1">
 					{showLeftSidebar && <SidebarTrigger className="-ml-1" />}

@@ -112,7 +112,7 @@
 	--radius: 0.625rem;
 	--header-height: 3.5rem; /* 56px = theme(spacing.14) */
 	--footer-height: 0rem; /* Footer height for KB sidebar calculations */
-	--sidebar-width: 12rem;
+	--sidebar-width: 16rem;
 	--top-spacing: 1rem;
 	--font-geist-sans:
 		"Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -608,4 +608,126 @@
 		background: hsl(var(--accent) / 0.05);
 		box-shadow: inset 0 0 0 0.5px hsl(var(--primary) / 0.1);
 	}
+}
+
+/* Email content styling */
+.email-content {
+	/* Reset common email styles */
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	color: hsl(var(--foreground));
+
+	/* Handle dark mode */
+	.dark & {
+		color: hsl(var(--foreground));
+	}
+}
+
+.email-content * {
+	/* Reset margins and padding */
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.email-content p {
+	margin-bottom: 1em;
+	line-height: 1.5;
+}
+
+.email-content h1,
+.email-content h2,
+.email-content h3,
+.email-content h4,
+.email-content h5,
+.email-content h6 {
+	margin: 1.5em 0 0.5em 0;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.email-content h1 { font-size: 1.5em; }
+.email-content h2 { font-size: 1.25em; }
+.email-content h3 { font-size: 1.125em; }
+.email-content h4 { font-size: 1em; }
+.email-content h5 { font-size: 0.875em; }
+.email-content h6 { font-size: 0.75em; }
+
+.email-content ul,
+.email-content ol {
+	margin: 1em 0;
+	padding-left: 2em;
+}
+
+.email-content li {
+	margin-bottom: 0.5em;
+}
+
+.email-content blockquote {
+	border-left: 4px solid hsl(var(--border));
+	padding-left: 1em;
+	margin: 1em 0;
+	font-style: italic;
+	color: hsl(var(--muted-foreground));
+}
+
+.email-content a {
+	color: hsl(var(--primary));
+	text-decoration: underline;
+}
+
+.email-content a:hover {
+	color: hsl(var(--primary));
+	text-decoration: none;
+}
+
+.email-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 4px;
+	margin: 1em 0;
+}
+
+.email-content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+
+.email-content th,
+.email-content td {
+	border: 1px solid hsl(var(--border));
+	padding: 0.5em;
+	text-align: left;
+}
+
+.email-content th {
+	background-color: hsl(var(--muted));
+	font-weight: 600;
+}
+
+.email-content pre {
+	background-color: hsl(var(--muted));
+	padding: 1em;
+	border-radius: 4px;
+	overflow-x: auto;
+	margin: 1em 0;
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+	font-size: 0.875em;
+	line-height: 1.4;
+}
+
+.email-content code {
+	background-color: hsl(var(--muted));
+	padding: 0.125em 0.25em;
+	border-radius: 3px;
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+	font-size: 0.875em;
+}
+
+.email-content hr {
+	border: none;
+	border-top: 1px solid hsl(var(--border));
+	margin: 2em 0;
 }

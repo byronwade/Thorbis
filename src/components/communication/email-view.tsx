@@ -21,13 +21,18 @@ type EmailMessage = {
 	id: string;
 	from: string;
 	fromEmail?: string;
+	toEmail?: string;
 	subject?: string;
 	preview: string;
 	timestamp: Date;
 	status: "unread" | "read" | "replied" | "archived";
 	priority: "low" | "normal" | "high" | "urgent";
+	direction: "inbound" | "outbound";
 	tags?: string[];
 	attachments?: number;
+	customerId?: string;
+	sentAt?: string;
+	deliveredAt?: string;
 };
 
 type EmailViewProps = {
@@ -136,11 +141,34 @@ export function EmailView({ messages }: EmailViewProps) {
 						>
 							{message.subject || "(No subject)"}
 						</span>
+						{message.direction === "outbound" && (
+							<span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+								Sent
+							</span>
+						)}
+						{message.direction === "inbound" && (
+							<span className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 rounded">
+								Received
+							</span>
+						)}
 					</div>
 					<p className="text-muted-foreground line-clamp-1 text-xs">
 						{message.preview}
 					</p>
 				</div>
+			),
+		},
+		{
+			key: "direction",
+			header: "Type",
+			width: "w-24",
+			render: (message) => (
+				<Badge
+					className="capitalize text-xs"
+					variant={message.direction === "outbound" ? "default" : "secondary"}
+				>
+					{message.direction === "outbound" ? "Sent" : "Received"}
+				</Badge>
 			),
 		},
 		{

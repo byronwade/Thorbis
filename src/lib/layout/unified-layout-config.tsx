@@ -40,8 +40,8 @@ import { ScheduleToolbarTitle } from "@/components/schedule/schedule-toolbar-tit
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import type { StatCard } from "@/components/ui/stats-cards";
-import { AppointmentDetailToolbarActions } from "@/components/work/appointments/appointment-detail-toolbar-actions";
 import { AppointmentsToolbarActions } from "@/components/work/appointments-toolbar-actions";
+import { AppointmentDetailToolbarActions } from "@/components/work/appointments/appointment-detail-toolbar-actions";
 import { ContractToolbarActions } from "@/components/work/contract-toolbar-actions";
 import { ContractDetailToolbarActions } from "@/components/work/contracts/contract-detail-toolbar-actions";
 import { EquipmentDetailToolbarActions } from "@/components/work/equipment-detail-toolbar-actions";
@@ -54,8 +54,8 @@ import { JobDetailToolbarWrapper } from "@/components/work/job-details/job-detai
 import { MaintenancePlanToolbarActions } from "@/components/work/maintenance-plan-toolbar-actions";
 import { MaintenancePlanDetailToolbarActions } from "@/components/work/maintenance-plans/maintenance-plan-detail-toolbar-actions";
 import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
-import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
 import { PaymentsToolbarActions } from "@/components/work/payments-toolbar-actions";
+import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
 import { PriceBookToolbarActions } from "@/components/work/pricebook-toolbar-actions";
 import { PurchaseOrderToolbarActions } from "@/components/work/purchase-order-toolbar-actions";
 import { PurchaseOrderDetailToolbarActions } from "@/components/work/purchase-orders/purchase-order-detail-toolbar-actions";
@@ -140,8 +140,12 @@ export const ROUTE_PATTERNS = {
 		/^\/dashboard\/work\/(?!invoices|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team|vendors)([^/]+)$/,
 
 	// Communication
+	EMAIL: /^\/dashboard\/communication(\/(email|drafts|sent|archive|snoozed|spam|trash))?$/,
+	TEXT: /^\/dashboard\/communication\/text/,
+	TEAMS: /^\/dashboard\/communication\/teams/,
+	TICKETS: /^\/dashboard\/communication\/tickets/,
 	COMMUNICATION_DETAIL:
-		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|teams|feed)[^/]+$/,
+		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|feed|teams|tickets|text|drafts|sent|snoozed|email)[^/]+$/,
 	COMMUNICATION: /^\/dashboard\/communication/,
 
 	// Customers
@@ -199,6 +203,16 @@ export type HeaderConfig = {
 	show: boolean;
 	/** Header variant - minimal shows logo only */
 	variant?: "default" | "minimal";
+};
+
+/**
+ * Sub-header configuration (page-specific navigation below header)
+ */
+export type SubHeaderConfig = {
+	/** Whether to show the sub-header */
+	show: boolean;
+	/** Sub-header component to render */
+	component?: ReactNode;
 };
 
 /**
@@ -317,6 +331,8 @@ export type UnifiedLayoutConfig = {
 	structure: PageStructureConfig;
 	/** Header (global navigation) configuration */
 	header: HeaderConfig;
+	/** Sub-header (page-specific navigation below header) configuration */
+	subHeader?: SubHeaderConfig;
 	/** Toolbar (page-specific) configuration */
 	toolbar: ToolbarConfig;
 	/** Left sidebar configuration */
@@ -696,10 +712,11 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 				show: process.env.NEXT_PUBLIC_APP_ENV === "production",
 			},
 			toolbar: {
-				show: false,
+				show: true,
 				title: "AI Assistant",
+				subtitle: "Powered by AI - Beta",
 			},
-			sidebar: { show: false },
+			sidebar: { show: true },
 		},
 		priority: 100,
 		description: "AI chat interface",
@@ -1732,6 +1749,74 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 	// ========================================
 
 	{
+		pattern: ROUTE_PATTERNS.EMAIL,
+		config: {
+			structure: FULL_WIDTH_STRUCTURE,
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: false,
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 68,
+		description: "Email main page (default communication page) with sidebar",
+	},
+
+	{
+		pattern: ROUTE_PATTERNS.TEXT,
+		config: {
+			structure: FULL_WIDTH_STRUCTURE,
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: false,
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 68,
+		description: "Text/SMS main page with sidebar",
+	},
+
+	{
+		pattern: ROUTE_PATTERNS.TEAMS,
+		config: {
+			structure: FULL_WIDTH_STRUCTURE,
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: false,
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 68,
+		description: "Teams main page with sidebar",
+	},
+
+	{
+		pattern: ROUTE_PATTERNS.TICKETS,
+		config: {
+			structure: FULL_WIDTH_STRUCTURE,
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: false,
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 68,
+		description: "Support tickets main page with sidebar",
+	},
+
+	{
 		pattern: ROUTE_PATTERNS.COMMUNICATION_DETAIL,
 		config: {
 			structure: DETAIL_PAGE_STRUCTURE,
@@ -1760,14 +1845,14 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			structure: FULL_WIDTH_STRUCTURE,
 			header: DEFAULT_HEADER,
 			toolbar: {
-				show: true,
-				title: "Communications",
-				actions: <CommunicationToolbarActions />,
+				show: false, // Custom layout - no toolbar needed
 			},
-			sidebar: DEFAULT_SIDEBAR,
+			sidebar: {
+				show: false, // Custom layout - no sidebar needed
+			},
 		},
 		priority: 65,
-		description: "Communication hub",
+		description: "Communication hub with custom sub-header navigation",
 	},
 
 	// Customers list page

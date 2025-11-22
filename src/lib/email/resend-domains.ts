@@ -79,29 +79,65 @@ export async function deleteInboundRoute(routeId: string) {
 	});
 }
 
+export async function getReceivedEmail(emailId: string) {
+	return resendRequest<any>(`/emails/${emailId}`, {
+		method: "GET",
+	});
+}
+
+export async function listReceivedEmailAttachments(emailId: string) {
+	return resendRequest<any>(`/emails/${emailId}/attachments`, {
+		method: "GET",
+	});
+}
+
+export async function getReceivedEmailAttachment(emailId: string, attachmentId: string) {
+	return resendRequest<any>(`/emails/${emailId}/attachments/${attachmentId}`, {
+		method: "GET",
+	});
+}
+
 export async function verifyResendWebhookSignature({
 	payload,
-	signature,
+	headers,
 }: {
 	payload: string;
-	signature: string;
+	headers: {
+		svixId?: string;
+		svixTimestamp?: string;
+		svixSignature?: string;
+	};
 }) {
 	const secret = process.env.RESEND_WEBHOOK_SECRET;
-	if (!(secret && signature)) {
+	if (!secret) {
+		console.error("RESEND_WEBHOOK_SECRET not configured");
 		return false;
 	}
 
-	const [timestampPart, signaturePart] = signature.split(",");
-	const timestamp = timestampPart?.split("=")[1] ?? "";
-	const digest = signaturePart?.split("=")[1] ?? "";
-	if (!(timestamp && digest)) {
+	const { svixId, svixTimestamp, svixSignature } = headers;
+
+	if (!(svixId && svixTimestamp && svixSignature)) {
+		console.error("Missing required Svix headers");
 		return false;
 	}
 
-	const computed = crypto
-		.createHmac("sha256", secret)
-		.update(`${timestamp}.${payload}`)
-		.digest("hex");
+	try {
+		// Create the signed content
+		const signedContent = `${svixId}.${svixTimestamp}.${payload}`;
 
-	return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(digest));
+		// Create HMAC signature
+		const computed = crypto
+			.createHmac("sha256", secret)
+			.update(signedContent)
+			.digest("hex");
+
+		// Compare with the provided signature
+		return crypto.timingSafeEqual(
+			Buffer.from(`v1,${computed}`),
+			Buffer.from(svixSignature)
+		);
+	} catch (error) {
+		console.error("Error verifying webhook signature:", error);
+		return false;
+	}
 }

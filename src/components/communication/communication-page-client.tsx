@@ -12,6 +12,28 @@ import { TicketsView } from "@/components/communication/tickets-view";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import type { CompanyEmail } from "@/lib/email/email-service";
+
+function convertEmailToMessage(email: CompanyEmail): UnifiedMessage {
+	return {
+		id: email.id,
+		type: "email",
+		from: email.from_name
+			? `${email.from_name} <${email.from_address}>`
+			: email.from_address || "Unknown",
+		fromEmail: email.from_address || undefined,
+		toEmail: email.to_address || undefined,
+		subject: email.subject || undefined,
+		preview: email.body || email.body_html || "",
+		timestamp: new Date(email.created_at),
+		status: email.direction === "inbound" && !email.read_at ? "unread" : "read",
+		priority: "normal", // TODO: Add priority mapping
+		direction: email.direction,
+		customerId: email.customer?.id || email.customer_id || undefined,
+		sentAt: email.sent_at || undefined,
+		deliveredAt: email.delivered_at || undefined,
+	};
+}
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
 type MessageStatus = "unread" | "read" | "replied" | "archived";
@@ -86,12 +108,22 @@ type UnifiedMessage = {
 
 type CommunicationPageClientProps = {
 	communications: CommunicationRecord[];
+	emails: CompanyEmail[];
+	emailStats: {
+		totalEmails: number;
+		sentEmails: number;
+		receivedEmails: number;
+		unreadEmails: number;
+		threadsCount: number;
+	};
 	companyId: string;
 	companyPhones: CompanyPhone[];
 };
 
 export function CommunicationPageClient({
 	communications,
+	emails,
+	emailStats,
 	companyId,
 	companyPhones,
 }: CommunicationPageClientProps) {
@@ -149,22 +181,33 @@ export function CommunicationPageClient({
 
 	const messageCounts = useMemo(
 		() => ({
-			all: unifiedMessages.length,
-			email: unifiedMessages.filter((m) => m.type === "email").length,
+			all: unifiedMessages.length + emails.length,
+			email: unifiedMessages.filter((m) => m.type === "email").length + emails.length,
 			sms: unifiedMessages.filter((m) => m.type === "sms").length,
 			phone: unifiedMessages.filter((m) => m.type === "phone").length,
 			ticket: unifiedMessages.filter((m) => m.type === "ticket").length,
 		}),
-		[unifiedMessages],
+		[unifiedMessages, emails],
 	);
 
-	const filteredMessages = useMemo(
-		() =>
-			unifiedMessages.filter(
-				(msg) => activeFilter === "all" || msg.type === activeFilter,
-			),
-		[unifiedMessages, activeFilter],
-	);
+	const filteredMessages = useMemo(() => {
+		if (activeFilter === "email") {
+			// For email view, use emails converted to unified format
+			return emails.map(convertEmailToMessage);
+		}
+
+		const messages = unifiedMessages.filter(
+			(msg) => activeFilter === "all" || msg.type === activeFilter,
+		);
+
+		// For "all" view, include emails too
+		if (activeFilter === "all") {
+			const emailMessages = emails.map(convertEmailToMessage);
+			return [...messages, ...emailMessages];
+		}
+
+		return messages;
+	}, [unifiedMessages, emails, activeFilter]);
 
 	const handleResumeCall = useCallback((callControlId: string) => {
 		if (!callControlId) {
