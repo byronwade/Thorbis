@@ -37,8 +37,14 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createAppointment } from "@/actions/appointments";
 import { CustomerAutocomplete, type CustomerOption } from "@/components/customers/customer-autocomplete";
-import { CustomerCreateModal } from "@/components/customers/customer-create-modal";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
+
+// Dynamically import CustomerCreateModal to reduce initial bundle size
+const CustomerCreateModal = dynamic(
+	() => import("@/components/customers/customer-create-modal").then((mod) => mod.CustomerCreateModal),
+	{ ssr: false }
+);
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

@@ -4,8 +4,7 @@ import { loadOGFonts, OG_CONFIG, HomepageTemplate, getLogoDataUrl } from "@/lib/
 /**
  * Default OG Image - Root Level Fallback
  *
- * REDESIGNED: Aggressive pain-first approach with huge pricing and social proof.
- * Stops contractors scrolling with "$50K/Year" pain points and massive "$200/mo" pricing.
+ * Dark mode professional design for contractor appeal.
  */
 
 export const runtime = "edge";

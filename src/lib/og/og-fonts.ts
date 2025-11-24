@@ -11,14 +11,16 @@ const fontCache = new Map<string, ArrayBuffer>();
 // Font URLs (relative to public directory)
 const FONT_URLS: Record<number, string> = {
 	400: "/fonts/inter-400.woff",
+	500: "/fonts/inter-500.woff",
 	700: "/fonts/inter-700.woff",
+	800: "/fonts/inter-800.woff",
 };
 
 /**
  * Load Inter font with specified weight
  */
 export async function loadInterFont(
-	weight: 400 | 700 = 700
+	weight: 400 | 500 | 700 | 800 = 700
 ): Promise<ArrayBuffer> {
 	const cacheKey = `inter-${weight}`;
 
@@ -60,7 +62,7 @@ export async function loadOGFonts(): Promise<
 		style: "normal";
 	}>
 > {
-	// Only load the weights we actually need
+	// Load available weights (500/800 use 400/700 as fallbacks for now)
 	const weights = [400, 700] as const;
 
 	try {
@@ -108,7 +110,7 @@ export async function loadOGFonts(): Promise<
  * Load a single font weight (more efficient for simple use cases)
  */
 export async function loadSingleFont(
-	weight: 400 | 700 = 700
+	weight: 400 | 500 | 700 | 800 = 700
 ): Promise<{
 	name: string;
 	data: ArrayBuffer;

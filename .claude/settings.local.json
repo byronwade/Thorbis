@@ -176,7 +176,13 @@
       "Bash(openssl rand:*)",
       "Bash(ps:*)",
       "Bash(timeout 60 curl:*)",
-      "Bash(convert:*)"
+      "Bash(convert:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx madge:*)",
+      "Bash(time npm run build:*)",
+      "Bash(sort:*)",
+      "WebFetch(domain:ogimage.org)",
+      "WebFetch(domain:www.ogimage.gallery)"
     ],
     "deny": [],
     "ask": []

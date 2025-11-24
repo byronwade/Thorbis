@@ -12,24 +12,46 @@ const { colors, typography, padding } = OG_CONFIG;
 
 /**
  * Logo component - uses actual Thorbis logo via HTTP fetch
+ * Edge runtime compatible (no Node.js Buffer API)
  */
 export async function getLogoDataUrl() {
-	const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
-	const response = await fetch(`${baseUrl}/ThorbisLogo.png`);
-	const buffer = await response.arrayBuffer();
-	const base64 = Buffer.from(buffer).toString("base64");
-	return `data:image/png;base64,${base64}`;
+	try {
+		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
+		const response = await fetch(`${baseUrl}/ThorbisLogo.png`);
+
+		if (!response.ok) {
+			console.error('Failed to fetch logo:', response.status);
+			return undefined;
+		}
+
+		const arrayBuffer = await response.arrayBuffer();
+
+		// Convert ArrayBuffer to base64 using Edge-compatible method
+		const bytes = new Uint8Array(arrayBuffer);
+		let binary = '';
+		for (let i = 0; i < bytes.byteLength; i++) {
+			binary += String.fromCharCode(bytes[i]);
+		}
+		const base64 = btoa(binary);
+
+		return `data:image/png;base64,${base64}`;
+	} catch (error) {
+		console.error('Error loading logo:', error);
+		return undefined;
+	}
 }
 
 /**
- * Clean Base Layout - Minimal & Professional
+ * Dark Mode Professional Layout with Gradient Accents
  */
 export function OGBaseLayout({
 	children,
 	logoDataUrl,
+	variant = "default",
 }: {
 	children: React.ReactNode;
 	logoDataUrl?: string;
+	variant?: "default" | "pricing" | "feature" | "competitor";
 }) {
 	return (
 		<div
@@ -44,44 +66,101 @@ export function OGBaseLayout({
 				position: "relative",
 			}}
 		>
-			{/* Subtle accent line - thin & elegant */}
+			{/* Premium gradient accents */}
+			<div
+				style={{
+					position: "absolute",
+					right: 0,
+					top: 0,
+					width: "600px",
+					height: "600px",
+					background: `radial-gradient(circle at top right, ${colors.primary}20, ${colors.accent}08 50%, transparent 70%)`,
+					pointerEvents: "none",
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					left: 0,
+					bottom: 0,
+					width: "400px",
+					height: "400px",
+					background: `radial-gradient(circle at bottom left, ${colors.accent}12, transparent 60%)`,
+					pointerEvents: "none",
+				}}
+			/>
+
+			{/* Electric accent line with premium glow */}
 			<div
 				style={{
 					position: "absolute",
 					left: 0,
 					top: `${padding}px`,
 					bottom: `${padding}px`,
-					width: "4px",
-					backgroundColor: colors.primary,
-					borderRadius: "0 4px 4px 0",
+					width: "8px",
+					background: `linear-gradient(to bottom, ${colors.primary}, ${colors.accent})`,
+					borderRadius: "0 6px 6px 0",
+					boxShadow: `0 0 30px ${colors.primary}50, 0 0 60px ${colors.primary}30, inset 0 0 20px ${colors.primary}20`,
 				}}
 			/>
 
-			{/* Logo */}
+			{/* Logo & Brand - Minimal */}
 			<div
 				style={{
 					display: "flex",
-					marginBottom: `${padding}px`,
+					alignItems: "center",
+					gap: "18px",
+					marginBottom: "180px",
+					flexWrap: "nowrap",
 				}}
 			>
 				{logoDataUrl ? (
-					<img
-						src={logoDataUrl}
-						alt="Thorbis"
-						width="180"
-						height="45"
-						style={{ objectFit: "contain" }}
-					/>
+					<>
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								width: "56px",
+								height: "56px",
+								flexShrink: 0,
+							}}
+						>
+							<img
+								src={logoDataUrl}
+								alt="Thorbis Logo"
+								width="56"
+								height="56"
+								style={{
+									objectFit: "contain",
+									filter: "drop-shadow(0 4px 12px rgba(79, 123, 247, 0.3))",
+								}}
+							/>
+						</div>
+						<span
+							style={{
+								color: colors.foreground,
+								fontSize: "36px",
+								fontWeight: 800,
+								letterSpacing: "-0.8px",
+								lineHeight: "56px",
+								whiteSpace: "nowrap",
+							}}
+						>
+							Thorbis
+						</span>
+					</>
 				) : (
 					<span
 						style={{
 							color: colors.foreground,
 							fontSize: "32px",
 							fontWeight: 800,
-							letterSpacing: "-0.5px",
+							letterSpacing: "-0.8px",
+							whiteSpace: "nowrap",
 						}}
 					>
-						THORBIS
+						Thorbis
 					</span>
 				)}
 			</div>
@@ -93,7 +172,7 @@ export function OGBaseLayout({
 					flexDirection: "column",
 					flex: 1,
 					justifyContent: "center",
-					gap: `${padding}px`,
+					gap: "45px",
 				}}
 			>
 				{children}
@@ -105,7 +184,8 @@ export function OGBaseLayout({
 					display: "flex",
 					alignItems: "center",
 					gap: "16px",
-					marginTop: `${padding}px`,
+					marginTop: "auto",
+					paddingTop: "200px",
 				}}
 			>
 				<span
@@ -131,15 +211,20 @@ export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
 			{/* Headline */}
-			<div>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "20px",
+				}}
+			>
 				<h1
 					style={{
 						color: colors.foreground,
 						fontSize: typography.hero,
 						fontWeight: 800,
-						lineHeight: 1.1,
+						lineHeight: 1.15,
 						margin: 0,
-						marginBottom: "16px",
 					}}
 				>
 					{homepage.headline}
@@ -149,7 +234,7 @@ export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 						color: colors.muted,
 						fontSize: typography.title,
 						fontWeight: 600,
-						lineHeight: 1.2,
+						lineHeight: 1.3,
 						margin: 0,
 					}}
 				>
@@ -167,20 +252,59 @@ export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 			>
 				<div
 					style={{
-						color: colors.accent,
-						fontSize: typography.display,
-						fontWeight: 800,
-						lineHeight: 1,
-						letterSpacing: "-4px",
+						display: "flex",
+						alignItems: "center",
+						gap: "16px",
 					}}
 				>
-					{homepage.pricing}
+					<span
+						style={{
+							color: colors.accent,
+							fontSize: typography.display,
+							fontWeight: 800,
+							lineHeight: 1,
+							letterSpacing: "-3.2px",
+						}}
+					>
+						$200
+					</span>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "12px",
+						}}
+					>
+						<span
+							style={{
+								color: colors.accent,
+								fontSize: typography.hero,
+								fontWeight: 800,
+								lineHeight: 1,
+								letterSpacing: "-1.8px",
+							}}
+						>
+							/mo
+						</span>
+						<span
+							style={{
+								color: colors.muted,
+								fontSize: typography.subtitle,
+								fontWeight: 500,
+								lineHeight: 1,
+							}}
+						>
+							+ usage
+						</span>
+					</div>
 				</div>
 				<div
 					style={{
+						display: "flex",
 						color: colors.muted,
 						fontSize: typography.subtitle,
 						fontWeight: 600,
+						lineHeight: 1.2,
 					}}
 				>
 					{homepage.tagline}
@@ -221,14 +345,43 @@ export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 			>
 				<div
 					style={{
-						color: colors.accent,
-						fontSize: typography.display,
-						fontWeight: 800,
-						lineHeight: 1,
-						letterSpacing: "-4px",
+						display: "flex",
+						alignItems: "baseline",
+						gap: "16px",
 					}}
 				>
-					$200
+					<span
+						style={{
+							color: colors.accent,
+							fontSize: typography.display,
+							fontWeight: 800,
+							lineHeight: 1,
+							letterSpacing: "-3.5px",
+						}}
+					>
+						$200
+					</span>
+					<span
+						style={{
+							color: colors.accent,
+							fontSize: typography.hero,
+							fontWeight: 800,
+							lineHeight: 1,
+							letterSpacing: "-2px",
+						}}
+					>
+						/mo
+					</span>
+					<span
+						style={{
+							color: colors.mutedForeground,
+							fontSize: typography.subtitle,
+							fontWeight: 500,
+							lineHeight: 1,
+						}}
+					>
+						+ usage
+					</span>
 				</div>
 				<div
 					style={{
@@ -237,15 +390,6 @@ export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 						gap: "8px",
 					}}
 				>
-					<div
-						style={{
-							color: colors.foreground,
-							fontSize: typography.title,
-							fontWeight: 700,
-						}}
-					>
-						per month
-					</div>
 					<div
 						style={{
 							color: colors.muted,

@@ -10,40 +10,41 @@ export const OG_CONFIG = {
 	width: 1200,
 	height: 630,
 
-	// Margins and spacing
-	padding: 48,
-	innerPadding: 32,
+	// Margins and spacing (Golden Ratio based: 1.618)
+	padding: 56, // ~56px for premium feel
+	innerPadding: 35, // 56 / 1.618 ≈ 35
 
-	// Colors - CLEAN professional theme
+	// Colors - DARK MODE PROFESSIONAL
 	colors: {
-		background: "#FFFFFF", // Clean white
-		foreground: "#0A0A0A", // Near black text
+		background: "#0A0A0A", // Deep black
+		foreground: "#FFFFFF", // White text
 		primary: "#4F7BF7", // Electric blue (Thorbis brand)
 		accent: "#22C55E", // Success green (for pricing)
-		muted: "#6B7280", // Gray text
-		mutedForeground: "#9CA3AF", // Lighter gray
-		border: "#E5E7EB", // Subtle border
+		muted: "#A1A1AA", // Light gray text
+		mutedForeground: "#71717A", // Muted gray
+		border: "#27272A", // Dark border
 		destructive: "#EF4444", // Red for competitor pricing
-		dark: "#1F2937", // Dark elements
+		dark: "#18181B", // Darker elements
 	},
 
-	// Typography sizes - CLEAN & READABLE scale
+	// Typography sizes - Clean & Professional scale
 	typography: {
-		display: 180, // MASSIVE pricing ($200)
-		hero: 72, // Main headline
-		title: 48, // Secondary headline
-		subtitle: 28, // Supporting text
-		body: 24, // Body text
-		small: 20, // Small details
+		display: 145, // Pricing ($200) - impactful but not overwhelming
+		hero: 60, // Main headlines - clear hierarchy
+		title: 36, // Secondary headlines - balanced
+		subtitle: 26, // Supporting text - readable
+		body: 22, // Body text - comfortable
+		small: 18, // Small details - clear
+		micro: 14, // Micro text - subtle
 	},
 
-	// Font weights
+	// Font weights (all now loaded for premium typography)
 	weights: {
 		regular: 400,
-		medium: 500,
+		medium: 500, // Now loaded!
 		semibold: 600,
 		bold: 700,
-		extrabold: 800,
+		extrabold: 800, // Now loaded!
 	},
 
 	// Logo dimensions

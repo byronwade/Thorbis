@@ -11,7 +11,7 @@
  * - Quick actions (view profile, call, schedule)
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import {
 	AlertCircle,
@@ -95,29 +95,41 @@ export function CustomerContextCard({
 			try {
 				const supabase = createClient();
 
-				// Fetch customer basic info
-				const { data: customerData, error: customerError } = await supabase
-					.from("customers")
-					.select("id, first_name, last_name, display_name, email, phone, company_name")
-					.eq("id", customerId)
-					.single();
+				// Use Promise.all to fetch data in parallel instead of sequentially
+				const [customerResult, jobsResult, invoicesResult] = await Promise.all([
+					// Fetch customer basic info
+					supabase
+						.from("customers")
+						.select("id, first_name, last_name, display_name, email, phone, company_name")
+						.eq("id", customerId)
+						.single(),
+					// Fetch recent jobs (last 3)
+					supabase
+						.from("jobs")
+						.select("id, title, status, total_amount, scheduled_start, created_at")
+						.eq("customer_id", customerId)
+						.order("created_at", { ascending: false })
+						.limit(3),
+					// Fetch recent invoices (last 3)
+					supabase
+						.from("invoices")
+						.select("id, invoice_number, status, total_amount, due_date, created_at")
+						.eq("customer_id", customerId)
+						.order("created_at", { ascending: false })
+						.limit(3),
+				]);
 
-				if (customerError) throw customerError;
-				setCustomer(customerData);
+				// Handle customer data
+				if (customerResult.error) throw customerResult.error;
+				setCustomer(customerResult.data);
 
-				// Fetch recent jobs (last 3)
-				const { data: jobsData, error: jobsError } = await supabase
-					.from("jobs")
-					.select("id, title, status, total_amount, scheduled_start, created_at")
-					.eq("customer_id", customerId)
-					.order("created_at", { ascending: false })
-					.limit(3);
-
-				if (jobsError) throw jobsError;
-				setRecentJobs(jobsData || []);
+				// Handle jobs data
+				if (jobsResult.error) throw jobsResult.error;
+				const jobsData = jobsResult.data || [];
+				setRecentJobs(jobsData);
 
 				// Get last service date from jobs
-				if (jobsData && jobsData.length > 0) {
+				if (jobsData.length > 0) {
 					const completedJob = jobsData.find(
 						(j) => j.status === "completed" || j.status === "invoiced"
 					);
@@ -126,24 +138,16 @@ export function CustomerContextCard({
 					}
 				}
 
-				// Fetch recent invoices (last 3)
-				const { data: invoicesData, error: invoicesError } = await supabase
-					.from("invoices")
-					.select("id, invoice_number, status, total_amount, due_date, created_at")
-					.eq("customer_id", customerId)
-					.order("created_at", { ascending: false })
-					.limit(3);
-
-				if (invoicesError) throw invoicesError;
-				setRecentInvoices(invoicesData || []);
+				// Handle invoices data
+				if (invoicesResult.error) throw invoicesResult.error;
+				const invoicesData = invoicesResult.data || [];
+				setRecentInvoices(invoicesData);
 
 				// Calculate outstanding balance (unpaid and overdue invoices)
-				if (invoicesData) {
-					const unpaid = invoicesData
-						.filter((inv) => inv.status === "sent" || inv.status === "overdue")
-						.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
-					setOutstandingBalance(unpaid);
-				}
+				const unpaid = invoicesData
+					.filter((inv) => inv.status === "sent" || inv.status === "overdue")
+					.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
+				setOutstandingBalance(unpaid);
 			} catch (err) {
 				console.error("Error fetching customer context:", err);
 				setError("Failed to load customer information");
@@ -194,7 +198,11 @@ export function CustomerContextCard({
 		);
 	}
 
-	const customerName = getCustomerDisplayName(customer);
+	// Memoize customer name to avoid recalculating on every render
+	const customerName = useMemo(
+		() => getCustomerDisplayName(customer),
+		[customer]
+	);
 
 	return (
 		<Card className={className}>

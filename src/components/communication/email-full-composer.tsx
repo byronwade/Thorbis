@@ -47,7 +47,20 @@ import {
 	RecipientAutocomplete,
 	type Recipient,
 } from "@/components/communication/recipient-autocomplete";
-import { CustomerContextCard } from "@/components/communication/customer-context-card";
+import dynamic from "next/dynamic";
+
+// Dynamically import CustomerContextCard to reduce initial bundle size
+const CustomerContextCard = dynamic(
+	() => import("@/components/communication/customer-context-card").then((mod) => mod.CustomerContextCard),
+	{
+		loading: () => (
+			<div className="flex items-center justify-center py-4">
+				<Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+			</div>
+		),
+		ssr: false,
+	}
+);
 
 type EmailAttachment = {
 	filename: string;
