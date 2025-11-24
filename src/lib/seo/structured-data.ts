@@ -252,6 +252,24 @@ export function createServiceSchema(options: ServiceSchemaOptions) {
 	};
 }
 
+/**
+ * E-E-A-T Enhanced Author Information
+ * Experience, Expertise, Authoritativeness, Trustworthiness
+ */
+export type AuthorInfo = {
+	name: string;
+	jobTitle?: string;
+	description?: string;
+	url?: string; // Author profile URL
+	image?: string;
+	sameAs?: string[]; // Social profiles (LinkedIn, Twitter, etc.)
+	expertise?: string[]; // Areas of expertise/knowsAbout
+	worksFor?: {
+		name: string;
+		url?: string;
+	};
+};
+
 export type ArticleSchemaOptions = {
 	title: string;
 	description: string;
@@ -260,11 +278,51 @@ export type ArticleSchemaOptions = {
 	publishedTime?: string;
 	modifiedTime?: string;
 	authorName?: string;
+	/** Enhanced author with E-E-A-T signals - takes precedence over authorName */
+	author?: AuthorInfo;
 	tags?: string[];
 	section?: string;
 	wordCount?: number;
 	estimatedReadTime?: string;
 };
+
+/**
+ * Build E-E-A-T enhanced author schema
+ */
+function buildAuthorSchema(author: AuthorInfo | undefined, authorName: string) {
+	// If no enhanced author info, return simple author
+	if (!author) {
+		return {
+			"@type": "Person",
+			name: authorName,
+		};
+	}
+
+	// Build enhanced author with E-E-A-T signals
+	return {
+		"@type": "Person",
+		name: author.name,
+		...(author.jobTitle && { jobTitle: author.jobTitle }),
+		...(author.description && { description: author.description }),
+		...(author.url && { url: author.url }),
+		...(author.image && {
+			image: {
+				"@type": "ImageObject",
+				url: author.image,
+			},
+		}),
+		...(author.sameAs && author.sameAs.length > 0 && { sameAs: author.sameAs }),
+		...(author.expertise &&
+			author.expertise.length > 0 && { knowsAbout: author.expertise }),
+		...(author.worksFor && {
+			worksFor: {
+				"@type": "Organization",
+				name: author.worksFor.name,
+				...(author.worksFor.url && { url: author.worksFor.url }),
+			},
+		}),
+	};
+}
 
 export function createArticleSchema(options: ArticleSchemaOptions) {
 	const {
@@ -275,6 +333,7 @@ export function createArticleSchema(options: ArticleSchemaOptions) {
 		publishedTime,
 		modifiedTime,
 		authorName = SEO_BRAND.company,
+		author,
 		tags,
 		section,
 		wordCount,
@@ -290,10 +349,7 @@ export function createArticleSchema(options: ArticleSchemaOptions) {
 		image: [buildShareImageUrl(image ? { path: image } : undefined)],
 		datePublished: publishedTime,
 		dateModified: modifiedTime ?? publishedTime,
-		author: {
-			"@type": "Person",
-			name: authorName,
-		},
+		author: buildAuthorSchema(author, authorName),
 		publisher: {
 			"@type": "Organization",
 			name: SEO_BRAND.company,

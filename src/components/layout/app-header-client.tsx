@@ -13,6 +13,7 @@ import { PhoneDropdown } from "./phone-dropdown";
 import { QuickAddDropdown } from "./quick-add-dropdown";
 import { UserMenu } from "./user-menu";
 import { getTotalUnreadCountAction } from "@/actions/email-actions";
+import { PendingActionsIndicator } from "@/components/ai/pending-actions-indicator";
 
 /**
  * AppHeaderClient - Client Component (Minimal Interactivity Only)
@@ -604,6 +605,9 @@ export function AppHeaderClient({
 							<span className="sr-only">TV Display</span>
 						</button>
 					</Link>
+
+					{/* AI Pending Actions (Owner Approval) */}
+					<PendingActionsIndicator />
 
 					{/* Notifications */}
 					<NotificationsDropdown

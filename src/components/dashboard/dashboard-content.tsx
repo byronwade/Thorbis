@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import { RoleBasedDashboard } from "@/components/dashboard/role-based-dashboard";
+import { PinBoardSection } from "@/components/dashboard/pin-board";
+import { PinBoardSkeleton } from "@/components/dashboard/pin-board/pin-board-skeleton";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getMissionControlData } from "@/lib/dashboard/mission-control-data";
 
@@ -19,6 +22,13 @@ export async function DashboardContent() {
 	const renderedAt = Date.now();
 
 	return (
-		<RoleBasedDashboard dashboardData={dashboardData} renderedAt={renderedAt} />
+		<div className="space-y-6">
+			<RoleBasedDashboard dashboardData={dashboardData} renderedAt={renderedAt} />
+
+			{/* Pin Board / Content Portal - Streams independently */}
+			<Suspense fallback={<PinBoardSkeleton />}>
+				<PinBoardSection />
+			</Suspense>
+		</div>
 	);
 }

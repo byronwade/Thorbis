@@ -49,14 +49,14 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 		<div
 			className={cn(
 				"group hover:bg-muted/10 dark:hover:bg-muted/5 cursor-default transition-all duration-200",
-				compact ? "px-3.5 py-2" : "px-5 py-3",
+				compact ? "px-3 py-1" : "px-4 py-2",
 			)}
 		>
-			<div className="flex items-baseline gap-2">
+			<div className="flex items-baseline gap-1.5">
 				<div
 					className={cn(
 						"text-foreground font-semibold tracking-tight tabular-nums transition-all duration-200",
-						compact ? "text-[15px] leading-tight" : "text-xl leading-tight",
+						compact ? "text-sm leading-tight" : "text-lg leading-tight",
 					)}
 				>
 					{formattedValue}
@@ -84,8 +84,8 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 				className={cn(
 					"text-muted-foreground font-medium tracking-wide transition-all duration-200",
 					compact
-						? "mt-0.5 text-xxs leading-tight"
-						: "mt-1 text-xs leading-tight",
+						? "mt-0.5 text-[10px] leading-tight"
+						: "mt-0.5 text-xs leading-tight",
 				)}
 			>
 				{stat.label}

@@ -4,5 +4,10 @@
 	"ignoreDependencies": [],
 	"ignoreBinaries": [],
 	"ignoreWorkspaces": [],
-	"eslint": false
+	"eslint": false,
+	"ignoreExportsUsedInFile": true,
+	"rules": {
+		"exports": "off",
+		"types": "off"
+	}
 }

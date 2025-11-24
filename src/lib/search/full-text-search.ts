@@ -308,7 +308,7 @@ async function searchEquipmentFullText(
  * Returns combined results from customers, jobs, properties, equipment, etc.
  * Useful for global search functionality
  */
-async function searchAllEntities(
+export async function searchAllEntities(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,

@@ -1,16 +1,41 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useChat } from "@ai-sdk/react";
-import { useChatStore, chatSelectors, type ChatStore } from "@/lib/stores/chat-store";
+import { useEffect, useState, useRef, useCallback } from "react";
+import Image from "next/image";
+import { useChat, type Message as AiMessage } from "@ai-sdk/react";
+import { useChatStore, chatSelectors } from "@/lib/stores/chat-store";
 import {
 	Conversation,
 	ConversationContent,
-	ConversationEmptyState,
 	ConversationScrollButton,
+	ConversationEmptyState,
 } from "@/components/ai-elements/conversation";
-import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import { Artifact, ArtifactContent, ArtifactHeader, ArtifactTitle } from "@/components/ai-elements/artifact";
+import {
+	Message,
+	MessageContent,
+	MessageResponse,
+	MessageActions,
+	MessageAction,
+	MessageToolbar,
+	MessageAttachment,
+	MessageAttachments,
+	MessageBranch,
+	MessageBranchContent,
+	MessageBranchSelector,
+	MessageBranchPrevious,
+	MessageBranchNext,
+	MessageBranchPage,
+} from "@/components/ai-elements/message";
+import {
+	Artifact,
+	ArtifactContent,
+	ArtifactHeader,
+	ArtifactTitle,
+	ArtifactDescription,
+	ArtifactActions,
+	ArtifactAction,
+	ArtifactClose,
+} from "@/components/ai-elements/artifact";
 import {
 	ModelSelector,
 	ModelSelectorContent,
@@ -23,6 +48,8 @@ import {
 	ModelSelectorLogoGroup,
 	ModelSelectorName,
 	ModelSelectorTrigger,
+	ModelSelectorSeparator,
+	ModelSelectorShortcut,
 } from "@/components/ai-elements/model-selector";
 import {
 	PromptInput,
@@ -44,47 +71,157 @@ import {
 	PromptInputSpeechButton,
 } from "@/components/ai-elements/prompt-input";
 import { Loader } from "@/components/ai-elements/loader";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+	CheckIcon,
+	Wrench,
+	Bot,
+	Sparkles,
+	Users,
+	Calendar,
+	FileText,
+	DollarSign,
+	Phone,
+	Mail,
+	MessageSquare,
+	TrendingUp,
+	Copy,
+	RefreshCw,
+	Pencil,
+	ThumbsUp,
+	ThumbsDown,
+	Download,
+	X,
+	ExternalLink,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import {
+	OwnerActionApprovalDialog,
+	ActionApprovalBanner,
+} from "@/components/ai/owner-action-approval-dialog";
+import {
+	approveAIAction,
+	rejectAIAction,
+	getChatPendingActions,
+	checkIsCompanyOwner,
+	type PendingAction,
+} from "@/actions/ai-approval";
 
+// Business-focused suggested actions for the AI manager
 const SUGGESTED_ACTIONS = [
-	"What are the advantages of using Next.js?",
-	"Write code to demonstrate Dijkstra's algorithm",
-	"Help me write an essay about Silicon Valley",
-	"What is the weather in San Francisco?",
+	{ text: "Show today's schedule", icon: Calendar },
+	{ text: "Inactive customers (30+ days)", icon: Users },
+	{ text: "Overdue invoices", icon: FileText },
+	{ text: "Monthly financial summary", icon: TrendingUp },
 ];
 
+// AI Models available - Claude is primary
 const models = [
 	{
-		id: "grok-vision",
-		name: "Grok Vision",
-		chef: "xAI",
-		chefSlug: "xai",
-		providers: ["xai"],
+		id: "claude-3-5-sonnet-20241022",
+		name: "Claude 3.5 Sonnet",
+		chef: "Anthropic",
+		chefSlug: "anthropic",
+		providers: ["anthropic"],
+		description: "Best for complex reasoning and analysis",
 	},
 	{
-		id: "grok-reasoning",
-		name: "Grok Reasoning",
-		chef: "xAI",
-		chefSlug: "xai",
-		providers: ["xai"],
+		id: "claude-3-5-haiku-20241022",
+		name: "Claude 3.5 Haiku",
+		chef: "Anthropic",
+		chefSlug: "anthropic",
+		providers: ["anthropic"],
+		description: "Fast and efficient for quick tasks",
+	},
+	{
+		id: "claude-3-opus-20240229",
+		name: "Claude 3 Opus",
+		chef: "Anthropic",
+		chefSlug: "anthropic",
+		providers: ["anthropic"],
+		description: "Most capable for complex tasks",
 	},
 ];
+
+// Tool icons for display
+const toolIcons: Record<string, React.ElementType> = {
+	searchCustomers: Users,
+	getCustomerDetails: Users,
+	createCustomer: Users,
+	updateCustomer: Users,
+	searchJobs: Wrench,
+	createAppointment: Calendar,
+	getAvailableSlots: Calendar,
+	searchInvoices: FileText,
+	createInvoice: FileText,
+	getFinancialSummary: DollarSign,
+	getVirtualBuckets: DollarSign,
+	transferToBucket: DollarSign,
+	sendEmail: Mail,
+	sendSms: MessageSquare,
+	initiateCall: Phone,
+	getCommunicationHistory: MessageSquare,
+	getDashboardMetrics: Sparkles,
+	getProactiveInsights: Bot,
+};
+
+// Tool category labels
+const toolCategoryLabels: Record<string, string> = {
+	customer: "Customer",
+	scheduling: "Scheduling",
+	financial: "Financial",
+	communication: "Communication",
+	reporting: "Reporting",
+};
+
+interface ToolInvocation {
+	toolCallId: string;
+	toolName: string;
+	args: Record<string, unknown>;
+	state: "partial-call" | "call" | "result";
+	result?: unknown;
+}
+
+interface ApprovalRequest {
+	action: string;
+	reason: string;
+	details: string;
+	toolCallId: string;
+}
 
 // Cache selectors at module level to ensure stable references for SSR
 // This prevents Zustand's getServerSnapshot from being recreated on each render
 const activeChatIdSelector = chatSelectors.activeChatId;
 const messagesSelector = chatSelectors.messages;
 
-export function AiChatInterface() {
+interface AiChatInterfaceProps {
+	companyId?: string;
+}
+
+export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 	// Use cached selectors to ensure stable references for SSR compatibility
 	// This prevents "getServerSnapshot should be cached" errors
 	const activeChatId = useChatStore(activeChatIdSelector);
 	const activeChatMessages = useChatStore(messagesSelector);
-	
+
 	const { createChat, addMessage } = useChatStore();
 	const [showSuggestedActions, setShowSuggestedActions] = useState(true);
+	const [selectedModel, setSelectedModel] = useState(models[0].id);
+	const [pendingApprovals, setPendingApprovals] = useState<ApprovalRequest[]>([]);
+
+	// Owner approval state
+	const [ownerPendingActions, setOwnerPendingActions] = useState<PendingAction[]>([]);
+	const [selectedPendingAction, setSelectedPendingAction] = useState<PendingAction | null>(null);
+	const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
+	const [isOwner, setIsOwner] = useState(false);
+	const [chatId] = useState(() => crypto.randomUUID()); // Stable chat ID for this session
 
 	// Initialize chat if none exists
 	useEffect(() => {
@@ -93,6 +230,66 @@ export function AiChatInterface() {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeChatId]);
+
+	// Check if user is owner on mount
+	useEffect(() => {
+		const checkOwner = async () => {
+			const result = await checkIsCompanyOwner();
+			if (result.success && result.data) {
+				setIsOwner(result.data);
+			}
+		};
+		checkOwner();
+	}, []);
+
+	// Fetch pending actions for this chat
+	const fetchPendingActions = useCallback(async () => {
+		if (!chatId) return;
+		const result = await getChatPendingActions({ chatId });
+		if (result.success && result.data) {
+			setOwnerPendingActions(result.data);
+		}
+	}, [chatId]);
+
+	// Poll for pending actions periodically (every 10 seconds)
+	useEffect(() => {
+		fetchPendingActions();
+		const interval = setInterval(fetchPendingActions, 10000);
+		return () => clearInterval(interval);
+	}, [fetchPendingActions]);
+
+	// Handler for approving owner-required actions
+	const handleOwnerApprove = useCallback(async (actionId: string) => {
+		const result = await approveAIAction({ actionId });
+		if (result.success) {
+			toast.success(
+				result.data?.executed
+					? "Action approved and executed!"
+					: "Action approved! Executing..."
+			);
+			// Refresh pending actions
+			fetchPendingActions();
+			return { success: true };
+		}
+		return { success: false, error: result.error };
+	}, [fetchPendingActions]);
+
+	// Handler for rejecting owner-required actions
+	const handleOwnerReject = useCallback(async (actionId: string, reason?: string) => {
+		const result = await rejectAIAction({ actionId, reason });
+		if (result.success) {
+			toast.info("Action rejected");
+			fetchPendingActions();
+			return { success: true };
+		}
+		return { success: false, error: result.error };
+	}, [fetchPendingActions]);
+
+	// Open approval dialog for a specific action
+	const handleViewActionDetails = useCallback((action: PendingAction) => {
+		setSelectedPendingAction(action);
+		setApprovalDialogOpen(true);
+	}, []);
 
 	// Use Vercel AI SDK's useChat hook
 	const {
@@ -106,6 +303,11 @@ export function AiChatInterface() {
 	} = useChat({
 		api: "/api/ai/chat",
 		id: activeChatId || undefined,
+		body: {
+			companyId,
+			chatId, // Include chatId for destructive action tracking
+			model: selectedModel,
+		},
 		onFinish: (message) => {
 			// Sync with chat store when message finishes
 			if (activeChatId && message.content) {
@@ -116,8 +318,51 @@ export function AiChatInterface() {
 					timestamp: new Date(),
 				});
 			}
+
+			// Check for approval requests in tool results
+			const toolInvocations = (message as AiMessage & { toolInvocations?: ToolInvocation[] }).toolInvocations;
+			if (toolInvocations) {
+				// Check for basic approval requests
+				const approvalRequests = toolInvocations
+					.filter((inv) => inv.state === "result" && inv.toolName === "requestApproval")
+					.map((inv) => ({
+						...(inv.result as { action: string; reason: string; details: string }),
+						toolCallId: inv.toolCallId,
+					}));
+
+				if (approvalRequests.length > 0) {
+					setPendingApprovals((prev) => [...prev, ...approvalRequests]);
+				}
+
+				// Check for owner-required approval results (destructive actions)
+				const ownerApprovalResults = toolInvocations
+					.filter((inv) => {
+						if (inv.state !== "result") return false;
+						const result = inv.result as { requiresOwnerApproval?: boolean } | undefined;
+						return result?.requiresOwnerApproval === true;
+					});
+
+				if (ownerApprovalResults.length > 0) {
+					// Refresh pending actions to show the new ones
+					fetchPendingActions();
+				}
+			}
 		},
 	});
+
+	// Handle approval/rejection of AI actions
+	const handleApproval = async (approval: ApprovalRequest, approved: boolean) => {
+		// Remove from pending
+		setPendingApprovals((prev) => prev.filter((a) => a.toolCallId !== approval.toolCallId));
+
+		// Send response to AI
+		await append({
+			role: "user",
+			content: approved
+				? `Yes, I approve: ${approval.action}`
+				: `No, do not proceed with: ${approval.action}`,
+		});
+	};
 
 	// Sync messages from store when chat changes - only on mount or when chat ID changes
 	const prevActiveChatIdRef = useRef<string | null>(null);
@@ -166,21 +411,104 @@ export function AiChatInterface() {
 		});
 	};
 
-	const handleSuggestedAction = (action: string) => {
+	const handleSuggestedAction = (action: { text: string; icon: React.ElementType }) => {
 		if (!activeChatId) return;
-		onSubmit({ text: action, files: [] }, {} as React.FormEvent<HTMLFormElement>);
+		onSubmit({ text: action.text, files: [] }, {} as React.FormEvent<HTMLFormElement>);
 	};
+
+	// Message action handlers
+	const handleCopyMessage = useCallback(async (content: string) => {
+		try {
+			await navigator.clipboard.writeText(content);
+			toast.success("Copied to clipboard");
+		} catch {
+			toast.error("Failed to copy");
+		}
+	}, []);
+
+	const handleRegenerateMessage = useCallback(async (messageId: string) => {
+		// Find the user message before this assistant message
+		const messageIndex = messages.findIndex((m) => m.id === messageId);
+		if (messageIndex <= 0) return;
+
+		const userMessage = messages[messageIndex - 1];
+		if (userMessage.role !== "user") return;
+
+		// Remove messages from this point forward and regenerate
+		const newMessages = messages.slice(0, messageIndex);
+		setMessages(newMessages);
+
+		// Re-send the user message
+		await append({
+			role: "user",
+			content: userMessage.content,
+		});
+
+		toast.success("Regenerating response...");
+	}, [messages, setMessages, append]);
+
+	const handleFeedback = useCallback((messageId: string, type: "up" | "down") => {
+		// TODO: Implement feedback submission to your analytics/feedback system
+		toast.success(type === "up" ? "Thanks for the feedback!" : "We'll improve based on your feedback");
+	}, []);
+
+	const handleEditMessage = useCallback((messageId: string, content: string) => {
+		// Find the message and allow editing
+		const messageIndex = messages.findIndex((m) => m.id === messageId);
+		if (messageIndex < 0) return;
+
+		// Set the input to the message content for editing
+		// This will require the PromptInputProvider to be updated
+		// For now, we'll just copy to clipboard
+		handleCopyMessage(content);
+		toast.info("Message copied - paste and edit in the input");
+	}, [messages, handleCopyMessage]);
+
+	// Render tool invocation UI
+	const renderToolInvocation = (invocation: ToolInvocation) => {
+		const ToolIcon = toolIcons[invocation.toolName] || Wrench;
+		const isCompleted = invocation.state === "result";
+		const isRunning = invocation.state === "call";
+
+		return (
+			<div key={invocation.toolCallId} className="flex items-center gap-2 text-xs text-muted-foreground py-1">
+				<ToolIcon className="h-3 w-3" />
+				<span>{invocation.toolName.replace(/([A-Z])/g, " $1").trim()}</span>
+				<span className={cn(
+					"ml-auto",
+					isCompleted ? "text-green-600" : "text-muted-foreground"
+				)}>
+					{isCompleted ? "Done" : isRunning ? "Running..." : "Pending"}
+				</span>
+			</div>
+		);
+	};
+
+	// Render approval request UI
+	const renderApprovalRequest = (approval: ApprovalRequest) => (
+		<div key={approval.toolCallId} className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 p-3">
+			<p className="text-sm font-medium mb-1">Approval Required</p>
+			<p className="text-sm text-muted-foreground mb-2">{approval.action}</p>
+			<p className="text-xs text-muted-foreground mb-3">{approval.reason}</p>
+			<div className="flex gap-2">
+				<Button size="sm" onClick={() => handleApproval(approval, true)}>
+					Approve
+				</Button>
+				<Button size="sm" variant="outline" onClick={() => handleApproval(approval, false)}>
+					Reject
+				</Button>
+			</div>
+		</div>
+	);
 
 	// Inner component to access PromptInputController
 	function ChatInputInner() {
 		const { textInput } = usePromptInputController();
 		const attachments = usePromptInputAttachments();
-		const [model, setModel] = useState<string>(models[0].id);
 		const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-		const [contextUsage] = useState(0);
 		const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-		const selectedModelData = models.find((m) => m.id === model);
+		const selectedModelData = models.find((m) => m.id === selectedModel);
 
 		// Sync PromptInputProvider with useChat's input
 		useEffect(() => {
@@ -195,7 +523,7 @@ export function AiChatInterface() {
 				onSubmit={onSubmit}
 				accept="image/*"
 				multiple
-				className="w-full overflow-hidden rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border focus-within:ring-0 focus-within:outline-none hover:border-muted-foreground/50 [&_[data-slot=input-group]]:!border-0 [&_[data-slot=input-group]]:!bg-transparent [&_[data-slot=input-group]]:!shadow-none [&_[data-slot=input-group]]:!rounded-none [&_[data-slot=input-group]]:!p-0 [&_[data-slot=input-group]]:!h-auto [&_[data-slot=input-group]]:!min-h-0 [&_[data-slot=input-group]]:has-[[data-slot=input-group-control]:focus-visible]:!ring-0 [&_[data-slot=input-group]]:has-[[data-slot=input-group-control]:focus-visible]:!outline-none [&_*:focus]:!ring-0 [&_*:focus]:!outline-none [&_*:focus-visible]:!ring-0 [&_*:focus-visible]:!outline-none [&_*:focus-visible]:!ring-offset-0 [&_textarea:focus]:!ring-0 [&_textarea:focus]:!outline-none [&_textarea:focus-visible]:!ring-0 [&_textarea:focus-visible]:!ring-0 [&_button:focus]:!ring-0 [&_button:focus]:!outline-none [&_button:focus-visible]:!ring-0"
+				className="w-full bg-background"
 			>
 				<PromptInputAttachments className="!items-start">
 					{(attachment) => <PromptInputAttachment data={attachment} />}
@@ -203,16 +531,15 @@ export function AiChatInterface() {
 				<PromptInputBody>
 					<PromptInputTextarea
 						ref={textareaRef}
-						placeholder="Send a message..."
-						className="flex min-h-[80px] w-full rounded-none border-none shadow-none outline-hidden field-sizing-fixed dark:bg-transparent grow resize-none bg-transparent p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden disabled:cursor-not-allowed disabled:opacity-50"
-						style={{ height: "44px" }}
+						placeholder="Ask anything about your business..."
+						className="min-h-[44px] w-full resize-none bg-transparent p-2 text-sm placeholder:text-muted-foreground focus:outline-none"
 						rows={1}
 						autoFocus
 						data-testid="multimodal-input"
 					/>
 				</PromptInputBody>
-				<PromptInputFooter className="!border-t-0 !p-0 !shadow-none !dark:border-0 !dark:border-transparent flex items-center justify-between">
-					<PromptInputTools className="[&_button:first-child]:rounded-bl-xl gap-0 sm:gap-0.5">
+				<PromptInputFooter className="flex items-center justify-between">
+					<PromptInputTools className="gap-1">
 						<PromptInputActionMenu>
 							<PromptInputActionMenuTrigger />
 							<PromptInputActionMenuContent>
@@ -242,7 +569,7 @@ export function AiChatInterface() {
 								<ModelSelectorInput placeholder="Search models..." />
 								<ModelSelectorList>
 									<ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-									{["xAI"].map((chef) => (
+									{["Anthropic"].map((chef) => (
 										<ModelSelectorGroup heading={chef} key={chef}>
 											{models
 												.filter((m) => m.chef === chef)
@@ -250,7 +577,7 @@ export function AiChatInterface() {
 													<ModelSelectorItem
 														key={m.id}
 														onSelect={() => {
-															setModel(m.id);
+															setSelectedModel(m.id);
 															setModelSelectorOpen(false);
 														}}
 														value={m.id}
@@ -265,7 +592,7 @@ export function AiChatInterface() {
 																/>
 															))}
 														</ModelSelectorLogoGroup>
-														{model === m.id ? (
+														{selectedModel === m.id ? (
 															<CheckIcon className="ml-auto size-4" />
 														) : (
 															<div className="ml-auto size-4" />
@@ -281,7 +608,7 @@ export function AiChatInterface() {
 					<PromptInputSubmit
 						status={status}
 						disabled={status === "in_progress" || !textInput.value?.trim()}
-						className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 gap-1.5 size-8 rounded-full bg-primary text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+						className="size-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 						data-testid="send-button"
 					/>
 				</PromptInputFooter>
@@ -290,65 +617,184 @@ export function AiChatInterface() {
 	}
 
 	return (
-		<div className="overscroll-behavior-contain flex h-full min-w-0 touch-pan-y flex-col bg-background">
+		<>
+		<OwnerActionApprovalDialog
+			pendingAction={selectedPendingAction}
+			isOpen={approvalDialogOpen}
+			onOpenChange={setApprovalDialogOpen}
+			onApprove={handleOwnerApprove}
+			onReject={handleOwnerReject}
+			isOwner={isOwner}
+		/>
+		<div className="flex h-full flex-col">
 			{/* Messages */}
-			<div className="overscroll-behavior-contain -webkit-overflow-scrolling-touch flex-1 touch-pan-y overflow-y-scroll" style={{ overflowAnchor: "none" }}>
-				<div className="relative flex-1 touch-pan-y overflow-y-auto will-change-scroll mx-auto flex min-w-0 max-w-4xl flex-col gap-4 md:gap-6" role="log">
+			<div className="flex-1 overflow-y-auto">
+				<div className="mx-auto max-w-3xl px-4" role="log">
 					<Conversation>
 						<ConversationContent>
 							{messages.length === 0 && !isLoading && (
-								<div className="p-4 flex flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
-									<div className="mx-auto mt-4 flex size-full max-w-3xl flex-col justify-center px-4 md:mt-16 md:px-8">
-										<div className="font-semibold text-xl md:text-2xl">
-											Hello there!
-										</div>
-										<div className="text-xl text-zinc-500 md:text-2xl">
-											How can I help you today?
-										</div>
-									</div>
-									<div className="min-h-[24px] min-w-[24px] shrink-0" />
-								</div>
+								<ConversationEmptyState
+									icon={<Image src="/ThorbisLogo.webp" alt="Thorbis AI" width={48} height={48} className="h-12 w-12" />}
+									title="AI Business Manager"
+									description="Ask me anything about your business - customers, jobs, invoices, scheduling, and more."
+								/>
 							)}
 
-							{messages.map((message) => (
-								<Message key={message.id} from={message.role}>
-									<MessageContent>
-										{message.content && (
-											<MessageResponse>{message.content}</MessageResponse>
+							{messages.map((message) => {
+								const toolInvocations = (message as AiMessage & { toolInvocations?: ToolInvocation[] }).toolInvocations;
+								const attachments = (message as AiMessage & { experimental_attachments?: Array<{ name?: string; content?: string; url?: string; mediaType?: string }> }).experimental_attachments;
+
+								return (
+									<Message key={message.id} from={message.role}>
+										{/* User message attachments */}
+										{message.role === "user" && attachments && attachments.length > 0 && (
+											<MessageAttachments className="mb-2">
+												{attachments.map((attachment, idx) => (
+													<MessageAttachment
+														key={idx}
+														data={{
+															type: "file",
+															url: attachment.url || "",
+															mediaType: attachment.mediaType || "application/octet-stream",
+															filename: attachment.name || "attachment",
+														}}
+													/>
+												))}
+											</MessageAttachments>
 										)}
 
-										{/* Render artifacts if present */}
-										{message.experimental_attachments?.map((attachment, idx) => (
-											<Artifact key={idx}>
-												<ArtifactHeader>
-													<ArtifactTitle>
-														{attachment.name || "Artifact"}
-													</ArtifactTitle>
-												</ArtifactHeader>
-												<ArtifactContent>
-													{attachment.content && (
-														<pre className="overflow-x-auto rounded-md bg-muted p-4 text-sm">
-															<code>{attachment.content}</code>
-														</pre>
-													)}
-													{attachment.url && (
-														<div className="mt-2">
-															<a
-																href={attachment.url}
-																target="_blank"
-																rel="noopener noreferrer"
-																className="text-primary hover:underline text-sm"
-															>
-																View artifact →
-															</a>
+										<MessageContent>
+											{/* Render tool invocations for assistant messages */}
+											{message.role === "assistant" && toolInvocations && toolInvocations.length > 0 && (
+												<div className="mb-2">
+													{toolInvocations
+														.filter((inv) => inv.toolName !== "requestApproval")
+														.map((inv) => renderToolInvocation(inv))}
+												</div>
+											)}
+
+											{message.content && (
+												<MessageResponse>{message.content}</MessageResponse>
+											)}
+
+											{/* Render artifacts if present for assistant messages */}
+											{message.role === "assistant" && attachments?.map((attachment, idx) => (
+												<Artifact key={idx} className="mt-3">
+													<ArtifactHeader>
+														<div className="flex-1">
+															<ArtifactTitle>
+																{attachment.name || "Artifact"}
+															</ArtifactTitle>
+															{attachment.mediaType && (
+																<ArtifactDescription>
+																	{attachment.mediaType}
+																</ArtifactDescription>
+															)}
 														</div>
+														<ArtifactActions>
+															{attachment.content && (
+																<ArtifactAction
+																	tooltip="Copy code"
+																	icon={Copy}
+																	onClick={() => handleCopyMessage(attachment.content || "")}
+																/>
+															)}
+															{attachment.url && (
+																<ArtifactAction
+																	tooltip="Open in new tab"
+																	icon={ExternalLink}
+																	onClick={() => window.open(attachment.url, "_blank")}
+																/>
+															)}
+															{attachment.content && (
+																<ArtifactAction
+																	tooltip="Download"
+																	icon={Download}
+																	onClick={() => {
+																		const blob = new Blob([attachment.content || ""], { type: "text/plain" });
+																		const url = URL.createObjectURL(blob);
+																		const a = document.createElement("a");
+																		a.href = url;
+																		a.download = attachment.name || "artifact.txt";
+																		a.click();
+																		URL.revokeObjectURL(url);
+																	}}
+																/>
+															)}
+														</ArtifactActions>
+													</ArtifactHeader>
+													<ArtifactContent>
+														{attachment.content && (
+															<pre className="overflow-x-auto rounded-md bg-muted p-4 text-sm">
+																<code>{attachment.content}</code>
+															</pre>
+														)}
+														{attachment.url && !attachment.content && (
+															<div className="flex items-center gap-2">
+																<ExternalLink className="h-4 w-4 text-muted-foreground" />
+																<a
+																	href={attachment.url}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	className="text-primary hover:underline text-sm"
+																>
+																	View artifact
+																</a>
+															</div>
+														)}
+													</ArtifactContent>
+												</Artifact>
+											))}
+										</MessageContent>
+
+										{/* Message Toolbar with Actions */}
+										{message.content && (
+											<MessageToolbar className="opacity-0 group-hover:opacity-100 transition-opacity">
+												<MessageActions>
+													<MessageAction
+														tooltip="Copy"
+														onClick={() => handleCopyMessage(message.content)}
+													>
+														<Copy className="h-3.5 w-3.5" />
+													</MessageAction>
+
+													{message.role === "user" && (
+														<MessageAction
+															tooltip="Edit"
+															onClick={() => handleEditMessage(message.id, message.content)}
+														>
+															<Pencil className="h-3.5 w-3.5" />
+														</MessageAction>
 													)}
-												</ArtifactContent>
-											</Artifact>
-										))}
-									</MessageContent>
-								</Message>
-							))}
+
+													{message.role === "assistant" && (
+														<>
+															<MessageAction
+																tooltip="Regenerate"
+																onClick={() => handleRegenerateMessage(message.id)}
+															>
+																<RefreshCw className="h-3.5 w-3.5" />
+															</MessageAction>
+															<MessageAction
+																tooltip="Good response"
+																onClick={() => handleFeedback(message.id, "up")}
+															>
+																<ThumbsUp className="h-3.5 w-3.5" />
+															</MessageAction>
+															<MessageAction
+																tooltip="Bad response"
+																onClick={() => handleFeedback(message.id, "down")}
+															>
+																<ThumbsDown className="h-3.5 w-3.5" />
+															</MessageAction>
+														</>
+													)}
+												</MessageActions>
+											</MessageToolbar>
+										)}
+									</Message>
+								);
+							})}
 
 							{isLoading && (
 								<Message from="assistant">
@@ -364,22 +810,45 @@ export function AiChatInterface() {
 			</div>
 
 			{/* Suggested Actions & Input */}
-			<div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
-				<div className="relative flex w-full flex-col gap-4">
+			<div className="bg-background px-4 py-4">
+				<div className="mx-auto max-w-3xl flex flex-col gap-3">
+					{/* Owner-Required Pending Actions (Destructive) */}
+					{ownerPendingActions.length > 0 && (
+						<div className="space-y-2">
+							{ownerPendingActions.map((action) => (
+								<ActionApprovalBanner
+									key={action.id}
+									pendingAction={action}
+									onViewDetails={() => handleViewActionDetails(action)}
+								/>
+							))}
+						</div>
+					)}
+
+					{/* Basic Approval Requests */}
+					{pendingApprovals.length > 0 && (
+						<div className="space-y-2">
+							{pendingApprovals.map((approval) => renderApprovalRequest(approval))}
+						</div>
+					)}
+
 					{/* Suggested Actions */}
 					{showSuggestedActions && messages.length === 0 && (
-						<div className="grid w-full gap-2 sm:grid-cols-2" data-testid="suggested-actions">
-							{SUGGESTED_ACTIONS.map((action, idx) => (
-								<div key={idx} style={{ opacity: 1, transform: "none" }}>
+						<div className="flex flex-wrap gap-2" data-testid="suggested-actions">
+							{SUGGESTED_ACTIONS.map((action, idx) => {
+								const ActionIcon = action.icon;
+								return (
 									<button
-										className="inline-flex items-center justify-center gap-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-full h-auto w-full whitespace-normal p-3 text-left"
+										key={idx}
+										className="inline-flex items-center gap-2 text-sm border border-border bg-background hover:bg-muted rounded-lg px-3 py-2 transition-colors"
 										onClick={() => handleSuggestedAction(action)}
 										type="button"
 									>
-										{action}
+										<ActionIcon className="h-4 w-4 text-muted-foreground" />
+										<span>{action.text}</span>
 									</button>
-								</div>
-							))}
+								);
+							})}
 						</div>
 					)}
 
@@ -390,6 +859,6 @@ export function AiChatInterface() {
 				</div>
 			</div>
 		</div>
+		</>
 	);
 }
-

@@ -10,16 +10,16 @@
 
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Mail, MessageSquare, User, Building2, Phone, AtSign } from "lucide-react";
 import { searchCustomers } from "@/actions/customers";
 import { searchVendors } from "@/actions/vendors";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 import { cn } from "@/lib/utils";
+import { AtSign, Building2, Loader2, Mail, MessageSquare, Phone, User } from "lucide-react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 type RecipientType = "email" | "sms";
 
@@ -88,7 +88,6 @@ export function RecipientSelector({
 				try {
 					// Search customers
 					const customersResult = await searchCustomers(searchQuery, { limit: 20 });
-					console.log("Customers search result:", customersResult);
 					
 					// Handle ActionResult structure: { success: boolean, data?: T, error?: string }
 					// Also handle direct array returns (for backward compatibility)
@@ -116,16 +115,13 @@ export function RecipientSelector({
 							phone: c.phone || c.primary_phone || null,
 							company_name: c.company_name || null,
 						}));
-						console.log("Mapped customers:", customerData);
 						setCustomers(customerData);
 					} else {
-						console.log("No customers found for query:", searchQuery);
 						setCustomers([]);
 					}
 
 					// Search vendors
 					const vendorsResult = await searchVendors(searchQuery);
-					console.log("Vendors search result:", vendorsResult);
 					
 					// Handle ActionResult structure: { success: boolean, data?: T, error?: string }
 					if (vendorsResult.success) {
@@ -273,39 +269,42 @@ export function RecipientSelector({
 						Search for a customer or vendor, or enter a custom {recipientType === "email" ? "email address" : "phone number"}
 					</DialogDescription>
 				</DialogHeader>
-				<Command className="rounded-lg border shadow-md">
+				<Command className="rounded-lg border shadow-md" shouldFilter={false}>
 					<CommandInput
 						placeholder={`Search customers, vendors, or enter ${recipientType === "email" ? "email" : "phone number"}...`}
 						value={customInputMode ? customInput : searchQuery}
 						onValueChange={(value) => {
-							if (customInputMode) {
-								// User is in custom input mode, update custom input
+						if (customInputMode) {
+							// User is in custom input mode, update custom input
+							setCustomInput(value);
+						} else {
+							// Check if user has typed a VALID complete email or phone
+							// Only switch to custom mode if it's actually valid
+							const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+							const isValidEmail = emailRegex.test(value.trim());
+							const phoneDigits = value.replace(/\D/g, "");
+							const isValidPhone = phoneDigits.length >= 10;
+							
+							// Be conservative - only switch to custom mode for VALID inputs
+							// This prevents switching mode while typing customer names
+							if (isValidEmail && recipientType === "email") {
+								// Valid complete email address
+								setCustomInputMode("email");
 								setCustomInput(value);
+								setSearchQuery(""); // Clear search query
+							} else if (isValidPhone && recipientType === "sms" && !value.includes("@")) {
+								// Valid phone number (10+ digits, no @ symbol)
+								setCustomInputMode("phone");
+								setCustomInput(value);
+								setSearchQuery(""); // Clear search query
 							} else {
-								// Check if user is typing a complete email (has @ and .)
-								const looksLikeEmail = value.includes("@") && value.includes(".");
-								// Check if user is typing mostly numbers (phone)
-								const digitCount = (value.match(/\d/g) || []).length;
-								const looksLikePhone = digitCount >= 7 && value.length >= 10;
-								
-								if (looksLikeEmail && !value.includes(" ")) {
-									// Switch to email mode only if it looks like a complete email
-									setCustomInputMode("email");
-									setCustomInput(value);
-									setSearchQuery(""); // Clear search query
-								} else if (looksLikePhone && !value.includes("@")) {
-									// Switch to phone mode only if it looks like a phone number
-									setCustomInputMode("phone");
-									setCustomInput(value);
-									setSearchQuery(""); // Clear search query
-								} else {
-									// Normal search mode
-									setSearchQuery(value);
-									setCustomInputMode(null);
-									setCustomInput("");
-								}
+								// Normal search mode - keep searching
+								setSearchQuery(value);
+								setCustomInputMode(null);
+								setCustomInput("");
 							}
-						}}
+						}
+					}}
 						onKeyDown={(e) => {
 							// Handle Enter key to submit custom email/phone
 							if (e.key === "Enter") {

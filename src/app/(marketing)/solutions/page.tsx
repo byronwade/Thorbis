@@ -285,10 +285,10 @@ export default function SolutionsOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
-							<Link href="/waitlist">Create your account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild variant="outline">
-							<Link href="/pricing">Review pricing</Link>
+							<Link href="/pricing">View Pricing</Link>
 						</Button>
 					</div>
 				</header>
@@ -459,10 +459,10 @@ export default function SolutionsOverviewPage() {
 
 				<section className="border-border/60 from-primary/10 via-background to-background mt-20 rounded-3xl border bg-gradient-to-br p-10 text-center">
 					<p className="text-primary text-sm font-semibold tracking-wide uppercase">
-						Ready to build?
+						Ready to get started?
 					</p>
 					<h2 className="mt-2 text-3xl font-bold">
-						Create your account or schedule a working session
+						Join the waitlist or schedule a demo
 					</h2>
 					<p className="text-muted-foreground mt-3 text-lg">
 						Thorbis is $200/month base plus usage, unlimited users, and data
@@ -470,10 +470,10 @@ export default function SolutionsOverviewPage() {
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
-							<Link href="/waitlist">Create account</Link>
+							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 						<Button asChild size="lg" variant="outline">
-							<Link href="/contact">Contact sales</Link>
+							<Link href="/contact">Contact Sales</Link>
 						</Button>
 					</div>
 				</section>

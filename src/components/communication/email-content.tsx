@@ -2,8 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Download, File, Image as ImageIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Download, File, Image as ImageIcon, AlertCircle } from "lucide-react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { toast } from "sonner";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EmailAttachment {
 	id?: string;
@@ -238,15 +244,20 @@ export function EmailContent({
 }
 
 function AttachmentItem({ attachment }: { attachment: EmailAttachment }) {
-	const filename =
-		attachment.filename || attachment.name || "attachment";
+	const filename = attachment.filename || attachment.name || "attachment";
 	const contentType = attachment.content_type || attachment.type || "";
 	const isImage = contentType.startsWith("image/");
 
-	// Generate download URL
-	// If we have storage_path and storage_bucket, we'd need to create a signed URL
-	// For now, we'll use storage_url if available
-	const downloadUrl = attachment.storage_url || "#";
+	// Check if we have a valid download URL
+	const downloadUrl = attachment.storage_url || null;
+	const hasDownloadUrl = !!downloadUrl && downloadUrl !== "#";
+
+	// Handler for unavailable downloads
+	const handleUnavailableDownload = useCallback(() => {
+		toast.error("Attachment unavailable", {
+			description: "This attachment cannot be downloaded. The file may have expired or been removed.",
+		});
+	}, []);
 
 	return (
 		<div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
@@ -259,26 +270,60 @@ function AttachmentItem({ attachment }: { attachment: EmailAttachment }) {
 			</div>
 			<div className="flex-1 min-w-0">
 				<p className="text-sm font-medium truncate">{filename}</p>
-				{contentType && (
-					<p className="text-xs text-muted-foreground">{contentType}</p>
-				)}
+				<div className="flex items-center gap-1.5">
+					{contentType && (
+						<span className="text-xs text-muted-foreground">{contentType}</span>
+					)}
+					{!hasDownloadUrl && (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span className="text-xs text-orange-500 flex items-center gap-0.5">
+									<AlertCircle className="h-3 w-3" />
+									Unavailable
+								</span>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>This attachment cannot be downloaded</p>
+							</TooltipContent>
+						</Tooltip>
+					)}
+				</div>
 			</div>
-			<Button
-				variant="ghost"
-				size="sm"
-				className="flex-shrink-0"
-				asChild
-			>
-				<a
-					href={downloadUrl}
-					download={filename}
-					target="_blank"
-					rel="noopener noreferrer"
+			{hasDownloadUrl ? (
+				<Button
+					variant="ghost"
+					size="sm"
+					className="flex-shrink-0"
+					asChild
 				>
-					<Download className="h-4 w-4" />
-					<span className="sr-only">Download {filename}</span>
-				</a>
-			</Button>
+					<a
+						href={downloadUrl}
+						download={filename}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Download className="h-4 w-4" />
+						<span className="sr-only">Download {filename}</span>
+					</a>
+				</Button>
+			) : (
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="flex-shrink-0 opacity-50"
+							onClick={handleUnavailableDownload}
+						>
+							<Download className="h-4 w-4" />
+							<span className="sr-only">Download {filename}</span>
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Attachment unavailable for download</p>
+					</TooltipContent>
+				</Tooltip>
+			)}
 		</div>
 	);
 }

@@ -23,6 +23,10 @@ export type CompanySms = {
 		id: string;
 		first_name: string | null;
 		last_name: string | null;
+		display_name: string | null;
+		email: string | null;
+		phone: string | null;
+		company_name: string | null;
 	} | null;
 	sent_at: string | null;
 	delivered_at: string | null;
@@ -89,7 +93,7 @@ export async function getCompanySms(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers!left(id, first_name, last_name),
+			customer:customers!left(id, first_name, last_name, display_name, email, phone, company_name),
 			sent_at,
 			delivered_at,
 			status,
@@ -221,7 +225,7 @@ export async function getSmsById(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers!left(id, first_name, last_name),
+			customer:customers!left(id, first_name, last_name, display_name, email, phone, company_name),
 			sent_at,
 			delivered_at,
 			status,
@@ -327,7 +331,7 @@ export async function getSmsConversation(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers!left(id, first_name, last_name),
+			customer:customers!left(id, first_name, last_name, display_name, email, phone, company_name),
 			sent_at,
 			delivered_at,
 			status,

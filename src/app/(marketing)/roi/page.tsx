@@ -1,4 +1,13 @@
-
+import {
+	ArrowRight,
+	Bot,
+	Calculator,
+	Clock,
+	DollarSign,
+	Download,
+	Layers,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
@@ -58,6 +67,36 @@ const FAQS = [
 	},
 ];
 
+const BENEFIT_CARDS = [
+	{
+		title: "AI drives higher close rates",
+		description:
+			"Thorbis AI assistant books more jobs after hours and keeps leads warm with automated follow-up, improving conversion by 5-12%.",
+		icon: Bot,
+		color: "from-violet-500/10 to-purple-500/10 border-violet-500/30",
+		iconBg: "bg-violet-500/10",
+		iconColor: "text-violet-600 dark:text-violet-400",
+	},
+	{
+		title: "Dispatch and technician efficiency",
+		description:
+			"Streamlined scheduling, mobile workflows, and digital checklists reduce job cycle time, freeing crews for more revenue work.",
+		icon: Clock,
+		color: "from-blue-500/10 to-cyan-500/10 border-blue-500/30",
+		iconBg: "bg-blue-500/10",
+		iconColor: "text-blue-600 dark:text-blue-400",
+	},
+	{
+		title: "Consolidate point solutions",
+		description:
+			"Replace add-on SMS tools, marketing drip apps, and manual spreadsheets—Thorbis bundles communications, portal, and analytics.",
+		icon: Layers,
+		color: "from-emerald-500/10 to-green-500/10 border-emerald-500/30",
+		iconBg: "bg-emerald-500/10",
+		iconColor: "text-emerald-600 dark:text-emerald-400",
+	},
+];
+
 const howToSchema = createHowToSchema({
 	name: "How to calculate Thorbis ROI",
 	steps: [
@@ -108,100 +147,148 @@ export default function RoiPage() {
 				type="application/ld+json"
 			/>
 
-			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-				<header className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="tracking-wide uppercase" variant="secondary">
-						ROI Calculator
-					</Badge>
-					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-						Quantify the ROI of switching to Thorbis
-					</h1>
-					<p className="text-muted-foreground text-lg leading-relaxed">
-						Use your real numbers to project labor savings, net-new revenue, and
-						net ROI after Thorbis replaces your legacy field service stack.
-						Thorbis pricing starts at $200/month with pay-as-you-go usage—no
-						per-user fees and absolutely no lock-in.
-					</p>
-					<div className="flex flex-wrap justify-center gap-3">
-						<Button asChild size="lg">
-							<Link href="/waitlist">Join Waitlist</Link>
-						</Button>
-						<Button asChild size="lg" variant="outline">
-							<Link href="/switch">Explore migration program</Link>
-						</Button>
+			<div className="container mx-auto space-y-20 px-4 py-16 sm:px-6 lg:px-8">
+				{/* Hero Section */}
+				<section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-green-600/20 via-background to-emerald-500/5 p-8 sm:p-12 lg:p-16">
+					<div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-green-500/10 blur-3xl" />
+					<div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-emerald-500/10 blur-3xl" />
+
+					<div className="mx-auto max-w-4xl space-y-6 text-center">
+						<Badge className="px-4 py-1.5 font-medium tracking-wide uppercase bg-green-500/10 text-green-600 dark:text-green-400">
+							<Calculator className="mr-2 size-4" />
+							ROI Calculator
+						</Badge>
+						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+							Quantify the ROI of switching to Thorbis
+						</h1>
+						<p className="text-muted-foreground text-lg leading-relaxed sm:text-xl">
+							Use your real numbers to project labor savings, net-new revenue, and
+							net ROI after Thorbis replaces your legacy field service stack.
+							Thorbis pricing starts at $200/month with pay-as-you-go usage—no
+							per-user fees and absolutely no lock-in.
+						</p>
+						<div className="border-border/50 flex flex-wrap items-center justify-center gap-6 border-t pt-6">
+							<div className="flex items-center gap-2">
+								<DollarSign className="size-5 text-green-600 dark:text-green-400" />
+								<span className="text-muted-foreground text-sm">See actual savings</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<TrendingUp className="size-5 text-green-600 dark:text-green-400" />
+								<span className="text-muted-foreground text-sm">Project revenue lift</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<Download className="size-5 text-green-600 dark:text-green-400" />
+								<span className="text-muted-foreground text-sm">Export to share</span>
+							</div>
+						</div>
+						<div className="flex flex-wrap justify-center gap-3">
+							<Button asChild className="group" size="lg">
+								<Link href="/waitlist">
+									Join Waitlist
+									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+								</Link>
+							</Button>
+							<Button asChild size="lg" variant="outline">
+								<Link href="/switch">Explore migration program</Link>
+							</Button>
+						</div>
 					</div>
-				</header>
+				</section>
 
-				<main className="mt-16 space-y-20">
-					<section>
-						<RoiCalculator />
-					</section>
+				{/* Calculator Section */}
+				<section>
+					<RoiCalculator />
+				</section>
 
-					<section className="grid gap-6 lg:grid-cols-3">
-						{[
-							{
-								title: "AI drives higher close rates",
-								description:
-									"Thorbis AI assistant books more jobs after hours and keeps leads warm with automated follow-up, improving conversion by 5-12%.",
-							},
-							{
-								title: "Dispatch and technician efficiency",
-								description:
-									"Streamlined scheduling, mobile workflows, and digital checklists reduce job cycle time, freeing crews for more revenue work.",
-							},
-							{
-								title: "Consolidate point solutions",
-								description:
-									"Replace add-on SMS tools, marketing drip apps, and manual spreadsheets—Thorbis bundles communications, portal, and analytics.",
-							},
-						].map((item) => (
-							<Card key={item.title}>
-								<CardHeader>
-									<CardTitle className="text-lg">{item.title}</CardTitle>
-								</CardHeader>
-								<CardContent className="text-muted-foreground text-sm leading-relaxed">
-									{item.description}
-								</CardContent>
-							</Card>
-						))}
-					</section>
+				{/* Benefits Section */}
+				<section className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto">
+						<Badge className="mb-4" variant="secondary">
+							Why ROI Improves
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							Where the savings come from
+						</h2>
+						<p className="text-muted-foreground mt-4 text-lg">
+							Three key areas where Thorbis delivers measurable impact.
+						</p>
+					</div>
+					<div className="grid gap-6 lg:grid-cols-3">
+						{BENEFIT_CARDS.map((item) => {
+							const Icon = item.icon;
+							return (
+								<Card
+									className={`border-2 bg-gradient-to-br transition-all hover:shadow-lg ${item.color}`}
+									key={item.title}
+								>
+									<CardHeader>
+										<div className={`flex size-12 items-center justify-center rounded-xl mb-3 ${item.iconBg}`}>
+											<Icon className={`size-6 ${item.iconColor}`} />
+										</div>
+										<CardTitle className="text-lg">{item.title}</CardTitle>
+									</CardHeader>
+									<CardContent className="text-muted-foreground text-sm leading-relaxed">
+										{item.description}
+									</CardContent>
+								</Card>
+							);
+						})}
+					</div>
+				</section>
 
-					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="text-3xl font-semibold">
+				{/* CTA Section */}
+				<section className="relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br from-primary/10 via-background to-primary/5 p-10 text-center">
+					<div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
+					<div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
+
+					<div className="relative space-y-6 max-w-3xl mx-auto">
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 							Share your ROI analysis with stakeholders
 						</h2>
-						<p className="text-muted-foreground">
+						<p className="text-muted-foreground text-lg">
 							Export the numbers and pair them with our migration plan to prove
 							the case for change.
 						</p>
 						<div className="flex flex-wrap justify-center gap-3">
-							<Button asChild>
+							<Button asChild className="group" size="lg">
 								<Link href="/templates?tag=migration">
 									Download migration checklist
+									<Download className="ml-2 size-4" />
 								</Link>
 							</Button>
-							<Button asChild variant="outline">
+							<Button asChild size="lg" variant="outline">
 								<Link href="/vs">Compare Thorbis with your current system</Link>
 							</Button>
 						</div>
-					</section>
+					</div>
+				</section>
 
-					<section className="mx-auto max-w-4xl space-y-4">
-						<h2 className="text-center text-3xl font-semibold">ROI FAQ</h2>
-						<div className="space-y-4">
-							{FAQS.map((faq) => (
-								<Card key={faq.question}>
-									<CardHeader>
-										<CardTitle className="text-lg">{faq.question}</CardTitle>
-									</CardHeader>
-									<CardContent className="text-muted-foreground text-sm leading-relaxed">
-										{faq.answer}
-									</CardContent>
-								</Card>
-							))}
-						</div>
-					</section>
-				</main>
+				{/* FAQ Section */}
+				<section className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto">
+						<Badge className="mb-4" variant="secondary">
+							FAQ
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							ROI Calculator Questions
+						</h2>
+					</div>
+					<div className="mx-auto max-w-4xl grid gap-4 md:grid-cols-2">
+						{FAQS.map((faq) => (
+							<Card
+								className="border-2 hover:border-primary/30 transition-all hover:shadow-lg"
+								key={faq.question}
+							>
+								<CardHeader>
+									<CardTitle className="text-lg">{faq.question}</CardTitle>
+								</CardHeader>
+								<CardContent className="text-muted-foreground text-sm leading-relaxed">
+									{faq.answer}
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</section>
 			</div>
 		</>
 	);

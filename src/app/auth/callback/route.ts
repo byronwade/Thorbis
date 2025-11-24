@@ -60,7 +60,7 @@ export async function GET(request: Request) {
 					.single();
 
 				// If missing required fields, redirect to complete profile
-				if (!(profile?.phone && profile?.name)) {
+				if (!(profile?.phone && profile?.full_name)) {
 					return NextResponse.redirect(`${requestUrl.origin}/complete-profile`);
 				}
 			}

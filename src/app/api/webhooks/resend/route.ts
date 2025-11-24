@@ -1,3 +1,5 @@
+import { processResendWebhookEvent } from "@/lib/email/deliverability-monitor";
+import { handleBounceWebhook, handleComplaintWebhook } from "@/lib/email/email-sender";
 import { getReceivedEmail, getReceivedEmailAttachment, listReceivedEmailAttachments, verifyResendWebhookSignature } from "@/lib/email/resend-domains";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -6,23 +8,78 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Buffer } from "node:buffer";
 
+/**
+ * Result type for customer lookup with duplicate detection
+ */
+type CustomerLookupResult = {
+	customerId: string | null;
+	duplicateCustomerIds?: string[];
+	hasDuplicates: boolean;
+};
+
+/**
+ * Find customer by email address for auto-linking inbound emails
+ * Returns the most recently updated customer if multiple matches found,
+ * along with duplicate detection info for potential merge prompts
+ */
+async function findCustomerByEmail(
+	supabase: TypedSupabaseClient,
+	companyId: string,
+	email: string,
+): Promise<CustomerLookupResult> {
+	if (!email) {
+		return { customerId: null, hasDuplicates: false };
+	}
+
+	const normalizedEmail = email.toLowerCase().trim();
+
+	// Find ALL matching customers, ordered by most recently updated
+	const { data: customers, error } = await supabase
+		.from("customers")
+		.select("id, updated_at")
+		.eq("company_id", companyId)
+		.eq("email", normalizedEmail)
+		.order("updated_at", { ascending: false });
+
+	if (error) {
+		console.error("Error finding customer by email:", error);
+		return { customerId: null, hasDuplicates: false };
+	}
+
+	if (!customers || customers.length === 0) {
+		return { customerId: null, hasDuplicates: false };
+	}
+
+	// Single match - no duplicates
+	if (customers.length === 1) {
+		return { customerId: customers[0].id, hasDuplicates: false };
+	}
+
+	// Multiple matches - return most recently active and flag duplicates
+	console.log(`⚠️  Found ${customers.length} customers with email ${normalizedEmail}`);
+	return {
+		customerId: customers[0].id,
+		duplicateCustomerIds: customers.slice(1).map((c) => c.id),
+		hasDuplicates: true,
+	};
+}
+
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 export async function POST(request: Request) {
-	const webhookId = crypto.randomUUID();
 	try {
-		console.log(`🔄 [${webhookId}] Webhook received - processing...`);
+		console.log("🔄 Webhook received - processing...");
 
 		const rawBody = await request.text();
 		const headersList = await headers();
 
-		console.log(`📋 [${webhookId}] Headers received:`, {
+		console.log("Headers received:", {
 			svixId: headersList.get("svix-id"),
 			svixTimestamp: headersList.get("svix-timestamp"),
 			hasSignature: !!headersList.get("svix-signature")
 		});
 
-		const isValid = verifyResendWebhookSignature({
+		const isValid = await verifyResendWebhookSignature({
 			payload: rawBody,
 			headers: {
 				svixId: headersList.get("svix-id") || undefined,
@@ -39,13 +96,7 @@ export async function POST(request: Request) {
 		console.log("✅ Webhook signature verified");
 
 		const payload = JSON.parse(rawBody) as ResendWebhookPayload;
-		console.log(`📧 [${webhookId}] Processing webhook event: ${payload.type}`);
-		console.log(`📧 [${webhookId}] Event data:`, {
-			emailId: payload.data.email_id || payload.data.id,
-			subject: payload.data.subject,
-			to: payload.data.to,
-			from: payload.data.from,
-		});
+		console.log(`📧 Processing webhook event: ${payload.type}`);
 
 		const supabase = await createServiceSupabaseClient();
 		if (!supabase) {
@@ -62,45 +113,42 @@ export async function POST(request: Request) {
 			case "email.opened":
 			case "email.clicked":
 				await handleEmailEvent(supabase, payload);
+				// Track deliverability events for domain reputation
+				if (["email.delivered", "email.bounced", "email.complained", "email.opened", "email.clicked"].includes(payload.type)) {
+					try {
+						await processResendWebhookEvent({
+							type: payload.type,
+							data: {
+								email_id: payload.data.id,
+								from: typeof payload.data.from?.[0] === "string"
+									? payload.data.from[0]
+									: payload.data.from?.[0]?.email,
+								to: payload.data.to?.map(t => typeof t === "string" ? t : t.email),
+								subject: payload.data.subject,
+								created_at: payload.created_at,
+							},
+						});
+					} catch (deliverabilityError) {
+						console.error("⚠️  Deliverability tracking error:", deliverabilityError);
+						// Don't fail the webhook for deliverability tracking errors
+					}
+				}
 				break;
 			case "email.received":
 				console.log("📧 Handling email.received event");
-				try {
-					await handleEmailReceived(supabase, payload);
-					console.log("✅ Email received event processed successfully");
-				} catch (error) {
-					console.error("❌ Failed to process email.received event:", error);
-					// Return error response so Resend knows to retry
-					return NextResponse.json(
-						{ 
-							success: false, 
-							error: error instanceof Error ? error.message : "Failed to process email" 
-						}, 
-						{ status: 500 }
-					);
-				}
+				await handleEmailReceived(supabase, payload);
 				break;
 			default:
 				console.log(`⚠️  Unknown event type: ${payload.type}`);
 				break;
 		}
 
-		console.log(`✅ [${webhookId}] Webhook processed successfully`);
+		console.log("✅ Webhook processed successfully");
 		return NextResponse.json({ success: true });
 
 	} catch (error) {
-		console.error(`💥 [${webhookId}] Webhook processing failed:`, error);
-		console.error(`💥 [${webhookId}] Error details:`, {
-			message: error instanceof Error ? error.message : "Unknown error",
-			stack: error instanceof Error ? error.stack : undefined,
-		});
-		return NextResponse.json(
-			{ 
-				success: false, 
-				error: error instanceof Error ? error.message : "Internal server error" 
-			}, 
-			{ status: 500 }
-		);
+		console.error("💥 Webhook processing failed:", error);
+		return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
 	}
 }
 
@@ -111,6 +159,52 @@ async function handleEmailEvent(
 	const communicationId = payload.data.tags?.find(
 		(tag) => tag.name === "communication_id",
 	)?.value;
+
+	// Get company_id from tags for suppression list
+	const companyIdTag = payload.data.tags?.find(
+		(tag) => tag.name === "company_id",
+	)?.value;
+
+	// Process bounces and complaints for suppression list
+	if (payload.type === "email.bounced" || payload.type === "email.complained") {
+		// Get recipient emails
+		const toAddresses = payload.data.to?.map(t =>
+			typeof t === "string" ? t : t.email
+		).filter(Boolean) as string[] || [];
+
+		// Try to get company_id from tags or from the communication
+		let companyId = companyIdTag;
+
+		if (!companyId && communicationId) {
+			const { data: comm } = await supabase
+				.from("communications")
+				.select("company_id")
+				.eq("id", communicationId)
+				.single();
+			companyId = comm?.company_id;
+		}
+
+		if (companyId && toAddresses.length > 0) {
+			for (const email of toAddresses) {
+				try {
+					if (payload.type === "email.bounced") {
+						// Determine bounce type from payload
+						const bounceType = payload.data.bounce_type === "hard" ? "hard" : "soft";
+						const bounceReason = payload.data.bounce_reason || payload.data.error?.message;
+
+						console.log(`📧 Processing bounce for ${email} (${bounceType})`);
+						await handleBounceWebhook(companyId, email, bounceType, bounceReason);
+					} else if (payload.type === "email.complained") {
+						console.log(`📧 Processing complaint for ${email}`);
+						await handleComplaintWebhook(companyId, email);
+					}
+				} catch (err) {
+					console.error(`Failed to process ${payload.type} for suppression list:`, err);
+					// Don't fail the webhook for suppression list errors
+				}
+			}
+		}
+	}
 
 	if (!communicationId) {
 		return;
@@ -134,6 +228,17 @@ async function handleEmailEvent(
 		updates.delivered_at = new Date().toISOString();
 	}
 
+	if (payload.type === "email.bounced") {
+		updates.status = "bounced";
+		updates.bounced_at = new Date().toISOString();
+		updates.bounce_reason = payload.data.bounce_reason || payload.data.error?.message;
+	}
+
+	if (payload.type === "email.complained") {
+		updates.status = "complained";
+		updates.complained_at = new Date().toISOString();
+	}
+
 	if (payload.type === "email.opened") {
 		// Get current values to increment counts
 		const { data: current } = await supabase
@@ -144,7 +249,7 @@ async function handleEmailEvent(
 
 		const currentOpenCount = current?.open_count || 0;
 		updates.open_count = currentOpenCount + 1;
-		
+
 		// Set opened_at on first open only
 		if (!current?.opened_at) {
 			updates.opened_at = new Date().toISOString();
@@ -161,7 +266,7 @@ async function handleEmailEvent(
 
 		const currentClickCount = current?.click_count || 0;
 		updates.click_count = currentClickCount + 1;
-		
+
 		// Set clicked_at on first click only
 		if (!current?.clicked_at) {
 			updates.clicked_at = new Date().toISOString();
@@ -195,9 +300,7 @@ async function handleEmailReceived(
 	if (!destination) {
 		console.error("❌ No destination email found in webhook payload");
 		console.error("   Payload data:", JSON.stringify(payload.data, null, 2));
-		console.error("   Full payload:", JSON.stringify(payload, null, 2));
-		// Throw error so it's properly logged and Resend can retry
-		throw new Error("No destination email found in webhook payload");
+		return;
 	}
 
 	console.log(`🔍 Looking up route for: ${destination}`);
@@ -304,25 +407,10 @@ async function handleEmailReceived(
 
 	const emailId = payload.data.email_id || payload.data.id;
 	console.log(`📧 Email ID: ${emailId}`);
-	console.log(`📧 Full payload.data:`, JSON.stringify(payload.data, null, 2));
 
 	if (!emailId) {
 		console.error("❌ No email ID found in webhook payload");
-		console.error("   Payload data keys:", Object.keys(payload.data));
-		console.error("   Full payload:", JSON.stringify(payload, null, 2));
-		// Store as unrouted for debugging
-		await supabase
-			.from("communication_unrouted_emails")
-			.insert({
-				to_address: destination || "unknown",
-				from_address: (payload.data.from?.[0] as any)?.email || (payload.data.from?.[0] as string) || "unknown",
-				subject: payload.data.subject || "No subject",
-				payload: payload,
-				status: 'error',
-				error_message: "No email ID found in webhook payload",
-			})
-			.catch(err => console.error("Failed to store error record:", err));
-		throw new Error("No email ID found in webhook payload");
+		return;
 	}
 
 	console.log(`🚀 Processing received email: ${emailId} for company: ${companyId}`);
@@ -340,19 +428,18 @@ async function handleEmailReceived(
 		hasText: !!emailData.text 
 	});
 
-	// Fetch full email from Resend API to get complete from/to addresses and content
-	let fullEmailData: any = null;
-	const emailResponse = await getReceivedEmail(emailId);
-	if (emailResponse.success && emailResponse.data) {
-		fullEmailData = emailResponse.data;
-		// Use API data if webhook didn't have content
-		if (!emailData.html && !emailData.text) {
-			emailData.html = fullEmailData.html || fullEmailData.body_html || null;
-			emailData.text = fullEmailData.text || fullEmailData.body || fullEmailData.plain_text || "";
+	// Only fetch from Resend API if webhook didn't include content
+	if (!emailData.html && !emailData.text) {
+		console.log(`⚠️  No content in webhook payload, fetching from Resend API...`);
+		const emailResponse = await getReceivedEmail(emailId);
+
+		if (emailResponse.success && emailResponse.data) {
+			emailData.html = emailResponse.data.html || emailResponse.data.body_html || null;
+			emailData.text = emailResponse.data.text || emailResponse.data.body || emailResponse.data.plain_text || "";
 			console.log(`✅ Fetched content from Resend API`);
+		} else {
+			console.error(`Failed to fetch email content for ${emailId}: ${emailResponse.error}`);
 		}
-	} else {
-		console.error(`Failed to fetch email content for ${emailId}: ${emailResponse.error}`);
 	}
 
 	console.log(`Processing email: ${emailData.subject}`);
@@ -465,218 +552,108 @@ async function handleEmailReceived(
 		}
 
 		console.log(`Successfully processed ${storedAttachments.length} attachments`);
-		
-		/**
-		 * Extract full email address from various formats
-		 * NEVER truncates - always returns the complete email address
-		 */
-		const extractFullEmail = (value: unknown): string | undefined => {
-			if (!value) return undefined;
-			
-			// Extract email from "Name <email@domain.com>" format
-			const extractFromFormat = (str: string): string => {
-				// Try to extract email from angle brackets first
-				const emailMatch = str.match(/<([^>]+@[^>]+)>/);
-				if (emailMatch && emailMatch[1]) {
-					const extracted = emailMatch[1].trim();
-					// Validate it looks like an email
-					if (extracted.includes("@") && extracted.length > 3) {
-						return extracted;
-					}
-				}
-				// If no angle brackets, check if it's a valid email format
-				if (str.includes("@") && str.length > 3) {
-					return str.trim();
-				}
-				// Return as-is if no clear email format found
-				return str.trim();
-			};
+		// Extract from address (handle both string and object formats)
+		const fromAddress = payload.data.from?.[0];
+		const fromEmail = typeof fromAddress === "string" ? fromAddress : fromAddress?.email;
+		const fromName = typeof fromAddress === "object" && fromAddress && "name" in fromAddress ? fromAddress.name : undefined;
 
-			// Handle string format
-			if (typeof value === "string" && value.length > 0) {
-				const extracted = extractFromFormat(value);
-				// Only return if it looks like a valid email (contains @ and has reasonable length)
-				if (extracted.includes("@") && extracted.length > 3) {
-					return extracted;
-				}
-			}
-
-			// Handle array format
-			if (Array.isArray(value) && value.length > 0) {
-				const first = value[0];
-				if (typeof first === "string" && first.length > 0) {
-					const extracted = extractFromFormat(first);
-					if (extracted.includes("@") && extracted.length > 3) {
-						return extracted;
-					}
-				}
-				if (first && typeof first === "object" && "email" in first) {
-					const email = (first as { email?: string }).email;
-					if (email && typeof email === "string" && email.length > 0) {
-						const extracted = extractFromFormat(email);
-						if (extracted.includes("@") && extracted.length > 3) {
-							return extracted;
-						}
-					}
-				}
-			}
-
-			// Handle object format
-			if (value && typeof value === "object" && !Array.isArray(value)) {
-				const obj = value as Record<string, unknown>;
-				if ("email" in obj && typeof obj.email === "string" && obj.email.length > 0) {
-					const extracted = extractFromFormat(obj.email);
-					if (extracted.includes("@") && extracted.length > 3) {
-						return extracted;
-					}
-				}
-			}
-
-			return undefined;
-		};
-
-		// Extract from address - prioritize API response, fallback to webhook payload
-		let fromAddress: any = null;
-		let fromEmail: string | undefined;
-		let fromName: string | undefined;
-		
-		// Try to get from API response first (more reliable)
-		if (fullEmailData?.from) {
-			fromAddress = fullEmailData.from;
-			console.log(`📧 Using from address from API:`, fromAddress);
-		} else {
-			// Fallback to webhook payload
-			fromAddress = payload.data.from?.[0];
-			console.log(`📧 Using from address from webhook:`, fromAddress);
-		}
-		
-		// Parse from address (handle both string and object formats)
-		if (typeof fromAddress === "string") {
-			fromEmail = extractFullEmail(fromAddress);
-			// Extract name from "Name <email@domain.com>" format
-			const nameMatch = fromAddress.match(/^([^<]+)</);
-			if (nameMatch && nameMatch[1]) {
-				fromName = nameMatch[1].trim();
-			}
-		} else if (fromAddress && typeof fromAddress === "object") {
-			fromEmail = extractFullEmail(fromAddress.email || fromAddress);
-			fromName = (fromAddress.name as string) || undefined;
-		}
-		
-		// If still no email, try parsing from webhook payload more carefully
-		if (!fromEmail || fromEmail.length <= 3 || !fromEmail.includes("@")) {
-			const webhookFrom = payload.data.from;
-			if (Array.isArray(webhookFrom) && webhookFrom.length > 0) {
-				const firstFrom = webhookFrom[0];
-				if (typeof firstFrom === "string") {
-					const extracted = extractFullEmail(firstFrom);
-					if (extracted) fromEmail = extracted;
-					// Extract name from formatted string
-					const nameMatch = firstFrom.match(/^([^<]+)</);
-					if (nameMatch && nameMatch[1]) {
-						fromName = nameMatch[1].trim();
-					}
-				} else if (firstFrom && typeof firstFrom === "object" && "email" in firstFrom) {
-					const extracted = extractFullEmail(firstFrom.email);
-					if (extracted) fromEmail = extracted;
-					fromName = (firstFrom.name as string) || undefined;
-				}
-			}
-		}
-		
-		// CRITICAL: Validate email before storing - must contain @ and be more than 3 characters
-		if (!fromEmail || fromEmail.length <= 3 || !fromEmail.includes("@")) {
-			console.error(`❌ Invalid email address extracted: "${fromEmail}"`);
-			console.error(`   Full fromAddress:`, JSON.stringify(fromAddress, null, 2));
-			console.error(`   Webhook payload from:`, JSON.stringify(payload.data.from, null, 2));
-			console.error(`   API response from:`, fullEmailData?.from);
-			// Don't throw - log error but continue with a placeholder to prevent data loss
-			fromEmail = "unknown@unknown.local";
-		}
-		
-		console.log(`📧 Extracted from address:`, { fromEmail, fromName });
-
-		// Try to link to customer by email
+		// Auto-link to customer by email address (handles multiple matches)
 		let customerId: string | null = null;
+		let customerLookup: CustomerLookupResult = { customerId: null, hasDuplicates: false };
 		if (fromEmail) {
-			const { findCustomerByEmail } = await import("@/lib/communication/link-customer");
-			customerId = await findCustomerByEmail(fromEmail, companyId);
+			console.log(`🔍 Looking up customer by email: ${fromEmail}`);
+			customerLookup = await findCustomerByEmail(supabase, companyId, fromEmail);
+			customerId = customerLookup.customerId;
 			if (customerId) {
-				console.log(`✅ Linked email to customer: ${customerId} (${fromEmail})`);
+				console.log(`✅ Found customer: ${customerId}`);
+				if (customerLookup.hasDuplicates) {
+					console.log(`⚠️  Warning: ${customerLookup.duplicateCustomerIds?.length} duplicate customers found with same email`);
+				}
+			} else {
+				console.log(`⚠️  No customer found for email: ${fromEmail}`);
 			}
 		}
 
-		// Run spam filter check (can be disabled via environment variable for testing)
-		const spamFilterEnabled = process.env.ENABLE_SPAM_FILTER !== "false";
+		// Run spam filter check
+		console.log(`🔍 Running spam filter check...`);
 		let spamResult = null;
-		
-		if (spamFilterEnabled) {
-			console.log(`🔍 Running spam filter check...`);
-			try {
-				const { checkSpam } = await import("@/lib/email/spam-filter");
-				spamResult = await checkSpam({
-					subject: emailData.subject,
-					body: finalText,
-					bodyHtml: finalHtml,
-					fromAddress: fromEmail,
-					fromName: fromName,
-					toAddress: destination,
-				});
-				
-				if (spamResult.isSpam) {
-					console.log(`🚫 Email detected as spam (${spamResult.method}, confidence: ${(spamResult.confidence * 100).toFixed(1)}%): ${spamResult.reason}`);
-				} else {
-					console.log(`✅ Email passed spam filter (${spamResult.method}, confidence: ${(spamResult.confidence * 100).toFixed(1)}%)`);
-				}
-			} catch (error) {
-				console.error(`⚠️  Spam filter check failed:`, error);
-				// Continue processing even if spam check fails
+		try {
+			const { checkSpam } = await import("@/lib/email/spam-filter");
+			spamResult = await checkSpam({
+				subject: emailData.subject,
+				body: finalText,
+				bodyHtml: finalHtml,
+				fromAddress: fromEmail,
+				fromName: fromName,
+				toAddress: destination,
+			});
+			
+			if (spamResult.isSpam) {
+				console.log(`🚫 Email detected as spam (${spamResult.method}, confidence: ${(spamResult.confidence * 100).toFixed(1)}%): ${spamResult.reason}`);
+			} else {
+				console.log(`✅ Email passed spam filter (${spamResult.method}, confidence: ${(spamResult.confidence * 100).toFixed(1)}%)`);
 			}
-		} else {
-			console.log(`⚠️  Spam filter is disabled (ENABLE_SPAM_FILTER=false)`);
+		} catch (error) {
+			console.error(`⚠️  Spam filter check failed:`, error);
+			// Continue processing even if spam check fails
 		}
 
 		// Now insert the email into communications table with all data
 		console.log(`💾 Inserting email into database...`);
 		console.log(`   Company ID: ${companyId}`);
+		console.log(`   Customer ID: ${customerId || "none"}`);
 		console.log(`   Subject: ${emailData.subject}`);
 		console.log(`   From: ${fromEmail}`);
 		console.log(`   Attachments: ${storedAttachments.length}`);
 		console.log(`   Spam: ${spamResult?.isSpam ? "YES" : "NO"}`);
 
+		// Build provider metadata with duplicate customer detection
+		const providerMetadata: Record<string, unknown> = {
+			...payload,
+			full_content: emailData, // Store API response
+			webhook_content: { // Store webhook payload content for reference
+				text: payload.data.text,
+				html: payload.data.html,
+				body: payload.data.body,
+				body_html: payload.data.body_html,
+			},
+			attachments: storedAttachments, // Store attachment metadata for easy access
+			spam_check: spamResult ? {
+				isSpam: spamResult.isSpam,
+				confidence: spamResult.confidence,
+				reason: spamResult.reason,
+				method: spamResult.method,
+				score: spamResult.score,
+				checked_at: new Date().toISOString(),
+			} : null,
+		};
+
+		// Add duplicate customer detection info if multiple matches found
+		if (customerLookup.hasDuplicates) {
+			providerMetadata.duplicate_customers = {
+				detected: true,
+				primary_customer_id: customerId,
+				other_customer_ids: customerLookup.duplicateCustomerIds,
+				merge_suggested: true,
+				message: "Multiple customers found with this email address. Consider merging these contacts.",
+			};
+		}
+
 		const insertData: any = {
 			company_id: companyId,
+			customer_id: customerId, // Auto-linked by email address (most recently updated if duplicates)
 			type: "email",
 			channel: "resend",
 			direction: "inbound",
-			from_address: fromEmail || null, // Store as string, not array - NEVER truncate
-			from_name: fromName || null, // NEVER truncate
-			to_address: destination, // Store as string, not array
+			from_address: fromEmail,
+			from_name: fromName,
+			to_address: destination,
 			subject: emailData.subject,
 			body: finalText,
 			body_html: finalHtml,
 			status: "delivered",
 			provider_message_id: emailId,
-			customer_id: customerId, // Link to customer if found
-			provider_metadata: {
-				...payload,
-				full_content: emailData, // Store API response
-				webhook_content: { // Store webhook payload content for reference
-					text: payload.data.text,
-					html: payload.data.html,
-					body: payload.data.body,
-					body_html: payload.data.body_html,
-				},
-				attachments: storedAttachments, // Store attachment metadata for easy access
-				spam_check: spamResult ? {
-					isSpam: spamResult.isSpam,
-					confidence: spamResult.confidence,
-					reason: spamResult.reason,
-					method: spamResult.method,
-					score: spamResult.score,
-					checked_at: new Date().toISOString(),
-				} : null,
-			},
+			provider_metadata: providerMetadata,
 			is_thread_starter: true,
 		};
 
@@ -685,20 +662,6 @@ async function handleEmailReceived(
 			insertData.category = "spam";
 			// Also add "spam" tag for filtering
 			insertData.tags = ["spam"];
-		}
-
-		// Check for duplicate emails before inserting (prevent duplicate inserts)
-		const { data: existingEmail } = await supabase
-			.from("communications")
-			.select("id")
-			.eq("provider_message_id", emailId)
-			.eq("company_id", companyId)
-			.eq("type", "email")
-			.maybeSingle();
-
-		if (existingEmail) {
-			console.log(`⚠️  Email ${emailId} already exists in database (ID: ${existingEmail.id}), skipping insert`);
-			return; // Email already processed, return successfully
 		}
 
 		const { data: insertedEmail, error: insertError } = await supabase
@@ -710,40 +673,14 @@ async function handleEmailReceived(
 		if (insertError) {
 			console.error(`❌ Failed to insert email:`, insertError);
 			console.error(`   Error details: ${JSON.stringify(insertError, null, 2)}`);
-			console.error(`   Email ID: ${emailId}`);
-			console.error(`   Company ID: ${companyId}`);
-			console.error(`   Destination: ${destination}`);
-			console.error(`   Subject: ${emailData.subject}`);
-			
-			// Store as unrouted email with error message for debugging
-			await supabase
-				.from("communication_unrouted_emails")
-				.insert({
-					to_address: destination,
-					from_address: fromEmail || "unknown",
-					subject: emailData.subject,
-					payload: payload,
-					status: 'error',
-					error_message: `Database insert failed: ${insertError.message}`,
-					company_id: companyId, // Store company ID even if insert failed
-				})
-				.catch(err => console.error("Failed to store error record:", err));
-			
-			// Throw error so Resend knows to retry
-			throw new Error(`Failed to insert email: ${insertError.message}`);
+			return;
 		}
 
 		console.log(`✅ Email inserted successfully with ID: ${insertedEmail.id}`);
 		console.log(`✅ Successfully stored email: ${emailData.subject} with ${storedAttachments.length} attachments`);
 	} catch (error) {
-		console.error(`💥 Unexpected error processing email: ${error}`);
-		console.error(`   Email ID: ${emailId || "unknown"}`);
-		console.error(`   Company ID: ${companyId || "unknown"}`);
-		console.error(`   Destination: ${destination || "unknown"}`);
-		console.error(`   Error stack: ${error instanceof Error ? error.stack : "No stack trace"}`);
-		
-		// Re-throw error so Resend knows to retry
-		throw error;
+		console.error(`Unexpected error processing email: ${error}`);
+		return; // Exit early on error
 	}
 }
 
@@ -756,9 +693,18 @@ type ResendWebhookPayload = {
 		subject?: string;
 		text?: string;
 		html?: string;
+		body?: string;
+		body_html?: string;
 		to?: string[] | { email: string }[]; // Can be array of strings or array of objects
 		from?: string[] | { email: string; name?: string }[]; // Can be array of strings or array of objects
 		tags?: { name: string; value: string }[];
+		// Bounce-specific fields
+		bounce_type?: "hard" | "soft";
+		bounce_reason?: string;
+		error?: {
+			message?: string;
+			code?: string;
+		};
 		attachments?: Array<{
 			id?: string;
 			filename?: string;

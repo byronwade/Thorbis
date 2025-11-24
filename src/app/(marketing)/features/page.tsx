@@ -18,7 +18,7 @@ import {
 	siteUrl,
 } from "@/lib/seo/metadata";
 import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
-import { createItemListSchema } from "@/lib/seo/structured-data";
+import { createFAQSchema, createItemListSchema } from "@/lib/seo/structured-data";
 
 // Note: Caching is controlled by next.config.ts cacheLife configuration
 
@@ -54,6 +54,30 @@ export default function FeaturesOverviewPage() {
 		})),
 	});
 
+	// FAQ Schema - Common feature questions
+	const faqSchema = createFAQSchema([
+		{
+			question: "What features are included in Thorbis?",
+			answer:
+				"Thorbis includes smart scheduling with AI-powered dispatch, automated invoicing with same-day payments, CRM for customer management, mobile app for field technicians, customer self-service portal, equipment and inventory tracking, estimates and contracts, and marketing automation—all in one platform.",
+		},
+		{
+			question: "Is there a mobile app for technicians?",
+			answer:
+				"Yes. Thorbis includes native iOS and Android apps that work offline. Technicians can view job details, capture photos, collect signatures, process payments, and sync when connected. The app is included in the $200/month base price.",
+		},
+		{
+			question: "Does Thorbis have AI features?",
+			answer:
+				"Yes. Thorbis includes AI-powered scheduling that optimizes routes and assigns the right technician. AI phone answering handles customer calls 24/7. AI chat assists customers and staff with common questions. AI features are billed at pay-as-you-go rates.",
+		},
+		{
+			question: "Can customers book and pay online?",
+			answer:
+				"Absolutely. The customer portal allows your customers to request service, view appointment times, approve estimates, sign contracts, pay invoices, and see their service history—all without calling your office.",
+		},
+	]);
+
 	return (
 		<>
 			{/* Breadcrumb Schema */}
@@ -76,6 +100,16 @@ export default function FeaturesOverviewPage() {
 					__html: JSON.stringify(featuresListSchema),
 				}}
 				id="features-list-ld"
+				type="application/ld+json"
+			/>
+
+			{/* FAQ Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="features-faq-ld"
+				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">

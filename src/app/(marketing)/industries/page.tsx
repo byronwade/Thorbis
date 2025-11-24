@@ -1,7 +1,8 @@
-
+import { Check, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
+import { PricingBadge } from "@/components/marketing/pricing-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,7 @@ import {
 	siteUrl,
 } from "@/lib/seo/metadata";
 import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
-import { createItemListSchema } from "@/lib/seo/structured-data";
+import { createFAQSchema, createItemListSchema } from "@/lib/seo/structured-data";
 
 // Note: Caching is controlled by next.config.ts cacheLife configuration
 
@@ -56,6 +57,30 @@ export default function IndustriesOverviewPage() {
 		})),
 	});
 
+	// FAQ Schema - Industry-specific questions
+	const faqSchema = createFAQSchema([
+		{
+			question: "What industries does Thorbis support?",
+			answer:
+				"Thorbis supports 12+ service industries including HVAC, plumbing, electrical, landscaping, pool service, pest control, cleaning, roofing, garage door, appliance repair, locksmith, and general contracting. Each industry gets tailored workflows, automations, and reporting.",
+		},
+		{
+			question: "Does Thorbis have industry-specific features?",
+			answer:
+				"Yes. Thorbis includes industry-specific playbooks with pre-built workflows, job templates, pricing guides, and compliance checklists. HVAC techs get refrigerant tracking, plumbers get permit management, and landscapers get recurring route optimization.",
+		},
+		{
+			question: "Is the pricing the same for all industries?",
+			answer:
+				"Yes. Every industry gets the same transparent pricing: $200/month base fee with pay-as-you-go usage. No per-user fees, no per-technician fees, and no long-term contracts required.",
+		},
+		{
+			question: "Can I customize Thorbis for my specific trade?",
+			answer:
+				"Absolutely. While Thorbis comes with industry-specific defaults, you can customize job types, service forms, pricing, and workflows to match your exact business processes.",
+		},
+	]);
+
 	return (
 		<>
 			<Script
@@ -80,6 +105,16 @@ export default function IndustriesOverviewPage() {
 				strategy="afterInteractive"
 				type="application/ld+json"
 			/>
+
+			{/* FAQ Schema */}
+			<Script
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(faqSchema),
+				}}
+				id="industries-faq-ld"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			/>
 			<div className="bg-background">
 				<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 					{/* Enhanced Hero Section */}
@@ -101,9 +136,7 @@ export default function IndustriesOverviewPage() {
 						<div className="mb-10 flex flex-wrap items-center justify-center gap-6">
 							<div className="flex items-center gap-2">
 								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
-									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-									</svg>
+									<Check className="text-primary size-5" />
 								</div>
 								<div className="text-left">
 									<p className="text-foreground text-sm font-semibold">$200/Month Base</p>
@@ -112,9 +145,7 @@ export default function IndustriesOverviewPage() {
 							</div>
 							<div className="flex items-center gap-2">
 								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
-									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-									</svg>
+									<Check className="text-primary size-5" />
 								</div>
 								<div className="text-left">
 									<p className="text-foreground text-sm font-semibold">No Lock-In</p>
@@ -123,9 +154,7 @@ export default function IndustriesOverviewPage() {
 							</div>
 							<div className="flex items-center gap-2">
 								<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
-									<svg className="text-primary size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-									</svg>
+									<Check className="text-primary size-5" />
 								</div>
 								<div className="text-left">
 									<p className="text-foreground text-sm font-semibold">12+ Industries</p>
@@ -138,9 +167,7 @@ export default function IndustriesOverviewPage() {
 							<Button asChild className="bg-gradient-to-r from-primary to-primary/80 shadow-lg" size="lg">
 								<Link href="/waitlist">
 									Join Waitlist
-									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-									</svg>
+									<ChevronRight className="ml-2 size-4" />
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
@@ -207,9 +234,7 @@ export default function IndustriesOverviewPage() {
 											<Button asChild className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
 												<Link href={`/industries/${industry.slug}`}>
 													Explore {industry.name}
-													<svg className="ml-2 size-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-													</svg>
+													<ChevronRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
 												</Link>
 											</Button>
 										</CardContent>
@@ -228,19 +253,17 @@ export default function IndustriesOverviewPage() {
 							Join Field Service Teams Across 12+ Industries
 						</h2>
 						<p className="text-muted-foreground mx-auto mb-6 max-w-2xl text-lg">
-							No matter your industry, Thorbis delivers the tools, automations, and insights you need to grow. Free 30-day trial. No credit card required.
+							No matter your industry, Thorbis delivers the tools, automations, and insights you need to grow. $200/month base with unlimited users.
 						</p>
 						<div className="flex flex-wrap justify-center gap-4">
 							<Button asChild size="lg">
 								<Link href="/waitlist">
-									Start Your Free Trial
-									<svg className="ml-2 size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-									</svg>
+									Join Waitlist
+									<ChevronRight className="ml-2 size-4" />
 								</Link>
 							</Button>
 							<Button asChild size="lg" variant="outline">
-								<Link href="/waitlist">Join Waitlist</Link>
+								<Link href="/pricing">View Pricing</Link>
 							</Button>
 						</div>
 					</section>

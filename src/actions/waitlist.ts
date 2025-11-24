@@ -9,6 +9,7 @@ import {
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import WaitlistSubscriptionEmail from "../../emails/templates/waitlist/subscription-confirmation";
+import WaitlistAdminNotificationEmail from "../../emails/templates/waitlist/admin-notification";
 
 const waitlistSchema = z.object({
 	name: z
@@ -144,6 +145,24 @@ export async function joinWaitlist(
 			} catch (emailError) {
 				// Log email error but don't fail the signup
 				console.error("Failed to send waitlist confirmation email:", emailError);
+			}
+
+			// Send admin notification email
+			try {
+				await sendEmail({
+					to: "bcw1995@gmail.com",
+					subject: `New Waitlist Signup: ${validated.name}`,
+					template: WaitlistAdminNotificationEmail({
+						userName: validated.name,
+						userEmail: validated.email,
+						previewText: "New waitlist signup",
+					}),
+					templateType: EmailTemplate.WAITLIST_ADMIN_NOTIFICATION,
+					tags: [{ name: "category", value: "waitlist-admin" }],
+				});
+			} catch (adminEmailError) {
+				// Log admin email error but don't fail the signup
+				console.error("Failed to send admin notification email:", adminEmailError);
 			}
 
 			return {

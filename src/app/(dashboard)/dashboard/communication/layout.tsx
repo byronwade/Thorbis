@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import { SectionLayout } from "@/components/layout/section-layout";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
+import type { ReactNode } from "react";
 
 /**
  * Communication Section Layout - Server Component
@@ -17,8 +17,8 @@ export default function CommunicationLayout({
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "full",
-			padding: "default",
-			gap: "default",
+			padding: "none",
+			gap: "none",
 			fixedHeight: false,
 			variant: "default",
 			background: "default",

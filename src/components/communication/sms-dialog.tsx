@@ -16,7 +16,7 @@ import { sendTextMessage } from "@/actions/telnyx";
 import type {
 	CommunicationRecord,
 	CompanyPhone,
-} from "@/components/communication/communication-page-client";
+} from "@/types/communication";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -73,10 +73,16 @@ export function SMSDialog({
 		companyPhones[0]?.number || "",
 	);
 
+	// SMS segment calculation - no max limit, just show segment count for cost awareness
 	const charCount = message.length;
-	const maxChars = 1600; // SMS max length (multiple segments)
 	const SMS_SEGMENT_LENGTH = 160;
-	const segmentCount = Math.ceil(charCount / SMS_SEGMENT_LENGTH);
+	const SMS_CONCAT_LENGTH = 153; // Concatenated messages use 153 chars per segment
+	const segmentCount =
+		charCount <= SMS_SEGMENT_LENGTH
+			? charCount > 0
+				? 1
+				: 0
+			: Math.ceil(charCount / SMS_CONCAT_LENGTH);
 
 	const handleSend = () => {
 		if (!message.trim()) {
@@ -177,17 +183,14 @@ export function SMSDialog({
 					<StandardFormField label="Message" htmlFor="sms-message">
 						<Textarea
 							id="sms-message"
-							className="min-h-[120px] resize-none"
-							maxLength={maxChars}
+							className="min-h-[120px] resize-y"
 							onChange={(e) => setMessage(e.target.value)}
 							placeholder="Type your message here..."
 							value={message}
 						/>
 						<div className="text-muted-foreground flex items-center justify-between text-xs">
-							<span>
-								{charCount} / {maxChars} characters
-							</span>
-							<span>
+							<span>{charCount} characters</span>
+							<span className={segmentCount > 1 ? "text-amber-500" : ""}>
 								{segmentCount} SMS segment{segmentCount !== 1 ? "s" : ""}
 							</span>
 						</div>

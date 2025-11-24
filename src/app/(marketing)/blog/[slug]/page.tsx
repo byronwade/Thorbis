@@ -9,6 +9,7 @@ import { MarkdownContent } from "@/components/content/markdown-content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getBlogPostBySlug, getBlogPosts } from "@/lib/content";
+import { getAuthorInfo } from "@/lib/seo/authors";
 import { buildShareImageUrl } from "@/lib/seo/config";
 import {
 	generateBreadcrumbStructuredData,
@@ -110,6 +111,7 @@ export default async function BlogArticlePage({
 							publishedTime: post.publishedAt ?? undefined,
 							modifiedTime: post.updatedAt ?? post.publishedAt ?? undefined,
 							authorName: post.author?.name,
+							author: getAuthorInfo(post.author?.name),
 							tags: post.tags.map((tag) => tag.name),
 							section: post.category?.name ?? "Blog",
 							wordCount,

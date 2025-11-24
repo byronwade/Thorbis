@@ -803,17 +803,17 @@ async function _getPropertyWithDetails(
 			);
 		}
 
-		// Get equipment count
+		// Get equipment count (head: true prevents data transfer)
 		const { count: equipmentCount } = await supabase
 			.from("equipment")
-			.select("id", { count: "exact" })
+			.select("id", { count: "exact", head: true })
 			.eq("property_id", propertyId)
 			.is("deleted_at", null);
 
-		// Get job count
+		// Get job count (head: true prevents data transfer)
 		const { count: jobCount } = await supabase
 			.from("jobs")
-			.select("id", { count: "exact" })
+			.select("id", { count: "exact", head: true })
 			.eq("property_id", propertyId);
 
 		return {

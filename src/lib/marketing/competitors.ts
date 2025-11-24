@@ -1,8 +1,13 @@
-import type { MarketingFAQ, MarketingValueProp } from "./types";
+import type {
+	CompetitorDesignVariant,
+	MarketingFAQ,
+	MarketingValueProp,
+} from "./types";
 
 export type CompetitorComparison = {
 	slug: string;
 	competitorName: string;
+	designVariant: CompetitorDesignVariant;
 	heroEyebrow: string;
 	heroTitle: string;
 	heroDescription: string;
@@ -37,6 +42,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "servicetitan",
 		competitorName: "ServiceTitan",
+		designVariant: "enterprise",
 		heroEyebrow: "Enterprise Power • Predictable Pricing • AI Assist",
 		heroTitle: "Thorbis vs ServiceTitan",
 		heroDescription:
@@ -255,6 +261,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "housecall-pro",
 		competitorName: "Housecall Pro",
+		designVariant: "growth",
 		heroEyebrow: "Scaling Up • Workflows • Automation",
 		heroTitle: "Thorbis vs Housecall Pro",
 		heroDescription:
@@ -466,6 +473,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "jobber",
 		competitorName: "Jobber",
+		designVariant: "field",
 		heroEyebrow: "Growing Crews • Recurring Work • Upsells",
 		heroTitle: "Thorbis vs Jobber",
 		heroDescription:
@@ -635,6 +643,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "fieldedge",
 		competitorName: "FieldEdge",
+		designVariant: "legacy",
 		heroEyebrow: "Modern UI • Innovation Velocity • AI Automation",
 		heroTitle: "Thorbis vs FieldEdge",
 		heroDescription:
@@ -804,6 +813,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "servicem8",
 		competitorName: "ServiceM8",
+		designVariant: "starter",
 		heroEyebrow: "Growing From Solo • Mid-Market Operations • Automations",
 		heroTitle: "Thorbis vs ServiceM8",
 		heroDescription:
@@ -953,6 +963,7 @@ const COMPETITORS: CompetitorComparison[] = [
 	{
 		slug: "workiz",
 		competitorName: "Workiz",
+		designVariant: "automation",
 		heroEyebrow: "Automation • Routing • Upsell Enablement",
 		heroTitle: "Thorbis vs Workiz",
 		heroDescription:

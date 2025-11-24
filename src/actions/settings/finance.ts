@@ -531,7 +531,8 @@ async function getBankAccounts(): Promise<ActionResult<any[]>> {
 			)
 			.eq("company_id", companyId)
 			.order("is_primary", { ascending: false })
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(50);
 
 		if (error) {
 			throw new ActionError(
@@ -884,7 +885,8 @@ async function getDebitCards(): Promise<ActionResult<any[]>> {
 			.from("finance_debit_cards")
 			.select("*, team_members(name, email)")
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		if (error) {
 			throw new ActionError(
@@ -922,7 +924,8 @@ async function getGasCards(): Promise<ActionResult<any[]>> {
 			.from("finance_gas_cards")
 			.select("*, team_members(name, email)")
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		if (error) {
 			throw new ActionError(
@@ -1220,7 +1223,8 @@ async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
 			.from("finance_virtual_buckets")
 			.select("*")
 			.eq("company_id", companyId)
-			.order("display_order", { ascending: true });
+			.order("display_order", { ascending: true })
+			.limit(50);
 
 		if (error) {
 			throw new ActionError(

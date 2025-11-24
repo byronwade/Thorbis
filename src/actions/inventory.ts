@@ -993,7 +993,8 @@ async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or("quantity_on_hand.lte.reorder_point,is_low_stock.eq.true")
-			.order("quantity_on_hand", { ascending: true });
+			.order("quantity_on_hand", { ascending: true })
+			.limit(100);
 
 		if (error) {
 			throw new ActionError(

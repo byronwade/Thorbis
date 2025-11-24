@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -11,11 +10,11 @@ import { createClient } from "@/lib/supabase/server";
  * This component is wrapped in Suspense with fallback={null} so it doesn't
  * show a loading screen - it just performs auth checks in the background.
  *
- * Auth protection:
- * - Checks for authenticated user before rendering
- * - Redirects to login with return URL if not authenticated
- * - Checks onboarding completion - redirects to welcome if incomplete
- * - Checks payment status - redirects to welcome/payment if not paid
+ * Smart Onboarding Routing:
+ * - NEW customers (no onboarding_completed_at): LOCKED to /dashboard/welcome
+ *   They cannot access any other dashboard page until onboarding is complete.
+ * - EXISTING customers (has onboarding_completed_at): Full access to all pages
+ *   Including /dashboard/welcome for reference or setting up additional accounts.
  *
  * This component renders nothing - it only performs checks and redirects.
  */
@@ -34,17 +33,15 @@ export async function DashboardAuthWrapper() {
 		return null;
 	}
 
-	// Check if the ACTIVE company has completed onboarding (payment)
-	// This is company-specific, not user-specific
+	// Check if the ACTIVE company has completed onboarding
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-
-	// Parallel execution instead of sequential (saves 30-50ms)
 	const activeCompanyId = await getActiveCompanyId();
 
-	let isCompanyOnboardingComplete = false;
+	// Track onboarding status
+	let hasCompletedOnboarding = false;
 
 	if (activeCompanyId) {
-		// Parallel queries instead of sequential JOIN (saves 20-40ms)
+		// Check company membership and onboarding status
 		const [teamMemberResult, companyResult] = await Promise.all([
 			supabase
 				.from("company_memberships")
@@ -56,9 +53,7 @@ export async function DashboardAuthWrapper() {
 
 			supabase
 				.from("companies")
-				.select(
-					"stripe_subscription_status, onboarding_progress, onboarding_completed_at",
-				)
+				.select("onboarding_completed_at, stripe_subscription_status, created_at")
 				.eq("id", activeCompanyId)
 				.maybeSingle(),
 		]);
@@ -66,25 +61,27 @@ export async function DashboardAuthWrapper() {
 		const teamMember = teamMemberResult.data;
 		const company = companyResult.data;
 
-		const subscriptionStatus = company?.stripe_subscription_status;
-		const subscriptionActive =
-			subscriptionStatus === "active" || subscriptionStatus === "trialing";
-		const onboardingProgress =
-			(company?.onboarding_progress as Record<string, unknown>) || null;
-		const onboardingFinished = isOnboardingComplete({
-			progress: onboardingProgress,
-			completedAt: company?.onboarding_completed_at ?? null,
-		});
+		// User has completed onboarding if they have a team membership AND either:
+		// 1. Company has onboarding_completed_at set (new flow)
+		// 2. Company has an active/trialing subscription (existing customer)
+		// 3. Company was created before new onboarding system (legacy customer)
+		const isLegacyCompany = company?.created_at &&
+			new Date(company.created_at) < new Date("2025-01-01");
+		const hasActiveSubscription =
+			company?.stripe_subscription_status === "active" ||
+			company?.stripe_subscription_status === "trialing";
 
-		// Company is fully onboarded if:
-		// 1. User is a team member AND
-		// 2. (Subscription is active AND onboarding is finished) OR in development mode
-		isCompanyOnboardingComplete =
-			!!teamMember && subscriptionActive && onboardingFinished;
+		hasCompletedOnboarding =
+			!!teamMember && (
+				!!company?.onboarding_completed_at ||
+				hasActiveSubscription ||
+				isLegacyCompany
+			);
 	}
 
-	// If no active company or onboarding not complete, redirect to welcome
-	if (!isCompanyOnboardingComplete) {
+	// Smart routing based on onboarding status
+	if (!hasCompletedOnboarding) {
+		// NEW CUSTOMER: Lock them to /dashboard/welcome until complete
 		const headerList = await headers();
 
 		const possiblePaths = [
@@ -109,10 +106,13 @@ export async function DashboardAuthWrapper() {
 			path?.startsWith("/dashboard/welcome"),
 		);
 
+		// If new customer tries to access any other page, redirect to welcome
 		if (!isOnWelcomePage) {
 			redirect("/dashboard/welcome");
 		}
 	}
+	// EXISTING CUSTOMER: Allow access to any page (including /dashboard/welcome)
+	// No redirect needed - they have full access
 
 	// This component renders nothing - it only performs auth checks and redirects
 	return null;

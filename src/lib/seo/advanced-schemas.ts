@@ -26,7 +26,7 @@ export type VideoObjectSchemaOptions = {
 	keywords?: string[];
 };
 
-function createVideoObjectSchema(options: VideoObjectSchemaOptions) {
+export function createVideoObjectSchema(options: VideoObjectSchemaOptions) {
 	const {
 		name,
 		description,
@@ -260,7 +260,7 @@ export type CourseSchemaOptions = {
 	}>;
 };
 
-function createCourseSchema(options: CourseSchemaOptions) {
+export function createCourseSchema(options: CourseSchemaOptions) {
 	const { name, description, provider, url, courseCode, hasCourseInstance } =
 		options;
 
@@ -303,7 +303,7 @@ export type PersonSchemaOptions = {
 	award?: string[]; // Awards and recognition
 };
 
-function createPersonSchema(options: PersonSchemaOptions) {
+export function createPersonSchema(options: PersonSchemaOptions) {
 	const {
 		name,
 		jobTitle,
@@ -367,7 +367,7 @@ export type CollectionPageSchemaOptions = {
 	}>;
 };
 
-function createCollectionPageSchema(
+export function createCollectionPageSchema(
 	options: CollectionPageSchemaOptions,
 ) {
 	const { name, description, url, about, hasPart } = options;
@@ -402,7 +402,7 @@ export type QAPageSchemaOptions = {
 	};
 };
 
-function createQAPageSchema(options: QAPageSchemaOptions) {
+export function createQAPageSchema(options: QAPageSchemaOptions) {
 	const { question, acceptedAnswer } = options;
 
 	return {
@@ -541,6 +541,165 @@ export function createEnhancedReviewSchema(
 				bestRating: review.bestRating || 5,
 				worstRating: review.worstRating || 1,
 			},
+		})),
+	};
+}
+
+/**
+ * Demo Video Schema - Optimized for product demo videos
+ * Pre-configured with common demo video settings
+ */
+export type DemoVideoSchemaOptions = {
+	title: string;
+	description: string;
+	thumbnailUrl: string;
+	uploadDate: string;
+	duration?: string; // ISO 8601 format (e.g., "PT5M30S" for 5:30)
+	transcript?: string;
+	feature?: string; // Feature being demonstrated
+};
+
+export function createDemoVideoSchema(options: DemoVideoSchemaOptions) {
+	const { title, description, thumbnailUrl, uploadDate, duration, transcript, feature } = options;
+
+	const keywords = [
+		"product demo",
+		"software demo",
+		"field service software",
+		"thorbis demo",
+		...(feature ? [`${feature} demo`, `${feature} tutorial`] : []),
+	];
+
+	return createVideoObjectSchema({
+		name: title,
+		description,
+		thumbnailUrl,
+		uploadDate,
+		duration,
+		transcript,
+		keywords,
+		embedUrl: `${SEO_URLS.site}/demo`,
+	});
+}
+
+/**
+ * Webinar Video Schema - Optimized for webinar/tutorial content
+ * Includes educational metadata for better search visibility
+ */
+export type WebinarVideoSchemaOptions = {
+	title: string;
+	description: string;
+	thumbnailUrl: string;
+	uploadDate: string;
+	duration?: string;
+	transcript?: string;
+	topic?: string;
+	presenter?: string;
+	contentUrl?: string;
+};
+
+export function createWebinarVideoSchema(options: WebinarVideoSchemaOptions) {
+	const { title, description, thumbnailUrl, uploadDate, duration, transcript, topic, presenter, contentUrl } = options;
+
+	const keywords = [
+		"webinar",
+		"field service webinar",
+		"contractor training",
+		"thorbis webinar",
+		...(topic ? [topic, `${topic} training`, `${topic} tutorial`] : []),
+	];
+
+	return createVideoObjectSchema({
+		name: title,
+		description: `${description}${presenter ? ` Presented by ${presenter}.` : ""}`,
+		thumbnailUrl,
+		uploadDate,
+		duration,
+		transcript,
+		keywords,
+		contentUrl,
+		embedUrl: `${SEO_URLS.site}/webinars`,
+	});
+}
+
+/**
+ * Tutorial Video Schema - For step-by-step instructional content
+ * Optimized for how-to and educational search queries
+ */
+export type TutorialVideoSchemaOptions = {
+	title: string;
+	description: string;
+	thumbnailUrl: string;
+	uploadDate: string;
+	duration?: string;
+	transcript?: string;
+	steps?: string[];
+	difficulty?: "beginner" | "intermediate" | "advanced";
+};
+
+export function createTutorialVideoSchema(options: TutorialVideoSchemaOptions) {
+	const { title, description, thumbnailUrl, uploadDate, duration, transcript, steps, difficulty } = options;
+
+	const keywords = [
+		"tutorial",
+		"how to",
+		"step by step",
+		"guide",
+		...(difficulty ? [`${difficulty} tutorial`] : []),
+	];
+
+	const enhancedDescription = steps
+		? `${description} Steps: ${steps.join(", ")}.`
+		: description;
+
+	return createVideoObjectSchema({
+		name: title,
+		description: enhancedDescription,
+		thumbnailUrl,
+		uploadDate,
+		duration,
+		transcript,
+		keywords,
+	});
+}
+
+/**
+ * Video Playlist Schema - For video series/collections
+ * Helps Google understand video groupings
+ */
+export type VideoPlaylistSchemaOptions = {
+	name: string;
+	description: string;
+	videos: Array<{
+		name: string;
+		description: string;
+		thumbnailUrl: string;
+		uploadDate: string;
+		contentUrl?: string;
+		duration?: string;
+	}>;
+};
+
+export function createVideoPlaylistSchema(options: VideoPlaylistSchemaOptions) {
+	const { name, description, videos } = options;
+
+	return {
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		name,
+		description,
+		numberOfItems: videos.length,
+		itemListElement: videos.map((video, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			item: createVideoObjectSchema({
+				name: video.name,
+				description: video.description,
+				thumbnailUrl: video.thumbnailUrl,
+				uploadDate: video.uploadDate,
+				contentUrl: video.contentUrl,
+				duration: video.duration,
+			}),
 		})),
 	};
 }

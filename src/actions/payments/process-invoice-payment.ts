@@ -20,6 +20,11 @@ import {
 	markTokenAsUsed,
 	validatePaymentToken,
 } from "@/lib/payments/payment-tokens";
+import {
+	getPaymentProcessor,
+	updateTrustScoreAfterPayment,
+} from "@/lib/payments/processor";
+import type { PaymentChannel } from "@/lib/payments/processor-types";
 import { createClient } from "@/lib/supabase/server";
 
 type PaymentResult = {
@@ -121,29 +126,81 @@ export async function processInvoicePayment(
 			};
 		}
 
-		// TODO: Integrate with actual payment processor (Adyen/Plaid)
-		// For now, we'll simulate a successful payment in development
-		const isDevelopment = process.env.NODE_ENV === "development";
+		// Get company's payment processor
+		const channel: PaymentChannel =
+			paymentMethod === "card" ? "online" : "ach";
+
+		const processor = await getPaymentProcessor(invoice.company_id, {
+			amount,
+			channel,
+		});
 
 		let transactionId: string;
 		let processorResponse: any;
 
-		if (isDevelopment) {
-			// Development mode - simulate payment
-			transactionId = `dev_txn_${Date.now()}`;
-			processorResponse = {
-				status: "success",
-				message: "Development mode - payment simulated",
-			};
+		if (!processor) {
+			// No processor configured - check if development mode for testing
+			const isDevelopment = process.env.NODE_ENV === "development";
+
+			if (isDevelopment) {
+				// Development mode - simulate payment
+				transactionId = `dev_txn_${Date.now()}`;
+				processorResponse = {
+					status: "success",
+					message: "Development mode - payment simulated (no processor configured)",
+				};
+			} else {
+				return {
+					success: false,
+					error:
+						"Payment processing is not configured for this company. Please contact the service provider.",
+				};
+			}
 		} else {
-			// Production mode - process real payment
-			// TODO: Implement actual payment processor integration
-			// This would call Adyen/Plaid APIs based on paymentMethod
-			return {
-				success: false,
-				error:
-					"Payment processing is not yet fully implemented. Please contact support.",
-			};
+			// Process payment through the configured processor
+			const customer = Array.isArray(invoice.customer)
+				? invoice.customer[0]
+				: invoice.customer;
+
+			const paymentResponse = await processor.processPayment({
+				amount,
+				currency: "USD",
+				invoiceId,
+				customerId: customer?.id || invoice.customer_id,
+				channel,
+				metadata: {
+					invoice_number: invoice.invoice_number,
+					payment_method: paymentMethod,
+				},
+			});
+
+			if (!paymentResponse.success) {
+				// Update trust score on failure
+				await updateTrustScoreAfterPayment(invoice.company_id, false, amount);
+
+				return {
+					success: false,
+					error:
+						paymentResponse.error ||
+						paymentResponse.failureMessage ||
+						"Payment processing failed",
+				};
+			}
+
+			// Handle requires_action (3D Secure, additional auth)
+			if (paymentResponse.status === "requires_action") {
+				return {
+					success: false,
+					error:
+						"Additional authentication required. Please contact support for assistance.",
+				};
+			}
+
+			transactionId = paymentResponse.transactionId || `txn_${Date.now()}`;
+			processorResponse = paymentResponse.processorMetadata;
+
+			// Update trust score on success
+			await updateTrustScoreAfterPayment(invoice.company_id, true, amount);
 		}
 
 		// Update invoice status to paid
@@ -169,15 +226,16 @@ export async function processInvoicePayment(
 		await supabase.from("payment_processor_transactions").insert({
 			company_id: invoice.company_id,
 			invoice_id: invoiceId,
-			processor_type: paymentMethod === "card" ? "adyen" : "plaid",
+			processor_type: processor ? (paymentMethod === "card" ? "adyen" : "adyen") : "manual",
 			transaction_id: transactionId,
 			amount,
 			currency: "USD",
 			status: "success",
-			channel: "online",
+			channel,
 			metadata: {
 				payment_method: paymentMethod,
 				processor_response: processorResponse,
+				simulated: !processor,
 			},
 		});
 

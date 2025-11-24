@@ -30,6 +30,8 @@ export type CompanyInfo = {
 	id: string;
 	name: string;
 	logo?: string | null;
+	phone?: string | null;
+	email?: string | null;
 };
 
 /**
@@ -80,9 +82,12 @@ export const getActiveCompanyId = cache(async (): Promise<string | null> => {
  *
  * Returns the full company object for the active company.
  *
+ * PERFORMANCE: Wrapped with React.cache() - called by multiple components,
+ * but only executes once per request.
+ *
  * @returns CompanyInfo object or null
  */
-export async function getActiveCompany(): Promise<CompanyInfo | null> {
+export const getActiveCompany = cache(async (): Promise<CompanyInfo | null> => {
 	const companyId = await getActiveCompanyId();
 	if (!companyId) {
 		return null;
@@ -95,13 +100,13 @@ export async function getActiveCompany(): Promise<CompanyInfo | null> {
 
 	const { data: company } = await supabase
 		.from("companies")
-		.select("id, name, logo")
+		.select("id, name, logo, phone, email")
 		.eq("id", companyId)
 		.is("deleted_at", null) // Exclude archived companies
 		.single();
 
 	return company;
-}
+});
 
 /**
  * Set Active Company

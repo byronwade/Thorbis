@@ -5,6 +5,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "ai-assistant",
 		name: "AI Service Assistant",
+		designVariant: "neural",
 		heroEyebrow: "Call Handling • Smart Triage • CRM Automation",
 		heroTitle: "Let an AI dispatcher capture every opportunity",
 		heroDescription:
@@ -124,6 +125,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "crm",
 		name: "Customer Relationship Management",
+		designVariant: "connected",
 		heroEyebrow: "Customer Profiles • Activity Timeline • Smart Segments",
 		heroTitle: "Give every dispatcher the full customer story",
 		heroDescription:
@@ -241,6 +243,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "online-booking",
 		name: "Online Booking",
+		designVariant: "calendar",
 		heroEyebrow:
 			"Self-Service Scheduling • Smart Capacity • Instant Confirmation",
 		heroTitle: "Turn website visitors into scheduled jobs 24/7",
@@ -354,6 +357,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "marketing",
 		name: "Marketing Automation",
+		designVariant: "vibrant",
 		heroEyebrow: "Campaign Builder • Lifecycle Journeys • ROI Analytics",
 		heroTitle: "Run campaigns that fill the board automatically",
 		heroDescription:
@@ -465,6 +469,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "customer-portal",
 		name: "Customer Portal",
+		designVariant: "gateway",
 		heroEyebrow: "Self-Service • Payments • Real-Time Updates",
 		heroTitle: "Provide a modern portal customers actually use",
 		heroDescription:
@@ -574,6 +579,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "scheduling",
 		name: "Scheduling & Dispatch",
+		designVariant: "grid",
 		heroEyebrow: "Drag-and-Drop Board • Skill Routing • Real-Time Visibility",
 		heroTitle: "Keep the board balanced while technicians stay on time",
 		heroDescription:
@@ -683,6 +689,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "mobile-app",
 		name: "Technician Mobile App",
+		designVariant: "compact",
 		heroEyebrow: "Offline-ready • Guided Workflows • Upsell Tools",
 		heroTitle: "Equip technicians with everything they need on-site",
 		heroDescription:
@@ -793,6 +800,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "routing",
 		name: "Route Optimization",
+		designVariant: "path",
 		heroEyebrow: "Smart Sequencing • Live Re-Route • Fuel Savings",
 		heroTitle: "Turn chaotic routes into profitable days",
 		heroDescription:
@@ -902,6 +910,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "inventory",
 		name: "Inventory & Asset Management",
+		designVariant: "storage",
 		heroEyebrow: "Truck Stock • Warehouse Control • Purchase Orders",
 		heroTitle: "Keep the right part on every truck, every time",
 		heroDescription:
@@ -1013,6 +1022,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "team-management",
 		name: "Team Management & Scheduling",
+		designVariant: "collective",
 		heroEyebrow: "Availability • Certifications • Performance Insights",
 		heroTitle:
 			"Manage every technician, apprentice, and coordinator in one hub",
@@ -1125,6 +1135,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "invoicing",
 		name: "Invoicing & Payments",
+		designVariant: "ledger",
 		heroEyebrow: "Progress Billing • Payment Plans • Automated Reminders",
 		heroTitle: "Collect revenue faster with frictionless invoicing",
 		heroDescription:
@@ -1234,6 +1245,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "quickbooks",
 		name: "QuickBooks Integration",
+		designVariant: "sync",
 		heroEyebrow: "Two-Way Sync • Job Costing • Financial Accuracy",
 		heroTitle: "Keep operations and accounting perfectly in sync",
 		heroDescription:
@@ -1346,6 +1358,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "estimates",
 		name: "Estimates & Proposals",
+		designVariant: "proposal",
 		heroEyebrow: "Good-Better-Best • Visual Proposals • Digital Approvals",
 		heroTitle: "Close more deals with professional proposals",
 		heroDescription:
@@ -1455,6 +1468,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "financing",
 		name: "Customer Financing",
+		designVariant: "growth",
 		heroEyebrow: "Instant Offers • Soft Credit Check • Approval Tracking",
 		heroTitle: "Give customers flexible financing without leaving Thorbis",
 		heroDescription:
@@ -1565,6 +1579,7 @@ const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "payroll",
 		name: "Payroll & Commissions",
+		designVariant: "calculate",
 		heroEyebrow: "Time Tracking • Rate Rules • Commission Statements",
 		heroTitle: "Pay technicians accurately without spreadsheets",
 		heroDescription:

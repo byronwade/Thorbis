@@ -1,119 +1,147 @@
 "use client";
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
-    Mail,
-    MessageSquare,
-    Phone,
-    Ticket,
-    Users,
-    ChevronDown,
-    Check,
+	Mail,
+	MessageSquare,
+	Users,
+	ChevronDown,
+	LayoutDashboard,
+	Check,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+type Channel = {
+	name: string;
+	url: string;
+	icon: React.ElementType;
+};
+
 export function CommunicationSwitcher() {
 	const pathname = usePathname();
 
-	const channels = [
+	const channels: Channel[] = [
+		{
+			name: "Dashboard",
+			url: "/dashboard/communication",
+			icon: LayoutDashboard,
+		},
 		{
 			name: "Email",
 			url: "/dashboard/communication/email?folder=inbox",
 			icon: Mail,
-			isActive: 
-				pathname === "/dashboard/communication" || // Legacy support
-				pathname?.startsWith("/dashboard/communication/email"),
 		},
 		{
 			name: "SMS",
 			url: "/dashboard/communication/sms",
 			icon: MessageSquare,
-			isActive: pathname?.startsWith("/dashboard/communication/sms"),
 		},
 		{
 			name: "Teams",
 			url: "/dashboard/communication/teams?channel=general",
 			icon: Users,
-			isActive: pathname?.startsWith("/dashboard/communication/teams"),
-		},
-		{
-			name: "Tickets",
-			url: "/dashboard/communication/tickets",
-			icon: Ticket,
-			isActive: pathname?.startsWith("/dashboard/communication/tickets"),
 		},
 	];
 
-	const activeChannel = channels.find((c) => c.isActive) || channels[0];
+	const getIsActive = (url: string) => {
+		if (url === "/dashboard/communication") {
+			return pathname === "/dashboard/communication";
+		}
+		const basePath = url.split("?")[0];
+		return pathname?.startsWith(basePath) ?? false;
+	};
+
+	const activeChannel = channels.find((c) => getIsActive(c.url)) || channels[0];
+	const ActiveIcon = activeChannel.icon;
 
 	return (
-		<div>
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button
-						variant="ghost"
-						size="sm"
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					variant="ghost"
+					size="sm"
+					className={cn(
+						"w-full justify-between h-8 px-2.5 rounded-md",
+						"border border-sidebar-border",
+						"bg-sidebar-accent/30 hover:bg-sidebar-accent/50",
+						"text-sidebar-foreground",
+						"font-medium text-sm",
+						"transition-colors",
+						"group"
+					)}
+				>
+					<div className="flex items-center gap-2">
+						<ActiveIcon className="size-4 text-sidebar-foreground/70" />
+						<span className="truncate">{activeChannel.name}</span>
+					</div>
+					<ChevronDown className="size-3.5 text-sidebar-foreground/50 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent
+				className="w-[200px] p-1"
+				align="start"
+				side="bottom"
+				sideOffset={4}
+			>
+				{/* Dashboard */}
+				<DropdownMenuItem asChild className="p-0">
+					<Link
+						href={channels[0].url}
 						className={cn(
-							"w-full justify-between h-9 px-3 rounded-lg",
-							"bg-sidebar-primary/10 hover:bg-sidebar-primary/20",
-							"border border-sidebar-primary/20 hover:border-sidebar-primary/30",
-							"text-sidebar-foreground hover:text-sidebar-accent-foreground",
-							"font-semibold text-sm",
-							"shadow-sm hover:shadow-md",
-							"transition-all duration-200"
+							"flex items-center gap-2.5 px-2 py-1.5 rounded-sm cursor-pointer",
+							"text-sm transition-colors",
+							getIsActive(channels[0].url)
+								? "bg-accent font-medium"
+								: "hover:bg-muted/80"
 						)}
 					>
-						<div className="flex items-center gap-2.5">
-							<div className="flex size-5 items-center justify-center">
-								<activeChannel.icon className="size-4 text-sidebar-primary" />
-							</div>
-							<span className="truncate">
-								{activeChannel.name}
-							</span>
-						</div>
-						<ChevronDown className="size-3 opacity-60" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent
-					className="w-[var(--radix-dropdown-menu-trigger-width)] shadow-lg border-border/50"
-					align="start"
-					side="bottom"
-					sideOffset={6}
-				>
-					{channels.map((channel) => (
-						<DropdownMenuItem
-							key={channel.name}
-							asChild
-							className={cn(
-								"gap-3 cursor-pointer px-3 py-2.5",
-								"hover:bg-accent/80 focus:bg-accent/80",
-								channel.isActive && "bg-accent font-medium"
-							)}
-						>
-							<Link href={channel.url}>
-								<div className={cn(
-									"flex size-5 items-center justify-center rounded",
-									channel.isActive ? "text-primary" : "text-muted-foreground"
-								)}>
-									<channel.icon className="size-4" />
-								</div>
-								<span className="text-sm">{channel.name}</span>
-								{channel.isActive && (
-									<Check className="size-3 ml-auto text-primary" />
-								)}
-							</Link>
-						</DropdownMenuItem>
-					))}
-				</DropdownMenuContent>
-			</DropdownMenu>
-		</div>
+						<LayoutDashboard className="size-4 text-muted-foreground" />
+						<span className="flex-1">Dashboard</span>
+						{getIsActive(channels[0].url) && (
+							<Check className="size-3.5 text-foreground/70" />
+						)}
+					</Link>
+				</DropdownMenuItem>
+
+				<DropdownMenuSeparator className="my-1" />
+
+				{/* Channels */}
+				<div className="space-y-0.5">
+					{channels.slice(1).map((channel) => {
+						const isActive = getIsActive(channel.url);
+						const Icon = channel.icon;
+						return (
+							<DropdownMenuItem key={channel.name} asChild className="p-0">
+								<Link
+									href={channel.url}
+									className={cn(
+										"flex items-center gap-2.5 px-2 py-1.5 rounded-sm cursor-pointer",
+										"text-sm transition-colors",
+										isActive
+											? "bg-accent font-medium"
+											: "hover:bg-muted/80"
+									)}
+								>
+									<Icon className="size-4 text-muted-foreground" />
+									<span className="flex-1">{channel.name}</span>
+									{isActive && (
+										<Check className="size-3.5 text-foreground/70" />
+									)}
+								</Link>
+							</DropdownMenuItem>
+						);
+					})}
+				</div>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }

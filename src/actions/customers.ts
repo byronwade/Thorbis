@@ -12,24 +12,24 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
+    ActionError,
+    ERROR_CODES,
+    ERROR_MESSAGES,
 } from "@/lib/errors/action-error";
 import {
-	type ActionResult,
-	assertAuthenticated,
-	assertExists,
-	withErrorHandling,
+    type ActionResult,
+    assertAuthenticated,
+    assertExists,
+    withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
 
 // ============================================================================
@@ -1176,15 +1176,28 @@ export async function searchCustomers(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
+		// Use the active company ID helper (same as getAllCustomers)
+		const activeCompanyId = await getActiveCompanyId();
+		if (!activeCompanyId) {
+			throw new ActionError(
+				"No active company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
+		}
+
+		// Verify user has access to the active company
 		const { data: teamMember } = await supabase
 			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
-			.single();
+			.eq("company_id", activeCompanyId)
+			.eq("status", "active")
+			.maybeSingle();
 
 		if (!teamMember?.company_id) {
 			throw new ActionError(
-				"You must be part of a company",
+				"You don't have access to this company",
 				ERROR_CODES.AUTH_FORBIDDEN,
 				HTTP_STATUS_FORBIDDEN,
 			);
@@ -1200,7 +1213,7 @@ export async function searchCustomers(
 
 		const customers = await searchCustomersFullText(
 			supabase,
-			teamMember.company_id,
+			activeCompanyId,
 			searchTerm,
 			{
 				limit: options?.limit || DEFAULT_SEARCH_LIMIT,
@@ -1312,7 +1325,8 @@ async function getCustomersWithBalance(): Promise<
 			.eq("company_id", teamMember.company_id)
 			.is("deleted_at", null)
 			.gt("outstanding_balance", 0)
-			.order("outstanding_balance", { ascending: false });
+			.order("outstanding_balance", { ascending: false })
+			.limit(100);
 
 		if (error) {
 			throw new ActionError(

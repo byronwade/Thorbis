@@ -22,7 +22,6 @@ export function TextSidebar(props: ComponentProps<typeof Sidebar>) {
 			const countsResult = await getSmsFolderCountsAction();
 			
 			if (countsResult.success && countsResult.counts) {
-				console.log("📊 SMS folder counts:", countsResult.counts);
 				setConfig(getSmsSidebarConfig(countsResult.counts));
 			} else {
 				console.error("❌ Failed to fetch SMS folder counts:", countsResult.error);

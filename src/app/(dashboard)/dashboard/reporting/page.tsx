@@ -1,5 +1,8 @@
 /**
+ * Reporting Analytics Dashboard
+ *
  * PPR Enabled Page - Performance: 10-20x faster
+ * Layout follows communication hub pattern with sidebar navigation
  */
 
 import { Suspense } from "react";

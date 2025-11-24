@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { addDays, subDays } from "date-fns";
 import type {
@@ -241,16 +242,23 @@ export async function fetchScheduleData({
 		scheduleQuery.gte("end_time", range.start.toISOString());
 	}
 
+	// Fetch all three queries in parallel (eliminates waterfall)
 	let scheduleResult;
 	let teamMembers;
+	let unscheduledResult;
 
 	try {
-		[scheduleResult, teamMembers] = await Promise.all([
+		[scheduleResult, teamMembers, unscheduledResult] = await Promise.all([
 			scheduleQuery,
 			fetchTeamMembersWithUsers(supabase, companyId),
+			fetchUnscheduledJobs(supabase, companyId, {
+				limit: unscheduledLimit,
+				offset: unscheduledOffset,
+				search: unscheduledSearch,
+			}),
 		]);
 	} catch (error) {
-		console.error("Failed to fetch appointments or team members:", error);
+		console.error("Failed to fetch schedule data:", error);
 		throw new Error(
 			`Schedule data query failed: ${error instanceof Error ? error.message : String(error)}`,
 		);
@@ -270,32 +278,14 @@ export async function fetchScheduleData({
 			.filter((id): id is string => Boolean(id)),
 	);
 
-	let unscheduledJobRows;
-	let unscheduledMeta: {
-		totalCount: number;
-		hasMore: boolean;
-		fetchedCount: number;
+	const unscheduledJobRows = unscheduledResult.rows.filter(
+		(row) => !scheduledJobIds.has(row.id),
+	);
+	const unscheduledMeta = {
+		totalCount: unscheduledResult.totalCount,
+		hasMore: unscheduledResult.hasMore,
+		fetchedCount: unscheduledResult.rows.length,
 	};
-	try {
-		const unscheduledResult = await fetchUnscheduledJobs(supabase, companyId, {
-			limit: unscheduledLimit,
-			offset: unscheduledOffset,
-			search: unscheduledSearch,
-		});
-		unscheduledJobRows = unscheduledResult.rows.filter(
-			(row) => !scheduledJobIds.has(row.id),
-		);
-		unscheduledMeta = {
-			totalCount: unscheduledResult.totalCount,
-			hasMore: unscheduledResult.hasMore,
-			fetchedCount: unscheduledResult.rows.length,
-		};
-	} catch (error) {
-		console.error("Failed to fetch unscheduled jobs:", error);
-		throw new Error(
-			`Unscheduled jobs query failed: ${error instanceof Error ? error.message : String(error)}`,
-		);
-	}
 
 	let propertyMap;
 	try {
@@ -388,7 +378,48 @@ function createTechnicianJobMap(jobs: Job[]): Record<string, Job[]> {
 	}, {});
 }
 
+// Optimized: Single query with join instead of N+1 pattern
 async function fetchTeamMembersWithUsers(
+	supabase: SupabaseClient<Database>,
+	companyId: string,
+): Promise<TeamMemberRecord[]> {
+	// Use a single query with left join to profiles via user_id
+	const { data: membersWithUsers, error } = await supabase
+		.from("company_memberships")
+		.select(`
+			*,
+			users:profiles!company_memberships_profile_id_fkey(
+				id,
+				full_name,
+				email,
+				phone,
+				avatar_url
+			)
+		`)
+		.eq("company_id", companyId)
+		.eq("status", "active")
+		.is("archived_at", null);
+
+	if (error) {
+		// Fallback to the old two-query approach if join fails
+		console.warn("Join query failed, falling back to sequential queries:", error.message);
+		return fetchTeamMembersWithUsersFallback(supabase, companyId);
+	}
+
+	return (membersWithUsers ?? []).map((member) => ({
+		...member,
+		users: member.users ? {
+			id: member.users.id,
+			name: member.users.full_name,
+			email: member.users.email,
+			phone: member.users.phone,
+			avatar: member.users.avatar_url,
+		} : null,
+	})) as TeamMemberRecord[];
+}
+
+// Fallback function if the join doesn't work
+async function fetchTeamMembersWithUsersFallback(
 	supabase: SupabaseClient<Database>,
 	companyId: string,
 ): Promise<TeamMemberRecord[]> {

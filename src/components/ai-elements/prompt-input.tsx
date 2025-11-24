@@ -706,33 +706,41 @@ export const PromptInput = ({
         }
         return item;
       })
-    ).then((convertedFiles: FileUIPart[]) => {
-      try {
-        const result = onSubmit({ text, files: convertedFiles }, event);
+    )
+      .then((convertedFiles: FileUIPart[]) => {
+        try {
+          const result = onSubmit({ text, files: convertedFiles }, event);
 
-        // Handle both sync and async onSubmit
-        if (result instanceof Promise) {
-          result
-            .then(() => {
-              clear();
-              if (usingProvider) {
-                controller.textInput.clear();
-              }
-            })
-            .catch(() => {
-              // Don't clear on error - user may want to retry
-            });
-        } else {
-          // Sync function completed without throwing, clear attachments
-          clear();
-          if (usingProvider) {
-            controller.textInput.clear();
+          // Handle both sync and async onSubmit
+          if (result instanceof Promise) {
+            result
+              .then(() => {
+                clear();
+                if (usingProvider) {
+                  controller.textInput.clear();
+                }
+              })
+              .catch(() => {
+                // Don't clear on error - user may want to retry
+              });
+          } else {
+            // Sync function completed without throwing, clear attachments
+            clear();
+            if (usingProvider) {
+              controller.textInput.clear();
+            }
           }
+        } catch (error) {
+          // Don't clear on error - user may want to retry
         }
-      } catch (error) {
-        // Don't clear on error - user may want to retry
-      }
-    });
+      })
+      .catch((error) => {
+        // Handle blob conversion errors gracefully
+        // Submit with original files if conversion fails
+        console.error("Failed to convert blob URLs:", error);
+        const originalFiles = files.map(({ id, ...item }) => item);
+        onSubmit({ text, files: originalFiles }, event);
+      });
   };
 
   // Render with or without local provider
@@ -883,7 +891,7 @@ export type PromptInputHeaderProps = Omit<
   "align"
 >;
 
-const PromptInputHeader = ({
+export const PromptInputHeader = ({
   className,
   ...props
 }: PromptInputHeaderProps) => (
@@ -973,7 +981,7 @@ export const PromptInputActionMenuContent = ({
 export type PromptInputActionMenuItemProps = ComponentProps<
   typeof DropdownMenuItem
 >;
-const PromptInputActionMenuItem = ({
+export const PromptInputActionMenuItem = ({
   className,
   ...props
 }: PromptInputActionMenuItemProps) => (
@@ -1181,7 +1189,7 @@ export const PromptInputSpeechButton = ({
 
 export type PromptInputSelectProps = ComponentProps<typeof Select>;
 
-const PromptInputSelect = (props: PromptInputSelectProps) => (
+export const PromptInputSelect = (props: PromptInputSelectProps) => (
   <Select {...props} />
 );
 
@@ -1189,7 +1197,7 @@ export type PromptInputSelectTriggerProps = ComponentProps<
   typeof SelectTrigger
 >;
 
-const PromptInputSelectTrigger = ({
+export const PromptInputSelectTrigger = ({
   className,
   ...props
 }: PromptInputSelectTriggerProps) => (
@@ -1207,7 +1215,7 @@ export type PromptInputSelectContentProps = ComponentProps<
   typeof SelectContent
 >;
 
-const PromptInputSelectContent = ({
+export const PromptInputSelectContent = ({
   className,
   ...props
 }: PromptInputSelectContentProps) => (
@@ -1216,7 +1224,7 @@ const PromptInputSelectContent = ({
 
 export type PromptInputSelectItemProps = ComponentProps<typeof SelectItem>;
 
-const PromptInputSelectItem = ({
+export const PromptInputSelectItem = ({
   className,
   ...props
 }: PromptInputSelectItemProps) => (
@@ -1225,7 +1233,7 @@ const PromptInputSelectItem = ({
 
 export type PromptInputSelectValueProps = ComponentProps<typeof SelectValue>;
 
-const PromptInputSelectValue = ({
+export const PromptInputSelectValue = ({
   className,
   ...props
 }: PromptInputSelectValueProps) => (
@@ -1234,7 +1242,7 @@ const PromptInputSelectValue = ({
 
 export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard>;
 
-const PromptInputHoverCard = ({
+export const PromptInputHoverCard = ({
   openDelay = 0,
   closeDelay = 0,
   ...props
@@ -1246,7 +1254,7 @@ export type PromptInputHoverCardTriggerProps = ComponentProps<
   typeof HoverCardTrigger
 >;
 
-const PromptInputHoverCardTrigger = (
+export const PromptInputHoverCardTrigger = (
   props: PromptInputHoverCardTriggerProps
 ) => <HoverCardTrigger {...props} />;
 
@@ -1254,7 +1262,7 @@ export type PromptInputHoverCardContentProps = ComponentProps<
   typeof HoverCardContent
 >;
 
-const PromptInputHoverCardContent = ({
+export const PromptInputHoverCardContent = ({
   align = "start",
   ...props
 }: PromptInputHoverCardContentProps) => (
@@ -1263,21 +1271,21 @@ const PromptInputHoverCardContent = ({
 
 export type PromptInputTabsListProps = HTMLAttributes<HTMLDivElement>;
 
-const PromptInputTabsList = ({
+export const PromptInputTabsList = ({
   className,
   ...props
 }: PromptInputTabsListProps) => <div className={cn(className)} {...props} />;
 
 export type PromptInputTabProps = HTMLAttributes<HTMLDivElement>;
 
-const PromptInputTab = ({
+export const PromptInputTab = ({
   className,
   ...props
 }: PromptInputTabProps) => <div className={cn(className)} {...props} />;
 
 export type PromptInputTabLabelProps = HTMLAttributes<HTMLHeadingElement>;
 
-const PromptInputTabLabel = ({
+export const PromptInputTabLabel = ({
   className,
   ...props
 }: PromptInputTabLabelProps) => (
@@ -1292,7 +1300,7 @@ const PromptInputTabLabel = ({
 
 export type PromptInputTabBodyProps = HTMLAttributes<HTMLDivElement>;
 
-const PromptInputTabBody = ({
+export const PromptInputTabBody = ({
   className,
   ...props
 }: PromptInputTabBodyProps) => (
@@ -1301,7 +1309,7 @@ const PromptInputTabBody = ({
 
 export type PromptInputTabItemProps = HTMLAttributes<HTMLDivElement>;
 
-const PromptInputTabItem = ({
+export const PromptInputTabItem = ({
   className,
   ...props
 }: PromptInputTabItemProps) => (
@@ -1316,14 +1324,14 @@ const PromptInputTabItem = ({
 
 export type PromptInputCommandProps = ComponentProps<typeof Command>;
 
-const PromptInputCommand = ({
+export const PromptInputCommand = ({
   className,
   ...props
 }: PromptInputCommandProps) => <Command className={cn(className)} {...props} />;
 
 export type PromptInputCommandInputProps = ComponentProps<typeof CommandInput>;
 
-const PromptInputCommandInput = ({
+export const PromptInputCommandInput = ({
   className,
   ...props
 }: PromptInputCommandInputProps) => (
@@ -1332,7 +1340,7 @@ const PromptInputCommandInput = ({
 
 export type PromptInputCommandListProps = ComponentProps<typeof CommandList>;
 
-const PromptInputCommandList = ({
+export const PromptInputCommandList = ({
   className,
   ...props
 }: PromptInputCommandListProps) => (
@@ -1341,7 +1349,7 @@ const PromptInputCommandList = ({
 
 export type PromptInputCommandEmptyProps = ComponentProps<typeof CommandEmpty>;
 
-const PromptInputCommandEmpty = ({
+export const PromptInputCommandEmpty = ({
   className,
   ...props
 }: PromptInputCommandEmptyProps) => (
@@ -1350,7 +1358,7 @@ const PromptInputCommandEmpty = ({
 
 export type PromptInputCommandGroupProps = ComponentProps<typeof CommandGroup>;
 
-const PromptInputCommandGroup = ({
+export const PromptInputCommandGroup = ({
   className,
   ...props
 }: PromptInputCommandGroupProps) => (
@@ -1359,7 +1367,7 @@ const PromptInputCommandGroup = ({
 
 export type PromptInputCommandItemProps = ComponentProps<typeof CommandItem>;
 
-const PromptInputCommandItem = ({
+export const PromptInputCommandItem = ({
   className,
   ...props
 }: PromptInputCommandItemProps) => (
@@ -1370,7 +1378,7 @@ export type PromptInputCommandSeparatorProps = ComponentProps<
   typeof CommandSeparator
 >;
 
-const PromptInputCommandSeparator = ({
+export const PromptInputCommandSeparator = ({
   className,
   ...props
 }: PromptInputCommandSeparatorProps) => (

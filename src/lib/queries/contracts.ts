@@ -145,11 +145,11 @@ type ContractStatusRow = Pick<
 	"status" | "archived_at" | "deleted_at"
 >;
 
-export async function getContractsStatusSummary(
+export const getContractsStatusSummary = cache(async (
 	companyIdOverride?: string,
-): Promise<ContractStatusRow[]> {
-	// IMPORTANT: Cannot use "use cache" here because we call getActiveCompanyId()
-	// which uses cookies(). The query is already fast enough without page-level caching.
+): Promise<ContractStatusRow[]> => {
+	// Note: cache() provides request-level deduplication - works fine with cookies()
+	// "use cache" directive would NOT work here due to cookies() usage
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return [];
@@ -169,7 +169,7 @@ export async function getContractsStatusSummary(
 	}
 
 	return (data ?? []) as ContractStatusRow[];
-}
+});
 
 /**
  * Fetch complete contract data including related entities and tags

@@ -373,7 +373,8 @@ export async function getCustomFields(): Promise<ActionResult<any[]>> {
 			.from("customer_custom_fields")
 			.select("*")
 			.eq("company_id", companyId)
-			.order("display_order", { ascending: true });
+			.order("display_order", { ascending: true })
+			.limit(100);
 
 		if (error) {
 			throw new ActionError(

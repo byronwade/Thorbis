@@ -11,11 +11,11 @@
  */
 
 import { CommunicationSwitcher } from "@/components/communication/communication-switcher";
+import { CommunicationReportsSidebar } from "@/components/communication/communication-reports-sidebar";
 import { EmailSidebar } from "@/components/communication/email-sidebar";
 import { TextSidebar } from "@/components/communication/text-sidebar";
 import { TeamsSidebar } from "@/components/communication/teams-sidebar";
-import { TicketsSidebar } from "@/components/communication/tickets-sidebar";
-import { NavChatHistory } from "@/components/layout/nav-chat-history";
+import { AiNewChatButton, NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
@@ -113,67 +113,37 @@ const navigationSections = {
 	],
 	communication: [
 		{
-			label: "Inbox",
+			label: "Overview",
 			items: [
 				{
-					title: "All Messages",
+					title: "Communication Hub",
 					url: "/dashboard/communication",
-					icon: Inbox,
-				},
-				{
-					title: "Unread",
-					url: "/dashboard/communication/unread",
-					icon: MailOpen,
-				},
-				{
-					title: "Starred",
-					url: "/dashboard/communication/starred",
-					icon: Star,
-				},
-				{
-					title: "Archive",
-					url: "/dashboard/communication/archive",
-					icon: Archive,
-				},
-				{
-					title: "Trash",
-					url: "/dashboard/communication/trash",
-					icon: Trash,
-				},
-				{
-					title: "Spam",
-					url: "/dashboard/communication/spam",
-					icon: ShieldAlert,
+					icon: BarChart,
 				},
 			],
 		},
 		{
-			label: "Teams",
+			label: "Channels",
 			items: [
 				{
-					title: "General",
-					url: "/dashboard/communication/teams/general",
-					icon: Hash,
+					title: "Email",
+					url: "/dashboard/communication/email?folder=inbox",
+					icon: Mail,
 				},
 				{
-					title: "Sales",
-					url: "/dashboard/communication/teams/sales",
-					icon: Hash,
+					title: "SMS",
+					url: "/dashboard/communication/sms",
+					icon: MessageSquare,
 				},
 				{
-					title: "Support",
-					url: "/dashboard/communication/teams/support",
-					icon: Hash,
+					title: "Calls",
+					url: "/dashboard/communication/calls",
+					icon: Phone,
 				},
 				{
-					title: "Technicians",
-					url: "/dashboard/communication/teams/technicians",
-					icon: Hash,
-				},
-				{
-					title: "Management",
-					url: "/dashboard/communication/teams/management",
-					icon: Hash,
+					title: "Teams",
+					url: "/dashboard/communication/teams?channel=general",
+					icon: Users,
 				},
 			],
 		},
@@ -1494,37 +1464,27 @@ const navigationSections = {
 	],
 	ai: [
 		{
-			label: "AI Assistant",
+			label: undefined, // No group label - flat list under New Chat button
 			items: [
-				{
-					title: "Thorbis Assistant",
-					url: "/dashboard/ai",
-					icon: Sparkles,
-				},
-				{
-					title: "Search Chats",
-					url: "/dashboard/ai/search",
-				},
-				{
-					title: "AI Library",
-					url: "/dashboard/ai/library",
-				},
 				{
 					title: "Automation",
 					url: "/dashboard/ai/automation",
-				},
-			],
-		},
-		{
-			label: "AI Tools",
-			items: [
-				{
-					title: "Smart Suggestions",
-					url: "/dashboard/ai/suggestions",
+					icon: Zap,
 				},
 				{
-					title: "AI Analytics",
-					url: "/dashboard/ai/analytics",
+					title: "AI Calls",
+					url: "/dashboard/ai/calls",
+					icon: Phone,
+				},
+				{
+					title: "AI Texts",
+					url: "/dashboard/ai/texts",
+					icon: MessageSquare,
+				},
+				{
+					title: "Activity Log",
+					url: "/dashboard/ai/activity",
+					icon: ClipboardList,
 				},
 			],
 		},
@@ -2301,14 +2261,6 @@ export function AppSidebar({
 }: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
-	// Hide sidebar for command center (exact match) and messages pages
-	const hideSidebar = 
-		pathname === "/dashboard/communication" || 
-		pathname.startsWith("/dashboard/communication/messages");
-
-	if (hideSidebar) {
-		return null;
-	}
 
 	const currentSection = getCurrentSection(pathname);
 	const navItems = navigationSections[currentSection];
@@ -2340,14 +2292,16 @@ export function AppSidebar({
 	const useCustomSidebar = navItems === "custom";
 
 	// Check for communication-specific sidebars
+	// Main communication page (reports/statistics)
+	const isCommunicationReportsPage = pathname === "/dashboard/communication";
 	// Email page is at /dashboard/communication/email (with query params for folder filtering)
-	const isEmailPage = 
-		pathname === "/dashboard/communication" || // Legacy support
-		pathname?.startsWith("/dashboard/communication/email");
+	const isEmailPage = pathname?.startsWith("/dashboard/communication/email");
 	const isSmsPage = pathname?.startsWith("/dashboard/communication/sms");
 	const isTeamsPage = pathname?.startsWith("/dashboard/communication/teams");
-	const isTicketsPage = pathname?.startsWith("/dashboard/communication/tickets");
 
+	if (isCommunicationReportsPage) {
+		return <CommunicationReportsSidebar {...props} />;
+	}
 	if (isEmailPage) {
 		return <EmailSidebar {...props} />;
 	}
@@ -2356,9 +2310,6 @@ export function AppSidebar({
 	}
 	if (isTeamsPage) {
 		return <TeamsSidebar {...props} />;
-	}
-	if (isTicketsPage) {
-		return <TicketsSidebar {...props} />;
 	}
 
 	// For pricebook, return tree sidebar
@@ -2390,7 +2341,11 @@ export function AppSidebar({
 					/>
 				) : useGroupedNav ? (
 					// Use default grouped navigation
-					<NavGrouped groups={navItems as any} pathname={pathname} />
+					<>
+						{/* New Chat button for AI section - above nav items */}
+						{isAISection && <AiNewChatButton />}
+						<NavGrouped groups={navItems as any} pathname={pathname} />
+					</>
 				) : (
 					// Use default main navigation
 					<NavMain items={navItems as any} pathname={pathname} />

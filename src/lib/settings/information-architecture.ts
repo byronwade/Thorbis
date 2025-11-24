@@ -299,6 +299,15 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				],
 			},
 			{
+				title: "Payment Processors",
+				description: "Adyen, Plaid, check deposits, and payout schedules",
+				href: "/dashboard/settings/finance/payments",
+				supabaseSources: [
+					"company_payment_processors",
+					"payout_schedules",
+				],
+			},
+			{
 				title: "Financing Programs",
 				description: "Consumer and business financing eligibility",
 				href: "/dashboard/settings/finance/business-financing",

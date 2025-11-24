@@ -25,8 +25,9 @@ import {
 	ensureCompanyTrialStatus,
 } from "@/lib/billing/trial-management";
 import {
-	createResendDomain,
+	createResendDomainWithValidation,
 	createInboundRoute as createResendInboundRoute,
+	generatePlatformSubdomain,
 } from "@/lib/email/resend-domains";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
@@ -400,35 +401,97 @@ function extractDomainFromUrl(url?: string | null) {
 async function autoConfigureEmailInfrastructure(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
+	companySlug: string,
 	website?: string | null,
 ) {
-	const domain = extractDomainFromUrl(website);
-	if (domain) {
-		try {
-			const result = await createResendDomain(domain);
+	// Check if domain already exists for this company
+	const { data: existingDomain } = await serviceSupabase
+		.from("company_email_domains")
+		.select("id")
+		.eq("company_id", companyId)
+		.maybeSingle();
+
+	if (existingDomain) {
+		// Domain already configured, skip
+		return;
+	}
+
+	try {
+		// Try to register custom domain from website if provided
+		const domain = extractDomainFromUrl(website);
+		if (domain) {
+			// Get count of existing domains for validation
+			const { count } = await serviceSupabase
+				.from("company_email_domains")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId);
+
+			const result = await createResendDomainWithValidation({
+				domain,
+				currentDomainCount: count || 0,
+				companySlug,
+			});
+
 			if (result.success) {
-				await (serviceSupabase as any)
-					.from("communication_email_domains")
+				await serviceSupabase
+					.from("company_email_domains")
 					.insert({
 						company_id: companyId,
-						domain,
+						domain_name: result.data.name,
 						status: result.data.status || "pending",
 						resend_domain_id: result.data.id,
 						dns_records: result.data.records || [],
+						is_platform_subdomain: false,
+						sending_enabled: result.data.status === "verified",
+						reputation_score: 100,
 						last_synced_at: new Date().toISOString(),
 					});
+				return; // Successfully registered custom domain
 			}
-		} catch (_error) {
-			// Error setting up domain, continue with flow
+		}
+
+		// Fallback to platform subdomain (e.g., company-slug.mail.stratos.app)
+		const platformDomain = generatePlatformSubdomain(companySlug);
+
+		await serviceSupabase
+			.from("company_email_domains")
+			.insert({
+				company_id: companyId,
+				domain_name: platformDomain,
+				status: "verified", // Platform subdomains are pre-verified
+				is_platform_subdomain: true,
+				sending_enabled: true,
+				reputation_score: 100,
+				last_synced_at: new Date().toISOString(),
+			});
+	} catch (_error) {
+		// Error setting up domain, try platform subdomain as fallback
+		try {
+			const platformDomain = generatePlatformSubdomain(companySlug);
+
+			await serviceSupabase
+				.from("company_email_domains")
+				.insert({
+					company_id: companyId,
+					domain_name: platformDomain,
+					status: "verified",
+					is_platform_subdomain: true,
+					sending_enabled: true,
+					reputation_score: 100,
+					last_synced_at: new Date().toISOString(),
+				});
+		} catch (_fallbackError) {
+			// Unable to set up any email domain
 		}
 	}
 
+	// Set up inbound email route
 	const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
 	if (!inboundDomain) {
 		return;
 	}
 
-	const { data: existingRoute } = await (serviceSupabase as any)
+	const { data: existingRoute } = await serviceSupabase
 		.from("communication_email_inbound_routes")
 		.select("id")
 		.eq("company_id", companyId)
@@ -449,7 +512,7 @@ async function autoConfigureEmailInfrastructure(
 		});
 
 		if (result.success) {
-			await (serviceSupabase as any)
+			await serviceSupabase
 				.from("communication_email_inbound_routes")
 				.insert({
 					company_id: companyId,
@@ -462,7 +525,7 @@ async function autoConfigureEmailInfrastructure(
 				});
 		}
 	} catch (_error) {
-		// Ignore QuickBooks sync errors during onboarding
+		// Ignore inbound route setup errors during onboarding
 	}
 }
 
@@ -679,8 +742,18 @@ async function saveOnboardingProgress(
 		}
 
 		let createdCompany = false;
+		let companySlug = "";
 
 		if (companyId) {
+			// Fetch existing company's slug
+			const { data: existingCompany } = await serviceSupabase
+				.from("companies")
+				.select("slug")
+				.eq("id", companyId)
+				.single();
+
+			companySlug = existingCompany?.slug || `company-${companyId.slice(0, 8)}`;
+
 			const updatePayload = {
 				name: data.orgName,
 				industry: data.orgIndustry,
@@ -713,13 +786,13 @@ async function saveOnboardingProgress(
 					.toLowerCase()
 					.replace(/[^a-z0-9]+/g, "-")
 					.replace(/(^-|-$)/g, "") || `company-${Date.now()}`;
-			const slug = await generateUniqueSlug(serviceSupabase, baseSlug);
+			companySlug = await generateUniqueSlug(serviceSupabase, baseSlug);
 
 			const { data: company, error: companyError } = await serviceSupabase
 				.from("companies")
 				.insert({
 					name: data.orgName,
-					slug,
+					slug: companySlug,
 					industry: data.orgIndustry,
 					company_size: data.orgSize,
 					phone: data.orgPhone,
@@ -809,6 +882,7 @@ async function saveOnboardingProgress(
 			await autoConfigureEmailInfrastructure(
 				serviceSupabase,
 				companyId,
+				companySlug,
 				data.orgWebsite,
 			);
 		} catch (_emailInfraError) {
@@ -1242,6 +1316,226 @@ async function saveOnboardingNotificationSettings(
 				error instanceof Error
 					? error.message
 					: "Failed to save notification settings",
+		};
+	}
+}
+
+/**
+ * Save payment processor setup during onboarding (Step 5)
+ * This step configures payment processors before final completion
+ */
+export async function savePaymentSetupProgress(
+	companyId: string,
+	paymentConfig: {
+		adyenEnabled?: boolean;
+		plaidEnabled?: boolean;
+		profitStarsEnabled?: boolean;
+		payoutSpeed?: "standard" | "instant" | "daily";
+		skipPaymentSetup?: boolean;
+	},
+): Promise<OnboardingResult> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Database not configured" };
+		}
+
+		const {
+			data: { user },
+			error: authError,
+		} = await supabase.auth.getUser();
+
+		if (authError || !user) {
+			return { success: false, error: "You must be logged in" };
+		}
+
+		const serviceSupabase = await createServiceSupabaseClient();
+
+		// Verify company access
+		const candidate = await validateCompanyForOnboarding(
+			serviceSupabase,
+			user.id,
+			companyId,
+		);
+
+		if (!candidate) {
+			return {
+				success: false,
+				error: "Company not found. Please go back and complete step 1.",
+			};
+		}
+
+		// If not skipping, create/update payment processor config
+		if (!paymentConfig.skipPaymentSetup) {
+			const { data: existingConfig } = await serviceSupabase
+				.from("company_payment_processors")
+				.select("id")
+				.eq("company_id", companyId)
+				.maybeSingle();
+
+			if (existingConfig) {
+				await serviceSupabase
+					.from("company_payment_processors")
+					.update({
+						adyen_enabled: paymentConfig.adyenEnabled ?? false,
+						plaid_enabled: paymentConfig.plaidEnabled ?? false,
+						profitstars_enabled: paymentConfig.profitStarsEnabled ?? false,
+						updated_at: new Date().toISOString(),
+					})
+					.eq("company_id", companyId);
+			} else {
+				await serviceSupabase.from("company_payment_processors").insert({
+					company_id: companyId,
+					adyen_enabled: paymentConfig.adyenEnabled ?? false,
+					plaid_enabled: paymentConfig.plaidEnabled ?? false,
+					profitstars_enabled: paymentConfig.profitStarsEnabled ?? false,
+				});
+			}
+
+			// Create payout schedule if payout speed specified
+			if (paymentConfig.payoutSpeed) {
+				const { data: existingSchedule } = await serviceSupabase
+					.from("payout_schedules")
+					.select("id")
+					.eq("company_id", companyId)
+					.maybeSingle();
+
+				if (existingSchedule) {
+					await serviceSupabase
+						.from("payout_schedules")
+						.update({
+							payout_speed: paymentConfig.payoutSpeed,
+							updated_at: new Date().toISOString(),
+						})
+						.eq("company_id", companyId);
+				} else {
+					await serviceSupabase.from("payout_schedules").insert({
+						company_id: companyId,
+						payout_speed: paymentConfig.payoutSpeed,
+					});
+				}
+			}
+		}
+
+		// Update onboarding progress
+		await updateOnboardingProgressRecord(serviceSupabase, companyId, {
+			step: 5,
+			stepData: {
+				...paymentConfig,
+				completed: true,
+				completedAt: new Date().toISOString(),
+			},
+		});
+
+		revalidatePath("/dashboard/welcome");
+
+		return { success: true, companyId };
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to save payment setup",
+		};
+	}
+}
+
+/**
+ * Complete the onboarding wizard and mark the company as fully set up
+ * This sets onboarding_completed_at timestamp which unlocks full dashboard access
+ */
+export async function completeOnboardingWizard(
+	onboardingData: Record<string, unknown>,
+): Promise<OnboardingResult> {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return {
+				success: false,
+				error: "Database not configured",
+			};
+		}
+
+		const {
+			data: { user },
+			error: authError,
+		} = await supabase.auth.getUser();
+
+		if (authError || !user) {
+			return {
+				success: false,
+				error: "You must be logged in to complete onboarding",
+			};
+		}
+
+		// Get active company
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const activeCompanyId = await getActiveCompanyId();
+
+		if (!activeCompanyId) {
+			return {
+				success: false,
+				error: "No active company found. Please complete company setup first.",
+			};
+		}
+
+		const serviceSupabase = await createServiceSupabaseClient();
+
+		// Verify user has access to this company
+		const { data: membership } = await serviceSupabase
+			.from("company_memberships")
+			.select("id, role")
+			.eq("company_id", activeCompanyId)
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.maybeSingle();
+
+		if (!membership) {
+			return {
+				success: false,
+				error: "You don't have access to this company",
+			};
+		}
+
+		// Update company with onboarding completion timestamp and full progress
+		const now = new Date().toISOString();
+		const { error: updateError } = await serviceSupabase
+			.from("companies")
+			.update({
+				onboarding_completed_at: now,
+				onboarding_progress: {
+					...(onboardingData as Record<string, unknown>),
+					completedAt: now,
+					completedBy: user.id,
+				} as Json,
+			})
+			.eq("id", activeCompanyId);
+
+		if (updateError) {
+			return {
+				success: false,
+				error: `Failed to complete onboarding: ${updateError.message}`,
+			};
+		}
+
+		// Revalidate all dashboard paths
+		revalidatePath("/dashboard");
+		revalidatePath("/dashboard/welcome");
+		revalidatePath("/", "layout");
+
+		return {
+			success: true,
+			companyId: activeCompanyId,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "An unexpected error occurred while completing onboarding",
 		};
 	}
 }

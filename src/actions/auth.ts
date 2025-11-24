@@ -1,34 +1,34 @@
 "use server";
 
+import { AuthApiError, AuthUnknownError } from "@supabase/supabase-js";
 import { Buffer } from "node:buffer";
 import { extname } from "node:path";
-import { AuthApiError } from "@supabase/supabase-js";
-import { checkBotId } from "botid/server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { z } from "zod";
+// import { checkBotId } from "botid/server";
 import { clearActiveCompany } from "@/lib/auth/company-context";
 import {
-	createEmailVerificationToken,
-	verifyAndConsumeToken,
+    createEmailVerificationToken,
+    verifyAndConsumeToken,
 } from "@/lib/auth/tokens";
 import { emailConfig } from "@/lib/email/resend-client";
 import { clearCSRFToken } from "@/lib/security/csrf";
 import {
-	authRateLimiter,
-	checkRateLimit,
-	passwordResetRateLimiter,
-	RateLimitError,
+    authRateLimiter,
+    checkRateLimit,
+    passwordResetRateLimiter,
+    RateLimitError,
 } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
-	createServiceSupabaseClient,
-	type ServiceSupabaseClient,
+    createServiceSupabaseClient,
+    type ServiceSupabaseClient,
 } from "@/lib/supabase/service-client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 import {
-	sendEmailVerification,
-	sendPasswordChanged,
-	sendWelcomeEmail,
+    sendEmailVerification,
+    sendPasswordChanged,
+    sendWelcomeEmail,
 } from "./emails";
 
 const NAME_MIN_LENGTH = 2;
@@ -663,6 +663,10 @@ const syncUserMetadataProfile = async ({
 			metadata.avatarUrl = avatarUrl;
 		}
 
+		if (!adminClient) {
+			throw new Error("Admin client not configured");
+		}
+
 		await adminClient.auth.admin.updateUserById(userId, {
 			user_metadata: metadata,
 		});
@@ -754,6 +758,7 @@ type AuthActionResult = {
 export async function signUp(formData: FormData): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
+		/*
 		const botCheck = await checkBotId();
 		if (botCheck.isBot) {
 			return {
@@ -761,6 +766,7 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
 				error: "Unable to process request. Please try again later.",
 			};
 		}
+		*/
 
 		const parsedForm = parseSignUpFormData(formData);
 
@@ -903,6 +909,7 @@ export async function completeProfile(
 export async function signIn(formData: FormData): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
+		/*
 		const botCheck = await checkBotId();
 		if (botCheck.isBot) {
 			return {
@@ -910,6 +917,7 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 				error: "Unable to process request. Please try again later.",
 			};
 		}
+		*/
 
 		// Parse and validate form data
 		const rawData = {
@@ -976,10 +984,21 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 			};
 		}
 
+		// Handle AuthUnknownError (usually network/service issues)
+		if (caughtError instanceof AuthUnknownError) {
+			console.error("AuthUnknownError during sign in:", caughtError);
+			return {
+				success: false,
+				error: "Unable to connect to authentication service. Please check your internet connection and try again.",
+			};
+		}
+
 		if (
 			caughtError instanceof Error &&
 			caughtError.message !== "NEXT_REDIRECT"
 		) {
+			// Log non-redirect errors for debugging
+			console.error("Sign in error:", caughtError);
 			return {
 				success: false,
 				error: caughtError.message,
@@ -1129,6 +1148,7 @@ async function forgotPassword(
 ): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
+		/*
 		const botCheck = await checkBotId();
 		if (botCheck.isBot) {
 			return {
@@ -1136,6 +1156,7 @@ async function forgotPassword(
 				error: "Unable to process request. Please try again later.",
 			};
 		}
+		*/
 
 		const rawData = {
 			email: formData.get("email") as string,
@@ -1236,6 +1257,7 @@ async function resetPassword(
 ): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
+		/*
 		const botCheck = await checkBotId();
 		if (botCheck.isBot) {
 			return {
@@ -1243,6 +1265,7 @@ async function resetPassword(
 				error: "Unable to process request. Please try again later.",
 			};
 		}
+		*/
 
 		const rawData = {
 			password: formData.get("password") as string,
@@ -1521,6 +1544,36 @@ async function resendVerificationEmail(
 				caughtError instanceof Error
 					? caughtError.message
 					: "Failed to resend verification email",
+		};
+	}
+}
+
+/**
+ * Get Active Company ID Action
+ *
+ * Server action to get the currently active company ID for client components.
+ */
+export async function getCompanyIdAction(): Promise<{
+	success: boolean;
+	companyId?: string;
+	error?: string;
+}> {
+	"use server";
+
+	try {
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
+
+		if (!companyId) {
+			return { success: false, error: "No active company found" };
+		}
+
+		return { success: true, companyId };
+	} catch (error) {
+		console.error("Error getting company ID:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
 		};
 	}
 }

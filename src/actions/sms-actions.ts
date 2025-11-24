@@ -319,3 +319,49 @@ export async function uploadSmsAttachments(
   }
 }
 
+/**
+ * SMS Template Context Type
+ * Data available for auto-filling SMS templates
+ */
+export type SmsTemplateContext = {
+  companyName?: string;
+  companyPhone?: string;
+  companyEmail?: string;
+};
+
+/**
+ * Get company context for SMS templates
+ * Returns company info for auto-filling template messages
+ */
+export async function getCompanyContextAction(): Promise<{
+  success: boolean;
+  context?: SmsTemplateContext;
+  error?: string;
+}> {
+  "use server";
+
+  try {
+    const { getActiveCompany } = await import("@/lib/auth/company-context");
+
+    const company = await getActiveCompany();
+    if (!company) {
+      return { success: false, error: "No active company found" };
+    }
+
+    return {
+      success: true,
+      context: {
+        companyName: company.name,
+        companyPhone: company.phone || undefined,
+        companyEmail: company.email || undefined,
+      },
+    };
+  } catch (error) {
+    console.error("Error getting company context:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+

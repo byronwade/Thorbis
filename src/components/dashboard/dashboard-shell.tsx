@@ -15,7 +15,7 @@ type DashboardShellProps = {
  */
 export function DashboardShell({ children }: DashboardShellProps) {
 	return (
-		<div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-6 p-6">
+		<div className="mx-auto flex min-h-full w-full max-w-7xl flex-col gap-6 p-6 pb-16">
 			{/* Dynamic content slots */}
 			{children}
 		</div>

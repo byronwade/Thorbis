@@ -19,11 +19,20 @@ export type CompanyEmail = {
 		id: string;
 		first_name: string | null;
 		last_name: string | null;
+		display_name: string | null;
+		email: string | null;
+		phone: string | null;
+		company_name: string | null;
 	} | null;
 	sent_at: string | null;
 	delivered_at: string | null;
+	opened_at: string | null;
+	clicked_at: string | null;
+	open_count: number | null;
+	click_count: number | null;
 	status: string;
 	tags?: string[] | null;
+	category?: string | null;
 	provider_metadata?: Record<string, unknown> | null;
 };
 
@@ -77,45 +86,6 @@ export async function getCompanyEmails(
 		sortOrder = "desc",
 	} = input;
 
-	// First, let's check what emails exist for debugging
-	const { data: debugData, error: debugError } = await supabase
-		.from("communications")
-		.select("id, channel, type, direction, subject, created_at, status, to_address")
-		.eq("company_id", companyId)
-		.eq("type", "email")
-		.is("deleted_at", null)
-		.order("created_at", { ascending: false })
-		.limit(10);
-
-	console.log("🔍 Debug: All emails for company:", {
-		companyId,
-		total: debugData?.length || 0,
-		channels: debugData?.map((e) => e.channel),
-		directions: debugData?.map((e) => e.direction),
-		statuses: debugData?.map((e) => e.status),
-		subjects: debugData?.map((e) => e.subject),
-		toAddresses: debugData?.map((e) => e.to_address),
-		error: debugError,
-		errorMessage: debugError?.message,
-		errorDetails: debugError ? JSON.stringify(debugError, null, 2) : null,
-	});
-
-	// Also check ALL communications (not just emails) to see what exists
-	const { data: allComms, error: allCommsError } = await supabase
-		.from("communications")
-		.select("id, type, channel, direction, subject, created_at")
-		.eq("company_id", companyId)
-		.is("deleted_at", null)
-		.order("created_at", { ascending: false })
-		.limit(10);
-
-	console.log("🔍 Debug: ALL communications for company:", {
-		total: allComms?.length || 0,
-		types: allComms?.map((e) => e.type),
-		channels: allComms?.map((e) => e.channel),
-		error: allCommsError,
-	});
-
 	// Build the query - get all emails, we'll filter by channel in memory
 	// Note: Using left join for customer to avoid filtering out emails without customers
 	let query = supabase
@@ -133,9 +103,13 @@ export async function getCompanyEmails(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers!left(id, first_name, last_name, display_name, email, phone),
+			customer:customers!left(id, first_name, last_name, display_name, email, phone, company_name),
 			sent_at,
 			delivered_at,
+			opened_at,
+			clicked_at,
+			open_count,
+			click_count,
 			status,
 			channel,
 			provider_metadata,
@@ -153,12 +127,13 @@ export async function getCompanyEmails(
 	if (folder) {
 		switch (folder) {
 			case "inbox":
-				// Inbox: inbound, not archived, not deleted, not draft, not snoozed (or snooze expired)
+				// Inbox: inbound, not archived, not deleted, not draft, not spam, not snoozed (or snooze expired)
 				query = query
 					.eq("direction", "inbound")
 					.eq("is_archived", false)
 					.is("deleted_at", null)
 					.neq("status", "draft")
+					.or("category.is.null,category.neq.spam")
 					.or("snoozed_until.is.null,snoozed_until.lt.now()");
 				break;
 			case "drafts":
@@ -254,33 +229,6 @@ export async function getCompanyEmails(
 		console.error("   Query filters:", { type: "email", direction: type });
 		console.error("   Full error details:", JSON.stringify(error, null, 2));
 		return { emails: [], total: 0, hasMore: false };
-	}
-
-	console.log("📧 Email query results:", {
-		companyId,
-		count: count || 0,
-		emailsFound: data?.length || 0,
-		limit,
-		offset,
-		type,
-		firstEmailId: data?.[0]?.id,
-		firstEmailSubject: data?.[0]?.subject,
-	});
-
-	// Debug: Log the first email's content fields to see what we're getting
-	if (data && data.length > 0) {
-		const firstEmail = data[0];
-		console.log("🔍 First email content check:", {
-			id: firstEmail.id,
-			subject: firstEmail.subject,
-			body: firstEmail.body ? `${firstEmail.body.substring(0, 100)}...` : "null/empty",
-			body_length: firstEmail.body?.length || 0,
-			body_html: firstEmail.body_html ? `${firstEmail.body_html.substring(0, 100)}...` : "null/empty",
-			body_html_length: firstEmail.body_html?.length || 0,
-			has_provider_metadata: !!firstEmail.provider_metadata,
-			provider_metadata_type: typeof firstEmail.provider_metadata,
-			provider_metadata_keys: firstEmail.provider_metadata ? Object.keys(firstEmail.provider_metadata as Record<string, unknown>) : [],
-		});
 	}
 
 	// Normalize customer data and filter out channel field
@@ -392,15 +340,10 @@ export async function getEmailById(
 			read_at,
 			direction,
 			customer_id,
-			customer:customers(id, first_name, last_name),
+			customer:customers(id, first_name, last_name, display_name, email, phone, company_name),
 			sent_at,
 			delivered_at,
-			status,
-			is_archived,
-			deleted_at,
-			snoozed_until,
-			category,
-			tags
+			status
 		`,
 		)
 		.eq("id", emailId)
@@ -472,7 +415,6 @@ export async function markEmailAsRead(
 
 	// If already read, return success
 	if (existingEmail.read_at) {
-		console.log("✅ markEmailAsRead: Already read:", { emailId, read_at: existingEmail.read_at });
 		return true;
 	}
 
@@ -511,7 +453,6 @@ export async function markEmailAsRead(
 		return false;
 	}
 
-	console.log("✅ markEmailAsRead success:", { emailId, read_at: updateData[0].read_at, rowsUpdated: updateData.length });
 	return true;
 }
 
@@ -588,3 +529,133 @@ export async function getEmailStats(): Promise<{
 	};
 }
 
+export type ArchiveAllEmailsResult = {
+	success: boolean;
+	count: number;
+	error?: string;
+};
+
+export async function archiveAllEmails(
+	companyId: string,
+	folder?: EmailFolder,
+): Promise<ArchiveAllEmailsResult> {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return { success: false, count: 0, error: "Database connection failed" };
+	}
+
+	if (!companyId) {
+		return { success: false, count: 0, error: "Missing company ID" };
+	}
+
+	const buildArchiveQuery = () =>
+		supabase
+			.from("communications")
+			.update({ is_archived: true })
+			.eq("company_id", companyId)
+			.eq("type", "email");
+
+	type ArchiveQuery = ReturnType<typeof buildArchiveQuery>;
+
+	const runArchive = async (queryBuilder: ArchiveQuery) => {
+		const { data, error, count } = await queryBuilder.select("id", { count: "exact" });
+
+		if (error) {
+			throw error;
+		}
+
+		return data?.length ?? count ?? 0;
+	};
+
+	const folderName = folder?.trim();
+	const normalizedFolder = folderName?.toLowerCase();
+
+	try {
+		switch (normalizedFolder || "inbox") {
+			case "inbox": {
+				// Inbox: inbound, not archived, not draft, not spam, not snoozed (or snooze expired)
+				const archived = await runArchive(
+					buildArchiveQuery()
+						.eq("direction", "inbound")
+						.eq("is_archived", false)
+						.neq("status", "draft")
+						.or("category.is.null,category.neq.spam")
+						.or(`snoozed_until.is.null,snoozed_until.lt.${new Date().toISOString()}`)
+						.is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+			case "drafts": {
+				const archived = await runArchive(
+					buildArchiveQuery().eq("status", "draft").is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+			case "sent": {
+				const archived = await runArchive(
+					buildArchiveQuery()
+						.eq("direction", "outbound")
+						.eq("is_archived", false)
+						.is("deleted_at", null)
+						.neq("status", "draft"),
+				);
+				return { success: true, count: archived };
+			}
+			case "archive": {
+				const archived = await runArchive(
+					buildArchiveQuery().eq("is_archived", true).is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+			case "snoozed": {
+				const archived = await runArchive(
+					buildArchiveQuery()
+						.not("snoozed_until", "is", null)
+						.gt("snoozed_until", new Date().toISOString())
+						.is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+			case "spam": {
+				const categorized = await runArchive(
+					buildArchiveQuery().eq("category", "spam").is("deleted_at", null),
+				);
+				const tagged = await runArchive(
+					buildArchiveQuery()
+						.neq("category", "spam")
+						.contains("tags", ["spam"])
+						.is("deleted_at", null),
+				);
+				return {
+					success: true,
+					count: categorized + tagged,
+				};
+			}
+			case "trash":
+			case "bin": {
+				const archived = await runArchive(buildArchiveQuery().not("deleted_at", "is", null));
+				return { success: true, count: archived };
+			}
+			case "starred": {
+				const archived = await runArchive(
+					buildArchiveQuery().contains("tags", ["starred"]).is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+			default: {
+				const archived = await runArchive(
+					buildArchiveQuery().contains("tags", [folderName]).is("deleted_at", null),
+				);
+				return { success: true, count: archived };
+			}
+		}
+	} catch (error) {
+		console.error("❌ archiveAllEmails error:", { companyId, folder, error });
+		return {
+			success: false,
+			count: 0,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}

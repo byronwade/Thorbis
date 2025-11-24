@@ -1,0 +1,24 @@
+import { ImageResponse } from "next/og";
+import { loadOGFonts, OG_CONFIG, DefaultTemplate } from "@/lib/og";
+
+export const alt = "Contact Thorbis - We're Here to Help";
+export const size = {
+	width: OG_CONFIG.width,
+	height: OG_CONFIG.height,
+};
+export const contentType = "image/png";
+
+export default async function Image() {
+	const fonts = await loadOGFonts();
+
+	return new ImageResponse(
+		<DefaultTemplate
+			title="Get in Touch"
+			subtitle="Questions? We're here to help you find the right solution for your business"
+		/>,
+		{
+			...size,
+			fonts,
+		}
+	);
+}

@@ -8,6 +8,7 @@
 "use client";
 
 import { Check, CreditCard } from "lucide-react";
+import { CollectPaymentDialog } from "@/components/payment/collect-payment-dialog";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,26 @@ import { useInvoicePaymentMethods } from "@/hooks/use-invoice-360";
 
 type InvoicePaymentMethodsWidgetProps = {
 	customerId: string;
+	invoiceId?: string;
+	invoiceNumber?: string;
+	customerName?: string;
+	companyId?: string;
+	amountDue?: number;
 	loadImmediately?: boolean;
+	onPaymentSuccess?: () => void;
 };
 
 export function InvoicePaymentMethodsWidget({
 	customerId,
+	invoiceId,
+	invoiceNumber,
+	customerName,
+	companyId,
+	amountDue,
 	loadImmediately = false,
+	onPaymentSuccess,
 }: InvoicePaymentMethodsWidgetProps) {
+	const canCollectPayment = invoiceId && companyId && amountDue && amountDue > 0;
 	return (
 		<ProgressiveWidget
 			title="Payment Methods"
@@ -91,9 +105,26 @@ export function InvoicePaymentMethodsWidget({
 							</div>
 						))}
 
-						<Button variant="outline" size="sm" className="w-full">
-							Collect Payment
-						</Button>
+						{canCollectPayment ? (
+							<CollectPaymentDialog
+								invoiceId={invoiceId}
+								invoiceNumber={invoiceNumber || ""}
+								customerId={customerId}
+								customerName={customerName || "Customer"}
+								companyId={companyId}
+								amountDue={amountDue}
+								onSuccess={onPaymentSuccess}
+								trigger={
+									<Button variant="outline" size="sm" className="w-full">
+										Collect Payment
+									</Button>
+								}
+							/>
+						) : (
+							<Button variant="outline" size="sm" className="w-full" disabled>
+								Collect Payment
+							</Button>
+						)}
 					</div>
 				);
 			}}

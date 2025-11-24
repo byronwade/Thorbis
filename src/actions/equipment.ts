@@ -29,7 +29,8 @@ async function getCustomerEquipment(customerId: string) {
 		)
 		.eq("customer_id", customerId)
 		.is("deleted_at", null)
-		.order("created_at", { ascending: false });
+		.order("created_at", { ascending: false })
+		.limit(100);
 
 	if (error) {
 		return { success: false, error: error.message };
@@ -59,7 +60,8 @@ async function getPropertyEquipment(propertyId: string) {
 		)
 		.eq("property_id", propertyId)
 		.is("deleted_at", null)
-		.order("created_at", { ascending: false });
+		.order("created_at", { ascending: false })
+		.limit(100);
 
 	if (error) {
 		return { success: false, error: error.message };
@@ -95,7 +97,8 @@ async function getJobEquipment(jobId: string) {
     `,
 		)
 		.eq("job_id", jobId)
-		.order("created_at", { ascending: false });
+		.order("created_at", { ascending: false })
+		.limit(50);
 
 	if (error) {
 		return { success: false, error: error.message };

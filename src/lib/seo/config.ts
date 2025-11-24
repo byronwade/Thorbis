@@ -46,8 +46,46 @@ export const SEO_URLS = {
 
 export const SEO_LOCALES = {
 	default: "en_US",
-	alternates: ["en_US"] as const,
+	/**
+	 * Supported locales for hreflang tags.
+	 * Format: { locale: region/path }
+	 * Add new locales here when expanding to new markets.
+	 */
+	alternates: {
+		"en-US": "/", // United States (default)
+		"en-CA": "/ca", // Canada
+		"en-GB": "/uk", // United Kingdom
+		"en-AU": "/au", // Australia
+		"x-default": "/", // Default fallback
+	},
+	/**
+	 * Currently active locales (expand as markets are added)
+	 * Set to just en-US for now, uncomment others when ready
+	 */
+	active: ["en-US", "x-default"] as const,
 } as const;
+
+/**
+ * Generate hreflang alternate links for a given path.
+ * Used for international SEO targeting.
+ */
+export function generateHreflangLinks(path: string = "/"): Record<string, string> {
+	const links: Record<string, string> = {};
+
+	for (const locale of SEO_LOCALES.active) {
+		const localePath = SEO_LOCALES.alternates[locale as keyof typeof SEO_LOCALES.alternates];
+		if (localePath) {
+			// For default locale, use the path directly
+			// For regional locales, prepend the region path
+			const fullPath = locale === "en-US" || locale === "x-default"
+				? path
+				: `${localePath}${path}`;
+			links[locale] = buildCanonicalUrl({ path: fullPath });
+		}
+	}
+
+	return links;
+}
 
 export const SEO_SOCIAL = {
 	twitterHandle: "@thorbis",

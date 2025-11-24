@@ -1,5 +1,7 @@
+import { cache } from "react";
 import { endOfDay, startOfDay } from "@/lib/schedule-utils";
 import { createClient } from "@/lib/supabase/server";
+import { getAnalyticsTrends, type AnalyticsTrendData } from "@/lib/queries/analytics";
 
 const CENTS_IN_DOLLAR = 100;
 
@@ -89,7 +91,14 @@ export type MissionControlData = {
 		openInvoices: MissionControlInvoice[];
 	};
 	activity: MissionControlActivity[];
+	analytics: AnalyticsTrendData;
 	lastUpdated: string;
+};
+
+const EMPTY_ANALYTICS: AnalyticsTrendData = {
+	revenue: [],
+	jobs: [],
+	communications: [],
 };
 
 const EMPTY_DATA: MissionControlData = {
@@ -115,6 +124,7 @@ const EMPTY_DATA: MissionControlData = {
 		openInvoices: [],
 	},
 	activity: [],
+	analytics: EMPTY_ANALYTICS,
 	lastUpdated: new Date().toISOString(),
 };
 
@@ -137,25 +147,13 @@ function resolveName(
 	return combined.length > 0 ? combined : undefined;
 }
 
-// Cache mission control data for 30 seconds to reduce database load
-const dataCache = new Map<
-	string,
-	{ data: MissionControlData; timestamp: number }
->();
-const CACHE_TTL = 30_000; // 30 seconds
-
-export async function getMissionControlData(
+// Use React.cache() for request-level deduplication
+// This ensures multiple components calling getMissionControlData in the same request
+// only trigger one database query
+export const getMissionControlData = cache(async (
 	companyId?: string,
-): Promise<MissionControlData> {
+): Promise<MissionControlData> => {
 	try {
-		// Check cache first
-		if (companyId) {
-			const cached = dataCache.get(companyId);
-			if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-				return cached.data;
-			}
-		}
-
 		const supabase = await createClient();
 
 		if (!supabase) {
@@ -181,6 +179,7 @@ export async function getMissionControlData(
 			communicationsResult,
 			invoicesResult,
 			activityResult,
+			analyticsResult,
 		] = await Promise.all([
 			supabase
 				.from("jobs")
@@ -377,6 +376,8 @@ export async function getMissionControlData(
 				.eq("company_id", activeCompanyId)
 				.order("created_at", { ascending: false })
 				.limit(25),
+			// Fetch analytics in parallel (eliminates waterfall)
+			getAnalyticsTrends(activeCompanyId, 90).catch(() => EMPTY_ANALYTICS),
 		]);
 
 		const jobsToday = jobsTodayResult.data ?? [];
@@ -555,7 +556,7 @@ export async function getMissionControlData(
 			}),
 		);
 
-		const data = {
+		const data: MissionControlData = {
 			metrics,
 			alerts,
 			operations,
@@ -565,16 +566,12 @@ export async function getMissionControlData(
 				openInvoices: invoiceItems,
 			},
 			activity: activityItems,
+			analytics: analyticsResult,
 			lastUpdated: now.toISOString(),
 		};
-
-		// Cache the result
-		if (companyId) {
-			dataCache.set(companyId, { data, timestamp: Date.now() });
-		}
 
 		return data;
 	} catch {
 		return EMPTY_DATA;
 	}
-}
+});

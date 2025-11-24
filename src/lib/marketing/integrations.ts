@@ -5,6 +5,7 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 		kind: "integration",
 		slug: "quickbooks",
 		name: "QuickBooks Online",
+		designVariant: "accounting",
 		heroEyebrow: "Accounting • Job Costing • Two-Way Sync",
 		heroTitle: "Keep operations and accounting perfectly aligned",
 		heroDescription:
@@ -124,6 +125,7 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 	{
 		kind: "integration",
 		slug: "stripe",
+		designVariant: "payments",
 		name: "Stripe Payments",
 		heroEyebrow: "Payments • Autopay • Digital Wallets",
 		heroTitle: "Collect payments faster with modern checkout experiences",
@@ -233,6 +235,7 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 	{
 		kind: "integration",
 		slug: "zapier",
+		designVariant: "automation",
 		name: "Zapier Automation",
 		heroEyebrow: "Automation • Workflows • No-Code",
 		heroTitle: "Automate repetitive tasks with Zapier’s 5,000+ app ecosystem",

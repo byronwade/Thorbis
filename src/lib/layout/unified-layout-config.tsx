@@ -31,6 +31,7 @@ import { CustomersToolbarActions } from "@/components/customers/customers-toolba
 import { EquipmentToolbarActions } from "@/components/inventory/equipment-toolbar-actions";
 import { MaterialsToolbarActions } from "@/components/inventory/materials-toolbar-actions";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
+import { ReportsToolbarActions } from "@/components/reports/reports-toolbar-actions";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
 import { PropertiesToolbarActions } from "@/components/properties/properties-toolbar-actions";
@@ -144,9 +145,8 @@ const ROUTE_PATTERNS = {
 		/^\/dashboard\/communication(\/(email|drafts|sent|archive|snoozed|spam|trash))?$/,
 	SMS: /^\/dashboard\/communication\/sms/,
 	TEAMS: /^\/dashboard\/communication\/teams/,
-	TICKETS: /^\/dashboard\/communication\/tickets/,
 	COMMUNICATION_DETAIL:
-		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|feed|teams|tickets|sms|drafts|sent|snoozed|email)[^/]+$/,
+		/^\/dashboard\/communication\/(?!unread|starred|archive|trash|spam|feed|teams|sms|drafts|sent|snoozed|email)[^/]+$/,
 	COMMUNICATION: /^\/dashboard\/communication/,
 
 	// Customers
@@ -161,8 +161,13 @@ const ROUTE_PATTERNS = {
 	FINANCE_ROOT: /^\/dashboard\/finance$/,
 	FINANCE_SUBPAGES: /^\/dashboard\/finance\//,
 
-	// Reporting
+	// Reporting (old)
 	REPORTING: /^\/dashboard\/reporting/,
+
+	// Reports (Business Intelligence)
+	REPORTS_ROOT: /^\/dashboard\/reports$/,
+	REPORTS_BUILDER: /^\/dashboard\/reports\/builder$/,
+	REPORTS_SUBPAGES: /^\/dashboard\/reports\//,
 
 	// Marketing
 	MARKETING: /^\/dashboard\/marketing/,
@@ -248,6 +253,8 @@ export type ToolbarConfig = {
 	showInlineStats?: boolean;
 	/** Inline stats component to render below toolbar (e.g., StatusPipeline) */
 	inlineStats?: ReactNode;
+	/** Hide the vertical separator line before actions */
+	hideActionSeparator?: boolean;
 };
 
 /**
@@ -1800,22 +1807,6 @@ const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 		description: "Teams main page with sidebar",
 	},
 
-	{
-		pattern: ROUTE_PATTERNS.TICKETS,
-		config: {
-			structure: FULL_WIDTH_STRUCTURE,
-			header: DEFAULT_HEADER,
-			toolbar: {
-				show: false,
-			},
-			sidebar: {
-				show: true,
-				variant: "standard",
-			},
-		},
-		priority: 68,
-		description: "Support tickets main page with sidebar",
-	},
 
 	{
 		pattern: ROUTE_PATTERNS.COMMUNICATION_DETAIL,
@@ -1905,11 +1896,92 @@ const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 				show: false,
 			},
 			sidebar: {
-				show: false,
+				show: true,
+				variant: "standard",
 			},
 		},
 		priority: 63,
-		description: "Reports and analytics - Coming Soon layout",
+		description: "Reports and analytics hub with sidebar navigation",
+	},
+
+	// ========================================
+	// REPORTS / BUSINESS INTELLIGENCE (Priority: 70-75)
+	// ========================================
+
+	{
+		pattern: ROUTE_PATTERNS.REPORTS_BUILDER,
+		config: {
+			structure: {
+				maxWidth: "4xl",
+				padding: "lg",
+				gap: "lg",
+				fixedHeight: false,
+			},
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: true,
+				title: "Report Builder",
+				subtitle: "Create a custom report",
+				back: (
+					<DetailBackButton href="/dashboard/reports" label="Reports" />
+				),
+			},
+			sidebar: {
+				show: false,
+			},
+		},
+		priority: 75,
+		description: "Custom report builder wizard",
+	},
+
+	{
+		pattern: ROUTE_PATTERNS.REPORTS_ROOT,
+		config: {
+			structure: {
+				maxWidth: "7xl",
+				padding: "lg",
+				gap: "lg",
+				fixedHeight: false,
+			},
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: true,
+				title: "Business Intelligence",
+				subtitle: "Analytics, reports, and insights",
+				actions: <ReportsToolbarActions showCreateButton={true} />,
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 74,
+		description: "Main reports dashboard with analytics overview",
+	},
+
+	{
+		pattern: ROUTE_PATTERNS.REPORTS_SUBPAGES,
+		config: {
+			structure: {
+				maxWidth: "7xl",
+				padding: "lg",
+				gap: "lg",
+				fixedHeight: false,
+			},
+			header: DEFAULT_HEADER,
+			toolbar: {
+				show: true,
+				back: (
+					<DetailBackButton href="/dashboard/reports" label="Reports" />
+				),
+			},
+			sidebar: {
+				show: true,
+				variant: "standard",
+			},
+		},
+		priority: 73,
+		description: "Report detail pages with sidebar navigation",
 	},
 
 	{

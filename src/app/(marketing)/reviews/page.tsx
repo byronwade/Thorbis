@@ -1,4 +1,15 @@
-
+import {
+	ArrowRight,
+	Award,
+	CheckCircle,
+	Clock,
+	ExternalLink,
+	Heart,
+	Quote,
+	Star,
+	ThumbsUp,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
@@ -16,7 +27,6 @@ import {
 	siteUrl,
 } from "@/lib/seo/metadata";
 import { generateSemanticKeywords } from "@/lib/seo/semantic-seo";
-import { createReviewAggregateSchema } from "@/lib/seo/structured-data";
 
 // Note: Caching is controlled by next.config.ts cacheLife configuration
 
@@ -45,18 +55,24 @@ const TESTIMONIALS = [
 			"Thorbis replaced ServiceTitan for our 60-tech operation in six weeks. Dispatchers love the new board, and AI booking boosted after-hours jobs by 18%.",
 		name: "Leslie Warren",
 		role: "COO, Elevate Mechanical",
+		color: "from-blue-500/10 to-cyan-500/10 border-blue-500/30",
+		iconColor: "text-blue-600 dark:text-blue-400",
 	},
 	{
 		quote:
 			"AI call handling and automatic follow-up saved the equivalent of two coordinators. Customers notice the difference immediately.",
 		name: "Jeremy Park",
 		role: "Founder, HomeHero Plumbing",
+		color: "from-violet-500/10 to-purple-500/10 border-violet-500/30",
+		iconColor: "text-violet-600 dark:text-violet-400",
 	},
 	{
 		quote:
 			"Thorbis let us scale from two crews to six without adding office staff. Reporting, inventory, and marketing are finally under one roof.",
 		name: "Ellie Martin",
 		role: "Owner, ShineBright Cleaning",
+		color: "from-emerald-500/10 to-green-500/10 border-emerald-500/30",
+		iconColor: "text-emerald-600 dark:text-emerald-400",
 	},
 ];
 
@@ -76,6 +92,67 @@ const FAQS = [
 		answer:
 			"Absolutely. We maintain a roster of reference customers across company sizes and industries. Create your account and message our success team to be connected.",
 	},
+];
+
+const STATS = [
+	{
+		score: "4.9",
+		label: "Overall rating",
+		subtext: "Average across G2, Capterra, and Google Reviews.",
+		icon: Star,
+		color: "from-yellow-500/10 to-amber-500/10 border-yellow-500/30",
+		iconColor: "text-yellow-600 dark:text-yellow-400",
+	},
+	{
+		score: "98%",
+		label: "Support satisfaction",
+		subtext: "Teams praise dedicated success managers and fast responses.",
+		icon: ThumbsUp,
+		color: "from-blue-500/10 to-cyan-500/10 border-blue-500/30",
+		iconColor: "text-blue-600 dark:text-blue-400",
+	},
+	{
+		score: "6 weeks",
+		label: "Average go-live",
+		subtext: "From contract to production across multi-location contractors.",
+		icon: Clock,
+		color: "from-emerald-500/10 to-green-500/10 border-emerald-500/30",
+		iconColor: "text-emerald-600 dark:text-emerald-400",
+	},
+];
+
+const PLATFORMS = [
+	{
+		platform: "G2",
+		rating: "4.9 / 5",
+		description: "High Performer in Field Service Management.",
+		href: "https://www.g2.com/products/thorbis/reviews",
+		color: "from-orange-500/10 to-red-500/10 border-orange-500/30",
+		iconColor: "text-orange-600 dark:text-orange-400",
+	},
+	{
+		platform: "Capterra",
+		rating: "4.8 / 5",
+		description: "Best ease of use award for mid-market contractors.",
+		href: "https://www.capterra.com/p/Thorbis/",
+		color: "from-sky-500/10 to-blue-500/10 border-sky-500/30",
+		iconColor: "text-sky-600 dark:text-sky-400",
+	},
+	{
+		platform: "Google Reviews",
+		rating: "4.9 / 5",
+		description: "Customer praise for AI automation and support.",
+		href: "https://www.google.com/search?q=thorbis+reviews",
+		color: "from-emerald-500/10 to-green-500/10 border-emerald-500/30",
+		iconColor: "text-emerald-600 dark:text-emerald-400",
+	},
+];
+
+const INDUSTRY_LINKS = [
+	{ label: "HVAC success stories", href: "/case-studies?industry=hvac", icon: TrendingUp },
+	{ label: "Plumbing upgrades", href: "/case-studies?industry=plumbing", icon: TrendingUp },
+	{ label: "Electrical growth playbooks", href: "/case-studies?industry=electrical", icon: TrendingUp },
+	{ label: "Cleaning & recurring services", href: "/case-studies?industry=cleaning", icon: TrendingUp },
 ];
 
 const breadcrumbLd = generateBreadcrumbStructuredData([
@@ -163,212 +240,264 @@ export default function ReviewsPage() {
 				type="application/ld+json"
 			/>
 
-			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-				<header className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="tracking-wide uppercase" variant="secondary">
-						Social Proof
-					</Badge>
-					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-						Thorbis earns 4.9/5 stars for AI automation and dispatch excellence
-					</h1>
-					<p className="text-muted-foreground text-lg leading-relaxed">
-						Contractors choose Thorbis for transparent pricing, fast
-						implementation, and AI-powered workflows. Every customer pays the
-						same $200/month base with pay-as-you-go usage—no per-user surprises.
-					</p>
-					<div className="flex flex-wrap justify-center gap-3">
-						<Button asChild size="lg">
-							<Link href="/waitlist">Join Waitlist</Link>
-						</Button>
-						<Button asChild size="lg" variant="outline">
-							<Link href="/case-studies">Read case studies</Link>
-						</Button>
-					</div>
-				</header>
+			<div className="container mx-auto space-y-20 px-4 py-16 sm:px-6 lg:px-8">
+				{/* Hero Section */}
+				<section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-yellow-600/20 via-background to-amber-500/5 p-8 sm:p-12 lg:p-16">
+					<div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-yellow-500/10 blur-3xl" />
+					<div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-amber-500/10 blur-3xl" />
 
-				<main className="mt-16 space-y-20">
-					<section className="grid gap-6 md:grid-cols-3">
-						{[
-							{
-								score: "4.9",
-								label: "Overall rating",
-								subtext: "Average across G2, Capterra, and Google Reviews.",
-							},
-							{
-								score: "98%",
-								label: "Support satisfaction",
-								subtext:
-									"Teams praise dedicated success managers and fast responses.",
-							},
-							{
-								score: "6 weeks",
-								label: "Average go-live",
-								subtext:
-									"From contract to production across multi-location contractors.",
-							},
-						].map((stat) => (
-							<Card className="bg-primary/5" key={stat.label}>
-								<CardContent className="flex h-full flex-col items-center justify-center gap-3 py-10 text-center">
-									<span className="text-primary text-5xl font-bold">
-										{stat.score}
-									</span>
-									<p className="text-base font-semibold">{stat.label}</p>
-									<p className="text-muted-foreground text-sm">
-										{stat.subtext}
-									</p>
-								</CardContent>
-							</Card>
-						))}
-					</section>
-
-					<section className="space-y-6">
-						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="text-3xl font-semibold">
-								What customers say about Thorbis
-							</h2>
-							<p className="text-muted-foreground">
-								A sampling of the feedback we hear from field service operators
-								who replaced legacy tools.
-							</p>
+					<div className="mx-auto max-w-4xl space-y-6 text-center">
+						<Badge className="px-4 py-1.5 font-medium tracking-wide uppercase bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
+							<Award className="mr-2 size-4" />
+							Social Proof
+						</Badge>
+						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+							Thorbis earns 4.9/5 stars for AI automation and dispatch excellence
+						</h1>
+						<p className="text-muted-foreground text-lg leading-relaxed sm:text-xl">
+							Contractors choose Thorbis for transparent pricing, fast
+							implementation, and AI-powered workflows. Every customer pays the
+							same $200/month base with pay-as-you-go usage—no per-user surprises.
+						</p>
+						<div className="border-border/50 flex flex-wrap items-center justify-center gap-6 border-t pt-6">
+							<div className="flex items-center gap-2">
+								<CheckCircle className="size-5 text-yellow-600 dark:text-yellow-400" />
+								<span className="text-muted-foreground text-sm">182+ verified reviews</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<CheckCircle className="size-5 text-yellow-600 dark:text-yellow-400" />
+								<span className="text-muted-foreground text-sm">98% satisfaction rate</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<CheckCircle className="size-5 text-yellow-600 dark:text-yellow-400" />
+								<span className="text-muted-foreground text-sm">Industry-leading NPS</span>
+							</div>
 						</div>
-						<div className="grid gap-6 md:grid-cols-3">
-							{TESTIMONIALS.map((testimonial) => (
-								<Card key={testimonial.quote}>
-									<CardContent className="flex h-full flex-col justify-between gap-4 py-8">
-										<p className="text-muted-foreground leading-relaxed">
-											“{testimonial.quote}”
-										</p>
-										<div className="space-y-1 text-sm">
-											<p className="text-foreground font-semibold">
-												{testimonial.name}
-											</p>
-											<p className="text-muted-foreground">
-												{testimonial.role}
+						<div className="flex flex-wrap justify-center gap-3">
+							<Button asChild className="group" size="lg">
+								<Link href="/waitlist">
+									Join Waitlist
+									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+								</Link>
+							</Button>
+							<Button asChild size="lg" variant="outline">
+								<Link href="/case-studies">Read case studies</Link>
+							</Button>
+						</div>
+					</div>
+				</section>
+
+				{/* Stats Section */}
+				<section className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto">
+						<Badge className="mb-4" variant="secondary">
+							Key Metrics
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							Numbers that speak for themselves
+						</h2>
+					</div>
+					<div className="grid gap-6 md:grid-cols-3">
+						{STATS.map((stat) => {
+							const Icon = stat.icon;
+							return (
+								<Card
+									className={`border-2 bg-gradient-to-br transition-all hover:shadow-lg ${stat.color}`}
+									key={stat.label}
+								>
+									<CardContent className="flex h-full flex-col items-center justify-center gap-4 py-10 text-center">
+										<div className={`flex size-14 items-center justify-center rounded-xl bg-background/80 ${stat.iconColor}`}>
+											<Icon className="size-7" />
+										</div>
+										<span className={`text-5xl font-bold ${stat.iconColor}`}>
+											{stat.score}
+										</span>
+										<div>
+											<p className="text-lg font-semibold">{stat.label}</p>
+											<p className="text-muted-foreground text-sm mt-1">
+												{stat.subtext}
 											</p>
 										</div>
 									</CardContent>
 								</Card>
-							))}
-						</div>
-					</section>
+							);
+						})}
+					</div>
+				</section>
 
-					<section className="space-y-6">
-						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="text-3xl font-semibold">
-								Platform badges & ratings
-							</h2>
-							<p className="text-muted-foreground">
-								Verified reviews from trusted directories. Thorbis leads in ease
-								of use, support, and ROI.
-							</p>
-						</div>
-						<div className="grid gap-6 md:grid-cols-3">
-							{[
-								{
-									platform: "G2",
-									rating: "4.9 / 5",
-									description: "High Performer in Field Service Management.",
-									href: "https://www.g2.com/products/thorbis/reviews",
-								},
-								{
-									platform: "Capterra",
-									rating: "4.8 / 5",
-									description:
-										"Best ease of use award for mid-market contractors.",
-									href: "https://www.capterra.com/p/Thorbis/",
-								},
-								{
-									platform: "Google Reviews",
-									rating: "4.9 / 5",
-									description: "Customer praise for AI automation and support.",
-									href: "https://www.google.com/search?q=thorbis+reviews",
-								},
-							].map((listing) => (
-								<Card className="text-center" key={listing.platform}>
-									<CardHeader>
-										<Badge className="mx-auto w-fit" variant="secondary">
-											{listing.platform}
-										</Badge>
-										<CardTitle className="text-2xl">{listing.rating}</CardTitle>
-									</CardHeader>
-									<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
-										<p>{listing.description}</p>
-										<Button asChild variant="outline">
-											<Link href={listing.href} rel="noopener" target="_blank">
-												Read {listing.platform} reviews
+				{/* Testimonials Section */}
+				<section className="space-y-8">
+					<div className="mx-auto max-w-3xl space-y-3 text-center">
+						<Badge className="mb-4" variant="secondary">
+							Customer Stories
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							What customers say about Thorbis
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							A sampling of the feedback we hear from field service operators
+							who replaced legacy tools.
+						</p>
+					</div>
+					<div className="grid gap-6 md:grid-cols-3">
+						{TESTIMONIALS.map((testimonial) => (
+							<Card
+								className={`border-2 bg-gradient-to-br transition-all hover:shadow-lg ${testimonial.color}`}
+								key={testimonial.quote}
+							>
+								<CardContent className="flex h-full flex-col justify-between gap-4 py-8">
+									<div>
+										<Quote className={`size-8 mb-4 ${testimonial.iconColor}`} />
+										<p className="text-muted-foreground leading-relaxed italic">
+											"{testimonial.quote}"
+										</p>
+									</div>
+									<div className="space-y-1 text-sm pt-4 border-t border-border/50">
+										<p className="text-foreground font-semibold">
+											{testimonial.name}
+										</p>
+										<p className="text-muted-foreground">
+											{testimonial.role}
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</section>
+
+				{/* Platforms Section */}
+				<section className="space-y-8">
+					<div className="mx-auto max-w-3xl space-y-3 text-center">
+						<Badge className="mb-4" variant="secondary">
+							Review Platforms
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							Platform badges & ratings
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							Verified reviews from trusted directories. Thorbis leads in ease
+							of use, support, and ROI.
+						</p>
+					</div>
+					<div className="grid gap-6 md:grid-cols-3">
+						{PLATFORMS.map((listing) => (
+							<Card
+								className={`text-center border-2 bg-gradient-to-br transition-all hover:shadow-lg ${listing.color}`}
+								key={listing.platform}
+							>
+								<CardHeader>
+									<Badge className="mx-auto w-fit mb-2" variant="secondary">
+										{listing.platform}
+									</Badge>
+									<CardTitle className={`text-3xl ${listing.iconColor}`}>{listing.rating}</CardTitle>
+								</CardHeader>
+								<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
+									<p>{listing.description}</p>
+									<Button asChild variant="outline">
+										<Link href={listing.href} rel="noopener" target="_blank">
+											Read reviews
+											<ExternalLink className="ml-2 size-4" />
+										</Link>
+									</Button>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</section>
+
+				{/* Industry Links Section */}
+				<section className="space-y-8">
+					<div className="mx-auto max-w-3xl space-y-3 text-center">
+						<Badge className="mb-4" variant="secondary">
+							Case Studies
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							Explore proof by industry
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							Dive deeper into stories from contractors like you, complete
+							with KPI improvements and AI adoption stats.
+						</p>
+					</div>
+					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+						{INDUSTRY_LINKS.map((item) => {
+							const Icon = item.icon;
+							return (
+								<Card className="border-2 hover:border-primary/30 transition-all hover:shadow-lg" key={item.label}>
+									<CardContent className="flex h-full flex-col items-start justify-between gap-4 py-6">
+										<div className="flex items-center gap-3">
+											<div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+												<Icon className="size-5 text-primary" />
+											</div>
+											<p className="text-base font-semibold">{item.label}</p>
+										</div>
+										<Button asChild variant="ghost" className="w-full justify-start">
+											<Link href={item.href}>
+												View stories
+												<ArrowRight className="ml-2 size-4" />
 											</Link>
 										</Button>
 									</CardContent>
 								</Card>
-							))}
-						</div>
-					</section>
+							);
+						})}
+					</div>
+				</section>
 
-					<section className="space-y-6">
-						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="text-3xl font-semibold">
-								Explore proof by industry
-							</h2>
-							<p className="text-muted-foreground">
-								Dive deeper into stories from contractors like you, complete
-								with KPI improvements and AI adoption stats.
-							</p>
-						</div>
-						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-							{[
-								{
-									label: "HVAC success stories",
-									href: "/case-studies?industry=hvac",
-								},
-								{
-									label: "Plumbing upgrades",
-									href: "/case-studies?industry=plumbing",
-								},
-								{
-									label: "Electrical growth playbooks",
-									href: "/case-studies?industry=electrical",
-								},
-								{
-									label: "Cleaning & recurring services",
-									href: "/case-studies?industry=cleaning",
-								},
-							].map((item) => (
-								<Card className="bg-muted/40" key={item.label}>
-									<CardContent className="flex h-full flex-col items-start justify-between gap-4 py-6">
-										<p className="text-base font-semibold">{item.label}</p>
-										<Button asChild variant="ghost">
-											<Link href={item.href}>View stories →</Link>
-										</Button>
-									</CardContent>
-								</Card>
-							))}
-						</div>
-					</section>
+				{/* FAQ Section */}
+				<section className="space-y-8">
+					<div className="text-center max-w-3xl mx-auto">
+						<Badge className="mb-4" variant="secondary">
+							FAQ
+						</Badge>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Reviews FAQ</h2>
+					</div>
+					<div className="mx-auto max-w-4xl grid gap-4 md:grid-cols-3">
+						{FAQS.map((faq) => (
+							<Card className="border-2 hover:border-primary/30 transition-all hover:shadow-lg" key={faq.question}>
+								<CardHeader>
+									<CardTitle className="text-base">{faq.question}</CardTitle>
+								</CardHeader>
+								<CardContent className="text-muted-foreground text-sm leading-relaxed">
+									{faq.answer}
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</section>
 
-					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="text-3xl font-semibold">Reviews FAQ</h2>
-						<div className="grid gap-4 md:grid-cols-3">
-							{FAQS.map((faq) => (
-								<Card key={faq.question}>
-									<CardHeader>
-										<CardTitle className="text-base">{faq.question}</CardTitle>
-									</CardHeader>
-									<CardContent className="text-muted-foreground text-sm leading-relaxed">
-										{faq.answer}
-									</CardContent>
-								</Card>
-							))}
+				{/* CTA Section */}
+				<section className="relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br from-primary/10 via-background to-primary/5 p-10 text-center">
+					<div className="absolute top-0 right-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
+					<div className="absolute bottom-0 left-0 -z-10 size-96 rounded-full bg-primary/5 blur-3xl" />
+
+					<div className="relative space-y-6 max-w-3xl mx-auto">
+						<div className="flex items-center justify-center gap-2">
+							<Heart className="size-5 text-primary" />
+							<span className="text-muted-foreground text-sm font-medium">
+								Join 1,000+ contractors who love Thorbis
+							</span>
 						</div>
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							Ready to experience it yourself?
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							Start with our $200/month base plan and see why teams rate us 4.9/5.
+						</p>
 						<div className="flex flex-wrap justify-center gap-3">
-							<Button asChild>
-								<Link href="/waitlist">Get started now</Link>
+							<Button asChild className="group" size="lg">
+								<Link href="/waitlist">
+									Join Waitlist
+									<ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+								</Link>
 							</Button>
-							<Button asChild variant="outline">
-								<Link href="/switch">Plan your migration</Link>
+							<Button asChild size="lg" variant="outline">
+								<Link href="/switch">Plan Your Migration</Link>
 							</Button>
 						</div>
-					</section>
-				</main>
+					</div>
+				</section>
 			</div>
 		</>
 	);

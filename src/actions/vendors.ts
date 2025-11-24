@@ -6,27 +6,27 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
 import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
+    ActionError,
+    ERROR_CODES,
+    ERROR_MESSAGES,
 } from "@/lib/errors/action-error";
+import { revalidatePath } from "next/cache";
 
 // Regex constants
 const VENDOR_NUMBER_REGEX = /VND-\d{4}-(\d+)/;
 
 import {
-	type ActionResult,
-	assertAuthenticated,
-	assertExists,
-	withErrorHandling,
+    type ActionResult,
+    assertAuthenticated,
+    assertExists,
+    withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 import {
-	type VendorUpdate,
-	vendorInsertSchema,
-	vendorUpdateSchema,
+    type VendorUpdate,
+    vendorInsertSchema,
+    vendorUpdateSchema,
 } from "@/lib/validations/database-schemas";
 
 /**
@@ -592,16 +592,30 @@ export async function searchVendors(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
+		// Use the same approach as searchCustomers
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const activeCompanyId = await getActiveCompanyId();
+		
+		if (!activeCompanyId) {
+			throw new ActionError(
+				"No active company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify user has access to the active company
 		const { data: teamMember } = await supabase
 			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
+			.eq("company_id", activeCompanyId)
 			.eq("status", "active")
-			.single();
+			.maybeSingle();
 
 		if (!teamMember?.company_id) {
 			throw new ActionError(
-				"You must be part of a company",
+				"You don't have access to this company",
 				ERROR_CODES.AUTH_FORBIDDEN,
 				403,
 			);
@@ -610,7 +624,7 @@ export async function searchVendors(
 		const { data: vendors, error } = await supabase
 			.from("vendors")
 			.select("id, name, display_name, vendor_number, email, phone, status")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", activeCompanyId)
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or(

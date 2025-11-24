@@ -444,7 +444,10 @@ export function FullWidthDataTable<T>({
 	searchParamKey = "search",
 	searchDebounceMs = 300,
 	noPadding = false,
-}: FullWidthDataTableProps<T>) {
+	onSelectionChange,
+}: FullWidthDataTableProps<T> & {
+	onSelectionChange?: (selectedIds: Set<string>) => void;
+}) {
 	// Get variant configuration
 	const config = VARIANT_CONFIG[variant];
 
@@ -463,6 +466,7 @@ export function FullWidthDataTable<T>({
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const toolbarRef = useRef<HTMLDivElement>(null);
 	const [toolbarHeight, setToolbarHeight] = useState(50); // Default fallback
+	const lastSelectedIndexRef = useRef<number | null>(null); // Track last clicked index for Shift+Click
 
 	// Client-only state to prevent hydration mismatch
 	const [isClient, setIsClient] = useState(false);
@@ -790,15 +794,46 @@ export function FullWidthDataTable<T>({
 		}
 	};
 
-	const handleSelectItem = (id: string) => {
+	const handleSelectItem = (
+		id: string,
+		index: number,
+		event?: React.MouseEvent | React.KeyboardEvent
+	) => {
 		const newSelected = new Set(selectedIds);
-		if (newSelected.has(id)) {
-			newSelected.delete(id);
+
+		// Check if Shift key is held for range selection
+		const isShiftHeld = event && "shiftKey" in event && event.shiftKey;
+
+		if (isShiftHeld && lastSelectedIndexRef.current !== null) {
+			// Range selection: select all items between last selected and current
+			const start = Math.min(lastSelectedIndexRef.current, index);
+			const end = Math.max(lastSelectedIndexRef.current, index);
+
+			// Select all items in range
+			for (let i = start; i <= end; i++) {
+				const item = paginatedData[i];
+				if (item) {
+					newSelected.add(getItemId(item));
+				}
+			}
 		} else {
-			newSelected.add(id);
+			// Normal toggle selection
+			if (newSelected.has(id)) {
+				newSelected.delete(id);
+			} else {
+				newSelected.add(id);
+			}
 		}
+
+		// Update last selected index (anchor point)
+		lastSelectedIndexRef.current = index;
 		setSelectedIds(newSelected);
 	};
+
+	// Notify parent of selection changes
+	useEffect(() => {
+		onSelectionChange?.(selectedIds);
+	}, [selectedIds, onSelectionChange]);
 
 	const handleRowClick = (item: T, event: React.MouseEvent) => {
 		// Prevent row click if clicking on checkbox or action buttons
@@ -1301,11 +1336,15 @@ export function FullWidthDataTable<T>({
 										<div
 											className="touch-target flex items-center justify-center"
 											data-no-row-click
+											onClick={(e) => {
+												e.stopPropagation();
+												handleSelectItem(itemId, virtualItem.index, e);
+											}}
 										>
 											<Checkbox
 												aria-label={`Select item ${itemId}`}
 												checked={isSelected}
-												onCheckedChange={() => handleSelectItem(itemId)}
+												className="pointer-events-none"
 											/>
 										</div>
 									)}
@@ -1410,11 +1449,15 @@ export function FullWidthDataTable<T>({
 										<div
 											className="flex w-8 shrink-0 items-center justify-center"
 											data-no-row-click
+											onClick={(e) => {
+												e.stopPropagation();
+												handleSelectItem(itemId, rowIndex, e);
+											}}
 										>
 											<Checkbox
 												aria-label={`Select item ${itemId}`}
 												checked={isSelected}
-												onCheckedChange={() => handleSelectItem(itemId)}
+												className="pointer-events-none"
 											/>
 										</div>
 									)}

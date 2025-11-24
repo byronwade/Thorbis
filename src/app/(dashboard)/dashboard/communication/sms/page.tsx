@@ -9,13 +9,14 @@
 
 "use client";
 
-import type { CompanySms, GetSmsResult } from "@/actions/sms-actions";
+import type { CompanySms, GetSmsResult, SmsTemplateContext } from "@/actions/sms-actions";
 import {
     getSmsAction,
     getSmsByIdAction,
     getSmsConversationAction,
     markSmsAsReadAction,
     markSmsConversationAsReadAction,
+    getCompanyContextAction,
 } from "@/actions/sms-actions";
 import { sendTextMessage } from "@/actions/telnyx";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -71,6 +72,7 @@ export default function SmsPage() {
     const [messageInput, setMessageInput] = useState("");
     const [sendingMessage, setSendingMessage] = useState(false);
     const [attachments, setAttachments] = useState<File[]>([]);
+    const [companyContext, setCompanyContext] = useState<SmsTemplateContext | null>(null);
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const selectedSmsRef = useRef<CompanySms | null>(null);
     const conversationScrollRef = useRef<HTMLDivElement>(null);
@@ -128,6 +130,15 @@ export default function SmsPage() {
         fetchSms();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [folder, searchQuery]); // Removed fetchSms from deps to prevent infinite loop
+
+    // Fetch company context once on mount (for template auto-fill)
+    useEffect(() => {
+        getCompanyContextAction().then((result) => {
+            if (result.success && result.context) {
+                setCompanyContext(result.context);
+            }
+        });
+    }, []);
 
     // Handle search input with debounce
     useEffect(() => {
@@ -612,15 +623,14 @@ export default function SmsPage() {
                                                                 } ${!smsMessage.read_at ? 'opacity-100' : 'opacity-60'}`}
                                                                 onClick={() => handleSmsSelect(smsMessage)}
                                                             >
-                                                                {/* Hover Action Toolbar */}
-                                                                <div 
-                                                                    className="dark:bg-panelDark absolute right-2 z-25 flex -translate-y-1/2 items-center gap-1 rounded-xl border bg-white p-1 opacity-0 shadow-sm group-hover:opacity-100 top-[-1] transition-opacity duration-200"
-                                                                    onClick={(e) => e.stopPropagation()}
+                                                                {/* Hover Action Toolbar - pointer-events-none on container allows clicks to pass through */}
+                                                                <div
+                                                                    className="dark:bg-panelDark pointer-events-none absolute right-2 z-25 flex -translate-y-1/2 items-center gap-1 rounded-xl border bg-white p-1 opacity-0 shadow-sm group-hover:opacity-100 top-[-1] transition-opacity duration-200"
                                                                 >
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-6 w-6 overflow-visible p-0 hover:bg-accent"
+                                                                        className="pointer-events-auto h-6 w-6 overflow-visible p-0 hover:bg-accent"
                                                                         onClick={(e) => e.stopPropagation()}
                                                                     >
                                                                         <Star className="h-4 w-4 fill-transparent stroke-[#9D9D9D] dark:stroke-[#9D9D9D]" />
@@ -628,7 +638,7 @@ export default function SmsPage() {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-6 w-6 p-0 hover:bg-accent"
+                                                                        className="pointer-events-auto h-6 w-6 p-0 hover:bg-accent"
                                                                         onClick={(e) => e.stopPropagation()}
                                                                     >
                                                                         <AlertTriangle className="fill-[#9D9D9D] h-3.5 w-3.5" />
@@ -636,7 +646,7 @@ export default function SmsPage() {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-6 w-6 p-0 hover:bg-accent"
+                                                                        className="pointer-events-auto h-6 w-6 p-0 hover:bg-accent"
                                                                         onClick={(e) => e.stopPropagation()}
                                                                     >
                                                                         <Archive className="fill-[#9D9D9D] h-4 w-4" />
@@ -644,7 +654,7 @@ export default function SmsPage() {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-6 w-6 p-0 hover:bg-[#FDE4E9] dark:hover:bg-[#411D23]"
+                                                                        className="pointer-events-auto h-6 w-6 p-0 hover:bg-[#FDE4E9] dark:hover:bg-[#411D23]"
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             handleDelete(smsMessage.id);
@@ -877,6 +887,15 @@ export default function SmsPage() {
                                     sending={sendingMessage}
                                     disabled={!selectedSms}
                                     placeholder="Text Message"
+                                    // Pass customer context for templates
+                                    customerId={selectedSms?.customer_id || undefined}
+                                    customerName={selectedSms?.customer ? `${selectedSms.customer.first_name || ""} ${selectedSms.customer.last_name || ""}`.trim() : undefined}
+                                    customerFirstName={selectedSms?.customer?.first_name || undefined}
+                                    // Pass company context for templates
+                                    companyName={companyContext?.companyName}
+                                    companyPhone={companyContext?.companyPhone}
+                                    // Enable AI suggestions if customer is linked
+                                    enableAiSuggestions={Boolean(selectedSms?.customer_id)}
                                 />
                             </>
                         ) : (

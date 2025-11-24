@@ -12,6 +12,21 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk-tools/agents':
+        specifier: ^1.2.0
+        version: 1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(@ai-sdk-tools/cache@1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(ai@5.0.92(zod@4.1.12)))(ai@5.0.92(zod@4.1.12))(zod@4.1.12)
+      '@ai-sdk-tools/artifacts':
+        specifier: ^1.2.0
+        version: 1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0)
+      '@ai-sdk-tools/cache':
+        specifier: ^1.2.0
+        version: 1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(ai@5.0.92(zod@4.1.12))
+      '@ai-sdk-tools/memory':
+        specifier: ^1.2.0
+        version: 1.2.0(ai@5.0.92(zod@4.1.12))
+      '@ai-sdk-tools/store':
+        specifier: ^1.2.0
+        version: 1.2.0(@ai-sdk/react@2.0.98(react@19.2.0)(zod@4.1.12))(react@19.2.0)(zod@4.1.12)(zustand@5.0.8(@types/react@19.2.2)(immer@10.2.0)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))
       '@ai-sdk/anthropic':
         specifier: ^2.0.44
         version: 2.0.44(zod@4.1.12)
@@ -141,9 +156,6 @@ importers:
       ai:
         specifier: ^5.0.92
         version: 5.0.92(zod@4.1.12)
-      botid:
-        specifier: ^1.5.10
-        version: 1.5.10(next@16.0.1(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       canvas-confetti:
         specifier: ^1.9.4
         version: 1.9.4
@@ -249,6 +261,9 @@ importers:
       telnyx:
         specifier: ^4.1.0
         version: 4.2.0
+      twilio:
+        specifier: ^5.10.6
+        version: 5.10.6
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -336,6 +351,61 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@ai-sdk-tools/agents@1.2.0':
+    resolution: {integrity: sha512-x1cTxnWDy/1Y63Ca875LDQXgy6dycTZ5BikMmCwRs5zHn4WOcudFfEgdFZndGA8wZFntk8V5LiUlJ7rSwYCp1g==}
+    peerDependencies:
+      '@ai-sdk-tools/artifacts': '*'
+      '@ai-sdk-tools/cache': '*'
+      ai: '>=5.0.0'
+      zod: ^3.25.76 || ^4.1.8
+    peerDependenciesMeta:
+      '@ai-sdk-tools/artifacts':
+        optional: true
+      '@ai-sdk-tools/cache':
+        optional: true
+
+  '@ai-sdk-tools/artifacts@1.2.0':
+    resolution: {integrity: sha512-BqvfpnluKVbZjF0rCAX4Oe/yhtiE2PgeII2FN0j+AOX4WBiEUVzydM3oQkT6BS/olG0b5Xgnj3WjMd7Q7hC6uQ==}
+    peerDependencies:
+      ai: ^5.0.82
+      react: ^18.0.0 || ^19.0.0
+
+  '@ai-sdk-tools/cache@1.2.0':
+    resolution: {integrity: sha512-ZjcP002ZsaK8y2H9FI/qSUEhMEjq3pZ6S9ZXNMNb7l9P99x29zzBn4R491PtliSEG9AZR0CSLDBbmwLwh5FY5w==}
+    peerDependencies:
+      '@ai-sdk-tools/artifacts': '*'
+      ai: ^5.0.82
+    peerDependenciesMeta:
+      '@ai-sdk-tools/artifacts':
+        optional: true
+
+  '@ai-sdk-tools/memory@1.2.0':
+    resolution: {integrity: sha512-ET8CQMyHsdEMVSYnBjopHWwR6j6W6tmB+djMybFiloPLF9NfsFr9bXt2hb7+/oFyE9zKAGWQXqUY+Z+kUueR2w==}
+    peerDependencies:
+      '@upstash/redis': ^1.34.3
+      ai: ^5.0.0
+      drizzle-orm: ^0.36.0
+      ioredis: ^5.0.0
+      redis: ^4.0.0
+    peerDependenciesMeta:
+      '@upstash/redis':
+        optional: true
+      ai:
+        optional: true
+      drizzle-orm:
+        optional: true
+      ioredis:
+        optional: true
+      redis:
+        optional: true
+
+  '@ai-sdk-tools/store@1.2.0':
+    resolution: {integrity: sha512-/R01/2KA3fOyjDGDDaRSgYn6TPsGS1gO7dTYlmdC36QrCTVkN4Aqx4T3PcwUnnp4i4/nhEZb0Ar2/mpYEsQvfw==}
+    peerDependencies:
+      '@ai-sdk/react': '>=2.0.0'
+      react: '>=18.0.0'
+      zustand: '>=5.0.0'
 
   '@ai-sdk/anthropic@2.0.44':
     resolution: {integrity: sha512-o8TfNXRzO/KZkBrcx+CL9LQsPhx7PHyqzUGjza3TJaF9WxfH1S5UQLAmEw8F7lQoHNLU0IX03WT8o8R/4JbUxQ==}
@@ -2636,6 +2706,9 @@ packages:
   '@types/node@22.19.0':
     resolution: {integrity: sha512-xpr/lmLPQEj+TUnHmR+Ab91/glhJvsqcjB+yY0Ix9GO70H6Lb4FHH5GeqdOE5btAx7eIMwuHkp4H2MSkLcqWbA==}
 
+  '@types/node@24.10.1':
+    resolution: {integrity: sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==}
+
   '@types/papaparse@5.5.0':
     resolution: {integrity: sha512-GVs5iMQmUr54BAZYYkByv8zPofFxmyxUpISPb2oh8sayR3+1zbxasrOvoKiHJ/nnoq/uULuPsu1Lze1EkagVFg==}
 
@@ -2877,6 +2950,10 @@ packages:
     resolution: {integrity: sha512-ynZ4w/nUUv5rrsR8UUGoe1VC9hZj6V5hU9Qw1HlMDJGEJw5S7TfTErWTjMys6M7vr0YWcPqs3qAr4ss0nDfP+A==}
     engines: {node: '>=0.8'}
 
+  agent-base@6.0.2:
+    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
+    engines: {node: '>= 6.0.0'}
+
   ai@5.0.92:
     resolution: {integrity: sha512-EnPe3QXiD06Tg7iAt/oU3JSwedI1nuhEBnTjyfn1qTXaqmJ6qI4YG8wn/eBHRVXnmljDFDNYvGBC5pALYV1rAA==}
     engines: {node: '>=18'}
@@ -2986,17 +3063,6 @@ packages:
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
 
-  botid@1.5.10:
-    resolution: {integrity: sha512-hhgty1u0CxozqTqLbTQMtYBwmWdzWZTAsBCvN7/qhkN3fM7MlXacmmcMoyc0f+vV+U6RRoLYdlo32td+PhJyew==}
-    peerDependencies:
-      next: '*'
-      react: ^18.0.0 || ^19.0.0
-    peerDependenciesMeta:
-      next:
-        optional: true
-      react:
-        optional: true
-
   bowser@2.12.1:
     resolution: {integrity: sha512-z4rE2Gxh7tvshQ4hluIT7XcFrgLIQaw9X3A+kTTRdovCz5PMukm/0QC/BKSYPj3omF5Qfypn9O/c5kgpmvYUCw==}
 
@@ -3019,6 +3085,9 @@ packages:
 
   browserify-zlib@0.2.0:
     resolution: {integrity: sha512-Z942RysHXmJrhqk88FmKBVq/v5tqmSkDz7p54G/MGyjMnCFFnC79XWNbg+Vta8W6Wb2qtSZTSxIGkJrRpCFEiA==}
+
+  buffer-equal-constant-time@1.0.1:
+    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -3596,6 +3665,9 @@ packages:
   easy-table@1.2.0:
     resolution: {integrity: sha512-OFzVOv03YpvtcWGe5AayU5G2hgybsg3iqA6drU8UaoZyB9jLGMTrz9+asnLp/E+6qPh88yEI1gvyZFZ41dmgww==}
 
+  ecdsa-sig-formatter@1.0.11:
+    resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
+
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
     engines: {node: '>=0.10.0'}
@@ -4092,6 +4164,10 @@ packages:
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
 
+  https-proxy-agent@5.0.1:
+    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
+    engines: {node: '>= 6'}
+
   human-signals@8.0.1:
     resolution: {integrity: sha512-eKCa6bwnJhvxj14kZk5NCPc6Hb6BdsU9DZcOnmQKSnO1VKrfV0zCvtttPZUsBvjmNDn8rpcJfpwSYnHBjc95MQ==}
     engines: {node: '>=18.18.0'}
@@ -4328,6 +4404,16 @@ packages:
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
 
+  jsonwebtoken@9.0.2:
+    resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
+    engines: {node: '>=12', npm: '>=6'}
+
+  jwa@1.4.2:
+    resolution: {integrity: sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==}
+
+  jws@3.2.2:
+    resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==}
+
   katex@0.16.25:
     resolution: {integrity: sha512-woHRUZ/iF23GBP1dkDQMh1QBad9dmr8/PAwNA54VrSOVYgI12MAcE14TqnDdQOdzyEonGzMepYnqBMYdsoAr8Q==}
     hasBin: true
@@ -4472,8 +4558,29 @@ packages:
   lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
 
+  lodash.includes@4.3.0:
+    resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
+
+  lodash.isboolean@3.0.3:
+    resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==}
+
+  lodash.isinteger@4.0.4:
+    resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==}
+
+  lodash.isnumber@3.0.3:
+    resolution: {integrity: sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==}
+
+  lodash.isplainobject@4.0.6:
+    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
+
+  lodash.isstring@4.0.1:
+    resolution: {integrity: sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==}
+
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lodash.once@4.1.1:
+    resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -5515,6 +5622,9 @@ packages:
   schema-dts@1.1.5:
     resolution: {integrity: sha512-RJr9EaCmsLzBX2NDiO5Z3ux2BVosNZN5jo0gWgsyKvxKIUL5R3swNvoorulAeL9kLB0iTSX7V6aokhla2m7xbg==}
 
+  scmp@2.1.0:
+    resolution: {integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==}
+
   scule@1.3.0:
     resolution: {integrity: sha512-6FtHJEvt+pVMIB9IBY+IcCJ6Z5f1iQnytgyfKMhDKgmzYG+TeH/wx1y3l27rshSbLiSanrR9ffZDrEsmjlQF2g==}
 
@@ -5848,6 +5958,10 @@ packages:
   tweetnacl@1.0.3:
     resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
 
+  twilio@5.10.6:
+    resolution: {integrity: sha512-mZkB1JHvIuxv4J0MUP+iNyK4xQi6XhtqZdiowDSZzOgT2MhYhGOtDTorb6+Y8NFsb589W3njtAUnRCPcXaiX3g==}
+    engines: {node: '>=14.0'}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -5877,6 +5991,9 @@ packages:
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   undici@6.22.0:
     resolution: {integrity: sha512-hU/10obOIu62MGYjdskASR3CUAiYaFTtC9Pa6vHyf//mAipSvSQg6od2CnJswq7fvzNS3zJhxoRkgNVaHurWKw==}
@@ -6146,6 +6263,10 @@ packages:
     engines: {node: '>=0.8'}
     hasBin: true
 
+  xmlbuilder@13.0.2:
+    resolution: {integrity: sha512-Eux0i2QdDYKbdbA6AM6xE4m6ZTZr4G4xF9kahI2ukSEMCzwce2eX9WlTI5J3s+NU7hpasFsr8hWIONae7LluAQ==}
+    engines: {node: '>=6.0'}
+
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
@@ -6213,6 +6334,42 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@ai-sdk-tools/agents@1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(@ai-sdk-tools/cache@1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(ai@5.0.92(zod@4.1.12)))(ai@5.0.92(zod@4.1.12))(zod@4.1.12)':
+    dependencies:
+      ai: 5.0.92(zod@4.1.12)
+      zod: 4.1.12
+    optionalDependencies:
+      '@ai-sdk-tools/artifacts': 1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0)
+      '@ai-sdk-tools/cache': 1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(ai@5.0.92(zod@4.1.12))
+
+  '@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0)':
+    dependencies:
+      ai: 5.0.92(zod@4.1.12)
+      react: 19.2.0
+      zod: 4.1.12
+
+  '@ai-sdk-tools/cache@1.2.0(@ai-sdk-tools/artifacts@1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0))(ai@5.0.92(zod@4.1.12))':
+    dependencies:
+      ai: 5.0.92(zod@4.1.12)
+    optionalDependencies:
+      '@ai-sdk-tools/artifacts': 1.2.0(ai@5.0.92(zod@4.1.12))(react@19.2.0)
+
+  '@ai-sdk-tools/memory@1.2.0(ai@5.0.92(zod@4.1.12))':
+    dependencies:
+      zod: 4.1.12
+    optionalDependencies:
+      ai: 5.0.92(zod@4.1.12)
+
+  '@ai-sdk-tools/store@1.2.0(@ai-sdk/react@2.0.98(react@19.2.0)(zod@4.1.12))(react@19.2.0)(zod@4.1.12)(zustand@5.0.8(@types/react@19.2.2)(immer@10.2.0)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)))':
+    dependencies:
+      '@ai-sdk/react': 2.0.98(react@19.2.0)(zod@4.1.12)
+      '@types/node': 24.10.1
+      ai: 5.0.98(zod@4.1.12)
+      react: 19.2.0
+      zustand: 5.0.8(@types/react@19.2.2)(immer@10.2.0)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
+    transitivePeerDependencies:
+      - zod
 
   '@ai-sdk/anthropic@2.0.44(zod@4.1.12)':
     dependencies:
@@ -8812,6 +8969,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@24.10.1':
+    dependencies:
+      undici-types: 7.16.0
+
   '@types/papaparse@5.5.0':
     dependencies:
       '@types/node': 20.19.24
@@ -9150,6 +9311,12 @@ snapshots:
 
   adler-32@1.3.1: {}
 
+  agent-base@6.0.2:
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
   ai@5.0.92(zod@4.1.12):
     dependencies:
       '@ai-sdk/gateway': 2.0.8(zod@4.1.12)
@@ -9251,11 +9418,6 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
-  botid@1.5.10(next@16.0.1(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0):
-    optionalDependencies:
-      next: 16.0.1(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react: 19.2.0
-
   bowser@2.12.1: {}
 
   boxen@8.0.1:
@@ -9289,6 +9451,8 @@ snapshots:
   browserify-zlib@0.2.0:
     dependencies:
       pako: 1.0.11
+
+  buffer-equal-constant-time@1.0.1: {}
 
   buffer@5.7.1:
     dependencies:
@@ -9910,6 +10074,10 @@ snapshots:
       ansi-regex: 5.0.1
     optionalDependencies:
       wcwidth: 1.0.1
+
+  ecdsa-sig-formatter@1.0.11:
+    dependencies:
+      safe-buffer: 5.2.1
 
   ejs@3.1.10:
     dependencies:
@@ -10554,6 +10722,13 @@ snapshots:
       domutils: 3.2.2
       entities: 4.5.0
 
+  https-proxy-agent@5.0.1:
+    dependencies:
+      agent-base: 6.0.2
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
   human-signals@8.0.1: {}
 
   husky@9.1.7: {}
@@ -10718,6 +10893,30 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
+  jsonwebtoken@9.0.2:
+    dependencies:
+      jws: 3.2.2
+      lodash.includes: 4.3.0
+      lodash.isboolean: 3.0.3
+      lodash.isinteger: 4.0.4
+      lodash.isnumber: 3.0.3
+      lodash.isplainobject: 4.0.6
+      lodash.isstring: 4.0.1
+      lodash.once: 4.1.1
+      ms: 2.1.3
+      semver: 7.7.3
+
+  jwa@1.4.2:
+    dependencies:
+      buffer-equal-constant-time: 1.0.1
+      ecdsa-sig-formatter: 1.0.11
+      safe-buffer: 5.2.1
+
+  jws@3.2.2:
+    dependencies:
+      jwa: 1.4.2
+      safe-buffer: 5.2.1
+
   katex@0.16.25:
     dependencies:
       commander: 8.3.0
@@ -10846,7 +11045,21 @@ snapshots:
 
   lodash-es@4.17.21: {}
 
+  lodash.includes@4.3.0: {}
+
+  lodash.isboolean@3.0.3: {}
+
+  lodash.isinteger@4.0.4: {}
+
+  lodash.isnumber@3.0.3: {}
+
+  lodash.isplainobject@4.0.6: {}
+
+  lodash.isstring@4.0.1: {}
+
   lodash.merge@4.6.2: {}
+
+  lodash.once@4.1.1: {}
 
   lodash@4.17.21: {}
 
@@ -12164,6 +12377,8 @@ snapshots:
 
   schema-dts@1.1.5: {}
 
+  scmp@2.1.0: {}
+
   scule@1.3.0: {}
 
   section-matter@1.0.0:
@@ -12534,6 +12749,19 @@ snapshots:
 
   tweetnacl@1.0.3: {}
 
+  twilio@5.10.6:
+    dependencies:
+      axios: 1.13.2
+      dayjs: 1.11.19
+      https-proxy-agent: 5.0.1
+      jsonwebtoken: 9.0.2
+      qs: 6.14.0
+      scmp: 2.1.0
+      xmlbuilder: 13.0.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -12556,6 +12784,8 @@ snapshots:
       unplugin: 2.3.10
 
   undici-types@6.21.0: {}
+
+  undici-types@7.16.0: {}
 
   undici@6.22.0: {}
 
@@ -12864,6 +13094,8 @@ snapshots:
       ssf: 0.11.2
       wmf: 1.0.2
       word: 0.3.0
+
+  xmlbuilder@13.0.2: {}
 
   y18n@5.0.8: {}
 

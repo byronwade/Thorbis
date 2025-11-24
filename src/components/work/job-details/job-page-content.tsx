@@ -59,7 +59,6 @@ import {
 	assignTeamMemberToJob,
 	removeTeamMemberFromJob,
 } from "@/actions/team-assignments";
-import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import {
@@ -640,7 +639,6 @@ export function JobPageContent({
 	});
 
 	// Communication dialog states
-	const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
 	const [isSMSDialogOpen, setIsSMSDialogOpen] = useState(false);
 	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
 		useState(false);
@@ -2711,7 +2709,14 @@ export function JobPageContent({
 											{customer.email && (
 												<Button
 													className="h-7 w-7 p-0"
-													onClick={() => setIsEmailDialogOpen(true)}
+													onClick={() => {
+														const params = new URLSearchParams();
+														params.set("compose", "true");
+														params.set("to", customer.email);
+														params.set("name", `${customer.first_name} ${customer.last_name}`);
+														params.set("customerId", customer.id);
+														router.push(`/dashboard/communication/email?${params.toString()}`);
+													}}
 													size="sm"
 													title="Send Email"
 													variant="outline"
@@ -3975,19 +3980,6 @@ export function JobPageContent({
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-
-			{customer?.email && (
-				<EmailDialog
-					companyId={job.company_id}
-					customerEmail={customer.email}
-					customerId={customer.id}
-					customerName={`${customer.first_name} ${customer.last_name}`}
-					jobId={job.id}
-					onOpenChange={setIsEmailDialogOpen}
-					open={isEmailDialogOpen}
-					propertyId={property?.id}
-				/>
-			)}
 
 			{customer?.phone && (
 				<SMSDialog

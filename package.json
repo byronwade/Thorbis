@@ -35,6 +35,11 @@
 		"prepare": "husky install"
 	},
 	"dependencies": {
+		"@ai-sdk-tools/agents": "^1.2.0",
+		"@ai-sdk-tools/artifacts": "^1.2.0",
+		"@ai-sdk-tools/cache": "^1.2.0",
+		"@ai-sdk-tools/memory": "^1.2.0",
+		"@ai-sdk-tools/store": "^1.2.0",
 		"@ai-sdk/anthropic": "^2.0.44",
 		"@ai-sdk/google": "^2.0.23",
 		"@ai-sdk/groq": "^2.0.29",
@@ -78,7 +83,6 @@
 		"@vercel/analytics": "^1.5.0",
 		"@vercel/speed-insights": "^1.2.0",
 		"ai": "^5.0.92",
-		"botid": "^1.5.10",
 		"canvas-confetti": "^1.9.4",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -114,6 +118,7 @@
 		"stripe": "^19.2.0",
 		"tailwind-merge": "^3.3.1",
 		"telnyx": "^4.1.0",
+		"twilio": "^5.10.6",
 		"unified": "^11.0.5",
 		"use-stick-to-bottom": "^1.1.1",
 		"workflow": "4.0.1-beta.13",

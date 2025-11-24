@@ -1,12 +1,13 @@
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ZustandHydration } from "@/components/providers/zustand-hydration";
-import { BotIdProvider } from "@/components/security/botid-provider";
+import { SpeculationRules } from "@/components/seo/speculation-rules";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
+// import { BotIdProvider } from "@/components/security/botid-provider";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
 
@@ -102,10 +103,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<head>
+				<SpeculationRules />
+			</head>
 			<body className="font-sans antialiased">
 				<ThemeProvider>
 					<ZustandHydration />
-					<BotIdProvider />
+					{/* <BotIdProvider /> */}
 					<Suspense fallback={null}>
 						<AnalyticsProvider>{children}</AnalyticsProvider>
 					</Suspense>

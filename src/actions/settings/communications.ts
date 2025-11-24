@@ -68,7 +68,7 @@ const emailSettingsSchema = z.object({
 		.default("#3b82f6"),
 });
 
-async function updateEmailSettings(
+export async function updateEmailSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -142,7 +142,7 @@ async function updateEmailSettings(
 	});
 }
 
-async function getEmailSettings(): Promise<ActionResult<any>> {
+export async function getEmailSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -177,7 +177,7 @@ async function getEmailSettings(): Promise<ActionResult<any>> {
 	});
 }
 
-async function getEmailInfrastructure(): Promise<
+export async function getEmailInfrastructure(): Promise<
 	ActionResult<{
 		domain: Record<string, unknown> | null;
 		inboundRoute: Record<string, unknown> | null;
@@ -201,7 +201,7 @@ async function getEmailInfrastructure(): Promise<
 
 		const [{ data: domain }, { data: inboundRoute }] = await Promise.all([
 			supabase
-				.from("communication_email_domains")
+				.from("company_email_domains")
 				.select("*")
 				.eq("company_id", companyId)
 				.order("created_at", { ascending: false })
@@ -217,234 +217,6 @@ async function getEmailInfrastructure(): Promise<
 			domain: domain ?? null,
 			inboundRoute: inboundRoute ?? null,
 		};
-	});
-}
-
-const inboundRouteSchema = z.object({
-	routeAddress: z.string().email(),
-	name: z.string().min(1).max(100),
-	description: z.string().optional(),
-	enabled: z.boolean().default(true),
-});
-
-export async function createInboundRoute(
-	formData: FormData,
-): Promise<ActionResult<any>> {
-	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getCompanyId(supabase, user.id);
-
-		const data = inboundRouteSchema.parse({
-			routeAddress: formData.get("routeAddress"),
-			name: formData.get("name"),
-			description: formData.get("description") || undefined,
-			enabled: formData.get("enabled") !== "false",
-		});
-
-		// Check if route address already exists
-		const { data: existingRoute } = await supabase
-			.from("communication_email_inbound_routes")
-			.select("id")
-			.eq("route_address", data.routeAddress)
-			.maybeSingle();
-
-		if (existingRoute) {
-			throw new ActionError(
-				"This email address is already configured for receiving emails",
-				ERROR_CODES.VALIDATION_ERROR,
-				400,
-			);
-		}
-
-		const { data: route, error } = await supabase
-			.from("communication_email_inbound_routes")
-			.insert({
-				company_id: companyId,
-				route_address: data.routeAddress,
-				name: data.name,
-				description: data.description,
-				enabled: data.enabled,
-			})
-			.select()
-			.single();
-
-		if (error) {
-			throw new ActionError(
-				ERROR_MESSAGES.operationFailed("create inbound route"),
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
-		}
-
-		revalidatePath("/dashboard/settings/communications/email");
-		return route;
-	});
-}
-
-async function updateInboundRoute(
-	routeId: string,
-	formData: FormData,
-): Promise<ActionResult<any>> {
-	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getCompanyId(supabase, user.id);
-
-		const data = inboundRouteSchema.partial().parse({
-			routeAddress: formData.get("routeAddress") || undefined,
-			name: formData.get("name") || undefined,
-			description: formData.get("description") || undefined,
-			enabled: formData.get("enabled") === "true" ? true : formData.get("enabled") === "false" ? false : undefined,
-		});
-
-		// Verify the route belongs to this company
-		const { data: existingRoute } = await supabase
-			.from("communication_email_inbound_routes")
-			.select("id")
-			.eq("id", routeId)
-			.eq("company_id", companyId)
-			.maybeSingle();
-
-		if (!existingRoute) {
-			throw new ActionError(
-				"Inbound route not found",
-				ERROR_CODES.NOT_FOUND,
-				404,
-			);
-		}
-
-		// Check if new route address conflicts with existing ones
-		if (data.routeAddress) {
-			const { data: conflictingRoute } = await supabase
-				.from("communication_email_inbound_routes")
-				.select("id")
-				.eq("route_address", data.routeAddress)
-				.neq("id", routeId)
-				.maybeSingle();
-
-			if (conflictingRoute) {
-				throw new ActionError(
-					"This email address is already configured for another route",
-					ERROR_CODES.VALIDATION_ERROR,
-					400,
-				);
-			}
-		}
-
-		const updateData: any = {};
-		if (data.routeAddress !== undefined) updateData.route_address = data.routeAddress;
-		if (data.name !== undefined) updateData.name = data.name;
-		if (data.description !== undefined) updateData.description = data.description;
-		if (data.enabled !== undefined) updateData.enabled = data.enabled;
-
-		const { data: route, error } = await supabase
-			.from("communication_email_inbound_routes")
-			.update(updateData)
-			.eq("id", routeId)
-			.eq("company_id", companyId)
-			.select()
-			.single();
-
-		if (error) {
-			throw new ActionError(
-				ERROR_MESSAGES.operationFailed("update inbound route"),
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
-		}
-
-		revalidatePath("/dashboard/settings/communications/email");
-		return route;
-	});
-}
-
-async function deleteInboundRoute(routeId: string): Promise<ActionResult<void>> {
-	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getCompanyId(supabase, user.id);
-
-		// Verify the route belongs to this company and delete
-		const { error } = await supabase
-			.from("communication_email_inbound_routes")
-			.delete()
-			.eq("id", routeId)
-			.eq("company_id", companyId);
-
-		if (error) {
-			throw new ActionError(
-				ERROR_MESSAGES.operationFailed("delete inbound route"),
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
-		}
-
-		revalidatePath("/dashboard/settings/communications/email");
-	});
-}
-
-async function getInboundRoutes(): Promise<ActionResult<any[]>> {
-	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getCompanyId(supabase, user.id);
-
-		const { data: routes, error } = await supabase
-			.from("communication_email_inbound_routes")
-			.select("*")
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
-
-		if (error) {
-			throw new ActionError(
-				ERROR_MESSAGES.operationFailed("fetch inbound routes"),
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
-		}
-
-		return routes || [];
 	});
 }
 
@@ -801,7 +573,7 @@ export async function updateNotificationSettings(
 	});
 }
 
-async function getNotificationSettings(): Promise<ActionResult<any>> {
+export async function getNotificationSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

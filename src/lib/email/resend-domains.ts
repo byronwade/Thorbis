@@ -1,6 +1,14 @@
 "use server";
 
 import crypto from "node:crypto";
+import {
+	validateDomain,
+	generatePlatformSubdomain,
+	getDomainConfig,
+	canRegisterMoreDomains,
+	suggestSubdomains,
+	type DomainValidationResult,
+} from "./domain-validation";
 
 const RESEND_API_BASE = "https://api.resend.com";
 
@@ -8,9 +16,33 @@ type ResendResponse<T> =
 	| { success: true; data: T }
 	| { success: false; error: string };
 
+interface ResendDomainData {
+	id: string;
+	name: string;
+	status: string;
+	region: string;
+	records: Array<{
+		type: string;
+		name: string;
+		value: string;
+		priority?: number;
+		ttl?: string;
+	}>;
+	created_at: string;
+}
+
+interface ResendInboundRouteData {
+	id: string;
+	name: string;
+	recipients: string[];
+	url: string;
+	enabled: boolean;
+	created_at: string;
+}
+
 async function resendRequest<T>(
 	path: string,
-	init: RequestInit,
+	init: RequestInit
 ): Promise<ResendResponse<T>> {
 	const apiKey = process.env.RESEND_API_KEY;
 	if (!apiKey) {
@@ -39,127 +71,144 @@ async function resendRequest<T>(
 	return { success: true, data };
 }
 
+/**
+ * Validate and create a Resend domain
+ */
+export async function createResendDomainWithValidation(params: {
+	domain: string;
+	currentDomainCount: number;
+	companySlug: string;
+}): Promise<
+	ResendResponse<ResendDomainData> & {
+		validation?: DomainValidationResult;
+		suggestions?: string[];
+	}
+> {
+	const { domain, currentDomainCount } = params;
+
+	// Check if company can register more domains
+	const canRegister = canRegisterMoreDomains(currentDomainCount);
+	if (!canRegister.allowed) {
+		return {
+			success: false,
+			error: canRegister.reason || "Cannot register more domains",
+		};
+	}
+
+	// Validate the domain
+	const validation = validateDomain(domain);
+	if (!validation.valid) {
+		return {
+			success: false,
+			error: validation.error || "Invalid domain",
+			validation,
+		};
+	}
+
+	// Create domain in Resend
+	const result = await resendRequest<ResendDomainData>("/domains", {
+		method: "POST",
+		body: JSON.stringify({ name: validation.normalizedDomain }),
+	});
+
+	return {
+		...result,
+		validation,
+	};
+}
+
+/**
+ * Create a Resend domain (basic, without validation - for internal use)
+ */
 export async function createResendDomain(name: string) {
-	return resendRequest<any>("/domains", {
+	return resendRequest<ResendDomainData>("/domains", {
 		method: "POST",
 		body: JSON.stringify({ name }),
 	});
 }
 
+/**
+ * Get domain details from Resend
+ */
 export async function getResendDomain(domainId: string) {
-	return resendRequest<any>(`/domains/${domainId}`, { method: "GET" });
+	return resendRequest<ResendDomainData>(`/domains/${domainId}`, {
+		method: "GET",
+	});
 }
 
-async function verifyResendDomain(domainId: string) {
-	return resendRequest<any>(`/domains/${domainId}/verify`, {
+/**
+ * Trigger domain verification in Resend
+ */
+export async function verifyResendDomain(domainId: string) {
+	return resendRequest<ResendDomainData>(`/domains/${domainId}/verify`, {
 		method: "POST",
 	});
 }
 
-async function deleteResendDomain(domainId: string) {
+/**
+ * Delete a domain from Resend
+ */
+export async function deleteResendDomain(domainId: string) {
 	return resendRequest<void>(`/domains/${domainId}`, {
 		method: "DELETE",
 	});
 }
 
+/**
+ * List all domains in Resend account
+ */
+export async function listResendDomains() {
+	return resendRequest<{ data: ResendDomainData[] }>("/domains", {
+		method: "GET",
+	});
+}
+
+/**
+ * Create an inbound email route
+ */
 export async function createInboundRoute(params: {
 	name: string;
 	recipients: string[];
 	url: string;
 }) {
-	return resendRequest<any>("/inbound", {
+	return resendRequest<ResendInboundRouteData>("/inbound", {
 		method: "POST",
 		body: JSON.stringify(params),
 	});
 }
 
-async function deleteInboundRoute(routeId: string) {
+/**
+ * Delete an inbound route
+ */
+export async function deleteInboundRoute(routeId: string) {
 	return resendRequest<void>(`/inbound/${routeId}`, {
 		method: "DELETE",
 	});
 }
 
-async function listReceivedEmails(params?: {
-	limit?: number;
-	cursor?: string;
-}) {
-	const queryParams = new URLSearchParams();
-	if (params?.limit) queryParams.append("limit", params.limit.toString());
-	if (params?.cursor) queryParams.append("cursor", params.cursor);
-	
-	const queryString = queryParams.toString();
-	// Try the receiving endpoint - Resend API might use different paths
-	const path = `/emails/receiving${queryString ? `?${queryString}` : ""}`;
-	
-	console.log(`📧 Calling Resend API: ${path}`);
-	const response = await resendRequest<any>(path, {
-		method: "GET",
-	});
-	
-	if (!response.success) {
-		// Try alternative endpoint format
-		console.log(`⚠️  First attempt failed, trying alternative endpoint...`);
-		const altPath = `/receiving/emails${queryString ? `?${queryString}` : ""}`;
-		return resendRequest<any>(altPath, {
-			method: "GET",
-		});
-	}
-	
-	return response;
-}
-
-export async function getReceivedEmail(emailId: string) {
-	console.log(`🔍 Resend API: Fetching email ${emailId}`);
-	
-	// Try the receiving endpoint per Resend API docs: /emails/receiving/{id}
-	let response = await resendRequest<any>(`/emails/receiving/${emailId}`, {
-		method: "GET",
-	});
-
-	// If that fails, try the alternative endpoint format
-	if (!response.success) {
-		console.log(`⚠️  Receiving endpoint failed, trying alternative: /emails/${emailId}`);
-		response = await resendRequest<any>(`/emails/${emailId}`, {
-			method: "GET",
-		});
-	}
-
-	if (response.success && response.data) {
-		console.log(`✅ Resend API response for ${emailId}:`, {
-			hasData: !!response.data,
-			keys: Object.keys(response.data),
-			hasHtml: !!response.data.html,
-			hasText: !!response.data.text,
-			hasBody: !!response.data.body,
-			hasBodyHtml: !!response.data.body_html,
-			hasPlainText: !!response.data.plain_text,
-			htmlLength: response.data.html?.length || 0,
-			textLength: response.data.text?.length || 0,
-			// Log the actual structure for debugging
-			dataSample: JSON.stringify(response.data).substring(0, 500),
-		});
-	} else {
-		console.error(`❌ Resend API failed for ${emailId}:`, response.error);
-	}
-
-	return response;
-}
-
-export async function listReceivedEmailAttachments(emailId: string) {
-	return resendRequest<any>(`/emails/${emailId}/attachments`, {
+/**
+ * List all inbound routes
+ */
+export async function listInboundRoutes() {
+	return resendRequest<{ data: ResendInboundRouteData[] }>("/inbound", {
 		method: "GET",
 	});
 }
 
-export async function getReceivedEmailAttachment(
-	emailId: string,
-	attachmentId: string,
-) {
-	return resendRequest<any>(`/emails/${emailId}/attachments/${attachmentId}`, {
+/**
+ * Get domain metrics from Resend (for deliverability monitoring)
+ */
+export async function getResendDomainMetrics(domainId: string) {
+	// Resend doesn't have a direct metrics endpoint per domain
+	// We track metrics in our database via webhook events
+	return resendRequest<any>(`/domains/${domainId}`, {
 		method: "GET",
 	});
 }
 
+/**
+ * Verify Resend webhook signature (Svix)
+ */
 export async function verifyResendWebhookSignature({
 	payload,
 	headers,
@@ -170,37 +219,103 @@ export async function verifyResendWebhookSignature({
 		svixTimestamp?: string;
 		svixSignature?: string;
 	};
-}) {
+}): Promise<boolean> {
 	const secret = process.env.RESEND_WEBHOOK_SECRET;
-	if (!secret) {
-		console.error("RESEND_WEBHOOK_SECRET not configured");
-		return false;
-	}
-
 	const { svixId, svixTimestamp, svixSignature } = headers;
 
-	if (!(svixId && svixTimestamp && svixSignature)) {
-		console.error("Missing required Svix headers");
+	if (!secret || !svixId || !svixTimestamp || !svixSignature) {
 		return false;
 	}
 
-	try {
-		// Create the signed content
-		const signedContent = `${svixId}.${svixTimestamp}.${payload}`;
+	// Svix signature format: v1,<base64_signature>
+	const signatures = svixSignature.split(" ");
+	const signedPayload = `${svixId}.${svixTimestamp}.${payload}`;
 
-		// Create HMAC signature
-		const computed = crypto
-			.createHmac("sha256", secret)
-			.update(signedContent)
-			.digest("hex");
+	// Try to decode the secret (Svix uses whsec_ prefix)
+	const secretBytes = secret.startsWith("whsec_")
+		? Buffer.from(secret.slice(6), "base64")
+		: Buffer.from(secret);
 
-		// Compare with the provided signature
-		return crypto.timingSafeEqual(
-			Buffer.from(`v1,${computed}`),
-			Buffer.from(svixSignature),
-		);
-	} catch (error) {
-		console.error("Error verifying webhook signature:", error);
-		return false;
+	const computed = crypto
+		.createHmac("sha256", secretBytes)
+		.update(signedPayload)
+		.digest("base64");
+
+	// Check against all provided signatures
+	for (const sig of signatures) {
+		const [version, expectedSig] = sig.split(",");
+		if (version === "v1" && expectedSig === computed) {
+			return true;
+		}
 	}
+
+	return false;
 }
+
+// =============================================================================
+// RECEIVED EMAIL FUNCTIONS (Inbound)
+// =============================================================================
+
+interface ReceivedEmailData {
+	id: string;
+	from: string;
+	to: string[];
+	subject: string;
+	text?: string;
+	html?: string;
+	created_at: string;
+	attachments?: { id: string; filename: string; content_type: string }[];
+}
+
+interface ReceivedAttachmentData {
+	id: string;
+	filename: string;
+	content_type: string;
+	content: string; // base64 encoded
+}
+
+/**
+ * Get a received email by ID
+ */
+export async function getReceivedEmail(
+	emailId: string
+): Promise<ResendResponse<ReceivedEmailData>> {
+	return resendRequest<ReceivedEmailData>(`/emails/${emailId}`, {
+		method: "GET",
+	});
+}
+
+/**
+ * List attachments for a received email
+ */
+export async function listReceivedEmailAttachments(
+	emailId: string
+): Promise<ResendResponse<{ data: ReceivedAttachmentData[] }>> {
+	return resendRequest<{ data: ReceivedAttachmentData[] }>(
+		`/emails/${emailId}/attachments`,
+		{ method: "GET" }
+	);
+}
+
+/**
+ * Get a specific attachment from a received email
+ */
+export async function getReceivedEmailAttachment(
+	emailId: string,
+	attachmentId: string
+): Promise<ResendResponse<ReceivedAttachmentData>> {
+	return resendRequest<ReceivedAttachmentData>(
+		`/emails/${emailId}/attachments/${attachmentId}`,
+		{ method: "GET" }
+	);
+}
+
+// Re-export validation utilities for convenience
+export {
+	validateDomain,
+	generatePlatformSubdomain,
+	getDomainConfig,
+	canRegisterMoreDomains,
+	suggestSubdomains,
+	type DomainValidationResult,
+};

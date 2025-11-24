@@ -13,9 +13,8 @@ const aiConfig: UnifiedLayoutConfig = {
 	},
 	toolbar: {
 		show: true,
-		title: "AI Assistant",
-		subtitle: "Powered by AI - Beta",
 		actions: <AiToolbarActions />,
+		hideActionSeparator: true,
 	},
 	sidebar: {
 		show: true,

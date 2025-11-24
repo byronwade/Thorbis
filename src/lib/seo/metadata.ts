@@ -3,6 +3,7 @@ import {
 	buildCanonicalUrl,
 	buildShareImageUrl,
 	buildTitle,
+	generateHreflangLinks,
 	SEO_BRAND,
 	SEO_COPY,
 	SEO_KEYWORDS,
@@ -93,6 +94,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
 	const combinedKeywords = Array.from(
 		new Set([...(keywords ?? []), ...SEO_KEYWORDS]),
 	).filter(Boolean);
+	// Use provided language alternates or generate default hreflang links
 	const alternatesLanguages = languageAlternates
 		? Object.fromEntries(
 				Object.entries(languageAlternates).map(([lang, href]) => [
@@ -100,7 +102,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
 					href.startsWith("http") ? href : buildCanonicalUrl({ path: href }),
 				]),
 			)
-		: undefined;
+		: generateHreflangLinks(path);
 	const alternateLocales = alternatesLanguages
 		? Object.keys(alternatesLanguages).filter(
 				(lang) => lang !== locale && lang !== SEO_LOCALES.default,

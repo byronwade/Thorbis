@@ -1,16 +1,44 @@
 import type { MetadataRoute } from "next";
 
+import {
+	getChangeFrequency,
+	getPagePriority,
+} from "@/lib/seo/sitemap-utils";
+
 /**
  * Root Sitemap - Optimized for 2025 SEO
  *
  * Features:
  * - Priority weighting for important pages
  * - Change frequency hints for crawlers
- * - Last modified timestamps
+ * - Last modified timestamps (based on content type)
  * - Organized by content type
+ * - Dynamic priority and frequency based on page importance
  */
 
 const BASE_URL = "https://thorbis.com";
+
+/**
+ * Get appropriate lastModified date based on content type
+ * High-churn content gets recent dates, static content gets older dates
+ */
+function getLastModified(path: string): Date {
+	const now = new Date();
+	const frequency = getChangeFrequency(path);
+
+	switch (frequency) {
+		case "daily":
+			return now;
+		case "weekly":
+			return new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
+		case "monthly":
+			return new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000); // 2 weeks ago
+		case "yearly":
+			return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); // 3 months ago
+		default:
+			return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 1 week ago
+	}
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
 	const now = new Date();
@@ -304,12 +332,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			priority: 0.5,
 		},
 
-		// Integrations
+		// Integrations hub
 		{
 			url: `${BASE_URL}/integrations`,
 			lastModified: lastWeek,
 			changeFrequency: "monthly",
 			priority: 0.6,
+		},
+		{
+			url: `${BASE_URL}/integrations/quickbooks`,
+			lastModified: lastWeek,
+			changeFrequency: "monthly",
+			priority: 0.6,
+		},
+		{
+			url: `${BASE_URL}/integrations/stripe`,
+			lastModified: lastWeek,
+			changeFrequency: "monthly",
+			priority: 0.6,
+		},
+		{
+			url: `${BASE_URL}/integrations/google-calendar`,
+			lastModified: lastWeek,
+			changeFrequency: "monthly",
+			priority: 0.6,
+		},
+
+		// Waitlist
+		{
+			url: `${BASE_URL}/waitlist`,
+			lastModified: now,
+			changeFrequency: "weekly",
+			priority: 0.8,
 		},
 
 		// Community & Support

@@ -54,7 +54,6 @@ export function EmailSidebar(
 					...allCounts,
 				};
 				
-				console.log("📊 Email folder counts:", normalizedCounts);
 				const config = getEmailSidebarConfig(normalizedCounts, foldersResult.folders);
 				
 				// Add delete handlers to folder items
@@ -106,7 +105,7 @@ export function EmailSidebar(
 		};
 		window.addEventListener("folder-created", handleFolderCreated);
 
-		// Listen for email read/unread events to refresh counts
+		// Listen for email read/unread events to refresh counts (debounced)
 		const handleEmailRead = () => {
 			// Debounce to avoid too many refreshes
 			setTimeout(() => fetchData(), 1000);
@@ -114,11 +113,24 @@ export function EmailSidebar(
 		window.addEventListener("email-read", handleEmailRead);
 		window.addEventListener("email-unread", handleEmailRead);
 
+		// Listen for email action events to refresh counts IMMEDIATELY (no debounce)
+		const handleEmailAction = () => {
+			fetchData();
+		};
+		window.addEventListener("email-archived", handleEmailAction);
+		window.addEventListener("email-starred-toggled", handleEmailAction);
+		window.addEventListener("email-spam-toggled", handleEmailAction);
+		window.addEventListener("email-snoozed", handleEmailAction);
+
 		return () => {
 			clearInterval(interval);
 			window.removeEventListener("folder-created", handleFolderCreated);
 			window.removeEventListener("email-read", handleEmailRead);
 			window.removeEventListener("email-unread", handleEmailRead);
+			window.removeEventListener("email-archived", handleEmailAction);
+			window.removeEventListener("email-starred-toggled", handleEmailAction);
+			window.removeEventListener("email-spam-toggled", handleEmailAction);
+			window.removeEventListener("email-snoozed", handleEmailAction);
 		};
 	}, [fetchData]);
 

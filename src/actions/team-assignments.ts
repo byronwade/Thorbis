@@ -164,7 +164,8 @@ async function getJobTeamAssignments(
 			.eq("job_id", jobId)
 			.eq("company_memberships.company_id", companyId)
 			.is("removed_at", null)
-			.order("assigned_at", { ascending: true });
+			.order("assigned_at", { ascending: true })
+			.limit(50);
 
 		if (assignmentsError) {
 			throw new ActionError(
@@ -309,7 +310,8 @@ export async function getAvailableTeamMembers(): Promise<
 			.from("company_memberships")
 			.select("id, user_id, job_title, status, company_id")
 			.eq("company_id", companyId)
-			.eq("status", "active");
+			.eq("status", "active")
+			.limit(200);
 
 		if (membersError) {
 			throw new ActionError(

@@ -143,15 +143,7 @@ export function getEmailSidebarConfig(
 		primaryAction: {
 			label: "New email",
 			icon: Plus,
-			onClick: () => {
-				// This will be handled by the EmailSidebar component
-				// which will open the RecipientSelector
-				if (typeof window !== "undefined") {
-					window.dispatchEvent(new CustomEvent("open-recipient-selector", { 
-						detail: { type: "email" } 
-					}));
-				}
-			},
+			href: "/dashboard/communication/email?compose=true",
 		},
 		additionalSections: [
 			{

@@ -1,19 +1,27 @@
-import { Settings } from "lucide-react";
+/**
+ * Builder Data - Report Builder Page Content
+ *
+ * Production: Shows Coming Soon shell
+ * Development: Shows full report builder wizard
+ */
+
+import { Wand2 } from "lucide-react";
+import { ReportBuilderWizard } from "./report-builder-wizard";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export async function BuilderData() {
-	return (
-		<ComingSoonShell
-			description="This feature is under development"
-			icon={Settings}
-			title="Builder"
-		>
-			<div className="mx-auto max-w-5xl">
-				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Coming Soon</h3>
-					<p className="text-muted-foreground">Under development</p>
-				</div>
-			</div>
-		</ComingSoonShell>
-	);
+	// Show Coming Soon in production, full builder in development
+	if (isProduction) {
+		return (
+			<ComingSoonShell
+				description="Create custom reports with an intuitive drag-and-drop builder"
+				icon={Wand2}
+				title="Custom Report Builder"
+			/>
+		);
+	}
+
+	return <ReportBuilderWizard />;
 }

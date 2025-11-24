@@ -99,6 +99,127 @@ export function generateSemanticKeywords(primaryKeyword: string): string[] {
 			"customer communication",
 			"customer portal",
 		],
+
+		// Careers & Hiring
+		careers: [
+			"field service jobs",
+			"software engineering careers",
+			"remote tech jobs",
+			"startup careers",
+			"SaaS company jobs",
+			"work from home tech",
+			"customer success jobs",
+		],
+
+		// Partners & Integrations
+		partners: [
+			"software partner program",
+			"API integration partners",
+			"referral program",
+			"channel partners",
+			"solution partners",
+			"technology ecosystem",
+		],
+
+		// Implementation & Onboarding
+		implementation: [
+			"software implementation",
+			"customer onboarding",
+			"data migration services",
+			"field service migration",
+			"software training",
+			"go-live support",
+		],
+
+		// ROI Calculator
+		"roi calculator": [
+			"software ROI",
+			"field service savings",
+			"cost comparison calculator",
+			"business case builder",
+			"investment calculator",
+			"efficiency gains",
+		],
+
+		// Switch & Migration
+		switch: [
+			"software migration",
+			"platform switching",
+			"data transfer",
+			"servicetitan alternative",
+			"change management",
+			"legacy system replacement",
+		],
+
+		// Reviews & Testimonials
+		reviews: [
+			"customer testimonials",
+			"software reviews",
+			"user ratings",
+			"customer success stories",
+			"case studies",
+			"social proof",
+		],
+
+		// Demo & Getting Started
+		demo: [
+			"software demo",
+			"product tour",
+			"free trial",
+			"getting started",
+			"platform walkthrough",
+			"live demonstration",
+		],
+
+		// Contact & Support
+		contact: [
+			"customer support",
+			"sales inquiry",
+			"get in touch",
+			"request information",
+			"schedule consultation",
+			"support contact",
+		],
+
+		// AI & Automation
+		"ai assistant": [
+			"AI automation",
+			"intelligent assistant",
+			"chatbot for business",
+			"automated customer service",
+			"AI-powered scheduling",
+			"smart dispatch",
+		],
+
+		// Mobile App
+		"mobile app": [
+			"field service mobile",
+			"technician app",
+			"mobile workforce",
+			"offline capable app",
+			"iOS field service",
+			"Android field service",
+		],
+
+		// Customer Portal
+		"customer portal": [
+			"client portal",
+			"self-service portal",
+			"customer login",
+			"online booking",
+			"service history access",
+			"payment portal",
+		],
+
+		// Integrations
+		integrations: [
+			"software integrations",
+			"API connections",
+			"third-party integrations",
+			"accounting sync",
+			"payment integration",
+			"CRM integration",
+		],
 	};
 
 	const normalized = primaryKeyword.toLowerCase().trim();

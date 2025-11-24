@@ -5,7 +5,7 @@ import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 export async function GET() {
 	const supabase = await createServiceSupabaseClient();
 	const { data: domains } = await supabase
-		.from("communication_email_domains")
+		.from("company_email_domains")
 		.select("*")
 		.in("status", ["pending", "verifying"]);
 
@@ -24,7 +24,7 @@ export async function GET() {
 		}
 
 		await supabase
-			.from("communication_email_domains")
+			.from("company_email_domains")
 			.update({
 				status: result.data.status,
 				dns_records: result.data.records || [],

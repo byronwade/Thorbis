@@ -177,7 +177,7 @@ export function AppToolbar({
 					{/* Primary Actions */}
 					{actionGroups.primary.length > 0 && (
 						<>
-							<div className="bg-border/40 h-5 w-px" />
+							{!config.hideActionSeparator && <div className="bg-border/40 h-5 w-px" />}
 							<div className="flex items-center gap-1.5">
 								{actionGroups.primary.map((action, idx) => (
 									<div key={idx}>{action}</div>

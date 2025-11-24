@@ -14,6 +14,9 @@ export type Message = {
 	timestamp: Date;
 };
 
+// Stable empty array reference for selectors (prevents infinite loop with getSnapshot)
+const EMPTY_MESSAGES: Message[] = [];
+
 export type Chat = {
 	id: string;
 	title: string;
@@ -221,7 +224,7 @@ export const chatSelectors = {
 	activeChatId: (state: ChatStore) => state.activeChatId,
 	messages: (state: ChatStore) => {
 		const activeChat = state.chats.find((c) => c.id === state.activeChatId);
-		return activeChat?.messages ?? [];
+		return activeChat?.messages ?? EMPTY_MESSAGES;
 	},
 	isLoading: (state: ChatStore) => state.isLoading,
 	error: (state: ChatStore) => state.error,

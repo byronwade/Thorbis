@@ -290,6 +290,7 @@ export enum EmailTemplate {
 
 	// Waitlist
 	WAITLIST_SUBSCRIPTION = "waitlist-subscription",
+	WAITLIST_ADMIN_NOTIFICATION = "waitlist-admin-notification",
 
 	// Generic
 	GENERIC = "generic",

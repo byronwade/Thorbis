@@ -38,6 +38,7 @@ export default function robots(): MetadataRoute.Robots {
 		],
 		sitemap: [
 			`${siteUrl}/sitemap.xml`,
+			`${siteUrl}/sitemap-images.xml`,
 			`${siteUrl}/seo/thorbis-sitemap.xml`,
 			`${siteUrl}/kb/sitemap.xml`,
 			`${siteUrl}/feed`,
