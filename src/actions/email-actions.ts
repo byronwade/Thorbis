@@ -15,7 +15,7 @@ const getEmailsSchema = z.object({
   limit: z.coerce.number().min(1).max(500).optional().default(50),
   offset: z.coerce.number().min(0).optional().default(0),
   type: z.enum(["sent", "received", "all"]).optional().default("all"),
-  folder: z.enum(["inbox", "drafts", "sent", "archive", "snoozed", "spam", "trash", "bin", "starred"]).optional(),
+  folder: z.enum(["inbox", "drafts", "sent", "archive", "snoozed", "spam", "trash", "bin", "starred", "all"]).optional(),
   label: z.string().optional(),
   search: z.string().optional().nullable(),
   sortBy: z.enum(["created_at", "sent_at", "subject"]).optional().default("created_at"),
@@ -684,6 +684,7 @@ export async function archiveAllEmailsAction(folder?: string): Promise<{
 export async function getEmailFolderCountsAction(): Promise<{
   success: boolean;
   counts?: {
+    all: number;
     inbox: number;
     drafts: number;
     sent: number;
@@ -713,7 +714,9 @@ export async function getEmailFolderCountsAction(): Promise<{
     }
 
     // Get counts for each folder type using parallel queries
+    // All counts show UNREAD emails only (read_at IS NULL)
     const [
+      allResult,
       inboxResult,
       draftsResult,
       sentResult,
@@ -723,7 +726,16 @@ export async function getEmailFolderCountsAction(): Promise<{
       trashResult,
       starredResult
     ] = await Promise.all([
-      // Inbox: inbound, not archived, not deleted, not draft, not spam
+      // All Mail: all non-deleted, unread emails
+      supabase
+        .from("communications")
+        .select("*", { count: "exact", head: true })
+        .eq("company_id", companyId)
+        .eq("type", "email")
+        .is("deleted_at", null)
+        .is("read_at", null),
+
+      // Inbox: inbound, not archived, not deleted, not draft, not spam, unread
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
@@ -732,11 +744,12 @@ export async function getEmailFolderCountsAction(): Promise<{
         .eq("direction", "inbound")
         .eq("is_archived", false)
         .is("deleted_at", null)
+        .is("read_at", null)
         .neq("status", "draft")
         .or("category.is.null,category.neq.spam")
         .or("snoozed_until.is.null,snoozed_until.lt.now()"),
 
-      // Drafts
+      // Drafts - always count all drafts (read_at not relevant for drafts)
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
@@ -745,7 +758,7 @@ export async function getEmailFolderCountsAction(): Promise<{
         .eq("status", "draft")
         .is("deleted_at", null),
 
-      // Sent: outbound, not archived, not deleted
+      // Sent: outbound, not archived, not deleted, unread
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
@@ -754,18 +767,20 @@ export async function getEmailFolderCountsAction(): Promise<{
         .eq("direction", "outbound")
         .eq("is_archived", false)
         .is("deleted_at", null)
+        .is("read_at", null)
         .neq("status", "draft"),
 
-      // Archive
+      // Archive - unread archived emails
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
         .eq("company_id", companyId)
         .eq("type", "email")
         .eq("is_archived", true)
-        .is("deleted_at", null),
+        .is("deleted_at", null)
+        .is("read_at", null),
 
-      // Snoozed
+      // Snoozed - unread snoozed emails
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
@@ -773,46 +788,62 @@ export async function getEmailFolderCountsAction(): Promise<{
         .eq("type", "email")
         .not("snoozed_until", "is", null)
         .gt("snoozed_until", new Date().toISOString())
-        .is("deleted_at", null),
+        .is("deleted_at", null)
+        .is("read_at", null),
 
-      // Spam
+      // Spam - fetch category, tags, and read_at to count unread spam
+      supabase
+        .from("communications")
+        .select("category, tags, read_at")
+        .eq("company_id", companyId)
+        .eq("type", "email")
+        .is("deleted_at", null)
+        .is("read_at", null),
+
+      // Trash - unread deleted emails
       supabase
         .from("communications")
         .select("*", { count: "exact", head: true })
         .eq("company_id", companyId)
         .eq("type", "email")
-        .eq("category", "spam")
-        .is("deleted_at", null),
+        .not("deleted_at", "is", null)
+        .is("read_at", null),
 
-      // Trash
+      // Starred - fetch tags and read_at, count unread starred in memory
       supabase
         .from("communications")
-        .select("*", { count: "exact", head: true })
+        .select("tags, read_at")
         .eq("company_id", companyId)
         .eq("type", "email")
-        .not("deleted_at", "is", null),
-
-      // Starred
-      supabase
-        .from("communications")
-        .select("*", { count: "exact", head: true })
-        .eq("company_id", companyId)
-        .eq("type", "email")
-        .contains("tags", ["starred"])
-        .is("deleted_at", null),
+        .is("deleted_at", null)
+        .is("read_at", null),
     ]);
+
+    // Count spam emails in memory (category=spam OR spam tag)
+    const spamCount = (spamResult.data ?? []).filter(email => {
+      const tags = email.tags as string[] | null;
+      const hasSpamTag = Array.isArray(tags) && tags.includes("spam");
+      return email.category === "spam" || hasSpamTag;
+    }).length;
+
+    // Count starred emails in memory
+    const starredCount = (starredResult.data ?? []).filter(email => {
+      const tags = email.tags as string[] | null;
+      return Array.isArray(tags) && tags.includes("starred");
+    }).length;
 
     return {
       success: true,
       counts: {
+        all: allResult.count ?? 0,
         inbox: inboxResult.count ?? 0,
         drafts: draftsResult.count ?? 0,
         sent: sentResult.count ?? 0,
         archive: archiveResult.count ?? 0,
         snoozed: snoozedResult.count ?? 0,
-        spam: spamResult.count ?? 0,
+        spam: spamCount,
         trash: trashResult.count ?? 0,
-        starred: starredResult.count ?? 0,
+        starred: starredCount,
       },
     };
   } catch (error) {
@@ -1509,6 +1540,136 @@ export async function deleteDraftAction(draftId: string): Promise<{
     return { success: true };
   } catch (error) {
     console.error("Error deleting draft:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}
+
+// ============================================================================
+// RETRY ACTIONS
+// ============================================================================
+
+/**
+ * Retry sending a failed email
+ * Fetches the failed email, resets its status, and attempts to resend
+ */
+export async function retryFailedEmailAction(emailId: string): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  "use server";
+
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+    const { sendEmail } = await import("@/lib/email/email-sender");
+    const { PlainTextEmail } = await import("@/emails/plain-text-email");
+
+    const companyId = await getActiveCompanyId();
+    if (!companyId) {
+      return { success: false, error: "No active company found" };
+    }
+
+    const supabase = await createClient();
+    if (!supabase) {
+      return { success: false, error: "Database connection failed" };
+    }
+
+    // Get the failed email
+    const { data: email, error: fetchError } = await supabase
+      .from("communications")
+      .select("*")
+      .eq("id", emailId)
+      .eq("company_id", companyId)
+      .eq("type", "email")
+      .eq("status", "failed")
+      .single();
+
+    if (fetchError) {
+      return { success: false, error: fetchError.message };
+    }
+
+    if (!email) {
+      return { success: false, error: "Failed email not found" };
+    }
+
+    // Reset status to queued
+    const { error: updateError } = await supabase
+      .from("communications")
+      .update({
+        status: "queued",
+        failure_reason: null,
+      })
+      .eq("id", emailId)
+      .eq("company_id", companyId);
+
+    if (updateError) {
+      return { success: false, error: `Failed to reset email status: ${updateError.message}` };
+    }
+
+    // Parse recipients
+    const parseAddresses = (addr: string | null): string | string[] => {
+      if (!addr) return [];
+      const addresses = addr.split(",").map(a => a.trim()).filter(Boolean);
+      return addresses.length === 1 ? addresses[0] : addresses;
+    };
+
+    const to = parseAddresses(email.to_address);
+    const cc = parseAddresses(email.cc_address);
+    const bcc = parseAddresses(email.bcc_address);
+
+    // Get attachments from metadata if stored (for scheduled emails)
+    const metadata = email.provider_metadata as Record<string, unknown> | null;
+    const attachments = metadata?.scheduled_attachments as Array<{
+      filename: string;
+      content: string;
+      contentType?: string;
+    }> | undefined;
+
+    // Attempt to resend
+    const sendResult = await sendEmail({
+      to,
+      subject: email.subject || "(No subject)",
+      template: PlainTextEmail({ message: email.body || "" }),
+      templateType: "generic" as any,
+      companyId,
+      communicationId: emailId,
+      cc: cc.length > 0 ? cc : undefined,
+      bcc: bcc.length > 0 ? bcc : undefined,
+      attachments,
+    });
+
+    if (!sendResult.success) {
+      // Update status back to failed
+      await supabase
+        .from("communications")
+        .update({
+          status: "failed",
+          failure_reason: sendResult.error || "Email send failed on retry",
+        })
+        .eq("id", emailId)
+        .eq("company_id", companyId);
+
+      return {
+        success: false,
+        error: sendResult.error || "Failed to send email on retry",
+      };
+    }
+
+    // Update status to sent
+    await supabase
+      .from("communications")
+      .update({
+        status: "sent",
+        sent_at: new Date().toISOString(),
+        provider_message_id: sendResult.data?.id || null,
+        failure_reason: null,
+      })
+      .eq("id", emailId)
+      .eq("company_id", companyId);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error retrying failed email:", error);
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

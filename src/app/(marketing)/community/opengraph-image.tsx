@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadOGFonts, OG_CONFIG, DefaultTemplate } from "@/lib/og";
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const alt = "Thorbis Community - Connect with Fellow Contractors";
 export const size = {
 	width: OG_CONFIG.width,

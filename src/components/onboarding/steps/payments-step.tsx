@@ -1,43 +1,41 @@
 "use client";
 
 /**
- * Payments Step - Payment Processing Setup
+ * Payments Step - Complete Payment Setup
  *
- * Sets up payment acceptance:
- * - Stripe integration for cards
- * - ACH/bank transfers
- * - Check acceptance
- * - Cash tracking
- * - Financing options
+ * Two distinct sections:
+ * 1. WHERE PAYMENTS GO - Connect your bank account (where money is deposited)
+ * 2. HOW TO ACCEPT PAYMENTS - Enable payment methods (how customers pay)
+ *
+ * Note: Stripe is ONLY for Thorbis platform billing, not customer payments.
  */
 
 import { useState } from "react";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { InfoCard, ExpandableInfo } from "@/components/onboarding/info-cards/walkthrough-slide";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
 	CreditCard,
 	Building2,
 	Banknote,
-	Receipt,
 	Percent,
+	Camera,
+	Smartphone,
 	Shield,
+	Zap,
 	CheckCircle2,
-	ExternalLink,
-	Sparkles,
-	Clock,
-	DollarSign,
+	Loader2,
 	ArrowRight,
-	SkipForward,
-	Wallet,
-	TrendingUp,
+	Landmark,
 	AlertTriangle,
+	Info,
 } from "lucide-react";
+import { PlaidVerificationTracker } from "@/components/onboarding/status-tracking/plaid-verification-tracker";
 
-type PaymentMethod = "cards" | "ach" | "checks" | "cash" | "financing";
+type PaymentMethod = "check-capture" | "ach" | "cards" | "cash" | "financing";
 
 const PAYMENT_METHODS: {
 	id: PaymentMethod;
@@ -45,55 +43,54 @@ const PAYMENT_METHODS: {
 	description: string;
 	icon: React.ElementType;
 	fees?: string;
-	timing: string;
-	popular?: boolean;
+	badge?: string;
+	recommended?: boolean;
 }[] = [
 	{
-		id: "cards",
-		title: "Credit & Debit Cards",
-		description: "Accept Visa, Mastercard, Amex, Discover",
-		icon: CreditCard,
-		fees: "2.9% + 30¢",
-		timing: "Instant authorization, 2-day payout",
-		popular: true,
+		id: "check-capture",
+		title: "Mobile Check Capture",
+		description: "Snap photos of checks, instant deposit",
+		icon: Camera,
+		badge: "Popular",
+		recommended: true,
 	},
 	{
 		id: "ach",
 		title: "Bank Transfers (ACH)",
-		description: "Direct bank-to-bank payments",
+		description: "Direct bank-to-bank via Plaid",
 		icon: Building2,
 		fees: "0.8% (max $5)",
-		timing: "3-5 business days",
 	},
 	{
-		id: "checks",
-		title: "Check Payments",
-		description: "Accept and track check payments",
-		icon: Receipt,
-		fees: "No processing fees",
-		timing: "Manual deposit",
+		id: "cards",
+		title: "Credit & Debit Cards",
+		description: "Visa, Mastercard, Amex, Discover",
+		icon: CreditCard,
+		fees: "2.9% + 30¢",
 	},
 	{
 		id: "cash",
 		title: "Cash Payments",
-		description: "Track cash collected in the field",
+		description: "Track field cash collections",
 		icon: Banknote,
-		fees: "No processing fees",
-		timing: "Immediate",
 	},
 	{
 		id: "financing",
 		title: "Customer Financing",
-		description: "Offer payment plans for large jobs",
+		description: "Payment plans for large jobs",
 		icon: Percent,
-		fees: "Varies by plan",
-		timing: "You get paid upfront",
 	},
 ];
 
 export function PaymentsStep() {
 	const { data, updateData } = useOnboardingStore();
-	const [connecting, setConnecting] = useState(false);
+	const [connectingPlaid, setConnectingPlaid] = useState(false);
+	const [connectingBank, setConnectingBank] = useState(false);
+	const [plaidInitiated, setPlaidInitiated] = useState(false);
+	const [plaidItemId, setPlaidItemId] = useState<string | undefined>(undefined);
+
+	const bankConnected = data.plaidConnected || false;
+	const [showBankForm, setShowBankForm] = useState(!bankConnected && !plaidInitiated);
 
 	const togglePaymentMethod = (method: PaymentMethod, enabled: boolean) => {
 		const current = data.paymentMethods || [];
@@ -107,260 +104,377 @@ export function PaymentsStep() {
 		return (data.paymentMethods || []).includes(method);
 	};
 
-	const connectStripe = async () => {
-		setConnecting(true);
-		// Simulate Stripe OAuth
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		updateData({ stripeConnected: true });
-		togglePaymentMethod("cards", true);
-		togglePaymentMethod("ach", true);
-		setConnecting(false);
+	const connectBankAccount = async () => {
+		setConnectingBank(true);
+
+		// In production, this would:
+		// 1. Call createPlaidLinkToken() action
+		// 2. Open Plaid Link UI
+		// 3. User selects bank and logs in
+		// 4. Get public token from Plaid
+		// 5. Call exchangePlaidToken() action
+		// 6. Store access token and fetch accounts
+
+		// For now, simulate the connection process
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+
+		// Mock Plaid item ID (would come from real Plaid API)
+		const mockItemId = `item_${Date.now()}`;
+		setPlaidItemId(mockItemId);
+		setPlaidInitiated(true);
+		setConnectingBank(false);
+
+		// Don't set plaidConnected yet - let the tracker do that
+		// after it verifies the accounts
 	};
 
-	const skipStep = () => {
-		updateData({ paymentMethods: [] });
+	const connectPlaidForACH = async () => {
+		setConnectingPlaid(true);
+		// Simulate Plaid connection for ACH verification
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		togglePaymentMethod("ach", true);
+		updateData({ acceptACH: true });
+		setConnectingPlaid(false);
 	};
+
+	const enableQuickSetup = () => {
+		// Auto-enable recommended payment methods
+		updateData({
+			paymentMethods: ["check-capture", "ach", "cards", "cash"],
+			acceptCards: true,
+			acceptACH: true,
+			acceptChecks: true,
+			acceptCash: true,
+		});
+	};
+
+	const enabledCount = (data.paymentMethods || []).length;
 
 	return (
-		<div className="space-y-6 max-w-2xl">
-			<div>
-				<h2 className="text-xl font-semibold">Set up payments</h2>
-				<p className="text-sm text-muted-foreground">
-					Get paid faster with integrated payment processing. Accept payments in the field or send payment links.
+		<div className="space-y-10">
+			{/* Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-semibold">Payment Setup</h2>
+				<p className="text-muted-foreground">
+					Connect your bank account and choose how you want to accept payments.
 				</p>
 			</div>
 
-			{/* Benefits Info */}
-			<InfoCard
-				icon={<Sparkles className="h-5 w-5" />}
-				title="Why accept payments through Thorbis?"
-				description="Integrated payments mean faster collections and less manual work."
-				bullets={[
-					"Get paid 2x faster than invoicing separately",
-					"Automatic payment reminders",
-					"Real-time deposit tracking",
-					"Accept payments from the mobile app",
-				]}
-				variant="tip"
-			/>
-
-			{/* Stripe Connection */}
-			<div className="rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 p-5 space-y-4">
-				<div className="flex items-start gap-4">
-					<div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 flex-shrink-0">
-						<Wallet className="h-6 w-6 text-primary" />
+			{/* SECTION 1: WHERE PAYMENTS GO */}
+			<div className="space-y-4">
+				<div className="flex items-center gap-3">
+					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+						<span className="text-sm font-medium text-primary">1</span>
 					</div>
-					<div className="flex-1">
-						<div className="flex items-center gap-2 mb-1">
-							<h3 className="font-semibold">Connect with Stripe</h3>
-							{data.stripeConnected && (
-								<Badge variant="default" className="bg-green-500">
-									<CheckCircle2 className="mr-1 h-3 w-3" />
-									Connected
-								</Badge>
-							)}
-						</div>
+					<div>
+						<h3 className="text-lg font-semibold">Where payments go</h3>
 						<p className="text-sm text-muted-foreground">
-							Stripe powers card and ACH payments. Secure, PCI-compliant, trusted by millions of businesses.
+							Connect your business bank account to receive deposits
 						</p>
 					</div>
 				</div>
 
-				{!data.stripeConnected ? (
-					<Button
-						onClick={connectStripe}
-						disabled={connecting}
-						className="w-full"
-					>
-						{connecting ? (
-							<>
-								<Clock className="mr-2 h-4 w-4 animate-spin" />
-								Connecting to Stripe...
-							</>
-						) : (
-							<>
-								<ExternalLink className="mr-2 h-4 w-4" />
-								Connect Stripe Account
-							</>
+				{/* Bank Connection Status */}
+				{!bankConnected && !plaidInitiated ? (
+					<div className="rounded-lg border-2 border-dashed border-muted-foreground/20 p-6 space-y-4">
+						<div className="flex items-start gap-3">
+							<div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
+								<Landmark className="h-6 w-6 text-primary" />
+							</div>
+							<div className="flex-1">
+								<h4 className="font-medium">Connect your bank account</h4>
+								<p className="text-sm text-muted-foreground mt-1">
+									All customer payments will be deposited here. We use Plaid for secure bank connections.
+								</p>
+							</div>
+						</div>
+
+						{showBankForm && (
+							<div className="space-y-4 pt-2">
+								<div className="flex items-start gap-3 text-sm bg-amber-500/10 rounded-lg p-3">
+									<Info className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+									<p className="text-muted-foreground">
+										This is your business receiving account - NOT for platform billing.
+										All payments from customers will be deposited here.
+									</p>
+								</div>
+
+								<Button
+									onClick={connectBankAccount}
+									disabled={connectingBank}
+									className="w-full"
+									size="lg"
+								>
+									{connectingBank ? (
+										<>
+											<Loader2 className="mr-2 h-5 w-5 animate-spin" />
+											Connecting to Plaid...
+										</>
+									) : (
+										<>
+											<Shield className="mr-2 h-5 w-5" />
+											Connect Bank Account via Plaid
+										</>
+									)}
+								</Button>
+
+								<p className="text-xs text-center text-muted-foreground">
+									Plaid uses bank-level security. Your login credentials are never stored.
+								</p>
+							</div>
 						)}
-					</Button>
+					</div>
+				) : plaidInitiated && !bankConnected ? (
+					/* Show Plaid Verification Tracker */
+					<div className="rounded-lg border-2 border-primary/20 p-6">
+						<PlaidVerificationTracker
+							companyId={data.companyId || ""}
+							plaidItemId={plaidItemId}
+							onVerificationComplete={(accounts) => {
+								updateData({
+									plaidConnected: true,
+									paymentSetupComplete: true,
+								});
+							}}
+						/>
+					</div>
 				) : (
-					<div className="flex items-center gap-2 rounded-lg bg-green-500/10 p-3 text-sm text-green-600 dark:text-green-400">
-						<CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-						<span>
-							Stripe connected! You can now accept card and ACH payments.
-						</span>
+					<div className="rounded-lg bg-green-500/10 p-4 space-y-3">
+						<div className="flex items-center gap-3">
+							<CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+							<div className="flex-1">
+								<span className="font-medium text-green-700 dark:text-green-400">
+									Bank account connected
+								</span>
+								<p className="text-sm text-muted-foreground mt-1">
+									Payments will be deposited to your connected bank account
+								</p>
+							</div>
+						</div>
+
+						{/* Payout Schedule Info */}
+						<div className="flex items-start gap-3 text-sm bg-muted/40 rounded-lg p-3">
+							<Zap className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+							<div>
+								<p className="font-medium">Automatic daily deposits</p>
+								<p className="text-muted-foreground">
+									Funds are deposited every business day. You can change this in Settings.
+								</p>
+							</div>
+						</div>
+
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => {
+								setShowBankForm(true);
+								setPlaidInitiated(false);
+								updateData({ plaidConnected: false });
+							}}
+						>
+							Change bank account
+						</Button>
+					</div>
+				)}
+			</div>
+
+			{/* Warning if bank not connected but trying to enable methods */}
+			{!bankConnected && enabledCount > 0 && (
+				<div className="flex items-start gap-3 text-sm bg-amber-500/10 rounded-lg p-4">
+					<AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+					<div>
+						<p className="font-medium text-foreground">Bank account required</p>
+						<p className="text-muted-foreground">
+							Connect your bank account above before enabling payment methods. Payments need somewhere to go.
+						</p>
+					</div>
+				</div>
+			)}
+
+			{/* SECTION 2: HOW TO ACCEPT PAYMENTS */}
+			<div className="space-y-4">
+				<div className="flex items-center gap-3">
+					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+						<span className="text-sm font-medium text-primary">2</span>
+					</div>
+					<div>
+						<h3 className="text-lg font-semibold">How to accept payments</h3>
+						<p className="text-sm text-muted-foreground">
+							Choose how customers can pay you
+						</p>
+					</div>
+				</div>
+
+				{/* Quick Setup Option */}
+				{enabledCount === 0 && (
+					<div className="space-y-3">
+						<Button
+							onClick={enableQuickSetup}
+							disabled={!bankConnected}
+							variant="outline"
+							className="w-full justify-between"
+							size="lg"
+						>
+							<div className="flex items-center gap-3">
+								<Zap className="h-5 w-5 text-primary" />
+								<div className="text-left">
+									<p className="font-medium">Quick Setup (Recommended)</p>
+									<p className="text-xs text-muted-foreground">
+										Enable all popular payment methods
+									</p>
+								</div>
+							</div>
+							<ArrowRight className="h-4 w-4" />
+						</Button>
+
+						<div className="relative">
+							<div className="absolute inset-0 flex items-center">
+								<span className="w-full border-t" />
+							</div>
+							<div className="relative flex justify-center text-xs uppercase">
+								<span className="bg-background px-2 text-muted-foreground">Or customize</span>
+							</div>
+						</div>
 					</div>
 				)}
 
-				<p className="text-xs text-muted-foreground text-center">
-					Takes about 10 minutes. You'll need your bank details for payouts.
-				</p>
-			</div>
-
-			{/* Payment Methods */}
-			<div className="space-y-3">
-				<h3 className="font-semibold">Payment Methods</h3>
-
-				{PAYMENT_METHODS.map((method) => {
-					const Icon = method.icon;
-					const enabled = isMethodEnabled(method.id);
-					const requiresStripe = method.id === "cards" || method.id === "ach";
-					const locked = requiresStripe && !data.stripeConnected;
-
-					return (
-						<div
-							key={method.id}
-							className={cn(
-								"rounded-xl p-4 transition-all",
-								enabled
-									? "bg-primary/10 ring-1 ring-primary/30"
-									: "bg-muted/30",
-								locked && "opacity-60"
+				{/* Payment Methods List */}
+				<div className="space-y-2">
+					{enabledCount > 0 && (
+						<div className="flex items-center justify-between mb-4">
+							<span className="text-sm font-medium text-muted-foreground">
+								{enabledCount} method{enabledCount !== 1 ? "s" : ""} enabled
+							</span>
+							{enabledCount < PAYMENT_METHODS.length && (
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={enableQuickSetup}
+									disabled={!bankConnected}
+								>
+									Enable all
+								</Button>
 							)}
-						>
-							<div className="flex items-start gap-4">
-								<div className={cn(
-									"flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 transition-colors",
-									enabled ? "bg-primary text-primary-foreground" : "bg-muted"
-								)}>
+						</div>
+					)}
+
+					{PAYMENT_METHODS.map((method) => {
+						const Icon = method.icon;
+						const enabled = isMethodEnabled(method.id);
+
+						return (
+							<div
+								key={method.id}
+								className={cn(
+									"flex items-center gap-4 rounded-lg p-4 transition-colors",
+									enabled ? "bg-primary/10 ring-1 ring-primary/20" : "bg-muted/40",
+									!bankConnected && "opacity-50"
+								)}
+							>
+								<div
+									className={cn(
+										"flex h-10 w-10 items-center justify-center rounded-full flex-shrink-0",
+										enabled ? "bg-primary text-primary-foreground" : "bg-muted"
+									)}
+								>
 									<Icon className="h-5 w-5" />
 								</div>
 
 								<div className="flex-1 min-w-0">
 									<div className="flex items-center gap-2">
 										<p className="font-medium">{method.title}</p>
-										{method.popular && (
-											<Badge variant="secondary" className="text-xs">Popular</Badge>
-										)}
-									</div>
-									<p className="text-sm text-muted-foreground">{method.description}</p>
-									<div className="flex flex-wrap gap-3 mt-2 text-xs text-muted-foreground">
-										{method.fees && (
-											<span className="flex items-center gap-1">
-												<DollarSign className="h-3 w-3" />
-												{method.fees}
+										{method.badge && (
+											<span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+												{method.badge}
 											</span>
 										)}
-										<span className="flex items-center gap-1">
-											<Clock className="h-3 w-3" />
-											{method.timing}
-										</span>
 									</div>
+									<p className="text-sm text-muted-foreground">
+										{method.description}
+										{method.fees && ` • ${method.fees}`}
+									</p>
 								</div>
 
 								<Switch
 									checked={enabled}
-									onCheckedChange={(v) => togglePaymentMethod(method.id, v)}
-									disabled={locked}
+									disabled={!bankConnected}
+									onCheckedChange={(v) => {
+										togglePaymentMethod(method.id, v);
+										if (v && !data.paymentSetupComplete) {
+											updateData({ paymentSetupComplete: true });
+										}
+									}}
 								/>
 							</div>
+						);
+					})}
+				</div>
 
-							{locked && (
-								<p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
-									<AlertTriangle className="h-3 w-3" />
-									Connect Stripe above to enable this method
+				{/* ACH Plaid Verification */}
+				{isMethodEnabled("ach") && bankConnected && (
+					<div className="space-y-3 mt-6">
+						<div className="flex items-start gap-3 text-sm bg-muted/40 rounded-lg p-4">
+							<Building2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+							<div className="flex-1">
+								<p className="font-medium text-foreground">ACH bank verification</p>
+								<p className="text-muted-foreground">
+									Use Plaid to instantly verify customer bank accounts for ACH transfers.
+									This prevents bounced payments and fraud.
 								</p>
+							</div>
+						</div>
+						<Button
+							onClick={connectPlaidForACH}
+							disabled={connectingPlaid}
+							variant="outline"
+							className="w-full"
+						>
+							{connectingPlaid ? (
+								<>
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									Connecting...
+								</>
+							) : (
+								<>
+									<Shield className="mr-2 h-4 w-4" />
+									Enable ACH Verification
+								</>
 							)}
+						</Button>
+					</div>
+				)}
+
+				{/* Check Capture Info */}
+				{isMethodEnabled("check-capture") && (
+					<div className="flex items-start gap-3 text-sm bg-muted/40 rounded-lg p-4 mt-4">
+						<Smartphone className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+						<div>
+							<p className="font-medium text-foreground">Mobile check capture ready</p>
+							<p className="text-muted-foreground">
+								Your team can snap photos of checks in the field for instant deposit to your connected bank.
+							</p>
 						</div>
-					);
-				})}
+					</div>
+				)}
 			</div>
 
-			{/* Financing Details */}
-			{isMethodEnabled("financing") && (
-				<div className="rounded-xl bg-muted/30 p-5 space-y-4">
-					<h3 className="font-semibold">Customer Financing Options</h3>
+			{/* Summary Footer */}
+			{bankConnected && enabledCount > 0 && (
+				<div className="rounded-lg bg-primary/5 p-4 space-y-2">
+					<div className="flex items-center gap-2">
+						<CheckCircle2 className="h-5 w-5 text-primary" />
+						<span className="font-medium">Payment setup complete</span>
+					</div>
 					<p className="text-sm text-muted-foreground">
-						Offer flexible payment plans for larger jobs. You get paid in full upfront while customers pay over time.
-					</p>
-					<div className="grid gap-3 sm:grid-cols-2">
-						<div className="rounded-lg bg-background p-3">
-							<p className="font-medium text-sm">6-Month Plan</p>
-							<p className="text-xs text-muted-foreground">0% APR for qualified customers</p>
-						</div>
-						<div className="rounded-lg bg-background p-3">
-							<p className="font-medium text-sm">12-Month Plan</p>
-							<p className="text-xs text-muted-foreground">Low APR financing</p>
-						</div>
-						<div className="rounded-lg bg-background p-3">
-							<p className="font-medium text-sm">24-Month Plan</p>
-							<p className="text-xs text-muted-foreground">Extended payment terms</p>
-						</div>
-						<div className="rounded-lg bg-background p-3">
-							<p className="font-medium text-sm">Buy Now, Pay Later</p>
-							<p className="text-xs text-muted-foreground">Split into 4 payments</p>
-						</div>
-					</div>
-					<p className="text-xs text-muted-foreground">
-						Financing details will be configured after setup completion.
+						You're ready to accept payments. Funds will be deposited daily to your connected bank account.
 					</p>
 				</div>
 			)}
 
-			{/* Stats Preview */}
-			{(data.paymentMethods?.length ?? 0) > 0 && (
-				<div className="rounded-xl bg-muted/30 p-4 space-y-3">
-					<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-						Payment Summary
-					</p>
-					<div className="flex items-center justify-between">
-						<span className="text-sm">Enabled payment methods</span>
-						<span className="font-semibold">{data.paymentMethods?.length || 0}</span>
-					</div>
-					<div className="flex items-center justify-between">
-						<span className="text-sm">Stripe status</span>
-						<span className={cn(
-							"text-sm font-medium",
-							data.stripeConnected ? "text-green-500" : "text-amber-500"
-						)}>
-							{data.stripeConnected ? "Connected" : "Not connected"}
-						</span>
-					</div>
-				</div>
-			)}
-
-			{/* Expandable: Processing Fees */}
-			<ExpandableInfo title="Understanding payment processing fees">
-				<div className="space-y-3">
-					<p>
-						Payment processing fees are charged by the payment networks (Visa, Mastercard, banks) and are standard across all software platforms.
-					</p>
-					<div className="space-y-2">
-						<div className="flex justify-between text-sm">
-							<span>Credit/Debit Cards</span>
-							<span className="font-mono">2.9% + $0.30</span>
-						</div>
-						<div className="flex justify-between text-sm">
-							<span>ACH Bank Transfer</span>
-							<span className="font-mono">0.8% (max $5)</span>
-						</div>
-						<div className="flex justify-between text-sm">
-							<span>Check/Cash</span>
-							<span className="font-mono">$0.00</span>
-						</div>
-					</div>
-					<p className="text-muted-foreground">
-						<strong>Tip:</strong> For large invoices ($500+), encouraging ACH payment can save you significant fees.
-					</p>
-				</div>
-			</ExpandableInfo>
-
-			{/* Security Badge */}
-			<div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-				<Shield className="h-4 w-4" />
-				<span>PCI-DSS compliant • Bank-level encryption • SOC 2 certified</span>
-			</div>
-
-			{/* Skip Option */}
-			<div className="text-center">
-				<button
-					onClick={skipStep}
-					className="text-sm text-muted-foreground hover:text-foreground"
-				>
-					Skip for now — set up payments later
-				</button>
-			</div>
+			{/* Info Note */}
+			<p className="text-xs text-muted-foreground text-center">
+				Processing fees are paid by your business. You can adjust all settings anytime from Settings → Payments.
+			</p>
 		</div>
 	);
 }

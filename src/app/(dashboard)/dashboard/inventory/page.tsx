@@ -23,11 +23,11 @@ import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
 export default function InventoryDashboardPage() {
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4 md:space-y-6 p-4 md:p-6">
 			{/* Page header */}
 			<div>
-				<h1 className="text-2xl font-semibold">Inventory Dashboard</h1>
-				<p className="text-muted-foreground">
+				<h1 className="text-2xl md:text-3xl font-semibold">Inventory Dashboard</h1>
+				<p className="text-muted-foreground text-sm md:text-base">
 					Manage inventory, parts, and equipment
 				</p>
 			</div>

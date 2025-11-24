@@ -2,22 +2,12 @@
 
 /**
  * Schedule Step - Business Hours & Availability
- *
- * Configures:
- * - Business operating hours
- * - Service area/zones
- * - Scheduling preferences
- * - Buffer times between appointments
  */
 
 import { useState } from "react";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { InfoCard } from "@/components/onboarding/info-cards/walkthrough-slide";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Select,
 	SelectContent,
@@ -26,27 +16,16 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import {
-	Calendar,
-	Clock,
-	MapPin,
-	Sparkles,
-	CheckCircle2,
-	Sun,
-	Moon,
-	Coffee,
-	AlertTriangle,
-	Truck,
-} from "lucide-react";
+import { Moon, AlertTriangle } from "lucide-react";
 
 const DAYS_OF_WEEK = [
-	{ id: "monday", label: "Mon", fullLabel: "Monday" },
-	{ id: "tuesday", label: "Tue", fullLabel: "Tuesday" },
-	{ id: "wednesday", label: "Wed", fullLabel: "Wednesday" },
-	{ id: "thursday", label: "Thu", fullLabel: "Thursday" },
-	{ id: "friday", label: "Fri", fullLabel: "Friday" },
-	{ id: "saturday", label: "Sat", fullLabel: "Saturday" },
-	{ id: "sunday", label: "Sun", fullLabel: "Sunday" },
+	{ id: "monday", label: "Mon" },
+	{ id: "tuesday", label: "Tue" },
+	{ id: "wednesday", label: "Wed" },
+	{ id: "thursday", label: "Thu" },
+	{ id: "friday", label: "Fri" },
+	{ id: "saturday", label: "Sat" },
+	{ id: "sunday", label: "Sun" },
 ];
 
 const TIME_SLOTS = [
@@ -60,7 +39,6 @@ const BUFFER_OPTIONS = [
 	{ value: "0", label: "No buffer" },
 	{ value: "15", label: "15 minutes" },
 	{ value: "30", label: "30 minutes" },
-	{ value: "45", label: "45 minutes" },
 	{ value: "60", label: "1 hour" },
 ];
 
@@ -127,35 +105,20 @@ export function ScheduleStep() {
 		return `${displayHour}:${minutes} ${ampm}`;
 	};
 
-	const enabledDays = DAYS_OF_WEEK.filter((d) => schedule[d.id]?.enabled);
-
 	return (
-		<div className="space-y-6 max-w-2xl">
-			<div>
-				<h2 className="text-xl font-semibold">Set your schedule</h2>
-				<p className="text-sm text-muted-foreground">
-					Define when you're available for appointments. This helps with online booking and dispatch optimization.
+		<div className="space-y-10">
+			{/* Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-semibold">Set your schedule</h2>
+				<p className="text-muted-foreground">
+					Define when you're available for appointments.
 				</p>
 			</div>
-
-			{/* Why This Matters */}
-			<InfoCard
-				icon={<Sparkles className="h-5 w-5" />}
-				title="Smart scheduling saves time"
-				description="Your schedule powers automatic booking windows and route optimization."
-				bullets={[
-					"Customers only see available time slots",
-					"Dispatch suggests optimal job timing",
-					"Buffer time prevents back-to-back stress",
-					"Emergency availability clearly communicated",
-				]}
-				variant="tip"
-			/>
 
 			{/* Weekly Schedule */}
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
-					<h3 className="font-semibold">Business Hours</h3>
+					<span className="font-medium">Business Hours</span>
 					<Button variant="outline" size="sm" onClick={applyToAllWeekdays}>
 						Copy Monday to Weekdays
 					</Button>
@@ -164,14 +127,13 @@ export function ScheduleStep() {
 				<div className="space-y-2">
 					{DAYS_OF_WEEK.map((day) => {
 						const daySchedule = schedule[day.id];
-						const isWeekend = day.id === "saturday" || day.id === "sunday";
 
 						return (
 							<div
 								key={day.id}
 								className={cn(
-									"flex items-center gap-4 rounded-xl p-3 transition-colors",
-									daySchedule?.enabled ? "bg-muted/30" : "bg-muted/10"
+									"flex items-center gap-4 rounded-lg p-3",
+									daySchedule?.enabled ? "bg-muted/40" : "bg-muted/20"
 								)}
 							>
 								<Switch
@@ -222,10 +184,6 @@ export function ScheduleStep() {
 								) : (
 									<span className="text-sm text-muted-foreground">Closed</span>
 								)}
-
-								{isWeekend && daySchedule?.enabled && (
-									<Badge variant="secondary" className="text-xs">Weekend</Badge>
-								)}
 							</div>
 						);
 					})}
@@ -233,21 +191,16 @@ export function ScheduleStep() {
 			</div>
 
 			{/* Buffer Time */}
-			<div className="rounded-xl bg-muted/30 p-5 space-y-4">
-				<div className="flex items-center gap-3">
-					<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-						<Coffee className="h-5 w-5" />
-					</div>
-					<div className="flex-1">
-						<p className="font-medium">Buffer Time Between Jobs</p>
-						<p className="text-sm text-muted-foreground">
-							Add travel time between appointments
-						</p>
-					</div>
+			<div className="space-y-3">
+				<div>
+					<p className="font-medium">Buffer Time Between Jobs</p>
+					<p className="text-sm text-muted-foreground">
+						Add travel time between appointments
+					</p>
 				</div>
 
 				<Select value={bufferTime} onValueChange={handleBufferChange}>
-					<SelectTrigger>
+					<SelectTrigger className="w-[180px]">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -258,80 +211,23 @@ export function ScheduleStep() {
 						))}
 					</SelectContent>
 				</Select>
-
-				<p className="text-xs text-muted-foreground">
-					Recommended: 15-30 minutes for most service areas
-				</p>
 			</div>
 
 			{/* Emergency Service */}
-			<div className="rounded-xl bg-muted/30 p-5">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-3">
-						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-							<AlertTriangle className="h-5 w-5 text-amber-500" />
-						</div>
-						<div>
-							<p className="font-medium">24/7 Emergency Service</p>
-							<p className="text-sm text-muted-foreground">
-								Accept emergency calls outside business hours
-							</p>
-						</div>
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-3">
+					<AlertTriangle className="h-5 w-5 text-amber-500" />
+					<div>
+						<p className="font-medium">24/7 Emergency Service</p>
+						<p className="text-sm text-muted-foreground">
+							Accept emergency calls outside business hours
+						</p>
 					</div>
-					<Switch
-						checked={emergencyService}
-						onCheckedChange={handleEmergencyChange}
-					/>
 				</div>
-
-				{emergencyService && (
-					<div className="mt-4 pt-4 border-t text-sm text-muted-foreground">
-						<p>Emergency calls will show an after-hours surcharge option and notify your on-call technician.</p>
-					</div>
-				)}
-			</div>
-
-			{/* Schedule Preview */}
-			<div className="rounded-xl bg-muted/30 p-4 space-y-3">
-				<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-					Schedule Summary
-				</p>
-
-				<div className="space-y-2">
-					<div className="flex items-center gap-2">
-						<Sun className="h-4 w-4 text-amber-500" />
-						<span className="text-sm">
-							{enabledDays.length === 7
-								? "Open 7 days a week"
-								: enabledDays.length === 5
-								? "Monday - Friday"
-								: `${enabledDays.length} days per week`}
-						</span>
-					</div>
-
-					{schedule.monday?.enabled && (
-						<div className="flex items-center gap-2">
-							<Clock className="h-4 w-4 text-muted-foreground" />
-							<span className="text-sm">
-								{formatTime(schedule.monday.start)} - {formatTime(schedule.monday.end)}
-							</span>
-						</div>
-					)}
-
-					{bufferTime !== "0" && (
-						<div className="flex items-center gap-2">
-							<Truck className="h-4 w-4 text-muted-foreground" />
-							<span className="text-sm">{bufferTime} min buffer between jobs</span>
-						</div>
-					)}
-
-					{emergencyService && (
-						<div className="flex items-center gap-2">
-							<AlertTriangle className="h-4 w-4 text-amber-500" />
-							<span className="text-sm">24/7 emergency service enabled</span>
-						</div>
-					)}
-				</div>
+				<Switch
+					checked={emergencyService}
+					onCheckedChange={handleEmergencyChange}
+				/>
 			</div>
 		</div>
 	);

@@ -1,6 +1,18 @@
 /**
  * Email Sender - Type-safe email sending utilities
  *
+ * CRITICAL RULE - Reply-To Addresses:
+ * ====================================
+ * Reply-to ALWAYS uses the company's platform subdomain (mail.thorbis.com),
+ * regardless of which email provider or sending method is used.
+ *
+ * Examples:
+ * - FROM: notifications@acme.mail.thorbis.com → REPLY-TO: support@acme.mail.thorbis.com
+ * - FROM: notifications@acme-plumbing.com (custom) → REPLY-TO: support@acme.mail.thorbis.com
+ * - FROM: john@gmail.com (personal) → REPLY-TO: support@acme.mail.thorbis.com
+ *
+ * See: /docs/email/REPLY_TO_ARCHITECTURE.md for full details
+ *
  * Features:
  * - Type-safe email sending with validation
  * - Development mode logging
@@ -66,6 +78,10 @@ type SendEmailOptions = {
 	subject: string;
 	template: ReactElement;
 	templateType: EmailTemplateEnum;
+	/** Reply-to address. Optional override.
+	 * If not provided, uses company's configured reply_to_email from company_email_domains table.
+	 * If company hasn't configured one, defaults to support@{company-subdomain}.mail.thorbis.com
+	 * This ensures replies always go to the same branded subdomain as FROM address (never custom domains) */
 	replyTo?: string;
 	tags?: { name: string; value: string }[];
 	companyId?: string;
@@ -116,14 +132,10 @@ export async function sendEmail({
 	listId,
 }: SendEmailOptions): Promise<EmailSendResult> {
 	let activeDomainId: string | null = null;
+	let companyReplyTo: string | null = null;
+	let activeDomain: Awaited<ReturnType<typeof getCompanyActiveDomain>> = null;
 
 	try {
-		// Validate email data
-		const validatedData = emailSendSchema.parse({
-			to,
-			subject,
-			replyTo,
-		});
 
 		// In development, log email instead of sending
 		if (emailConfig.isDevelopment) {
@@ -152,14 +164,9 @@ export async function sendEmail({
 
 		const supabase = await createClient();
 
-		// Normalize recipient list
-		const recipientEmails = Array.isArray(validatedData.to)
-			? validatedData.to
-			: [validatedData.to];
-
-		// Check rate limits and run pre-send checks if companyId is provided
+		// Fetch company email domain to get reply-to configuration
 		if (companyId) {
-			const activeDomain = await getCompanyActiveDomain(companyId);
+			activeDomain = await getCompanyActiveDomain(companyId);
 			if (!activeDomain) {
 				return {
 					success: false,
@@ -168,6 +175,36 @@ export async function sendEmail({
 			}
 
 			activeDomainId = activeDomain.domainId;
+
+			// Set reply-to from company's domain configuration
+			// If not set, construct default using the company's domain (e.g., support@acme.mail.thorbis.com)
+			// This ensures all replies go to the same branded subdomain as the FROM address
+			if (activeDomain.replyToEmail) {
+				companyReplyTo = activeDomain.replyToEmail;
+			} else {
+				// Default to support@{company-domain}
+				companyReplyTo = `support@${activeDomain.domain}`;
+			}
+		}
+
+		// Determine final reply-to address
+		// Priority: 1) Explicit replyTo parameter, 2) Company's configured reply-to, 3) None
+		const finalReplyTo = replyTo || companyReplyTo || undefined;
+
+		// Validate email data (now with proper reply-to)
+		const validatedData = emailSendSchema.parse({
+			to,
+			subject,
+			replyTo: finalReplyTo,
+		});
+
+		// Normalize recipient list
+		const recipientEmails = Array.isArray(validatedData.to)
+			? validatedData.to
+			: [validatedData.to];
+
+		// Check rate limits and run pre-send checks if companyId is provided
+		if (companyId && activeDomainId) {
 
 			// Check rate limit before incrementing
 			const rateLimitCheck = await checkRateLimit(activeDomain.domainId);

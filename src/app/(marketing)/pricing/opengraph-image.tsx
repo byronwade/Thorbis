@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadOGFonts, OG_CONFIG, PricingTemplate } from "@/lib/og";
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const alt = "Thorbis Pricing - $200/mo, All Features Included, No Per-User Fees";
 export const size = {
 	width: OG_CONFIG.width,

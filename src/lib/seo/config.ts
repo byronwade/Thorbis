@@ -36,8 +36,9 @@ export const SEO_URLS = {
 		"https://thorbis.com",
 	/**
 	 * Default social/OG image relative path. Use helpers below to make it absolute.
+	 * Points to Next.js auto-generated OG image route from opengraph-image.tsx
 	 */
-	defaultImagePath: "/og-image.jpg",
+	defaultImagePath: "/opengraph-image",
 	/**
 	 * Shared support contact surfaced in structured data.
 	 */

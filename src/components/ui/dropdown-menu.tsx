@@ -71,7 +71,9 @@ function DropdownMenuItem({
 	return (
 		<DropdownMenuPrimitive.Item
 			className={cn(
-				"data-[variant=destructive]:*:[svg]:!text-destructive hover:bg-primary/10 hover:text-foreground focus:bg-primary/15 focus:text-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:hover:bg-destructive/15 dark:focus:bg-primary/25 dark:data-[variant=destructive]:focus:bg-destructive/30 dark:hover:bg-primary/20 dark:data-[variant=destructive]:hover:bg-destructive/25 [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"data-[variant=destructive]:*:[svg]:!text-destructive hover:bg-primary/10 hover:text-foreground focus:bg-primary/15 focus:text-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:hover:bg-destructive/15 dark:focus:bg-primary/25 dark:data-[variant=destructive]:focus:bg-destructive/30 dark:hover:bg-primary/20 dark:data-[variant=destructive]:hover:bg-destructive/25 [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 text-sm outline-hidden transition-colors select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				// Mobile: 44px touch target (py-2.5), Desktop: 36px (py-1.5)
+				"py-2.5 md:py-1.5 min-h-[44px] md:min-h-[36px]",
 				className,
 			)}
 			data-inset={inset}
@@ -92,7 +94,9 @@ function DropdownMenuCheckboxItem({
 		<DropdownMenuPrimitive.CheckboxItem
 			checked={checked}
 			className={cn(
-				"hover:bg-primary/10 hover:text-foreground focus:bg-primary/15 focus:text-foreground data-[state=checked]:bg-primary/10 dark:data-[state=checked]:bg-primary/20 dark:focus:bg-primary/25 dark:hover:bg-primary/20 relative flex cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden transition-colors select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[state=checked]:font-medium [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"hover:bg-primary/10 hover:text-foreground focus:bg-primary/15 focus:text-foreground data-[state=checked]:bg-primary/10 dark:data-[state=checked]:bg-primary/20 dark:focus:bg-primary/25 dark:hover:bg-primary/20 relative flex cursor-pointer items-center gap-2 rounded-sm pr-2 pl-8 text-sm outline-hidden transition-colors select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[state=checked]:font-medium [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				// Mobile: 44px touch target (py-2.5), Desktop: 36px (py-1.5)
+				"py-2.5 md:py-1.5 min-h-[44px] md:min-h-[36px]",
 				className,
 			)}
 			data-slot="dropdown-menu-checkbox-item"

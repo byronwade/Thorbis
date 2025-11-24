@@ -9,6 +9,9 @@ import { loadOGFonts, OG_CONFIG, HomepageTemplate } from "@/lib/og";
  * cascade from parent to child routes.
  */
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const alt = "Thorbis - Field Service Management Software | $200/mo";
 export const size = {
 	width: OG_CONFIG.width,

@@ -36,6 +36,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createAppointment } from "@/actions/appointments";
+import { CustomerAutocomplete, type CustomerOption } from "@/components/customers/customer-autocomplete";
+import { CustomerCreateModal } from "@/components/customers/customer-create-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -105,6 +107,9 @@ export function AppointmentCreateFormV2({
 	const [propertyId, setPropertyId] = useState(initialPropertyId || "");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
+
+	// Customer creation modal state
+	const [isCreateCustomerModalOpen, setIsCreateCustomerModalOpen] = useState(false);
 
 	// Time scheduling
 	const [timeMode, setTimeMode] = useState<TimeMode>("window");
@@ -731,26 +736,19 @@ export function AppointmentCreateFormV2({
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<StandardFormRow cols={2}>
-							<StandardFormField label="Customer" htmlFor="customer" required>
-								<Select
+							<div>
+								<CustomerAutocomplete
 									value={customerId}
-									onValueChange={setCustomerId}
-									required
+									onChange={(newCustomerId) => setCustomerId(newCustomerId || "")}
+									placeholder="Search for customer..."
+									label="Customer"
 									disabled={!!linkedJob}
-								>
-									<SelectTrigger id="customer" className="h-9">
-										<SelectValue placeholder="Select customer" />
-									</SelectTrigger>
-									<SelectContent>
-										{customers.map((customer) => (
-											<SelectItem key={customer.id} value={customer.id}>
-												{customer.display_name ||
-													`${customer.first_name} ${customer.last_name}`}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</StandardFormField>
+									showRecent={true}
+									showCreateNew={true}
+									onCreateNew={() => setIsCreateCustomerModalOpen(true)}
+									error={!customerId && !!linkedJob}
+								/>
+							</div>
 
 							<StandardFormField label="Property" htmlFor="property" required>
 								<Select
@@ -952,6 +950,20 @@ export function AppointmentCreateFormV2({
 					</div>
 				</div>
 			</form>
+
+			{/* Customer Creation Modal */}
+			<CustomerCreateModal
+				open={isCreateCustomerModalOpen}
+				onOpenChange={setIsCreateCustomerModalOpen}
+				onCustomerCreated={(customer: CustomerOption) => {
+					// Set the newly created customer as selected
+					setCustomerId(customer.id);
+					// Close the modal
+					setIsCreateCustomerModalOpen(false);
+					// Show success message
+					toast.success("Customer created successfully");
+				}}
+			/>
 		</div>
 	);
 }

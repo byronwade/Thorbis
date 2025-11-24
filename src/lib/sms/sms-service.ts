@@ -138,13 +138,9 @@ export async function getCompanySms(
 				query = query.not("deleted_at", "is", null);
 				break;
 			default:
-				// Custom folder or label filtering
-				if (label || folder) {
-					const folderName = label || folder;
-					query = query
-						.contains("tags", [folderName])
-						.is("deleted_at", null);
-				}
+				// Custom folder or label filtering - done in memory after fetch
+				// (JSONB array containment not supported by PostgREST cs operator)
+				query = query.is("deleted_at", null);
 				break;
 		}
 	} else {
@@ -185,11 +181,26 @@ export async function getCompanySms(
 		return { sms: [], total: 0, hasMore: false };
 	}
 
-	const sms = (data || []).map((msg) => ({
+	let sms = (data || []).map((msg) => ({
 		...msg,
 		tags: (msg.tags as string[]) || null,
 		provider_metadata: (msg.provider_metadata as Record<string, unknown>) || null,
 	})) as CompanySms[];
+
+	// Post-process custom folder/label filtering (JSONB array containment not supported by PostgREST)
+	const standardFolders = ["inbox", "sent", "archive", "trash", "bin"];
+	const folderName = label || folder;
+	if (folderName && !standardFolders.includes(folderName)) {
+		sms = sms.filter((msg) => {
+			const msgTags = msg.tags || [];
+			return Array.isArray(msgTags) && msgTags.includes(folderName);
+		});
+		return {
+			sms,
+			total: sms.length,
+			hasMore: false,
+		};
+	}
 
 	const total = count || 0;
 	const hasMore = offset + sms.length < total;

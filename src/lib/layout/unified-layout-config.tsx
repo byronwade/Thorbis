@@ -227,6 +227,8 @@ export type SubHeaderConfig = {
 export type ToolbarConfig = {
 	/** Whether to show the toolbar */
 	show: boolean;
+	/** Hide toolbar on mobile devices (< md breakpoint) */
+	hideOnMobile?: boolean;
 	/** Toolbar title */
 	title?: React.ReactNode;
 	/** Toolbar subtitle */

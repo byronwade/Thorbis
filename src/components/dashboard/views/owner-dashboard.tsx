@@ -214,33 +214,33 @@ export default function OwnerDashboard({
 function ActiveJobsList({ jobs }: { jobs: MissionControlData["operations"]["inProgress"] }) {
 	return (
 		<div className="bg-card/50 border-border/50 backdrop-blur-sm rounded-xl border overflow-hidden">
-			<div className="p-6 border-b border-border/50 flex items-center justify-between">
-				<h3 className="font-semibold text-lg">Active Jobs</h3>
+			<div className="p-4 md:p-6 border-b border-border/50 flex items-center justify-between">
+				<h3 className="font-semibold text-base md:text-lg">Active Jobs</h3>
 				<Badge variant="secondary" className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0">
 					{jobs.length} Active
 				</Badge>
 			</div>
 			<div className="p-0">
 				{jobs.length === 0 ? (
-					<div className="p-8 text-center text-muted-foreground text-sm">
+					<div className="p-6 md:p-8 text-center text-muted-foreground text-sm">
 						No active jobs at the moment.
 					</div>
 				) : (
 					<div className="divide-y divide-border/50">
 						{jobs.slice(0, 5).map((job) => (
-							<div key={job.id} className="p-4 hover:bg-muted/30 transition-colors flex items-center justify-between">
-								<div className="space-y-1">
-									<div className="flex items-center gap-2">
-										<span className="font-medium text-sm">{job.title || `Job #${job.jobNumber}`}</span>
-										<Badge variant="outline" className="text-[10px] h-5 px-1.5 uppercase tracking-wider">
+							<div key={job.id} className="p-3 md:p-4 hover:bg-muted/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+								<div className="space-y-1 min-w-0 flex-1">
+									<div className="flex items-center gap-2 flex-wrap">
+										<span className="font-medium text-sm truncate">{job.title || `Job #${job.jobNumber}`}</span>
+										<Badge variant="outline" className="text-[10px] h-5 px-1.5 uppercase tracking-wider shrink-0">
 											{job.status?.replace(/_/g, " ")}
 										</Badge>
 									</div>
-									<p className="text-xs text-muted-foreground">
+									<p className="text-xs text-muted-foreground truncate">
 										{job.customerName} • {job.address}
 									</p>
 								</div>
-								<div className="text-right">
+								<div className="text-left sm:text-right shrink-0">
 									<p className="text-sm font-medium">
 										{formatCurrencyFromDollars(job.totalAmountCents / 100, {
 											minimumFractionDigits: 0,
@@ -279,38 +279,38 @@ function TechnicianStatusList({ schedule }: { schedule: MissionControlData["sche
 
 	return (
 		<div className="bg-card/50 border-border/50 backdrop-blur-sm rounded-xl border overflow-hidden">
-			<div className="p-6 border-b border-border/50 flex items-center justify-between">
-				<h3 className="font-semibold text-lg">Technician Status</h3>
+			<div className="p-4 md:p-6 border-b border-border/50 flex items-center justify-between">
+				<h3 className="font-semibold text-base md:text-lg">Technician Status</h3>
 				<Badge variant="secondary" className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-0">
 					{techs.length} Scheduled
 				</Badge>
 			</div>
 			<div className="p-0">
 				{techs.length === 0 ? (
-					<div className="p-8 text-center text-muted-foreground text-sm">
+					<div className="p-6 md:p-8 text-center text-muted-foreground text-sm">
 						No technicians scheduled for today yet.
 					</div>
 				) : (
 					<div className="divide-y divide-border/50">
 						{techs.map((tech, i) => (
-							<div key={i} className="p-4 hover:bg-muted/30 transition-colors flex items-center justify-between">
-								<div className="flex items-center gap-3">
-									<div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+							<div key={i} className="p-3 md:p-4 hover:bg-muted/30 transition-colors flex items-center justify-between gap-3">
+								<div className="flex items-center gap-3 min-w-0 flex-1">
+									<div className="h-9 w-9 md:h-8 md:w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary shrink-0">
 										{tech.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2)}
 									</div>
-									<div className="space-y-0.5">
-										<p className="text-sm font-medium">{tech.name}</p>
-										<p className="text-xs text-muted-foreground">
+									<div className="space-y-0.5 min-w-0">
+										<p className="text-sm font-medium truncate">{tech.name}</p>
+										<p className="text-xs text-muted-foreground truncate">
 											{tech.status === "Working" ? "Currently at:" : "Next up:"} {tech.currentJob}
 										</p>
 									</div>
 								</div>
-								<div className="flex items-center gap-2">
-									<Badge 
-										variant="outline" 
+								<div className="flex items-center gap-2 shrink-0">
+									<Badge
+										variant="outline"
 										className={`text-[10px] h-5 px-1.5 uppercase tracking-wider ${
-											tech.status === "Working" 
-												? "bg-green-500/10 text-green-500 border-green-500/20" 
+											tech.status === "Working"
+												? "bg-green-500/10 text-green-500 border-green-500/20"
 												: "bg-blue-500/10 text-blue-500 border-blue-500/20"
 										}`}
 									>

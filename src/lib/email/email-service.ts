@@ -179,18 +179,9 @@ export async function getCompanyEmails(
 					.is("deleted_at", null);
 				break;
 			default:
-				// Custom folder or label filtering
-				if (label || folder) {
-					const folderName = label || folder;
-					
-					// First, check if it's a custom folder by slug
-					// We'll need to check the email_folders table
-					// For now, filter by tags containing the folder name
-					// The folder slug should match the tag name
-					query = query
-						.contains("tags", [folderName])
-						.is("deleted_at", null);
-				}
+				// Custom folder or label filtering - will be done in memory after fetch
+				// (JSONB array containment not supported by PostgREST cs operator)
+				query = query.is("deleted_at", null);
 				break;
 		}
 	} else {
@@ -260,12 +251,13 @@ export async function getCompanyEmails(
 			total: spamCount,
 			hasMore: spamCount >= limit,
 		};
-	} else {
-		// Exclude spam emails from all other folders (same way archiving works)
+	} else if (folder !== "archive") {
+		// Exclude spam emails from all folders EXCEPT spam and archive
+		// Archive should show ALL archived emails regardless of spam status
 		emails = emails.filter((email: any) => {
 			const tags = (email.tags as string[]) || [];
 			const isSpam = email.category === "spam" || tags.includes("spam");
-			return !isSpam; // Exclude spam from all non-spam folders
+			return !isSpam; // Exclude spam from non-spam, non-archive folders
 		});
 	}
 
@@ -281,6 +273,22 @@ export async function getCompanyEmails(
 			emails,
 			total: starredCount,
 			hasMore: starredCount >= limit,
+		};
+	}
+
+	// Post-process custom folder/label filtering (JSONB array containment not supported by PostgREST)
+	const standardFolders = ["inbox", "spam", "starred", "sent", "drafts", "archive", "snoozed", "trash", "bin"];
+	const folderName = label || folder;
+	if (folderName && !standardFolders.includes(folderName)) {
+		emails = emails.filter((email: any) => {
+			const tags = (email.tags as string[]) || [];
+			return tags.includes(folderName);
+		});
+		const customCount = emails.length;
+		return {
+			emails,
+			total: customCount,
+			hasMore: customCount >= limit,
 		};
 	}
 
@@ -621,15 +629,29 @@ export async function archiveAllEmails(
 				const categorized = await runArchive(
 					buildArchiveQuery().eq("category", "spam").is("deleted_at", null),
 				);
-				const tagged = await runArchive(
-					buildArchiveQuery()
-						.neq("category", "spam")
-						.contains("tags", ["spam"])
-						.is("deleted_at", null),
-				);
+				// For spam tagged emails, fetch IDs first then update (JSONB filtering not supported)
+				const { data: spamTaggedEmails } = await supabase
+					.from("communications")
+					.select("id, tags")
+					.eq("company_id", companyId)
+					.eq("type", "email")
+					.neq("category", "spam")
+					.is("deleted_at", null);
+				const spamTaggedIds = (spamTaggedEmails ?? [])
+					.filter(e => Array.isArray(e.tags) && (e.tags as string[]).includes("spam"))
+					.map(e => e.id);
+				let taggedCount = 0;
+				if (spamTaggedIds.length > 0) {
+					const { data } = await supabase
+						.from("communications")
+						.update({ is_archived: true })
+						.in("id", spamTaggedIds)
+						.select("id");
+					taggedCount = data?.length ?? 0;
+				}
 				return {
 					success: true,
-					count: categorized + tagged,
+					count: categorized + taggedCount,
 				};
 			}
 			case "trash":
@@ -638,16 +660,48 @@ export async function archiveAllEmails(
 				return { success: true, count: archived };
 			}
 			case "starred": {
-				const archived = await runArchive(
-					buildArchiveQuery().contains("tags", ["starred"]).is("deleted_at", null),
-				);
-				return { success: true, count: archived };
+				// Fetch starred email IDs first then update (JSONB filtering not supported)
+				const { data: starredEmails } = await supabase
+					.from("communications")
+					.select("id, tags")
+					.eq("company_id", companyId)
+					.eq("type", "email")
+					.is("deleted_at", null);
+				const starredIds = (starredEmails ?? [])
+					.filter(e => Array.isArray(e.tags) && (e.tags as string[]).includes("starred"))
+					.map(e => e.id);
+				let starredCount = 0;
+				if (starredIds.length > 0) {
+					const { data } = await supabase
+						.from("communications")
+						.update({ is_archived: true })
+						.in("id", starredIds)
+						.select("id");
+					starredCount = data?.length ?? 0;
+				}
+				return { success: true, count: starredCount };
 			}
 			default: {
-				const archived = await runArchive(
-					buildArchiveQuery().contains("tags", [folderName]).is("deleted_at", null),
-				);
-				return { success: true, count: archived };
+				// Custom folder - fetch IDs first then update (JSONB filtering not supported)
+				const { data: customEmails } = await supabase
+					.from("communications")
+					.select("id, tags")
+					.eq("company_id", companyId)
+					.eq("type", "email")
+					.is("deleted_at", null);
+				const customIds = (customEmails ?? [])
+					.filter(e => Array.isArray(e.tags) && folderName && (e.tags as string[]).includes(folderName))
+					.map(e => e.id);
+				let customCount = 0;
+				if (customIds.length > 0) {
+					const { data } = await supabase
+						.from("communications")
+						.update({ is_archived: true })
+						.in("id", customIds)
+						.select("id");
+					customCount = data?.length ?? 0;
+				}
+				return { success: true, count: customCount };
 			}
 		}
 	} catch (error) {

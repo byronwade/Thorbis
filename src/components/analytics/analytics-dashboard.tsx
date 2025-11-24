@@ -65,9 +65,9 @@ export function MetricCard({
 
 	return (
 		<Card className="bg-card/50 border-border/50 overflow-hidden backdrop-blur-sm">
-			<CardContent className="p-6">
-				<div className="flex items-center gap-2 mb-2">
-					<span className="text-muted-foreground text-sm font-medium">
+			<CardContent className="p-4 md:p-6">
+				<div className="flex items-center gap-2 mb-1 md:mb-2">
+					<span className="text-muted-foreground text-xs md:text-sm font-medium">
 						{label}
 					</span>
 					{verified && (
@@ -84,10 +84,10 @@ export function MetricCard({
 						</div>
 					)}
 				</div>
-				<div className="flex items-baseline gap-2">
-					<span className="text-2xl font-bold tracking-tight">{value}</span>
+				<div className="flex items-baseline gap-1 md:gap-2">
+					<span className="text-xl md:text-2xl font-bold tracking-tight">{value}</span>
 					{subValue && (
-						<span className="text-muted-foreground text-sm">{subValue}</span>
+						<span className="text-muted-foreground text-xs md:text-sm">{subValue}</span>
 					)}
 				</div>
 				{change !== undefined && (
@@ -131,43 +131,43 @@ export function MainChartCard({
 }) {
 	return (
 		<Card className="bg-card/50 border-border/50 col-span-full backdrop-blur-sm">
-			<CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 pb-4">
+			<CardHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 p-4 md:p-6 pb-4">
 				<div className="flex items-center gap-4">
-					<CardTitle className="text-xl font-semibold">{title}</CardTitle>
+					<CardTitle className="text-lg md:text-xl font-semibold">{title}</CardTitle>
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
-					<Button variant="outline" size="sm" className="h-8 w-8 p-0">
-						<Calendar className="h-4 w-4" />
+					<Button variant="outline" size="sm" className="h-10 w-10 md:h-8 md:w-8 p-0">
+						<Calendar className="h-5 w-5 md:h-4 md:w-4" />
 					</Button>
 					<Tabs defaultValue="3M" className="w-auto">
-						<TabsList className="h-8">
-							<TabsTrigger value="7D" className="text-xs h-6 px-2">
+						<TabsList className="h-10 md:h-8">
+							<TabsTrigger value="7D" className="text-xs h-8 md:h-6 px-2.5 md:px-2">
 								7D
 							</TabsTrigger>
-							<TabsTrigger value="2W" className="text-xs h-6 px-2">
+							<TabsTrigger value="2W" className="text-xs h-8 md:h-6 px-2.5 md:px-2">
 								2W
 							</TabsTrigger>
-							<TabsTrigger value="4W" className="text-xs h-6 px-2">
+							<TabsTrigger value="4W" className="text-xs h-8 md:h-6 px-2.5 md:px-2">
 								4W
 							</TabsTrigger>
-							<TabsTrigger value="3M" className="text-xs h-6 px-2">
+							<TabsTrigger value="3M" className="text-xs h-8 md:h-6 px-2.5 md:px-2">
 								3M
 							</TabsTrigger>
-							<TabsTrigger value="1Y" className="text-xs h-6 px-2">
+							<TabsTrigger value="1Y" className="text-xs h-8 md:h-6 px-2.5 md:px-2">
 								1Y
 							</TabsTrigger>
 						</TabsList>
 					</Tabs>
-					<Button variant="outline" size="sm" className="h-8 w-8 p-0">
-						<Download className="h-4 w-4" />
+					<Button variant="outline" size="sm" className="h-10 w-10 md:h-8 md:w-8 p-0">
+						<Download className="h-5 w-5 md:h-4 md:w-4" />
 					</Button>
 				</div>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="p-4 md:p-6 pt-0">
 				<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2 flex-wrap">
 						<Select defaultValue="impressions">
-							<SelectTrigger className="w-[140px] h-8 text-xs">
+							<SelectTrigger className="w-[140px] h-10 md:h-8 text-base md:text-xs">
 								<SelectValue placeholder="Metric" />
 							</SelectTrigger>
 							<SelectContent>
@@ -177,7 +177,7 @@ export function MainChartCard({
 							</SelectContent>
 						</Select>
 						<Select defaultValue="secondary">
-							<SelectTrigger className="w-[180px] h-8 text-xs text-muted-foreground">
+							<SelectTrigger className="w-[180px] h-10 md:h-8 text-base md:text-xs text-muted-foreground">
 								<SelectValue placeholder="Select secondary metric" />
 							</SelectTrigger>
 							<SelectContent>
@@ -187,9 +187,9 @@ export function MainChartCard({
 							</SelectContent>
 						</Select>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2 flex-wrap">
 						<Select defaultValue="daily">
-							<SelectTrigger className="w-[100px] h-8 text-xs">
+							<SelectTrigger className="w-[100px] h-10 md:h-8 text-base md:text-xs">
 								<SelectValue placeholder="Granularity" />
 							</SelectTrigger>
 							<SelectContent>
@@ -198,11 +198,11 @@ export function MainChartCard({
 								<SelectItem value="monthly">Monthly</SelectItem>
 							</SelectContent>
 						</Select>
-						<div className="flex items-center border rounded-md h-8">
+						<div className="flex items-center border rounded-md h-10 md:h-8">
 							<Button
 								variant="ghost"
 								size="sm"
-								className="h-full px-2 rounded-none border-r hover:bg-muted"
+								className="h-full px-3 md:px-2 rounded-none border-r hover:bg-muted"
 							>
 								<svg
 									width="12"
@@ -222,7 +222,7 @@ export function MainChartCard({
 							<Button
 								variant="ghost"
 								size="sm"
-								className="h-full px-2 rounded-none hover:bg-muted text-muted-foreground"
+								className="h-full px-3 md:px-2 rounded-none hover:bg-muted text-muted-foreground"
 							>
 								<svg
 									width="12"
@@ -297,12 +297,12 @@ export function SmallChartCard({
 }: ChartCardProps) {
 	return (
 		<Card className="bg-card/50 border-border/50 backdrop-blur-sm">
-			<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-base font-medium">{title}</CardTitle>
+			<CardHeader className="flex flex-row items-center justify-between p-4 md:p-6 pb-2">
+				<CardTitle className="text-sm md:text-base font-medium">{title}</CardTitle>
 				<Info className="h-4 w-4 text-muted-foreground" />
 			</CardHeader>
-			<CardContent>
-				<div className="h-[150px] w-full mt-4">
+			<CardContent className="p-4 md:p-6 pt-0">
+				<div className="h-[120px] md:h-[150px] w-full mt-4">
 					<ResponsiveContainer width="100%" height="100%">
 						{type === "line" ? (
 							<LineChart data={data}>

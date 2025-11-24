@@ -6,7 +6,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
-type TimelineViewMode = "day" | "week" | "month";
+type TimelineViewMode = "day" | "week" | "month" | "list";
 
 type ScheduleViewStore = {
 	viewMode: TimelineViewMode;
@@ -19,8 +19,15 @@ type ScheduleViewStore = {
 	reset: () => void;
 };
 
+// Detect mobile viewport and set default view accordingly
+// List view is more mobile-friendly than day view
+const getDefaultViewMode = (): TimelineViewMode => {
+	if (typeof window === "undefined") return "day"; // SSR fallback
+	return window.innerWidth < 768 ? "list" : "day";
+};
+
 const initialState = {
-	viewMode: "day" as TimelineViewMode,
+	viewMode: getDefaultViewMode(),
 	currentDate: new Date(),
 };
 
@@ -39,7 +46,7 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 				navigatePrevious: () => {
 					const { currentDate, viewMode } = get();
 					const newDate = new Date(currentDate);
-					if (viewMode === "day") {
+					if (viewMode === "day" || viewMode === "list") {
 						newDate.setDate(newDate.getDate() - 1);
 					} else if (viewMode === "week") {
 						newDate.setDate(newDate.getDate() - 7);
@@ -52,7 +59,7 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 				navigateNext: () => {
 					const { currentDate, viewMode } = get();
 					const newDate = new Date(currentDate);
-					if (viewMode === "day") {
+					if (viewMode === "day" || viewMode === "list") {
 						newDate.setDate(newDate.getDate() + 1);
 					} else if (viewMode === "week") {
 						newDate.setDate(newDate.getDate() + 7);

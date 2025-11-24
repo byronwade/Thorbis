@@ -310,6 +310,94 @@ export async function getReceivedEmailAttachment(
 	);
 }
 
+/**
+ * Verify DNS records for a domain (for onboarding tracker)
+ */
+export async function verifyDomainDNS(domain: string): Promise<{
+	success: boolean;
+	records: Array<{
+		id: string;
+		type: string;
+		name: string;
+		value: string;
+		purpose: string;
+		verified: boolean;
+	}>;
+	error?: string;
+}> {
+	try {
+		// First, get all domains to find the one matching our domain
+		const listResult = await listResendDomains();
+
+		if (!listResult.success || !listResult.data) {
+			return {
+				success: false,
+				records: [],
+				error: "Failed to fetch domains from Resend",
+			};
+		}
+
+		// Find the domain by name
+		const domainData = listResult.data.data?.find((d) => d.name === domain);
+
+		if (!domainData) {
+			return {
+				success: false,
+				records: [],
+				error: `Domain ${domain} not found in Resend`,
+			};
+		}
+
+		// Trigger verification
+		await verifyResendDomain(domainData.id);
+
+		// Get fresh domain data after verification
+		const verifyResult = await getResendDomain(domainData.id);
+
+		if (!verifyResult.success || !verifyResult.data) {
+			return {
+				success: false,
+				records: [],
+				error: "Failed to verify domain",
+			};
+		}
+
+		// Format records for the tracker
+		const records = (verifyResult.data.records || []).map((record, index) => ({
+			id: `${record.type.toLowerCase()}-${index}`,
+			type: record.type,
+			name: record.name,
+			value: record.value,
+			purpose: getPurposeLabel(record.type),
+			verified: verifyResult.data.status === "verified",
+		}));
+
+		return {
+			success: true,
+			records,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			records: [],
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Get purpose label for DNS record type
+ */
+function getPurposeLabel(type: string): string {
+	const purposes: Record<string, string> = {
+		TXT: "SPF - Authorizes sending",
+		CNAME: "DKIM - Email signing",
+		MX: "Email routing",
+		DMARC: "DMARC - Policy",
+	};
+	return purposes[type] || "Email authentication";
+}
+
 // Re-export validation utilities for convenience
 export {
 	validateDomain,

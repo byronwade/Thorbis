@@ -7,6 +7,14 @@
 		{
 			"path": "/api/cron/verify-telnyx-webhooks",
 			"schedule": "0 9 * * *"
+		},
+		{
+			"path": "/api/cron/sync-gmail-inboxes",
+			"schedule": "0 * * * *"
+		},
+		{
+			"path": "/api/cron/cleanup-invalid-tokens",
+			"schedule": "0 3 * * *"
 		}
 	]
 }

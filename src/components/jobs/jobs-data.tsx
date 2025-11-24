@@ -17,7 +17,7 @@ export async function JobsData() {
 	return (
 		<>
 			{/* Job Stats */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			<div className="grid gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
@@ -120,8 +120,8 @@ export async function JobsData() {
 			</div>
 
 			{/* Job Management */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-				<Card className="col-span-4">
+			<div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+				<Card className="lg:col-span-4">
 					<CardHeader>
 						<CardTitle>Active Jobs</CardTitle>
 						<CardDescription>
@@ -183,15 +183,15 @@ export async function JobsData() {
 								},
 							].map((job, index) => (
 								<div
-									className="flex items-center gap-4 rounded-lg border p-4"
+									className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 rounded-lg border p-3 md:p-4"
 									key={index}
 								>
-									<div className="bg-accent flex size-12 items-center justify-center rounded-full">
-										<span className="text-sm font-medium">{job.jobId}</span>
+									<div className="bg-accent flex size-10 md:size-12 items-center justify-center rounded-full shrink-0">
+										<span className="text-xs md:text-sm font-medium">{job.jobId}</span>
 									</div>
-									<div className="flex-1 space-y-1">
-										<div className="flex items-center gap-2">
-											<p className="text-sm leading-none font-medium">
+									<div className="flex-1 space-y-1 min-w-0">
+										<div className="flex items-center gap-2 flex-wrap">
+											<p className="text-sm leading-none font-medium truncate">
 												{job.customer}
 											</p>
 											<span
@@ -226,8 +226,8 @@ export async function JobsData() {
 											{job.location}
 										</p>
 									</div>
-									<div className="text-right">
-										<p className="text-sm font-medium">{job.scheduled}</p>
+									<div className="text-left sm:text-right mt-2 sm:mt-0 shrink-0">
+										<p className="text-xs md:text-sm font-medium">{job.scheduled}</p>
 									</div>
 								</div>
 							))}
@@ -235,7 +235,7 @@ export async function JobsData() {
 					</CardContent>
 				</Card>
 
-				<Card className="col-span-3">
+				<Card className="lg:col-span-3">
 					<CardHeader>
 						<CardTitle>Job Summary</CardTitle>
 						<CardDescription>

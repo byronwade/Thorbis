@@ -2,27 +2,23 @@
  * OG Image Font Loading
  *
  * Loads Inter font for OG image generation.
- * Uses direct GitHub raw URLs for TTF fonts (next/og doesn't support WOFF2).
+ * Compatible with Edge Runtime (no Node.js APIs).
  */
 
 // Font data cache to avoid repeated fetches
 const fontCache = new Map<string, ArrayBuffer>();
 
-// Direct URLs to Inter TTF fonts from GitHub
-// Using fontsource which provides reliable TTF files
+// Font URLs (relative to public directory)
 const FONT_URLS: Record<number, string> = {
-	400: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-400-normal.woff",
-	500: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-500-normal.woff",
-	600: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-600-normal.woff",
-	700: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-700-normal.woff",
-	800: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-800-normal.woff",
+	400: "/fonts/inter-400.woff",
+	700: "/fonts/inter-700.woff",
 };
 
 /**
  * Load Inter font with specified weight
  */
 export async function loadInterFont(
-	weight: 400 | 500 | 600 | 700 | 800 = 700
+	weight: 400 | 700 = 700
 ): Promise<ArrayBuffer> {
 	const cacheKey = `inter-${weight}`;
 
@@ -32,14 +28,18 @@ export async function loadInterFont(
 
 	const fontUrl = FONT_URLS[weight];
 	if (!fontUrl) {
-		throw new Error(`No font URL for weight ${weight}`);
+		throw new Error(`No font file for weight ${weight}`);
 	}
 
 	try {
-		const response = await fetch(fontUrl);
+		// Use fetch for Edge Runtime compatibility
+		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
+		const response = await fetch(`${baseUrl}${fontUrl}`);
+
 		if (!response.ok) {
-			throw new Error(`Failed to fetch font: ${response.status}`);
+			throw new Error(`Failed to fetch font: ${response.statusText}`);
 		}
+
 		const fontData = await response.arrayBuffer();
 		fontCache.set(cacheKey, fontData);
 		return fontData;
@@ -64,6 +64,8 @@ export async function loadOGFonts(): Promise<
 	const weights = [400, 700] as const;
 
 	try {
+		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
+
 		const fonts = await Promise.all(
 			weights.map(async (weight) => {
 				const cacheKey = `inter-${weight}`;
@@ -78,10 +80,12 @@ export async function loadOGFonts(): Promise<
 				}
 
 				const fontUrl = FONT_URLS[weight];
-				const response = await fetch(fontUrl);
+				const response = await fetch(`${baseUrl}${fontUrl}`);
+
 				if (!response.ok) {
-					throw new Error(`Failed to fetch font: ${response.status}`);
+					throw new Error(`Failed to fetch font: ${response.statusText}`);
 				}
+
 				const fontData = await response.arrayBuffer();
 				fontCache.set(cacheKey, fontData);
 				return {
@@ -104,7 +108,7 @@ export async function loadOGFonts(): Promise<
  * Load a single font weight (more efficient for simple use cases)
  */
 export async function loadSingleFont(
-	weight: 400 | 500 | 600 | 700 | 800 = 700
+	weight: 400 | 700 = 700
 ): Promise<{
 	name: string;
 	data: ArrayBuffer;
@@ -123,10 +127,13 @@ export async function loadSingleFont(
 	}
 
 	const fontUrl = FONT_URLS[weight];
-	const response = await fetch(fontUrl);
+	const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
+	const response = await fetch(`${baseUrl}${fontUrl}`);
+
 	if (!response.ok) {
-		throw new Error(`Failed to fetch font: ${response.status}`);
+		throw new Error(`Failed to fetch font: ${response.statusText}`);
 	}
+
 	const fontData = await response.arrayBuffer();
 	fontCache.set(cacheKey, fontData);
 

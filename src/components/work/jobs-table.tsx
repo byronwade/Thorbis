@@ -18,9 +18,14 @@
  * - Can force with: enableVirtualization={true|false|"auto"}
  */
 
-import { Archive, Briefcase, Edit, Eye, Plus } from "lucide-react";
+import { Archive, Briefcase, Edit, Eye, FileText, Mail, Phone, Plus, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -41,6 +46,7 @@ import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import { JobStatusBadge, PriorityBadge } from "@/components/ui/status-badge";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { getCustomerDisplayName } from "@/lib/utils/customer-display";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
 type JobsTableProps = {
@@ -123,6 +129,78 @@ export function JobsTable({
 			),
 		},
 		{
+			key: "customer",
+			header: "Customer",
+			width: "w-48",
+			shrink: true,
+			hideOnMobile: true,
+			hideable: true,
+			render: (job) => {
+				const jobData = job as any; // Type assertion for customer data
+				const customer = jobData.customer || jobData.customers;
+
+				if (!customer) return <span className="text-muted-foreground text-xs">—</span>;
+
+				const customerName = getCustomerDisplayName(customer);
+
+				return (
+					<HoverCard>
+						<HoverCardTrigger asChild>
+							<Link
+								href={`/dashboard/customers/${customer.id}`}
+								onClick={(e) => e.stopPropagation()}
+								className="text-sm hover:underline hover:text-primary flex items-center gap-1.5 truncate"
+							>
+								<User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+								<span className="truncate">{customerName}</span>
+							</Link>
+						</HoverCardTrigger>
+						<HoverCardContent className="w-80" align="start">
+							<div className="space-y-3">
+								<div className="flex items-start gap-3">
+									<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full shrink-0">
+										<User className="text-primary h-5 w-5" />
+									</div>
+									<div className="flex-1 min-w-0">
+										<p className="font-semibold text-sm">{customerName}</p>
+										{customer.company_name && (
+											<p className="text-muted-foreground text-xs">{customer.company_name}</p>
+										)}
+									</div>
+								</div>
+								<div className="space-y-2">
+									{customer.email && (
+										<div className="flex items-center gap-2 text-xs">
+											<Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+											<a
+												href={`mailto:${customer.email}`}
+												className="text-primary hover:underline truncate"
+												onClick={(e) => e.stopPropagation()}
+											>
+												{customer.email}
+											</a>
+										</div>
+									)}
+									{customer.phone && (
+										<div className="flex items-center gap-2 text-xs">
+											<Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+											<a
+												href={`tel:${customer.phone}`}
+												className="text-primary hover:underline"
+												onClick={(e) => e.stopPropagation()}
+											>
+												{customer.phone}
+											</a>
+										</div>
+									)}
+								</div>
+							</div>
+						</HoverCardContent>
+					</HoverCard>
+				);
+			},
+		},
+		{
 			key: "status",
 			header: "Status",
 			width: "w-32",
@@ -186,6 +264,12 @@ export function JobsTable({
 							label: "Edit Job",
 							icon: Edit,
 							href: `/dashboard/work/${job.id}/edit`,
+						},
+						{
+							label: "Create Invoice",
+							icon: FileText,
+							href: `/dashboard/work/invoices/new?jobId=${job.id}`,
+							separatorBefore: true,
 						},
 						{
 							label: "Archive Job",

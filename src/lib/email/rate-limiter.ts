@@ -180,12 +180,13 @@ export async function getCompanyActiveDomain(companyId: string): Promise<{
 	domainId: string;
 	domain: string;
 	isPlatformSubdomain: boolean;
+	replyToEmail: string | null;
 } | null> {
 	const supabase = await createServiceSupabaseClient();
 
 	const { data, error } = await supabase
 		.from("company_email_domains")
-		.select("id, domain_name, is_platform_subdomain")
+		.select("id, domain_name, is_platform_subdomain, reply_to_email")
 		.eq("company_id", companyId)
 		.eq("sending_enabled", true)
 		.eq("is_suspended", false)
@@ -203,6 +204,7 @@ export async function getCompanyActiveDomain(companyId: string): Promise<{
 		domainId: data.id,
 		domain: data.domain_name,
 		isPlatformSubdomain: data.is_platform_subdomain || false,
+		replyToEmail: data.reply_to_email,
 	};
 }
 

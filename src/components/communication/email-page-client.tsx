@@ -9,6 +9,7 @@ import {
 	markEmailAsReadAction,
 	toggleSpamEmailAction,
 	toggleStarEmailAction,
+	retryFailedEmailAction,
 } from "@/actions/email-actions";
 import { CustomerInfoPill } from "@/components/communication/customer-info-pill";
 import { EmailContent } from "@/components/communication/email-content";
@@ -23,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import {
 	AlertTriangle,
 	Archive,
+	ArrowLeft,
 	CheckCheck,
 	ChevronRight,
 	Download,
@@ -42,6 +44,7 @@ import {
 	Star,
 	StickyNote,
 	Trash2,
+	User,
 	X
 } from "lucide-react";
 import {
@@ -73,7 +76,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getCustomerDisplayName } from "@/lib/utils/customer-display";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { USER_ROLES } from "@/types/roles";
@@ -129,6 +134,7 @@ export function EmailPageClient({
 	const [notesOpen, setNotesOpen] = useState(false);
 	const [emailNotes, setEmailNotes] = useState<string>("");
 	const [archiveAllDialogOpen, setArchiveAllDialogOpen] = useState(false);
+	const [retrying, setRetrying] = useState(false);
 	const role = useRoleStore((state) => state.role);
 	const isOwner = role === USER_ROLES.OWNER || role === USER_ROLES.ADMIN;
 
@@ -667,7 +673,12 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement('a');
 		link.href = url;
-		link.download = `${(selectedEmail.subject || 'email').replace(/[^a-z0-9]/gi, '_').slice(0, 50)}.eml`;
+		// Safely sanitize filename - replace non-alphanumeric chars, handle empty/invalid subjects
+		const safeSubject = (selectedEmail.subject || 'email')
+			.replace(/[^a-z0-9\s-]/gi, '_')
+			.replace(/\s+/g, '_')
+			.slice(0, 50) || 'email';
+		link.download = `${safeSubject}.eml`;
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
@@ -700,32 +711,71 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 		}
 	}, [fetchEmails, selectedEmail, folder, router]);
 
+	const handleRetry = useCallback(async (emailId: string) => {
+		if (!emailId) return;
+
+		setRetrying(true);
+		try {
+			const result = await retryFailedEmailAction(emailId);
+
+			if (result.success) {
+				toast.success("Email sent successfully!");
+				// Refresh emails to get updated status
+				fetchEmails(true);
+			} else {
+				toast.error("Failed to send email", {
+					description: result.error || "Please try again later",
+				});
+			}
+		} catch (err) {
+			console.error("Failed to retry email:", err);
+			toast.error("Failed to send email", {
+				description: err instanceof Error ? err.message : "Unknown error occurred",
+			});
+		} finally {
+			setRetrying(false);
+		}
+	}, [fetchEmails]);
+
+	// Mobile: show list when no email selected, show detail when email selected
+	// Desktop: always show both panels side by side
+	const showListOnMobile = !selectedEmail && !composeMode;
+	const showDetailOnMobile = selectedEmail || composeMode;
+
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden bg-sidebar">
-			<div className="flex flex-1 overflow-hidden min-h-0 gap-2">
-				{/* Email List Panel */}
-				<div className="bg-card mb-1 w-full md:w-[400px] lg:w-[480px] shadow-sm lg:h-full lg:shadow-sm flex flex-col rounded-tr-2xl overflow-hidden">
+			<div className="flex flex-1 overflow-hidden min-h-0 md:gap-2">
+				{/* Email List Panel - Hidden on mobile when email is selected */}
+				<div className={cn(
+					"bg-card mb-1 shadow-sm flex flex-col overflow-hidden",
+					"w-full h-full", // Mobile: full width/height
+					"md:w-[400px] lg:w-[480px] md:rounded-tr-2xl", // Desktop: fixed width with rounded corner
+					// Mobile visibility logic
+					showListOnMobile ? "flex" : "hidden md:flex"
+				)}>
 					<div className="w-full h-full flex flex-col">
 						<div className="sticky top-0 z-15 flex items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
 							<div className="w-full">
 								<div className="grid grid-cols-12 gap-2 mt-1">
 									<div className="col-span-12 flex gap-2">
+										{/* Sidebar toggle - larger on mobile for touch */}
 										<Button
 											variant="ghost"
 											size="sm"
 											onClick={toggleSidebar}
-											className="h-8 w-8 p-0 shrink-0"
+											className="h-10 w-10 p-0 md:h-8 md:w-8 shrink-0"
 											title="Toggle sidebar"
 										>
-											<PanelLeft className="h-4 w-4 text-muted-foreground" />
+											<PanelLeft className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
 										</Button>
 										<div className="relative flex-1">
+											{/* Search input - text-base on mobile to prevent iOS zoom */}
 											<Input
 												type="search"
 												placeholder="Search emails..."
 												value={searchInput}
 												onChange={(e) => setSearchInput(e.target.value)}
-												className="h-8 pl-9 pr-20 border-input bg-white dark:bg-[#141414] dark:border-none"
+												className="h-10 md:h-8 pl-9 pr-20 text-base md:text-sm border-input bg-white dark:bg-[#141414] dark:border-none"
 											/>
 											<svg
 												width="10"
@@ -755,10 +805,10 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 											size="sm"
 											onClick={handleRefresh}
 											disabled={refreshing}
-											className="h-8 w-8 p-0"
+											className="h-10 w-10 p-0 md:h-8 md:w-8"
 											title="Refresh"
 										>
-											<RefreshCw className={`h-4 w-4 text-muted-foreground ${refreshing ? 'animate-spin' : ''}`} />
+											<RefreshCw className={`h-5 w-5 md:h-4 md:w-4 text-muted-foreground ${refreshing ? 'animate-spin' : ''}`} />
 										</Button>
 										{/* Archive All - Owner only, icon button with confirmation dialog */}
 										{isOwner && folder !== "archive" && emails?.emails && emails.emails.length > 0 && (
@@ -882,7 +932,10 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 																					<span className="font-bold text-md flex items-baseline gap-1 group-hover:opacity-100">
 																						<div className="flex items-center gap-1">
 																							<span className="line-clamp-1 overflow-hidden text-sm">
-																								{email.from_address || email.from_name || "Unknown"}
+																								{email.direction === "outbound"
+																									? (email.to_address || "Unknown recipient")
+																									: (email.from_name || email.from_address || "Unknown sender")
+																								}
 																							</span>
 																							{!email.read_at && (
 																								<span className="ml-0.5 size-2 rounded-full bg-[#006FFE]"></span>
@@ -895,10 +948,51 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 																				</p>
 																			</div>
 
-																			<div className="flex justify-between">
-																				<p className="mt-1 line-clamp-1 w-[95%] min-w-0 overflow-hidden text-sm text-[#8C8C8C]">
+																			<div className="flex justify-between items-center gap-2">
+																				<p className="mt-1 line-clamp-1 min-w-0 overflow-hidden text-sm text-[#8C8C8C] flex-1">
 																					{email.subject || "No subject"}
 																				</p>
+																				{/* Status badges */}
+																				<div className="flex items-center gap-1 shrink-0">
+																					{/* Customer link badge */}
+																					{email.customer?.id && (
+																						<Link
+																							href={`/dashboard/customers/${email.customer.id}`}
+																							onClick={(e) => e.stopPropagation()}
+																							className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-0.5"
+																							title={`View ${getCustomerDisplayName(email.customer)} profile`}
+																						>
+																							<User className="h-2.5 w-2.5" />
+																							<span className="hidden sm:inline">
+																								{getCustomerDisplayName(email.customer)}
+																							</span>
+																						</Link>
+																					)}
+																					{email.status === "draft" && (
+																						<span className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground">
+																							Draft
+																						</span>
+																					)}
+																					{email.status === "failed" && (
+																						<Tooltip>
+																							<TooltipTrigger asChild>
+																								<span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/10 text-destructive cursor-help flex items-center gap-0.5">
+																									<AlertTriangle className="h-2.5 w-2.5" />
+																									Failed
+																								</span>
+																							</TooltipTrigger>
+																							<TooltipContent>
+																								<p className="font-medium">Email failed to send</p>
+																								<p className="text-xs text-muted-foreground mt-1">Click email to retry or view details</p>
+																							</TooltipContent>
+																						</Tooltip>
+																					)}
+																					{email.direction === "outbound" && email.status !== "draft" && email.status !== "failed" && (
+																						<span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-600">
+																							Sent
+																						</span>
+																					)}
+																				</div>
 																			</div>
 																		</div>
 																	</div>
@@ -937,8 +1031,14 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 				</div>
 
 				{/* Right Panel - Email Composer OR Email Detail */}
+			{/* Mobile: shown when email selected or compose mode, Desktop: always visible as flex-1 */}
 				{composeMode ? (
-					<div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
+					<div className={cn(
+						"bg-card mb-1 shadow-sm flex flex-col min-w-0 overflow-hidden",
+						"w-full h-full", // Mobile: full width/height
+						"md:rounded-tl-2xl md:flex-1", // Desktop: rounded corner and flex
+						showDetailOnMobile ? "flex" : "hidden md:flex"
+					)}>
 						<EmailFullComposer
 							companyId={companyId}
 							onClose={() => setComposeMode(false)}
@@ -950,39 +1050,54 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 						/>
 					</div>
 				) : selectedEmail ? (
-					<div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
+					<div className={cn(
+						"bg-card mb-1 shadow-sm flex flex-col min-w-0 overflow-hidden",
+						"w-full h-full", // Mobile: full width/height
+						"md:rounded-tl-2xl md:flex-1", // Desktop: rounded corner and flex
+						showDetailOnMobile ? "flex" : "hidden md:flex"
+					)}>
 						<div className="relative flex-1 min-h-0 flex flex-col">
 							<div className="bg-card relative flex flex-col overflow-hidden transition-all duration-300 h-full flex-1 min-h-0">
 								{/* Email Header Toolbar */}
 								<div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
 									<div className="flex flex-1 items-center gap-2">
+										{/* Back button (mobile) / Close button (desktop) */}
 										<Button
 											variant="ghost"
 											size="sm"
 											onClick={() => {
+												setSelectedEmail(null);
+												setEmailContent(null);
+												selectedEmailRef.current = null;
 												const params = new URLSearchParams();
 												if (folder && folder !== "inbox") params.set("folder", folder);
 												router.push(`/dashboard/communication/email?${params.toString()}`, { scroll: false });
 											}}
-											className="h-8 w-8 p-0"
+											className="h-10 w-10 p-0 md:h-8 md:w-8"
+											title="Back to list"
 										>
-											<X className="h-4 w-4 text-muted-foreground" />
+											{/* Arrow on mobile, X on desktop */}
+											<ArrowLeft className="h-5 w-5 md:hidden text-muted-foreground" />
+											<X className="h-4 w-4 hidden md:block text-muted-foreground" />
 										</Button>
-										<Separator orientation="vertical" className="h-4 bg-border/60" />
+										<Separator orientation="vertical" className="h-4 bg-border/60 hidden md:block" />
 									</div>
 									<div className="flex items-center gap-1">
+										{/* Reply all - hidden text on mobile */}
 										<Button
 											variant="ghost"
 											size="sm"
-											className="h-8 px-2"
+											className="h-10 w-10 p-0 md:h-8 md:w-auto md:px-2"
 											onClick={() => setReplyMode("reply-all")}
+											title="Reply all"
 										>
-											<ReplyAll className="h-4 w-4 mr-1.5 text-muted-foreground" />
-											<span className="text-sm leading-none font-medium">Reply all</span>
+											<ReplyAll className="h-5 w-5 md:h-4 md:w-4 md:mr-1.5 text-muted-foreground" />
+											<span className="text-sm leading-none font-medium hidden md:inline">Reply all</span>
 										</Button>
+										{/* Notes - hidden on mobile, accessible via more menu */}
 										<Sheet open={notesOpen} onOpenChange={setNotesOpen}>
 											<SheetTrigger asChild>
-												<Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Notes">
+												<Button variant="ghost" size="sm" className="h-10 w-10 p-0 md:h-8 md:w-8 hidden md:flex" title="Notes">
 													<StickyNote className="h-4 w-4 text-muted-foreground" />
 												</Button>
 											</SheetTrigger>
@@ -1011,24 +1126,26 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 												</div>
 											</SheetContent>
 										</Sheet>
+										{/* Star - visible on all sizes */}
 										<Button
 											variant="ghost"
 											size="sm"
-											className="h-8 w-8 p-0 group/star"
+											className="h-10 w-10 p-0 md:h-8 md:w-8 group/star"
 											title={selectedEmail?.tags?.includes("starred") ? "Unstar" : "Star"}
 											onClick={() => selectedEmail && handleStar(selectedEmail.id)}
 										>
 											<Star className={cn(
-												"h-4 w-4 transition-colors group-hover/star:text-yellow-500",
+												"h-5 w-5 md:h-4 md:w-4 transition-colors group-hover/star:text-yellow-500",
 												selectedEmail?.tags?.includes("starred")
 													? "fill-yellow-500 text-yellow-500"
 													: "text-muted-foreground"
 											)} />
 										</Button>
+										{/* Spam - hidden on mobile, in more menu */}
 										<Button
 											variant="ghost"
 											size="sm"
-											className="h-8 w-8 p-0 group/spam"
+											className="h-10 w-10 p-0 md:h-8 md:w-8 hidden md:flex group/spam"
 											title={selectedEmail?.category === "spam" ? "Not spam" : "Spam"}
 											onClick={() => selectedEmail && handleToggleSpam(selectedEmail.id)}
 										>
@@ -1039,22 +1156,40 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 													: "text-muted-foreground"
 											)} />
 										</Button>
+										{/* Archive - visible on all sizes */}
 										<Button
 											variant="destructive"
 											size="sm"
-											className="h-8 w-8 p-0"
+											className="h-10 w-10 p-0 md:h-8 md:w-8"
 											title="Archive"
 											onClick={() => selectedEmail && handleArchive(selectedEmail.id)}
 										>
-											<Archive className="h-4 w-4" />
+											<Archive className="h-5 w-5 md:h-4 md:w-4" />
 										</Button>
+										{/* More menu */}
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
-												<Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="More">
-													<MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+												<Button variant="ghost" size="sm" className="h-10 w-10 p-0 md:h-8 md:w-8" title="More">
+													<MoreHorizontal className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
 												</Button>
 											</DropdownMenuTrigger>
 											<DropdownMenuContent align="end" className="w-48">
+												{/* Mobile-only options */}
+												<DropdownMenuItem
+													onClick={() => selectedEmail && handleToggleSpam(selectedEmail.id)}
+													className="md:hidden"
+												>
+													<Flag className="h-4 w-4 mr-2" />
+													{selectedEmail?.category === "spam" ? "Not spam" : "Mark as spam"}
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() => setNotesOpen(true)}
+													className="md:hidden"
+												>
+													<StickyNote className="h-4 w-4 mr-2" />
+													Notes
+												</DropdownMenuItem>
+												<DropdownMenuSeparator className="md:hidden" />
 												<DropdownMenuItem onClick={handlePrintEmail}>
 													<Printer className="h-4 w-4 mr-2" />
 													Print
@@ -1225,7 +1360,7 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 											</div>
 
 											{/* Reply Composer or Action Bar */}
-											<div className="px-2 py-4">
+											<div className="px-2 py-4 pb-safe">
 												{replyMode ? (
 													<EmailReplyComposer
 														mode={replyMode}
@@ -1237,18 +1372,70 @@ ${emailContent?.html || selectedEmail.body_html || '<p>No content</p>'}
 															fetchEmails(true);
 														}}
 													/>
+												) : selectedEmail.status === "failed" ? (
+													<div className="flex items-center gap-2 flex-wrap">
+														{/* Retry button for failed emails */}
+														<Button
+															variant="default"
+															size="sm"
+															className="h-11 px-4 flex-1 md:flex-none md:h-9"
+															onClick={() => handleRetry(selectedEmail.id)}
+															disabled={retrying}
+														>
+															{retrying ? (
+																<>
+																	<Loader2 className="h-5 w-5 md:h-4 md:w-4 mr-2 animate-spin" />
+																	Sending...
+																</>
+															) : (
+																<>
+																	<RefreshCw className="h-5 w-5 md:h-4 md:w-4 mr-2" />
+																	Retry Send
+																</>
+															)}
+														</Button>
+														{/* Show failure reason if available */}
+														{selectedEmail.failure_reason && (
+															<div className="w-full flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+																<AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+																<div className="flex-1 min-w-0">
+																	<p className="text-sm font-medium text-destructive">Failed to send</p>
+																	<p className="text-xs text-muted-foreground mt-0.5">{selectedEmail.failure_reason}</p>
+																</div>
+															</div>
+														)}
+													</div>
 												) : (
-													<div className="flex items-center gap-2">
-														<Button variant="default" size="sm" className="h-9 px-4" onClick={() => setReplyMode("reply")}>
-															<Reply className="h-4 w-4 mr-2" />
+													<div className="flex items-center gap-2 flex-wrap">
+														{/* Reply - primary action, larger on mobile */}
+														<Button
+															variant="default"
+															size="sm"
+															className="h-11 px-4 flex-1 md:flex-none md:h-9"
+															onClick={() => setReplyMode("reply")}
+														>
+															<Reply className="h-5 w-5 md:h-4 md:w-4 mr-2" />
 															Reply
 														</Button>
-														<Button variant="outline" size="sm" className="h-9 px-4" onClick={() => setReplyMode("reply-all")}>
-															<ReplyAll className="h-4 w-4 mr-2" />
-															Reply All
+														{/* Reply All - secondary on mobile */}
+														<Button
+															variant="outline"
+															size="sm"
+															className="h-11 px-3 flex-1 md:flex-none md:h-9 md:px-4"
+															onClick={() => setReplyMode("reply-all")}
+														>
+															<ReplyAll className="h-5 w-5 md:h-4 md:w-4 mr-2" />
+															<span className="hidden xs:inline">Reply All</span>
+															<span className="xs:hidden">All</span>
 														</Button>
-														<Button variant="outline" size="sm" className="h-9 px-4" onClick={() => setReplyMode("forward")}>
-															<Forward className="h-4 w-4 mr-2" />
+														{/* Forward - secondary on mobile */}
+														<Button
+															variant="outline"
+															size="sm"
+															className="h-11 px-3 flex-1 md:flex-none md:h-9 md:px-4"
+															onClick={() => setReplyMode("forward")}
+														>
+															<Forward className="h-5 w-5 md:h-4 md:w-4 mr-2" />
 															Forward
 														</Button>
 													</div>

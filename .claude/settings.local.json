@@ -171,7 +171,9 @@
       "Bash(timeout 60 npx tsc:*)",
       "Bash(timeout 30 npx tsc:*)",
       "mcp__supabase__get_project_url",
-      "Bash(timeout 120 npx knip:*)"
+      "Bash(timeout 120 npx knip:*)",
+      "Bash(perl -i -pe:*)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []

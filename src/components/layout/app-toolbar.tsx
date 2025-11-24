@@ -85,14 +85,16 @@ export function AppToolbar({
 	// Parse actions into structured groups
 	const actionGroups = parseActions(config.actions);
 
-	return (
-		<header
-			className="bg-background/80 sticky top-0 z-40 flex w-full shrink-0 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
-			data-app-toolbar
-			data-app-toolbar-scope={scope}
-		>
-			{/* Desktop/Tablet Layout */}
-			<div className="hidden md:flex h-14 w-full items-center gap-3 px-6">
+	// If hideOnMobile is true, don't render on mobile
+	if (config.hideOnMobile) {
+		return (
+			<header
+				className="bg-background/80 sticky top-0 z-40 hidden w-full shrink-0 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 md:flex"
+				data-app-toolbar
+				data-app-toolbar-scope={scope}
+			>
+				{/* Desktop/Tablet Layout */}
+				<div className="flex h-14 w-full items-center gap-3 px-6">
 				{/* Left Section: Navigation + Context */}
 				<div className="flex items-center gap-3 min-w-0 flex-1">
 					{/* Navigation */}
@@ -214,9 +216,18 @@ export function AppToolbar({
 					<OfflineIndicator />
 				</div>
 			</div>
+			</header>
+		);
+	}
 
-			{/* Mobile Layout */}
-			<div className="flex md:hidden h-14 w-full items-center gap-2 px-6">
+	return (
+		<header
+			className="bg-background/80 sticky top-0 z-40 flex w-full shrink-0 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
+			data-app-toolbar
+			data-app-toolbar-scope={scope}
+		>
+			{/* Desktop/Tablet Layout */}
+			<div className="hidden md:flex h-14 w-full items-center gap-3 px-6">
 				{/* Left: Sidebar + Title */}
 				<div className="flex items-center gap-2 min-w-0 flex-1">
 					{showLeftSidebar && <SidebarTrigger className="-ml-1" />}

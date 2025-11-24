@@ -1,3 +1,30 @@
+/**
+ * Company Domain Email Sender
+ *
+ * CRITICAL RULE - Reply-To Addresses:
+ * ====================================
+ * Reply-to ALWAYS uses the platform subdomain (mail.thorbis.com), regardless of:
+ * - Which email provider is used (platform, custom domain, Gmail)
+ * - What the FROM address is
+ * - Whether they have a custom domain or not
+ *
+ * Examples:
+ * - FROM: notifications@acme-plumbing.com (custom domain)
+ *   REPLY-TO: support@acme-plumbing.mail.thorbis.com (platform subdomain)
+ *
+ * - FROM: john@gmail.com (personal Gmail)
+ *   REPLY-TO: support@acme-plumbing.mail.thorbis.com (platform subdomain)
+ *
+ * - FROM: notifications@acme-plumbing.mail.thorbis.com (platform subdomain)
+ *   REPLY-TO: support@acme-plumbing.mail.thorbis.com (same platform subdomain)
+ *
+ * Why?
+ * - Centralizes all replies to one inbox per company
+ * - Prevents replies going to custom domains or personal emails
+ * - Each company controls their reply-to prefix (support@, help@, etc.)
+ * - Stored in company_email_domains.reply_to_email
+ */
+
 import { Resend } from "resend";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -42,7 +69,12 @@ async function getCompanyVerifiedDomain(
 		.select("*")
 		.eq("company_id", companyId)
 		.eq("status", "verified")
-		.single();
+		.eq("sending_enabled", true)
+		.eq("is_suspended", false)
+		.order("is_platform_subdomain", { ascending: true }) // Prefer custom domains for FROM
+		.order("created_at", { ascending: false })
+		.limit(1)
+		.maybeSingle();
 
 	if (!domain) {
 		return null;
@@ -60,6 +92,42 @@ async function getCompanyVerifiedDomain(
 		sending_addresses: domain.sending_addresses || [],
 		reply_to_email: domain.reply_to_email,
 	};
+}
+
+/**
+ * Get the company's platform subdomain for reply-to
+ * Reply-to ALWAYS uses the platform subdomain (mail.thorbis.com)
+ * This ensures replies are isolated per company, never using custom domains
+ */
+async function getCompanyPlatformReplyTo(
+	companyId: string,
+): Promise<string | null> {
+	const supabase = await createServiceSupabaseClient();
+
+	if (!supabase) {
+		return null;
+	}
+
+	// Get the platform subdomain for this company
+	const { data: platformDomain } = await supabase
+		.from("company_email_domains")
+		.select("domain_name, reply_to_email")
+		.eq("company_id", companyId)
+		.eq("is_platform_subdomain", true)
+		.eq("status", "verified")
+		.maybeSingle();
+
+	if (!platformDomain) {
+		return null;
+	}
+
+	// Use configured reply-to if set, otherwise default to support@
+	if (platformDomain.reply_to_email) {
+		return platformDomain.reply_to_email;
+	}
+
+	// Default: support@{company}.mail.thorbis.com
+	return `support@${platformDomain.domain_name}`;
 }
 
 /**
@@ -114,7 +182,7 @@ export async function sendCompanyEmail({
 	}>;
 	communicationId?: string;
 }) {
-	// 1. Get company's verified domain
+	// 1. Get company's verified domain (for FROM address)
 	const domain = await getCompanyVerifiedDomain(companyId);
 
 	if (!domain) {
@@ -126,9 +194,11 @@ export async function sendCompanyEmail({
 	// 2. Get appropriate sending address
 	const fromAddress = getSendingAddress(domain, type, companyName);
 
-	// 3. Use company's reply-to email if configured, otherwise use domain email
-	const replyToAddress =
-		replyTo || domain.reply_to_email || `office@${domain.full_domain}`;
+	// 3. Get reply-to from platform subdomain (NEVER custom domain)
+	// Reply-to ALWAYS uses mail.thorbis.com, even when FROM uses a custom domain
+	// This ensures all replies are centralized to the company's platform subdomain
+	const platformReplyTo = await getCompanyPlatformReplyTo(companyId);
+	const replyToAddress = replyTo || platformReplyTo || `support@${domain.full_domain}`;
 
 	// 4. Add email tracking if communicationId is provided
 	let trackedHtml = html;

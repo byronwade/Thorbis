@@ -91,6 +91,10 @@ export function RecipientAutocomplete({
 	const [loading, setLoading] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isPending, startTransition] = useTransition();
+	const [isReadOnly, setIsReadOnly] = useState(true);
+
+	// Generate a stable random name to prevent browser pattern recognition
+	const randomInputName = useMemo(() => `recipient-${Math.random().toString(36).slice(2)}`, []);
 
 	// Filter out already selected recipients
 	const selectedEmails = useMemo(
@@ -110,51 +114,61 @@ export function RecipientAutocomplete({
 			setLoading(true);
 			startTransition(async () => {
 				try {
-					// Search customers
-					const customersResult = await searchCustomers(inputValue, { limit: 5 });
-					if (customersResult.success && customersResult.data) {
-						const customerArray = Array.isArray(customersResult.data)
-							? customersResult.data
-							: [customersResult.data];
+					// Search customers with error handling
+					try {
+						const customersResult = await searchCustomers(inputValue, { limit: 5 });
+						if (customersResult.success && customersResult.data) {
+							const customerArray = Array.isArray(customersResult.data)
+								? customersResult.data
+								: [customersResult.data];
 
-						const mapped = customerArray
-							.filter((c: any) => c.email && !selectedEmails.has(c.email.toLowerCase()))
-							.map((c: any) => ({
-								id: c.id,
-								type: "customer" as const,
-								name:
-									c.display_name ||
-									`${c.first_name || ""} ${c.last_name || ""}`.trim() ||
-									"Customer",
-								email: c.email,
-								subtitle: c.company_name || undefined,
-							}));
-						setCustomers(mapped);
-					} else {
+							const mapped = customerArray
+								.filter((c: any) => c.email && !selectedEmails.has(c.email.toLowerCase()))
+								.map((c: any) => ({
+									id: c.id,
+									type: "customer" as const,
+									name:
+										c.display_name ||
+										`${c.first_name || ""} ${c.last_name || ""}`.trim() ||
+										"Customer",
+									email: c.email,
+									subtitle: c.company_name || undefined,
+								}));
+							setCustomers(mapped);
+						} else {
+							setCustomers([]);
+						}
+					} catch (customerError) {
+						// Silently handle customer search errors - user can still use custom email
 						setCustomers([]);
 					}
 
-					// Search vendors
-					const vendorsResult = await searchVendors(inputValue);
-					if (vendorsResult.success && vendorsResult.data) {
-						const vendorArray = Array.isArray(vendorsResult.data)
-							? vendorsResult.data
-							: [vendorsResult.data];
+					// Search vendors with error handling
+					try {
+						const vendorsResult = await searchVendors(inputValue);
+						if (vendorsResult.success && vendorsResult.data) {
+							const vendorArray = Array.isArray(vendorsResult.data)
+								? vendorsResult.data
+								: [vendorsResult.data];
 
-						const mapped = vendorArray
-							.filter((v: any) => v.email && !selectedEmails.has(v.email.toLowerCase()))
-							.map((v: any) => ({
-								id: v.id,
-								type: "vendor" as const,
-								name: v.display_name || v.name,
-								email: v.email,
-							}));
-						setVendors(mapped);
-					} else {
+							const mapped = vendorArray
+								.filter((v: any) => v.email && !selectedEmails.has(v.email.toLowerCase()))
+								.map((v: any) => ({
+									id: v.id,
+									type: "vendor" as const,
+									name: v.display_name || v.name,
+									email: v.email,
+								}));
+							setVendors(mapped);
+						} else {
+							setVendors([]);
+						}
+					} catch (vendorError) {
+						// Silently handle vendor search errors - user can still use custom email
 						setVendors([]);
 					}
 				} catch (error) {
-					console.error("Error searching recipients:", error);
+					// General error handler
 					setCustomers([]);
 					setVendors([]);
 				} finally {
@@ -230,6 +244,19 @@ export function RecipientAutocomplete({
 		return groups;
 	}, [inputValue, customers, vendors, recentRecipients, selectedEmails]);
 
+	// Check if input is a valid email
+	const isValidEmail = useMemo(() => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(inputValue.trim());
+	}, [inputValue]);
+
+	// Show custom email option whenever user is typing (primary feature)
+	const showCustomEmailOption = useMemo(() => {
+		const trimmedInput = inputValue.trim();
+		// Show if there's any input and it's not already selected
+		return trimmedInput.length > 0 && !selectedEmails.has(trimmedInput.toLowerCase());
+	}, [inputValue, selectedEmails]);
+
 	// Flatten suggestions for keyboard navigation
 	const flatSuggestions = useMemo(
 		() => suggestionGroups.flatMap((g) => g.suggestions || []),
@@ -246,7 +273,7 @@ export function RecipientAutocomplete({
 			};
 
 			if (!selectedEmails.has(newRecipient.email.toLowerCase())) {
-				onChange([...value, newRecipient]);
+				onChange([...(value || []), newRecipient]);
 			}
 
 			setInputValue("");
@@ -256,6 +283,23 @@ export function RecipientAutocomplete({
 		},
 		[value, onChange, selectedEmails]
 	);
+
+	const addCustomEmail = useCallback(() => {
+		const email = inputValue.trim();
+
+		// Validate email format when adding
+		if (!isValidEmail) {
+			// Could show a toast error here if desired
+			return;
+		}
+
+		addRecipient({
+			id: `custom-${email}`,
+			type: "custom",
+			name: email,
+			email: email,
+		});
+	}, [inputValue, isValidEmail, addRecipient]);
 
 	const removeRecipient = useCallback(
 		(email: string) => {
@@ -376,7 +420,7 @@ export function RecipientAutocomplete({
 						)}
 					>
 						{getTypeIcon(recipient.type)}
-						<span className="max-w-[120px] truncate">{recipient.name}</span>
+						<span className="max-w-[120px] truncate">{recipient.name || recipient.email}</span>
 						<button
 							type="button"
 							onClick={(e) => {
@@ -390,19 +434,51 @@ export function RecipientAutocomplete({
 					</div>
 				))}
 
-				{/* Input */}
+				{/* Input with anti-autocomplete techniques */}
 				<div className="flex-1 min-w-[140px] flex items-center gap-1.5">
 					<Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-					<input
-						ref={inputRef}
-						type="text"
-						value={inputValue}
-						onChange={(e) => setInputValue(e.target.value)}
-						onFocus={() => setIsFocused(true)}
-						onKeyDown={handleKeyDown}
-						placeholder={(value || []).length === 0 ? placeholder : "Add more..."}
-						className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-					/>
+					<form autoComplete="off" onSubmit={(e) => e.preventDefault()} className="flex-1">
+						{/* Hidden decoy input to catch autocomplete */}
+						<input
+							type="text"
+							name="decoy"
+							autoComplete="off"
+							tabIndex={-1}
+							style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}
+							aria-hidden="true"
+						/>
+						<input
+							ref={inputRef}
+							type="text"
+							value={inputValue}
+							onChange={(e) => setInputValue(e.target.value)}
+							onFocus={() => {
+								setIsFocused(true);
+								// Remove readonly on focus to allow typing
+								setIsReadOnly(false);
+							}}
+							onBlur={() => {
+								// Re-enable readonly when not focused
+								setTimeout(() => setIsReadOnly(true), 100);
+							}}
+							onKeyDown={handleKeyDown}
+							placeholder={(value || []).length === 0 ? placeholder : "Add more..."}
+							className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground w-full"
+							autoComplete="chrome-off"
+							autoCorrect="off"
+							autoCapitalize="off"
+							spellCheck="false"
+							data-form-type="other"
+							data-lpignore="true"
+							data-1p-ignore="true"
+							role="combobox"
+							aria-autocomplete="list"
+							aria-expanded={showDropdown}
+							aria-controls="recipient-suggestions"
+							name={randomInputName}
+							readOnly={isReadOnly}
+						/>
+					</form>
 				</div>
 			</div>
 
@@ -417,7 +493,44 @@ export function RecipientAutocomplete({
 							</div>
 						)}
 
-						{!loading && suggestionGroups.length === 0 && inputValue.trim().length >= 2 && (
+						{/* Add Custom Email Option - Always show at TOP while typing */}
+						{showCustomEmailOption && (
+							<>
+								<div className="p-1.5">
+									<button
+										type="button"
+										onClick={addCustomEmail}
+										disabled={!isValidEmail}
+										className={cn(
+											"flex items-center gap-2 w-full px-2 py-2 text-left rounded-md transition-colors",
+											isValidEmail
+												? "hover:bg-accent cursor-pointer"
+												: "opacity-60 cursor-not-allowed"
+										)}
+									>
+										<div className={cn(
+											"flex items-center justify-center h-7 w-7 shrink-0 rounded-full",
+											isValidEmail ? "bg-blue-500/10" : "bg-muted"
+										)}>
+											<Mail className={cn(
+												"h-4 w-4",
+												isValidEmail ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground"
+											)} />
+										</div>
+										<div className="flex-1 min-w-0">
+											<div className="text-sm font-medium">Add "{inputValue.trim()}"</div>
+											<div className="text-xs text-muted-foreground">
+												{isValidEmail ? "Use this email address" : "Enter a valid email address"}
+											</div>
+										</div>
+										<Plus className="h-4 w-4 text-muted-foreground shrink-0" />
+									</button>
+								</div>
+								{(suggestionGroups.length > 0 || loading) && <Separator />}
+							</>
+						)}
+
+						{!loading && suggestionGroups.length === 0 && inputValue.trim().length >= 2 && !showCustomEmailOption && (
 							<div className="px-3 py-4 text-center">
 								<p className="text-sm text-muted-foreground">No results found</p>
 								<p className="text-xs text-muted-foreground/70 mt-1">
@@ -429,7 +542,7 @@ export function RecipientAutocomplete({
 						{/* Quick Actions when no search */}
 						{!loading && inputValue.trim().length < 2 && suggestionGroups.length === 0 && (
 							<div className="p-2">
-								<p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+								<p className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
 									Quick Add
 								</p>
 								<div className="space-y-0.5">
@@ -471,8 +584,8 @@ export function RecipientAutocomplete({
 								<div key={group.id}>
 									{groupIndex > 0 && <Separator />}
 									<div className="p-1.5">
-										<div className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-											{group.icon}
+										<div className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
+											<span className="opacity-70">{group.icon}</span>
 											{group.label}
 										</div>
 										<div className="space-y-0.5">

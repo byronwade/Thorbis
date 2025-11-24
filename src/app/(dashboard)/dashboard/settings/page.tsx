@@ -68,12 +68,12 @@ async function SettingsData({ searchParams }: PageProps) {
 	);
 
 	return (
-		<div className="space-y-12">
-			<header className="space-y-6">
+		<div className="space-y-8 md:space-y-12 p-4 md:p-6">
+			<header className="space-y-4 md:space-y-6">
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
-						<h1 className="text-4xl font-bold tracking-tight">Settings</h1>
-						<p className="text-muted-foreground">
+						<h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Settings</h1>
+						<p className="text-muted-foreground text-sm md:text-base">
 							Workspace controls, advanced configuration, and telemetry
 						</p>
 					</div>
@@ -83,7 +83,7 @@ async function SettingsData({ searchParams }: PageProps) {
 						</Suspense>
 					</div>
 				</div>
-				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+				<div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
 					<Card>
 						<CardHeader>
 							<CardTitle className="text-base">Team</CardTitle>
@@ -202,12 +202,12 @@ async function SettingsData({ searchParams }: PageProps) {
 // Loading skeleton
 function SettingsSkeleton() {
 	return (
-		<div className="space-y-12">
-			<header className="space-y-6">
+		<div className="space-y-8 md:space-y-12 p-4 md:p-6">
+			<header className="space-y-4 md:space-y-6">
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
-						<h1 className="text-4xl font-bold tracking-tight">Settings</h1>
-						<p className="text-muted-foreground">
+						<h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Settings</h1>
+						<p className="text-muted-foreground text-sm md:text-base">
 							Workspace controls, advanced configuration, and telemetry
 						</p>
 					</div>
@@ -217,7 +217,7 @@ function SettingsSkeleton() {
 						</Suspense>
 					</div>
 				</div>
-				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+				<div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
 					{[1, 2, 3, 4].map((i) => (
 						<div className="bg-muted h-32 animate-pulse rounded-lg" key={i} />
 					))}

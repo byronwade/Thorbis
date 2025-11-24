@@ -89,11 +89,11 @@ function KPICard({
 	const content = (
 		<Card className="relative overflow-hidden transition-all hover:shadow-md">
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+				<CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">{title}</CardTitle>
 				<div className="rounded-md bg-primary/10 p-2 text-primary">{icon}</div>
 			</CardHeader>
 			<CardContent>
-				<div className="text-2xl font-bold">{value}</div>
+				<div className="text-xl md:text-2xl font-bold">{value}</div>
 				<div className="mt-1 flex items-center gap-2">
 					{trend && trendValue && (
 						<span
@@ -149,9 +149,9 @@ function QuickStatCard({
 	};
 
 	return (
-		<div className="rounded-lg border bg-card/50 p-4">
+		<div className="rounded-lg border bg-card/50 p-3 md:p-4">
 			<div className="text-xs font-medium text-muted-foreground">{label}</div>
-			<div className={`mt-1 text-xl font-bold ${colorClasses[color].split(" ")[1]}`}>{value}</div>
+			<div className={`mt-1 text-lg md:text-xl font-bold ${colorClasses[color].split(" ")[1]}`}>{value}</div>
 		</div>
 	);
 }
@@ -237,9 +237,9 @@ export async function AnalyticsOverview() {
 		customerHealth.low + customerHealth.medium + customerHealth.high + customerHealth.unknown;
 
 	return (
-		<div className="flex w-full flex-col gap-4 p-6">
+		<div className="flex w-full flex-col gap-4 p-4 md:p-6">
 			{/* Primary KPIs */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			<div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 				<KPICard
 					title="Total Revenue"
 					value={formatCurrency(totalRevenue)}
@@ -279,7 +279,7 @@ export async function AnalyticsOverview() {
 			</Suspense>
 
 			{/* Secondary Metrics Row */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 				{/* Estimate Conversion */}
 				<Card>
 					<CardHeader className="pb-2">
@@ -401,8 +401,8 @@ export async function AnalyticsOverview() {
 
 			{/* Quick Access Reports */}
 			<div>
-				<h3 className="mb-4 text-lg font-semibold">Quick Access Reports</h3>
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+				<h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">Quick Access Reports</h3>
+				<div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 					<ReportLinkCard
 						title="Financial Reports"
 						description="P&L, cash flow, AR aging, and revenue analysis"
@@ -445,7 +445,7 @@ export async function AnalyticsOverview() {
 						<CardDescription>Outstanding invoice breakdown</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="grid gap-4 md:grid-cols-5">
+						<div className="grid gap-3 md:gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
 							<QuickStatCard
 								label="Current"
 								value={formatCurrency(invoiceAging.current?.amount || 0)}

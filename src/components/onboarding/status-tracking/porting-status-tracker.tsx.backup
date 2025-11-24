@@ -1,0 +1,484 @@
+"use client";
+
+/**
+ * Porting Status Tracker
+ *
+ * Comprehensive tracking for phone number porting (2-4 week process)
+ * - Polls Telnyx API every 30 seconds for status updates
+ * - Shows timeline with current stage
+ * - Educational content (dos and don'ts)
+ * - Estimated completion date
+ * - Support contact info
+ */
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+	CheckCircle2,
+	Clock,
+	AlertTriangle,
+	Phone,
+	Calendar,
+	Info,
+	ExternalLink,
+	Loader2,
+	AlertCircle,
+	CheckCircle,
+	Circle,
+	Building2,
+	XCircle,
+} from "lucide-react";
+
+type PortingStatus =
+	| "draft"
+	| "in-process"
+	| "submitted"
+	| "exception"
+	| "foc-date-confirmed"
+	| "ported"
+	| "cancelled";
+
+interface PortingStatusTrackerProps {
+	portingOrderId: string;
+	phoneNumber: string;
+	carrier: string;
+	estimatedFocDate: string;
+	onStatusChange?: (status: PortingStatus) => void;
+}
+
+const STATUS_INFO: Record<
+	PortingStatus,
+	{
+		label: string;
+		description: string;
+		icon: React.ElementType;
+		color: string;
+	}
+> = {
+	draft: {
+		label: "Draft",
+		description: "Order created, not yet submitted",
+		icon: Circle,
+		color: "text-muted-foreground",
+	},
+	"in-process": {
+		label: "Processing",
+		description: "Reviewing your porting request",
+		icon: Loader2,
+		color: "text-blue-500",
+	},
+	submitted: {
+		label: "Submitted to Carrier",
+		description: "Sent to your current carrier for approval",
+		icon: Clock,
+		color: "text-amber-500",
+	},
+	exception: {
+		label: "Needs Attention",
+		description: "Additional information required",
+		icon: AlertTriangle,
+		color: "text-destructive",
+	},
+	"foc-date-confirmed": {
+		label: "Scheduled",
+		description: "Porting date confirmed with carrier",
+		icon: Calendar,
+		color: "text-green-500",
+	},
+	ported: {
+		label: "Complete",
+		description: "Number successfully ported!",
+		icon: CheckCircle2,
+		color: "text-green-500",
+	},
+	cancelled: {
+		label: "Cancelled",
+		description: "Porting order was cancelled",
+		icon: AlertCircle,
+		color: "text-muted-foreground",
+	},
+};
+
+const TIMELINE_STAGES = [
+	{ id: "submitted", label: "Submitted" },
+	{ id: "in-process", label: "Processing" },
+	{ id: "foc-date-confirmed", label: "Scheduled" },
+	{ id: "ported", label: "Complete" },
+];
+
+export function PortingStatusTracker({
+	portingOrderId,
+	phoneNumber,
+	carrier,
+	estimatedFocDate,
+	onStatusChange,
+}: PortingStatusTrackerProps) {
+	const [currentStatus, setCurrentStatus] = useState<PortingStatus>("submitted");
+	const [lastUpdated, setLastUpdated] = useState(new Date());
+	const [isPolling, setIsPolling] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	// Poll Telnyx API every 30 seconds
+	useEffect(() => {
+		if (!isPolling) return;
+
+		const pollStatus = async () => {
+			try {
+				// Call server action to get porting status
+				const response = await fetch(`/api/phone/porting-status?orderId=${portingOrderId}`);
+				const data = await response.json();
+
+				if (data.success && data.status) {
+					setCurrentStatus(data.status as PortingStatus);
+					setLastUpdated(new Date());
+					onStatusChange?.(data.status as PortingStatus);
+
+					// Stop polling if complete or cancelled
+					if (data.status === "ported" || data.status === "cancelled") {
+						setIsPolling(false);
+					}
+				}
+			} catch (err) {
+				setError("Unable to check status. We'll keep trying...");
+			}
+		};
+
+		// Initial poll
+		pollStatus();
+
+		// Poll every 30 seconds
+		const interval = setInterval(pollStatus, 30000);
+
+		return () => clearInterval(interval);
+	}, [portingOrderId, isPolling, onStatusChange]);
+
+	const statusInfo = STATUS_INFO[currentStatus];
+	const StatusIcon = statusInfo.icon;
+
+	const getCurrentStageIndex = () => {
+		const stageOrder = ["submitted", "in-process", "foc-date-confirmed", "ported"];
+		return stageOrder.indexOf(currentStatus);
+	};
+
+	const currentStageIndex = getCurrentStageIndex();
+
+	return (
+		<div className="space-y-6">
+			{/* Current Status Header */}
+			<div className="rounded-lg bg-muted/40 p-6 space-y-4">
+				<div className="flex items-start gap-4">
+					<div
+						className={cn(
+							"flex h-12 w-12 items-center justify-center rounded-full bg-background",
+							statusInfo.icon === Loader2 && "animate-pulse"
+						)}
+					>
+						<StatusIcon
+							className={cn("h-6 w-6", statusInfo.color, statusInfo.icon === Loader2 && "animate-spin")}
+						/>
+					</div>
+					<div className="flex-1">
+						<h3 className="text-lg font-semibold">{statusInfo.label}</h3>
+						<p className="text-sm text-muted-foreground">{statusInfo.description}</p>
+						<p className="text-xs text-muted-foreground mt-2">
+							Last updated: {lastUpdated.toLocaleTimeString()}
+							{isPolling && " • Checking for updates..."}
+						</p>
+					</div>
+				</div>
+
+				{/* Timeline */}
+				<div className="flex items-center justify-between gap-2 pt-4">
+					{TIMELINE_STAGES.map((stage, index) => {
+						const isComplete = index < currentStageIndex;
+						const isCurrent = index === currentStageIndex;
+
+						return (
+							<div key={stage.id} className="flex items-center gap-2 flex-1">
+								<div className="flex flex-col items-center gap-1 min-w-0">
+									<div
+										className={cn(
+											"flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
+											isComplete && "bg-green-500 text-white",
+											isCurrent && "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2",
+											!isComplete && !isCurrent && "bg-muted text-muted-foreground"
+										)}
+									>
+										{isComplete ? <CheckCircle className="h-4 w-4" /> : index + 1}
+									</div>
+									<span className="text-xs text-center font-medium">{stage.label}</span>
+								</div>
+								{index < TIMELINE_STAGES.length - 1 && (
+									<div
+										className={cn(
+											"h-0.5 flex-1",
+											isComplete ? "bg-green-500" : "bg-muted"
+										)}
+									/>
+								)}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+
+			{/* Quick Reference */}
+			<div className="rounded-lg border bg-card p-5">
+				<h4 className="font-semibold mb-4">Important Information</h4>
+				<div className="space-y-4">
+					<div className="flex items-start gap-3">
+						<Clock className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+						<div>
+							<p className="text-sm font-medium">Timeline</p>
+							<p className="text-sm text-muted-foreground">2-4 weeks is standard for all carriers</p>
+						</div>
+					</div>
+					<div className="flex items-start gap-3">
+						<Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+						<div>
+							<p className="text-sm font-medium">Porting Service</p>
+							<p className="text-sm text-muted-foreground">Telnyx coordinates the port with {carrier}</p>
+						</div>
+					</div>
+					<div className="flex items-start gap-3">
+						<Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+						<div>
+							<p className="text-sm font-medium">Timeline Control</p>
+							<p className="text-sm text-muted-foreground">{carrier} controls the processing time - we cannot speed it up</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* CRITICAL: Do Not Cancel Service Warning */}
+			<div className="rounded-lg bg-destructive/15 ring-2 ring-destructive/50 p-5 space-y-3">
+				<div className="flex items-start gap-3">
+					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive flex-shrink-0">
+						<AlertTriangle className="h-5 w-5 text-white" />
+					</div>
+					<div className="flex-1">
+						<p className="text-base font-bold text-destructive">CRITICAL: DO NOT Cancel Your Service!</p>
+						<p className="text-sm text-foreground mt-2 font-medium">
+							Canceling your service with {carrier} WILL CANCEL THE PORT and you'll lose your phone number permanently!
+						</p>
+						<p className="text-sm text-muted-foreground mt-2">
+							Keep paying {carrier} and keep your service active until you receive confirmation that the port is complete. This is the #1 mistake that cancels ports.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			{/* Estimated Completion & 3rd Party Service Info */}
+			<div className="rounded-lg bg-blue-500/10 p-5 space-y-3">
+				<div className="flex items-center gap-2">
+					<Calendar className="h-5 w-5 text-blue-500" />
+					<span className="font-semibold">Estimated completion: {new Date(estimatedFocDate).toLocaleDateString("en-US", {
+						weekday: "long",
+						month: "long",
+						day: "numeric",
+						year: "numeric",
+					})}</span>
+				</div>
+				<div className="space-y-2 text-sm text-muted-foreground">
+					<p className="font-medium text-foreground">
+						Standard Timeline: 2-4 weeks
+					</p>
+					<p>
+						<strong className="text-foreground">Important:</strong> We use Telnyx, a third-party porting service, to handle the number transfer. The timeline is controlled by your current carrier ({carrier}) and federal regulations - not by us or Telnyx.
+					</p>
+					<p>
+						<strong className="text-foreground">Please be patient.</strong> This is the standard industry timeline for all carriers. We'll email you with updates and notify you immediately when the port is complete.
+					</p>
+					<p>
+						<strong className="text-foreground">We have no control</strong> over how fast {carrier} processes the port request. The timeline can vary based on their internal processes and workload.
+					</p>
+				</div>
+			</div>
+
+			{/* Porting Details */}
+			<div className="space-y-3">
+				<h4 className="text-sm font-medium">Porting Details</h4>
+				<div className="space-y-2 text-sm">
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Phone Number:</span>
+						<span className="font-medium">{phoneNumber}</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Current Carrier:</span>
+						<span className="font-medium">{carrier}</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">Order ID:</span>
+						<span className="font-mono text-xs">{portingOrderId.slice(0, 12)}...</span>
+					</div>
+				</div>
+			</div>
+
+			{/* Exception Alert */}
+			{currentStatus === "exception" && (
+				<div className="rounded-lg bg-destructive/10 p-4 space-y-3">
+					<div className="flex items-start gap-3">
+						<AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+						<div>
+							<p className="font-medium text-destructive">Action Required</p>
+							<p className="text-sm text-muted-foreground mt-1">
+								Your current carrier needs additional information to complete the port. Please check your
+								email for details or contact support.
+							</p>
+						</div>
+					</div>
+					<Button variant="destructive" className="w-full">
+						<Phone className="mr-2 h-4 w-4" />
+						Contact Support
+					</Button>
+				</div>
+			)}
+
+			{/* Important Dos and Don'ts */}
+			<div className="space-y-4">
+				<h4 className="text-base font-semibold flex items-center gap-2">
+					<Info className="h-5 w-5" />
+					Critical Instructions - Must Read!
+				</h4>
+
+				<div className="rounded-lg bg-green-500/10 ring-1 ring-green-500/20 p-4 space-y-3">
+					<p className="text-sm font-bold text-green-700 dark:text-green-400">You must do these:</p>
+					<ul className="text-sm text-foreground space-y-2 ml-4 list-disc">
+						<li className="font-medium">
+							Keep your service ACTIVE with {carrier} until you receive our completion email - usually 2-4 weeks
+						</li>
+						<li className="font-medium">
+							Continue paying {carrier}'s bills on time - do NOT let your account go past due
+						</li>
+						<li>
+							Keep your account number and PIN/password accessible in case {carrier} contacts you for verification
+						</li>
+						<li>
+							Check your email daily for updates from us and {carrier} - they may request additional information
+						</li>
+						<li>
+							Be patient - this is the standard industry timeline for ALL carriers, not just {carrier}
+						</li>
+						<li>
+							Contact us immediately if {carrier} reaches out about canceling your service
+						</li>
+					</ul>
+				</div>
+
+				<div className="rounded-lg bg-destructive/15 ring-2 ring-destructive/50 p-4 space-y-3">
+					<p className="text-sm font-bold text-destructive">Never do these (port will fail!):</p>
+					<ul className="text-sm text-foreground space-y-2 ml-4 list-disc">
+						<li className="font-bold">
+							DO NOT cancel, disconnect, or terminate your service with {carrier} - this IMMEDIATELY cancels the port and you'll lose your number forever!
+						</li>
+						<li className="font-medium">
+							DO NOT change your account information, billing address, or PIN with {carrier} during porting
+						</li>
+						<li className="font-medium">
+							DO NOT request a new SIM card, phone number change, or plan change from {carrier}
+						</li>
+						<li>
+							DO NOT port to another carrier simultaneously - this will cause both ports to fail
+						</li>
+						<li>
+							DO NOT let your account become delinquent, past due, or suspended with {carrier}
+						</li>
+						<li>
+							DO NOT contact {carrier} asking to "speed up" the port - they control the timeline
+						</li>
+					</ul>
+				</div>
+
+				<div className="rounded-lg bg-amber-500/10 p-4 space-y-2">
+					<p className="text-sm font-medium text-foreground flex items-center gap-2">
+						<Clock className="h-4 w-4 text-amber-500" />
+						Why does it take 2-4 weeks?
+					</p>
+					<p className="text-sm text-muted-foreground">
+						Federal regulations (FCC rules) require carriers to verify account ownership and prevent fraud. {carrier} must:
+					</p>
+					<ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+						<li>Verify your account details match our porting request (1-3 days)</li>
+						<li>Confirm you're the authorized account holder (2-5 days)</li>
+						<li>Check for outstanding balances or contract obligations (1-2 days)</li>
+						<li>Schedule the port date (FOC) with Telnyx (1-2 days notice required)</li>
+						<li>Complete the actual number transfer (happens automatically on FOC date)</li>
+					</ul>
+					<p className="text-sm text-muted-foreground mt-2">
+						This is not unique to us - ALL phone companies must follow this same process. We appreciate your patience!
+					</p>
+				</div>
+			</div>
+
+			{/* What Happens Next */}
+			<div className="space-y-3">
+				<h4 className="text-sm font-semibold">The porting process (controlled by {carrier} and Telnyx)</h4>
+				<p className="text-xs text-muted-foreground">
+					Note: Telnyx is our third-party porting service provider. Neither we nor Telnyx control the timeline - {carrier} does.
+				</p>
+				<div className="space-y-3 text-sm text-muted-foreground">
+					<div className="flex items-start gap-3">
+						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
+							<span className="text-xs font-medium text-primary">1</span>
+						</div>
+						<p>
+							<strong className="text-foreground">Submission (Day 1):</strong> Telnyx has submitted your porting request to {carrier} via the industry-standard LSR (Local Service Request) system. {carrier} has 24-48 hours to acknowledge it.
+						</p>
+					</div>
+					<div className="flex items-start gap-3">
+						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
+							<span className="text-xs font-medium text-primary">2</span>
+						</div>
+						<p>
+							<strong className="text-foreground">Verification (1-2 weeks):</strong> {carrier} will verify your account details, check for outstanding balances, and approve the port. This is entirely controlled by {carrier}'s internal processes - we cannot speed this up.
+						</p>
+					</div>
+					<div className="flex items-start gap-3">
+						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
+							<span className="text-xs font-medium text-primary">3</span>
+						</div>
+						<p>
+							<strong className="text-foreground">Scheduling (FOC Date):</strong> Once {carrier} approves, Telnyx will coordinate with them to schedule the "Firm Order Commitment" (FOC) date. You'll receive 24 hours notice before the switch.
+						</p>
+					</div>
+					<div className="flex items-start gap-3">
+						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
+							<span className="text-xs font-medium text-primary">4</span>
+						</div>
+						<p>
+							<strong className="text-foreground">Completion:</strong> On the FOC date, {carrier} will release your number and Telnyx will activate it on our platform. This happens automatically and usually takes a few minutes. You'll receive a confirmation email from us.
+						</p>
+					</div>
+				</div>
+				<div className="rounded-lg bg-muted/40 p-3 mt-3">
+					<p className="text-xs text-muted-foreground">
+						<strong className="text-foreground">Important:</strong> We monitor the port status daily and will email you immediately if {carrier} requests additional information or if there are any issues. The entire process is automated between Telnyx and {carrier} - we cannot manually intervene to speed it up.
+					</p>
+				</div>
+			</div>
+
+			{/* Support */}
+			<div className="rounded-lg border border-muted p-4 space-y-3">
+				<p className="text-sm font-medium">Need help or have questions?</p>
+				<div className="flex flex-col sm:flex-row gap-2">
+					<Button variant="outline" className="flex-1">
+						<Phone className="mr-2 h-4 w-4" />
+						Call Support
+					</Button>
+					<Button variant="outline" className="flex-1">
+						<ExternalLink className="mr-2 h-4 w-4" />
+						View Help Center
+					</Button>
+				</div>
+			</div>
+
+			{error && (
+				<p className="text-xs text-muted-foreground text-center">
+					<AlertCircle className="inline h-3 w-3 mr-1" />
+					{error}
+				</p>
+			)}
+		</div>
+	);
+}

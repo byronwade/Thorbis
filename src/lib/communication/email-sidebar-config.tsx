@@ -3,6 +3,7 @@ import {
 	Clock,
 	File,
 	Inbox,
+	Mail,
 	Plus,
 	Send,
 	ShieldAlert,
@@ -13,6 +14,7 @@ import type { CommunicationSidebarConfig } from "@/components/communication/comm
 import { CreateFolderDialog } from "@/components/communication/create-folder-dialog";
 
 type FolderCounts = {
+	all?: number;
 	inbox?: number;
 	drafts?: number;
 	sent?: number;
@@ -58,10 +60,11 @@ export function getEmailSidebarConfig(
 		customFolders
 			.sort((a, b) => a.sort_order - b.sort_order)
 			.forEach((folder) => {
+				const count = counts?.[folder.slug];
 				labelItems.push({
 					title: folder.name,
 					icon: Tag,
-					badge: counts?.[folder.slug],
+					badge: count && count > 0 ? count : undefined,
 					url: `/dashboard/communication/folder/${encodeURIComponent(folder.slug)}`,
 					folderId: folder.id, // Include ID for delete functionality
 				});
@@ -72,13 +75,14 @@ export function getEmailSidebarConfig(
 	if (counts) {
 		Object.keys(counts).forEach((key) => {
 			if (
-				!["inbox", "drafts", "sent", "archive", "snoozed", "spam", "trash", "starred"].includes(key) &&
+				!["all", "inbox", "drafts", "sent", "archive", "snoozed", "spam", "trash", "starred"].includes(key) &&
 				!labelItems.some((item) => item.url.includes(key))
 			) {
+				const count = counts[key];
 				labelItems.push({
 					title: key,
 					icon: Tag,
-					badge: counts[key],
+					badge: count && count > 0 ? count : undefined,
 					url: `/dashboard/communication/label/${encodeURIComponent(key.toLowerCase())}`,
 				});
 			}
@@ -91,22 +95,28 @@ export function getEmailSidebarConfig(
 				label: "Core",
 				items: [
 					{
+						title: "All Mail",
+						url: "/dashboard/communication/email?folder=all",
+						icon: Mail,
+						badge: counts?.all && counts.all > 0 ? counts.all : undefined,
+					},
+					{
 						title: "Inbox",
 						url: "/dashboard/communication/email?folder=inbox",
 						icon: Inbox,
-						badge: counts?.inbox ?? 0,
+						badge: counts?.inbox && counts.inbox > 0 ? counts.inbox : undefined,
 					},
 					{
 						title: "Drafts",
 						url: "/dashboard/communication/email?folder=drafts",
 						icon: File,
-						badge: counts?.drafts ?? 0,
+						badge: counts?.drafts && counts.drafts > 0 ? counts.drafts : undefined,
 					},
 					{
 						title: "Sent",
 						url: "/dashboard/communication/email?folder=sent",
 						icon: Send,
-						badge: counts?.sent ?? 0,
+						badge: counts?.sent && counts.sent > 0 ? counts.sent : undefined,
 					},
 				],
 			},
@@ -117,25 +127,25 @@ export function getEmailSidebarConfig(
 						title: "Starred",
 						url: "/dashboard/communication/email?folder=starred",
 						icon: Star,
-						badge: counts?.starred ?? 0,
+						badge: counts?.starred && counts.starred > 0 ? counts.starred : undefined,
 					},
 					{
 						title: "Snoozed",
 						url: "/dashboard/communication/email?folder=snoozed",
 						icon: Clock,
-						badge: counts?.snoozed ?? 0,
+						badge: counts?.snoozed && counts.snoozed > 0 ? counts.snoozed : undefined,
 					},
 					{
 						title: "Spam",
 						url: "/dashboard/communication/email?folder=spam",
 						icon: ShieldAlert,
-						badge: counts?.spam ?? 0,
+						badge: counts?.spam && counts.spam > 0 ? counts.spam : undefined,
 					},
 					{
 						title: "Archive",
 						url: "/dashboard/communication/email?folder=archive",
 						icon: Archive,
-						badge: counts?.archive ?? 0,
+						badge: counts?.archive && counts.archive > 0 ? counts.archive : undefined,
 					},
 				],
 			},

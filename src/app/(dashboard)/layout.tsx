@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { DashboardAuthWrapper } from "@/components/layout/dashboard-auth-wrapper";
 import { IncomingCallNotificationWrapper } from "@/components/layout/incoming-call-notification-wrapper";
+import { MobileBottomTabsWrapper } from "@/components/layout/mobile-bottom-tabs-wrapper";
 import { NotificationsInitializer } from "@/components/layout/notifications-initializer";
 
 /**
@@ -41,7 +42,12 @@ export default function DashboardLayout({
 			</Suspense>
 
 			{/* Page content - each page has its own Suspense boundaries */}
-			<main className="flex-1 flex flex-col overflow-y-auto">{children}</main>
+			<main className="flex-1 flex flex-col overflow-y-auto pb-16 lg:pb-0">
+				{children}
+			</main>
+
+			{/* Mobile Bottom Tab Bar - Native iOS/Android style navigation */}
+			<MobileBottomTabsWrapper />
 		</div>
 	);
 }

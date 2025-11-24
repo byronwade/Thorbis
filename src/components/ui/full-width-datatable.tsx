@@ -973,7 +973,7 @@ export function FullWidthDataTable<T>({
 	return (
 		<div className="bg-background relative flex h-full flex-1 flex-col overflow-hidden">
 			<div
-				className="momentum-scroll flex-1 overflow-auto"
+				className="momentum-scroll flex-1 overflow-x-auto overflow-y-auto"
 				ref={scrollContainerRef}
 			>
 				{/* Sticky Top Toolbar */}
@@ -991,7 +991,7 @@ export function FullWidthDataTable<T>({
 							<div className="relative">
 								<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
 								<Input
-									className="focus:ring-primary/20 h-9 w-64 pl-9 text-sm transition-all duration-200 focus:ring-2 md:w-96"
+									className="focus:ring-primary/20 h-10 md:h-9 w-full sm:w-64 md:w-96 pl-9 text-base md:text-sm transition-all duration-200 focus:ring-2"
 									onChange={(e) => {
 										setSearchQuery(e.target.value);
 										setCurrentPage(1); // Reset to first page on search
@@ -1038,13 +1038,13 @@ export function FullWidthDataTable<T>({
 					<div className="ml-auto flex flex-wrap items-center gap-2">
 						{showRefresh && (
 							<Button
-								className="touch-target transition-all duration-200 hover:scale-105 active:scale-95"
+								className="h-10 w-10 md:h-9 md:w-9 p-0 transition-all duration-200 hover:scale-105 active:scale-95"
 								onClick={onRefresh}
 								size="icon"
 								title="Refresh"
 								variant="ghost"
 							>
-								<RefreshCw className="h-4 w-4" />
+								<RefreshCw className="h-5 w-5 md:h-4 md:w-4" />
 							</Button>
 						)}
 
@@ -1053,32 +1053,35 @@ export function FullWidthDataTable<T>({
 						{effectiveShowPagination && !useVirtualization && (
 							<>
 								<div className="bg-border/50 h-5 w-px" />
-								<div className="flex items-center gap-2">
+								<div className="flex items-center gap-1 md:gap-2">
 									<Button
-										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
+										className="h-10 w-10 md:h-9 md:w-9 p-0 transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
 										disabled={currentPage === 1}
 										onClick={handlePreviousPage}
 										size="icon"
 										variant="ghost"
 									>
-										<ChevronLeft className="h-4 w-4" />
+										<ChevronLeft className="h-5 w-5 md:h-4 md:w-4" />
 									</Button>
 									<span className="text-muted-foreground text-xs font-medium text-nowrap tabular-nums">
-										{(currentPage - 1) * effectiveItemsPerPage + 1}-
-										{Math.min(
-											currentPage * effectiveItemsPerPage,
-											totalCount || filteredData.length,
-										)}{" "}
-										of {(totalCount || filteredData.length).toLocaleString()}
+										<span className="hidden sm:inline">
+											{(currentPage - 1) * effectiveItemsPerPage + 1}-
+											{Math.min(
+												currentPage * effectiveItemsPerPage,
+												totalCount || filteredData.length,
+											)}{" "}
+											of{" "}
+										</span>
+										{(totalCount || filteredData.length).toLocaleString()}
 									</span>
 									<Button
-										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
+										className="h-10 w-10 md:h-9 md:w-9 p-0 transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
 										disabled={currentPage === totalPages}
 										onClick={handleNextPage}
 										size="icon"
 										variant="ghost"
 									>
-										<ChevronRight className="h-4 w-4" />
+										<ChevronRight className="h-5 w-5 md:h-4 md:w-4" />
 									</Button>
 								</div>
 							</>
@@ -1105,7 +1108,7 @@ export function FullWidthDataTable<T>({
 						>
 							<div
 								className={cn(
-									"sticky z-20 flex items-center border-b-hairline border-border-subtle font-semibold",
+									"sticky z-20 flex min-w-max items-center border-b-hairline border-border-subtle font-semibold",
 									config.headerBg,
 									config.borderColor,
 									config.gapSize,
@@ -1173,7 +1176,7 @@ export function FullWidthDataTable<T>({
 					) : (
 						<div
 							className={cn(
-								"sticky z-20 flex items-center border-b-hairline border-border-subtle font-semibold",
+								"sticky z-20 flex min-w-max items-center border-b-hairline border-border-subtle font-semibold",
 								config.headerBg,
 								config.borderColor,
 								config.gapSize,
@@ -1314,7 +1317,7 @@ export function FullWidthDataTable<T>({
 							return (
 								<div
 									className={cn(
-										"group border-border-subtle absolute top-0 left-0 flex w-full items-center gap-4 border-b-hairline px-3 py-1.5 transition-smooth sm:gap-6 sm:px-4 sm:py-2",
+										"group border-border-subtle absolute top-0 left-0 flex w-full min-w-max items-center gap-4 border-b-hairline px-3 py-1.5 transition-smooth sm:gap-6 sm:px-4 sm:py-2",
 										!archived &&
 											"hover:bg-accent/80 dark:hover:bg-accent/60 cursor-pointer",
 										excelRowClass,
@@ -1431,7 +1434,7 @@ export function FullWidthDataTable<T>({
 							return (
 								<div
 									className={cn(
-										"group flex cursor-pointer items-center border-b-hairline transition-smooth",
+										"group flex min-w-max cursor-pointer items-center border-b-hairline transition-smooth",
 										config.borderColor,
 										config.rowHover,
 										config.gapSize,

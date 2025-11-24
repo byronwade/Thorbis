@@ -342,21 +342,22 @@ export function AnalyticsCharts({ trends }: AnalyticsChartsProps) {
 
 	return (
 		<Card className="overflow-hidden">
-			<CardHeader className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-center sm:justify-between">
+			<CardHeader className="flex flex-col gap-4 pb-4">
 				<div className="flex items-center gap-3">
 					<div className="rounded-md bg-primary/10 p-2">
 						<TrendingUp className="h-5 w-5 text-primary" />
 					</div>
 					<div>
-						<CardTitle className="text-xl">Performance Trends</CardTitle>
-						<CardDescription>{config.description}</CardDescription>
+						<CardTitle className="text-lg md:text-xl">Performance Trends</CardTitle>
+						<CardDescription className="text-xs md:text-sm">{config.description}</CardDescription>
 					</div>
 				</div>
 
-				<div className="flex flex-wrap items-center gap-2">
-					{/* Metric Selector */}
+				{/* Mobile: Stack controls vertically, Desktop: horizontal */}
+				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+					{/* Metric Selector - Full width on mobile */}
 					<Select value={selectedMetric} onValueChange={(v) => setSelectedMetric(v as MetricType)}>
-						<SelectTrigger className="h-8 w-[140px]">
+						<SelectTrigger className="h-11 md:h-9 w-full md:w-[160px] text-base md:text-sm">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -381,91 +382,99 @@ export function AnalyticsCharts({ trends }: AnalyticsChartsProps) {
 						</SelectContent>
 					</Select>
 
-					{/* Time Range Tabs */}
-					<Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
-						<TabsList className="h-8">
-							<TabsTrigger value="7" className="h-6 px-2 text-xs">
-								7D
-							</TabsTrigger>
-							<TabsTrigger value="14" className="h-6 px-2 text-xs">
-								2W
-							</TabsTrigger>
-							<TabsTrigger value="30" className="h-6 px-2 text-xs">
-								30D
-							</TabsTrigger>
-							<TabsTrigger value="90" className="h-6 px-2 text-xs">
-								90D
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
+					<div className="flex items-center gap-2">
+						{/* Time Range Tabs */}
+						<Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as any)} className="flex-1">
+							<TabsList className="h-11 md:h-9 w-full grid grid-cols-4">
+								<TabsTrigger value="7" className="h-9 md:h-7 text-sm md:text-xs">
+									7D
+								</TabsTrigger>
+								<TabsTrigger value="14" className="h-9 md:h-7 text-sm md:text-xs">
+									2W
+								</TabsTrigger>
+								<TabsTrigger value="30" className="h-9 md:h-7 text-sm md:text-xs">
+									30D
+								</TabsTrigger>
+								<TabsTrigger value="90" className="h-9 md:h-7 text-sm md:text-xs">
+									90D
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
 
-					{/* Chart Type Toggle */}
-					<div className="flex items-center rounded-md border">
-						<Button
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"h-8 rounded-none rounded-l-md px-2",
-								chartType === "area" && "bg-muted"
-							)}
-							onClick={() => setChartType("area")}
-						>
-							<TrendingUp className="h-4 w-4" />
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"h-8 rounded-none border-x px-2",
-								chartType === "bar" && "bg-muted"
-							)}
-							onClick={() => setChartType("bar")}
-						>
-							<BarChart3 className="h-4 w-4" />
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"h-8 rounded-none rounded-r-md px-2",
-								chartType === "line" && "bg-muted"
-							)}
-							onClick={() => setChartType("line")}
-						>
-							<LineChartIcon className="h-4 w-4" />
-						</Button>
+						{/* Chart Type Toggle */}
+						<div className="flex items-center rounded-md border shrink-0">
+							<Button
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"h-11 md:h-9 w-11 md:w-9 rounded-none rounded-l-md p-0",
+									chartType === "area" && "bg-muted"
+								)}
+								onClick={() => setChartType("area")}
+								title="Area chart"
+							>
+								<TrendingUp className="h-5 w-5 md:h-4 md:w-4" />
+								<span className="sr-only">Area chart</span>
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"h-11 md:h-9 w-11 md:w-9 rounded-none border-x p-0",
+									chartType === "bar" && "bg-muted"
+								)}
+								onClick={() => setChartType("bar")}
+								title="Bar chart"
+							>
+								<BarChart3 className="h-5 w-5 md:h-4 md:w-4" />
+								<span className="sr-only">Bar chart</span>
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"h-11 md:h-9 w-11 md:w-9 rounded-none rounded-r-md p-0",
+									chartType === "line" && "bg-muted"
+								)}
+								onClick={() => setChartType("line")}
+								title="Line chart"
+							>
+								<LineChartIcon className="h-5 w-5 md:h-4 md:w-4" />
+								<span className="sr-only">Line chart</span>
+							</Button>
+						</div>
 					</div>
 				</div>
 			</CardHeader>
 
-			<CardContent>
-				{/* Summary Stats */}
-				<div className="mb-6 flex flex-wrap gap-6">
-					<div>
-						<p className="text-sm text-muted-foreground">Total</p>
-						<p className="text-2xl font-bold">
+			<CardContent className="px-3 md:px-6">
+				{/* Summary Stats - Grid on mobile for better space usage */}
+				<div className="mb-4 md:mb-6 grid grid-cols-3 gap-3 md:gap-6">
+					<div className="text-center md:text-left">
+						<p className="text-[0.65rem] md:text-sm text-muted-foreground uppercase tracking-wide font-medium">Total</p>
+						<p className="text-lg md:text-2xl font-bold mt-1">
 							{config.valuePrefix}
 							{totalValue.toLocaleString()}
 						</p>
 					</div>
-					<div>
-						<p className="text-sm text-muted-foreground">Daily Average</p>
-						<p className="text-2xl font-bold">
+					<div className="text-center md:text-left">
+						<p className="text-[0.65rem] md:text-sm text-muted-foreground uppercase tracking-wide font-medium">Daily Avg</p>
+						<p className="text-lg md:text-2xl font-bold mt-1">
 							{config.valuePrefix}
 							{avgValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
 						</p>
 					</div>
-					<div>
-						<p className="text-sm text-muted-foreground">Peak Day</p>
-						<p className="text-2xl font-bold">
+					<div className="text-center md:text-left">
+						<p className="text-[0.65rem] md:text-sm text-muted-foreground uppercase tracking-wide font-medium">Peak</p>
+						<p className="text-lg md:text-2xl font-bold mt-1">
 							{config.valuePrefix}
 							{maxValue.toLocaleString()}
 						</p>
 					</div>
 				</div>
 
-				{/* Chart */}
-				<div className="h-[350px] w-full">
+				{/* Chart - Reduced height on mobile for better scrolling */}
+				<div className="h-[280px] md:h-[350px] w-full -mx-3 md:mx-0">
 					<ResponsiveContainer width="100%" height="100%">
 						{renderChart()}
 					</ResponsiveContainer>

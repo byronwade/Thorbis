@@ -7,6 +7,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { getCustomerDisplayName, getCustomerInitials } from "@/lib/utils/customer-display";
 import { ChevronDown, ExternalLink, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
 
@@ -46,25 +47,18 @@ export function CustomerInfoPill({
 	className,
 	size = "default",
 }: CustomerInfoPillProps) {
-	// Determine display name
-	const displayName = customer?.display_name
-		|| (customer?.first_name && customer?.last_name
-			? `${customer.first_name} ${customer.last_name}`
-			: customer?.first_name || customer?.last_name)
-		|| fallbackName
-		|| "Unknown";
-
 	const email = customer?.email || fallbackEmail;
 	const phone = customer?.phone || fallbackPhone;
+
+	// Use unified customer display utility
+	const displayName = getCustomerDisplayName(
+		customer ? { ...customer, email: customer.email || fallbackEmail } : null,
+		fallbackName || fallbackEmail
+	);
 	const hasCustomerProfile = !!customer?.id;
 
-	// Get initials for avatar
-	const initials = displayName
-		.split(" ")
-		.map((n) => n[0])
-		.join("")
-		.toUpperCase()
-		.slice(0, 2);
+	// Get initials using utility
+	const initials = getCustomerInitials(customer);
 
 	return (
 		<Popover>

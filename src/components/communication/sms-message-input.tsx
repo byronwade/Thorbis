@@ -805,7 +805,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 			)}
 
 			{/* Input Area - iPhone style */}
-			<div className="flex items-end gap-1.5 p-2">
+			<div className="flex items-end gap-1.5 p-2 pb-safe">
 				{/* Plus Button - Attachment Menu */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -813,11 +813,11 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 							type="button"
 							variant="ghost"
 							size="icon"
-							className="mb-0.5 size-8 shrink-0 rounded-full hover:bg-muted"
+							className="mb-0.5 size-10 md:size-8 shrink-0 rounded-full hover:bg-muted"
 							disabled={disabled}
 							title="Add attachment"
 						>
-							<Plus className="size-5 text-muted-foreground" />
+							<Plus className="size-6 md:size-5 text-muted-foreground" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="start" side="top" className="w-48">
@@ -861,11 +861,11 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 							type="button"
 							variant="ghost"
 							size="icon"
-							className="mb-0.5 size-8 shrink-0 rounded-full hover:bg-muted"
+							className="mb-0.5 size-10 md:size-8 shrink-0 rounded-full hover:bg-muted"
 							disabled={disabled}
 							title="Quick replies"
 						>
-							<MessageSquareText className="size-4 text-muted-foreground" />
+							<MessageSquareText className="size-5 md:size-4 text-muted-foreground" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="start" side="top" className="w-56">
@@ -910,7 +910,8 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 				<div className="relative min-w-0 flex-1">
 					<div
 						className={cn(
-							"flex min-h-[36px] max-h-[120px] w-full items-center overflow-y-auto rounded-[18px] border border-border bg-muted/50 pl-3 pr-1 py-1 transition-colors",
+							"flex w-full items-center overflow-y-auto rounded-[18px] border border-border bg-muted/50 pl-3 pr-1 py-1 transition-colors",
+							"min-h-[44px] md:min-h-[36px] max-h-[120px]", // Taller on mobile for touch targets
 							"focus-within:border-primary/30 focus-within:bg-background focus-within:ring-1 focus-within:ring-primary/20",
 							(disabled || sending) && "cursor-not-allowed opacity-50"
 						)}
@@ -933,7 +934,8 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 								onBlur={() => setIsFocused(false)}
 								data-placeholder={placeholder}
 								className={cn(
-									"w-full min-w-0 whitespace-pre-wrap break-words py-1 text-sm leading-5 outline-none",
+									"w-full min-w-0 whitespace-pre-wrap break-words py-1 leading-5 outline-none",
+									"text-base md:text-sm", // 16px on mobile to prevent iOS zoom
 									"empty:before:pointer-events-none empty:before:text-muted-foreground/60 empty:before:content-[attr(data-placeholder)]",
 									(disabled || sending) && "pointer-events-none"
 								)}
@@ -969,14 +971,14 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 									<button
 										type="button"
 										className={cn(
-											"flex size-7 items-center justify-center rounded-full transition-colors",
+											"flex size-9 md:size-7 items-center justify-center rounded-full transition-colors",
 											"hover:bg-muted/80",
 											showEmojiPicker && "bg-muted"
 										)}
 										disabled={disabled}
 										title="Add emoji"
 									>
-										<Smile className="size-4 text-muted-foreground" />
+										<Smile className="size-5 md:size-4 text-muted-foreground" />
 									</button>
 								</PopoverTrigger>
 								<PopoverContent side="top" align="end" className="w-[300px] p-0">
@@ -1014,7 +1016,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 									(!value.trim() && attachments.length === 0) || sending || disabled
 								}
 								className={cn(
-									"flex size-7 items-center justify-center rounded-full transition-all duration-200",
+									"flex size-9 md:size-7 items-center justify-center rounded-full transition-all duration-200",
 									value.trim() || attachments.length > 0
 										? "bg-primary hover:bg-primary/90 scale-100 active:scale-95"
 										: "bg-muted/50 scale-90"
@@ -1022,12 +1024,12 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 							>
 								{sending ? (
 									<Loader2 className={cn(
-										"size-4 animate-spin",
+										"size-5 md:size-4 animate-spin",
 										value.trim() || attachments.length > 0 ? "text-primary-foreground" : "text-muted-foreground"
 									)} />
 								) : (
 									<ArrowUp className={cn(
-										"size-4",
+										"size-5 md:size-4",
 										value.trim() || attachments.length > 0 ? "text-primary-foreground" : "text-muted-foreground"
 									)} />
 								)}

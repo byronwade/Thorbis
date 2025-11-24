@@ -1,46 +1,26 @@
-import { SectionLayout } from "@/components/layout/section-layout";
-import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import { CommunicationSectionLayout } from "@/components/layout/communication-section-layout";
 
 /**
- * Communication Section Layout - Server Component
+ * Communication Section Layout - Server Component Wrapper
  *
  * This layout applies to all routes under /dashboard/communication/*
- * Uses the unified layout configuration system with a static config
- * for consistent layout across communication routes.
+ * It delegates to CommunicationSectionLayout (client component) which
+ * conditionally applies the communication layout based on the route.
+ *
+ * Mobile routes (/mobile) bypass the SectionLayout to avoid rendering
+ * the desktop sidebar.
  */
 export default function CommunicationLayout({
 	children,
 }: {
 	children: ReactNode;
 }) {
-	const config: UnifiedLayoutConfig = {
-		structure: {
-			maxWidth: "full",
-			padding: "none",
-			gap: "none",
-			fixedHeight: false,
-			variant: "default",
-			background: "default",
-			insetPadding: "default",
-		},
-		header: {
-			show: true,
-		},
-		toolbar: {
-			show: false,
-			title: null,
-			actions: null,
-		},
-		sidebar: {
-			show: true,
-			variant: "communication",
-		},
-	};
-
 	return (
-		<SectionLayout config={config} pathname="/dashboard/communication">
-			{children}
-		</SectionLayout>
+		<CommunicationSectionLayout>
+			<Suspense fallback={<div className="p-4">Loading...</div>}>
+				{children}
+			</Suspense>
+		</CommunicationSectionLayout>
 	);
 }

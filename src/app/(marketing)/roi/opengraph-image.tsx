@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadOGFonts, OG_CONFIG, CalculatorTemplate } from "@/lib/og";
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const alt = "ROI Calculator - Calculate Your Thorbis Savings";
 export const size = {
 	width: OG_CONFIG.width,

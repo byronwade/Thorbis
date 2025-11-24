@@ -2,27 +2,18 @@
 
 /**
  * First Action Step - Guided First Task
- *
- * Helps users complete their first meaningful action:
- * - Create first customer
- * - Schedule first job
- * - Send first estimate
- * - Book first appointment
  */
 
 import { useState } from "react";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { InfoCard } from "@/components/onboarding/info-cards/walkthrough-slide";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
 	Users,
 	Calendar,
 	FileText,
-	Sparkles,
 	CheckCircle2,
 	ArrowRight,
 	Clock,
@@ -30,7 +21,6 @@ import {
 	Mail,
 	MapPin,
 	Plus,
-	Rocket,
 	Trophy,
 	SkipForward,
 } from "lucide-react";
@@ -43,31 +33,27 @@ const ACTION_OPTIONS: {
 	description: string;
 	icon: React.ElementType;
 	time: string;
-	impact: string;
 }[] = [
 	{
 		id: "customer",
 		title: "Add Your First Customer",
 		description: "Start building your customer database",
 		icon: Users,
-		time: "2 minutes",
-		impact: "Foundation for all work",
+		time: "2 min",
 	},
 	{
 		id: "job",
 		title: "Schedule a Job",
 		description: "Put something on the calendar",
 		icon: Calendar,
-		time: "3 minutes",
-		impact: "See dispatch in action",
+		time: "3 min",
 	},
 	{
 		id: "estimate",
 		title: "Create an Estimate",
 		description: "Send a professional quote",
 		icon: FileText,
-		time: "5 minutes",
-		impact: "Win more business",
+		time: "5 min",
 	},
 	{
 		id: "skip",
@@ -75,7 +61,6 @@ const ACTION_OPTIONS: {
 		description: "Jump straight to the dashboard",
 		icon: SkipForward,
 		time: "Instant",
-		impact: "Full freedom",
 	},
 ];
 
@@ -113,7 +98,6 @@ export function FirstActionStep() {
 
 	const saveCustomer = async () => {
 		setSaving(true);
-		// Simulate API call
 		await new Promise((resolve) => setTimeout(resolve, 1500));
 		setCompleted(true);
 		updateData({ firstActionCompleted: "customer" });
@@ -123,52 +107,39 @@ export function FirstActionStep() {
 	// If action is completed, show success
 	if (completed) {
 		return (
-			<div className="space-y-6 max-w-2xl">
-				<div className="rounded-xl bg-green-500/10 p-8 text-center space-y-4">
-					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 mx-auto">
+			<div className="space-y-10">
+				<div className="flex flex-col items-center gap-4 py-8">
+					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
 						<Trophy className="h-8 w-8 text-green-500" />
 					</div>
-					<div>
-						<h2 className="text-xl font-semibold">First customer added!</h2>
+					<div className="text-center">
+						<h2 className="text-2xl font-semibold">First customer added!</h2>
 						<p className="text-muted-foreground mt-1">
 							{customerData.firstName} {customerData.lastName} is now in your system.
 						</p>
 					</div>
 				</div>
 
-				<div className="rounded-xl bg-muted/30 p-5 space-y-4">
-					<h3 className="font-semibold">What you can do now:</h3>
-					<ul className="space-y-3">
-						<li className="flex items-start gap-3">
-							<CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+				<div className="space-y-3">
+					<span className="font-medium">What you can do now:</span>
+					{[
+						{ title: `Schedule a job for ${customerData.firstName}`, desc: "Put an appointment on the calendar" },
+						{ title: "Create an estimate", desc: "Send a professional quote" },
+						{ title: "Add property details", desc: "Equipment, notes, and history" },
+					].map((item, i) => (
+						<div key={i} className="flex items-start gap-3 rounded-lg bg-muted/40 p-3">
+							<CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
 							<div>
-								<p className="font-medium">Schedule a job for {customerData.firstName}</p>
-								<p className="text-sm text-muted-foreground">Put an appointment on the calendar</p>
+								<p className="font-medium text-sm">{item.title}</p>
+								<p className="text-xs text-muted-foreground">{item.desc}</p>
 							</div>
-						</li>
-						<li className="flex items-start gap-3">
-							<CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-							<div>
-								<p className="font-medium">Create an estimate</p>
-								<p className="text-sm text-muted-foreground">Send a professional quote</p>
-							</div>
-						</li>
-						<li className="flex items-start gap-3">
-							<CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-							<div>
-								<p className="font-medium">Add property details</p>
-								<p className="text-sm text-muted-foreground">Equipment, notes, and history</p>
-							</div>
-						</li>
-					</ul>
+						</div>
+					))}
 				</div>
 
-				<InfoCard
-					icon={<Sparkles className="h-5 w-5" />}
-					title="You're ready to go!"
-					description="Complete the last step to see your personalized dashboard and start running your business with Thorbis."
-					variant="success"
-				/>
+				<p className="text-sm text-muted-foreground text-center">
+					Complete the final step to see your personalized dashboard.
+				</p>
 			</div>
 		);
 	}
@@ -176,21 +147,21 @@ export function FirstActionStep() {
 	// Show customer form if that action is selected
 	if (selectedAction === "customer") {
 		return (
-			<div className="space-y-6 max-w-2xl">
-				<div>
+			<div className="space-y-10">
+				<div className="space-y-2">
 					<button
 						onClick={() => setSelectedAction(null)}
-						className="text-sm text-muted-foreground hover:text-foreground mb-4"
+						className="text-sm text-muted-foreground hover:text-foreground"
 					>
 						← Back to options
 					</button>
-					<h2 className="text-xl font-semibold">Add your first customer</h2>
-					<p className="text-sm text-muted-foreground">
+					<h2 className="text-2xl font-semibold">Add your first customer</h2>
+					<p className="text-muted-foreground">
 						Enter a real customer or create a test one. You can edit this later.
 					</p>
 				</div>
 
-				<div className="rounded-xl bg-muted/30 p-5 space-y-4">
+				<div className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
 						<div className="space-y-2">
 							<Label htmlFor="firstName">First Name *</Label>
@@ -261,12 +232,11 @@ export function FirstActionStep() {
 					onClick={saveCustomer}
 					disabled={!customerData.firstName || !customerData.lastName || saving}
 					className="w-full"
-					size="lg"
 				>
 					{saving ? (
 						<>
 							<Clock className="mr-2 h-4 w-4 animate-spin" />
-							Saving Customer...
+							Saving...
 						</>
 					) : (
 						<>
@@ -275,37 +245,25 @@ export function FirstActionStep() {
 						</>
 					)}
 				</Button>
-
-				<p className="text-xs text-muted-foreground text-center">
-					This customer will be saved to your account and visible on your dashboard.
-				</p>
 			</div>
 		);
 	}
 
 	// Show action selection
 	return (
-		<div className="space-y-6 max-w-2xl">
-			<div>
-				<h2 className="text-xl font-semibold">Take your first action</h2>
-				<p className="text-sm text-muted-foreground">
+		<div className="space-y-10">
+			{/* Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-semibold">Take your first action</h2>
+				<p className="text-muted-foreground">
 					The best way to learn is by doing. What would you like to do first?
 				</p>
 			</div>
 
-			{/* Info Card */}
-			<InfoCard
-				icon={<Rocket className="h-5 w-5" />}
-				title="Aha moment ahead!"
-				description="Research shows that users who complete one meaningful action in their first session are 3x more likely to become long-term users."
-				variant="tip"
-			/>
-
 			{/* Action Options */}
-			<div className="space-y-3">
+			<div className="space-y-2">
 				{ACTION_OPTIONS.map((action) => {
 					const Icon = action.icon;
-					const isSelected = selectedAction === action.id;
 					const isSkip = action.id === "skip";
 
 					return (
@@ -314,45 +272,29 @@ export function FirstActionStep() {
 							type="button"
 							onClick={() => handleActionSelect(action.id)}
 							className={cn(
-								"w-full flex items-center gap-4 rounded-xl p-5 text-left transition-all",
-								isSelected
-									? "bg-primary/10 ring-2 ring-primary"
-									: "bg-muted/30 hover:bg-muted/50",
+								"w-full flex items-center gap-4 rounded-lg p-4 text-left transition-colors",
+								"bg-muted/40 hover:bg-muted/60",
 								isSkip && "opacity-70"
 							)}
 						>
-							<div className={cn(
-								"flex h-12 w-12 items-center justify-center rounded-xl transition-colors flex-shrink-0",
-								isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-							)}>
-								<Icon className="h-6 w-6" />
-							</div>
-
+							<Icon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
 							<div className="flex-1 min-w-0">
-								<p className="font-semibold">{action.title}</p>
+								<p className="font-medium">{action.title}</p>
 								<p className="text-sm text-muted-foreground">{action.description}</p>
-								<div className="flex items-center gap-4 mt-2">
-									<span className="flex items-center gap-1 text-xs text-muted-foreground">
-										<Clock className="h-3 w-3" />
-										{action.time}
-									</span>
-									<span className="text-xs text-muted-foreground">
-										{action.impact}
-									</span>
-								</div>
 							</div>
-
-							<ArrowRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+							<div className="flex items-center gap-3">
+								<span className="text-xs text-muted-foreground">{action.time}</span>
+								<ArrowRight className="h-4 w-4 text-muted-foreground" />
+							</div>
 						</button>
 					);
 				})}
 			</div>
 
 			{/* Encouragement */}
-			<div className="text-center text-sm text-muted-foreground">
-				<p>Don't worry — you can always do all of these later.</p>
-				<p>We recommend starting with "Add Your First Customer".</p>
-			</div>
+			<p className="text-sm text-muted-foreground text-center">
+				We recommend starting with "Add Your First Customer".
+			</p>
 		</div>
 	);
 }

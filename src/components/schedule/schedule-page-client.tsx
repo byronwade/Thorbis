@@ -2,12 +2,17 @@
 
 import { useEffect, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { deserializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { DispatchTimelineLazy as DispatchTimeline } from "./dispatch-timeline-lazy";
 import { KanbanViewLazy as KanbanView } from "./kanban-view-lazy";
+import { DayViewMobile } from "./mobile/day-view-mobile";
+import { KanbanViewMobile } from "./mobile/kanban-view-mobile";
+import { ListViewMobile } from "./mobile/list-view-mobile";
+import { MonthlyViewMobile } from "./mobile/monthly-view-mobile";
 import { MonthlyViewLazy as MonthlyView } from "./monthly-view-lazy";
 
 type SchedulePageClientProps = {
@@ -23,6 +28,7 @@ export function SchedulePageClient({
 		(state) => state.hydrateFromServer,
 	);
 	const { viewMode } = useScheduleViewStore();
+	const isMobile = useIsMobile(); // Detect mobile viewport (<768px)
 	const payload = useMemo(
 		() => (initialData ? deserializeScheduleBootstrap(initialData) : null),
 		[initialData],
@@ -38,7 +44,7 @@ export function SchedulePageClient({
 		<div className="m-0 flex h-full w-full flex-1 flex-col overflow-hidden p-0">
 			{bootstrapError && (
 				<Alert
-					className="mx-4 mt-2 mb-4 max-w-2xl self-center"
+					className="mx-3 md:mx-4 mt-2 mb-3 md:mb-4 max-w-2xl self-center"
 					variant="destructive"
 				>
 					<AlertTitle>Live schedule data unavailable</AlertTitle>
@@ -49,12 +55,46 @@ export function SchedulePageClient({
 				</Alert>
 			)}
 
-			{viewMode === "month" ? (
-				<MonthlyView />
-			) : viewMode === "week" ? (
-				<KanbanView />
+			{/*
+				Mobile vs Desktop Routing:
+				- Mobile (<768px): Use mobile-optimized views with vertical scrolling, tap actions
+				- Desktop (≥768px): Use existing drag & drop timeline/kanban/month views
+
+				Mobile views:
+				- List view: ✅ Primary mobile view (vertical scrolling, search/filter)
+				- Day view: ✅ Vertical timeline with collapsible tech sections
+				- Week view: ✅ Single-column kanban with swipe navigation
+				- Month view: ✅ Touch-friendly calendar grid with day detail bottom sheets
+			*/}
+			{isMobile ? (
+				<>
+					{viewMode === "list" ? (
+						<ListViewMobile />
+					) : viewMode === "day" ? (
+						<DayViewMobile />
+					) : viewMode === "week" ? (
+						<KanbanViewMobile />
+					) : viewMode === "month" ? (
+						<MonthlyViewMobile />
+					) : (
+						// Fallback: Use list view for unknown modes
+						<ListViewMobile />
+					)}
+				</>
 			) : (
-				<DispatchTimeline />
+				<>
+					{/* Desktop views (unchanged) */}
+					{viewMode === "month" ? (
+						<MonthlyView />
+					) : viewMode === "week" ? (
+						<KanbanView />
+					) : viewMode === "list" ? (
+						// Desktop users can access list view too
+						<ListViewMobile />
+					) : (
+						<DispatchTimeline />
+					)}
+				</>
 			)}
 		</div>
 	);

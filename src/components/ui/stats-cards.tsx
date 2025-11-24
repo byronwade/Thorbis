@@ -104,16 +104,16 @@ export function StatsCards({
 	variant = "ticker",
 	compact = false,
 }: StatsCardsProps) {
-	// Dynamically determine grid columns based on number of stats
+	// Dynamically determine grid columns with mobile responsiveness
 	const gridColsClass =
 		{
 			1: "grid-cols-1",
 			2: "grid-cols-2",
-			3: "grid-cols-3",
-			4: "grid-cols-4",
-			5: "grid-cols-5",
-			6: "grid-cols-6",
-		}[stats.length] || "grid-cols-5";
+			3: "grid-cols-2 lg:grid-cols-3",
+			4: "grid-cols-2 lg:grid-cols-4",
+			5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
+			6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+		}[stats.length] || "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5";
 
 	if (variant === "ticker") {
 		return (
@@ -138,9 +138,9 @@ export function StatsCards({
 				{stats.map((stat) => (
 					<div className="group relative overflow-hidden" key={stat.label}>
 						{/* Content with padding */}
-						<div className="relative z-10 px-4 py-3">
-							<div className="flex items-baseline gap-2">
-								<div className="text-foreground text-xl font-semibold tabular-nums">
+						<div className="relative z-10 px-3 md:px-4 py-2 md:py-3">
+							<div className="flex items-baseline gap-1 md:gap-2">
+								<div className="text-foreground text-base md:text-xl font-semibold tabular-nums">
 									{stat.value}
 								</div>
 								{stat.percentage !== undefined && (
@@ -149,7 +149,7 @@ export function StatsCards({
 									</div>
 								)}
 							</div>
-							<div className="text-muted-foreground mt-0.5 text-sm">
+							<div className="text-muted-foreground mt-0.5 text-xs md:text-sm">
 								{stat.label}
 							</div>
 						</div>

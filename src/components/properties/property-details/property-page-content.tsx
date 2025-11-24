@@ -25,10 +25,12 @@ import {
 	FileText,
 	Home,
 	Info,
+	Mail,
 	MapPin,
 	MessageSquare,
 	Navigation,
 	Paperclip,
+	Phone,
 	Receipt,
 	Ruler,
 	Settings,
@@ -781,6 +783,98 @@ export function PropertyPageContent({
 							</div>
 						)}
 					</div>
+				</UnifiedAccordionContent>
+			),
+		},
+		{
+			id: "customer",
+			title: "Customer Information",
+			icon: <User className="size-4" />,
+			actions: (
+				<div className="flex items-center gap-2">
+					{customer?.email && (
+						<Button asChild size="sm" variant="outline">
+							<Link href={`mailto:${customer.email}`}>
+								<Mail className="mr-2 size-4" />
+								Email Customer
+							</Link>
+						</Button>
+					)}
+					{customer?.phone && (
+						<Button asChild size="sm" variant="outline">
+							<Link href={`tel:${customer.phone}`}>
+								<Phone className="mr-2 size-4" />
+								Call Customer
+							</Link>
+						</Button>
+					)}
+					{customer?.id && (
+						<Button asChild size="sm" variant="outline">
+							<Link href={`/dashboard/customers/${customer.id}`}>
+								<User className="mr-2 size-4" />
+								View Full Profile
+							</Link>
+						</Button>
+					)}
+				</div>
+			),
+			content: (
+				<UnifiedAccordionContent>
+					{customer ? (
+						<div className="space-y-4">
+							<div className="flex items-start gap-4">
+								<div className="bg-primary/10 flex size-12 items-center justify-center rounded-full">
+									<User className="text-primary size-6" />
+								</div>
+								<div className="flex-1 space-y-3">
+									<div>
+										<h3 className="font-semibold text-lg">
+											{customer.display_name ||
+												`${customer.first_name || ''} ${customer.last_name || ''}`.trim() ||
+												'Customer'}
+										</h3>
+										{customer.company_name && (
+											<p className="text-muted-foreground text-sm">{customer.company_name}</p>
+										)}
+									</div>
+									<div className="space-y-2">
+										{customer.email && (
+											<div className="flex items-center gap-2 text-sm">
+												<Mail className="text-muted-foreground size-4 shrink-0" />
+												<a
+													href={`mailto:${customer.email}`}
+													className="text-primary hover:underline"
+												>
+													{customer.email}
+												</a>
+											</div>
+										)}
+										{customer.phone && (
+											<div className="flex items-center gap-2 text-sm">
+												<Phone className="text-muted-foreground size-4 shrink-0" />
+												<a
+													href={`tel:${customer.phone}`}
+													className="text-primary hover:underline"
+												>
+													{customer.phone}
+												</a>
+											</div>
+										)}
+										{!customer.email && !customer.phone && (
+											<p className="text-muted-foreground text-sm italic">
+												No contact information available
+											</p>
+										)}
+									</div>
+								</div>
+							</div>
+						</div>
+					) : (
+						<div className="text-muted-foreground flex flex-col items-center justify-center py-12 text-center text-sm">
+							<User className="text-muted-foreground mb-4 size-10" />
+							No customer information available
+						</div>
+					)}
 				</UnifiedAccordionContent>
 			),
 		},

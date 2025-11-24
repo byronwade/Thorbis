@@ -146,11 +146,11 @@ export function CommunicationSidebar({
 
     return (
         <Sidebar collapsible="offcanvas" variant="inset" {...props}>
-            <SidebarHeader className="gap-3 px-3 pt-0 pb-2">
+            <SidebarHeader className="gap-3 px-3 pt-4 md:pt-0 pb-2">
                 <CommunicationSwitcher />
                 {primaryAction && (
                     <Button
-                        className="w-full h-9 font-medium"
+                        className="w-full h-11 md:h-9 font-medium text-base md:text-sm"
                         variant={primaryAction.variant || "default"}
                         type="button"
                         onClick={primaryAction.onClick}
@@ -158,12 +158,12 @@ export function CommunicationSidebar({
                     >
                         {primaryAction.href ? (
                             <Link href={primaryAction.href}>
-                                <primaryAction.icon className="size-4" />
+                                <primaryAction.icon className="size-5 md:size-4" />
                                 {primaryAction.label}
                             </Link>
                         ) : (
                             <>
-                                <primaryAction.icon className="size-4" />
+                                <primaryAction.icon className="size-5 md:size-4" />
                                 {primaryAction.label}
                             </>
                         )}

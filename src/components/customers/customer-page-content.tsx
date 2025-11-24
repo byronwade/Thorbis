@@ -433,6 +433,14 @@ export function CustomerPageContent({
 				router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
 		},
 		{
+			key: "schedule-appointment",
+			label: "Schedule Appointment",
+			icon: Calendar,
+			variant: "secondary" as const,
+			onClick: () =>
+				router.push(`/dashboard/schedule/new?customerId=${customer.id}`),
+		},
+		{
 			key: "add-property",
 			label: "Add Property",
 			icon: Building2,
@@ -696,46 +704,47 @@ export function CustomerPageContent({
 
 	const overviewSurface = (
 		<DetailPageSurface padding="lg" variant="muted">
-			<div className="flex flex-col gap-6">
+			<div className="flex flex-col gap-4 md:gap-6">
 				<div className="flex flex-col gap-3">
 					<Label className="text-muted-foreground text-xs font-medium uppercase">
 						Display Name
 					</Label>
 					<Input
 						className={cn(
-							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl",
+							"border-border/40 bg-background focus-visible:ring-primary/50 h-11 md:h-12 rounded-lg border px-3 md:px-4 text-lg md:text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl",
 						)}
 						onChange={(e) => handlePrimaryNameChange(e.target.value)}
 						placeholder="Enter customer name..."
 						value={displayName}
 					/>
-					<p className="text-muted-foreground text-xs">
+					<p className="text-muted-foreground text-[0.7rem] md:text-xs">
 						Update how this customer appears across Thorbis. Changes are saved
 						when you select Save changes.
 					</p>
 				</div>
 
-				<div className="grid gap-3 sm:grid-cols-2">
+				{/* Contact Info - 2 columns on mobile, full grid on larger screens */}
+				<div className="grid gap-2 md:gap-3 grid-cols-1 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
 						<div
-							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							className="border-border/40 bg-background rounded-lg border px-3 py-2.5 md:py-3"
 							key={key}
 						>
-							<div className="flex items-center gap-3">
-								<Icon className="text-muted-foreground h-4 w-4" />
-								<div className="flex flex-col">
-									<span className="text-muted-foreground text-xs font-medium uppercase">
+							<div className="flex items-center gap-2 md:gap-3">
+								<Icon className="text-muted-foreground h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+								<div className="flex flex-col min-w-0">
+									<span className="text-muted-foreground text-[0.65rem] md:text-xs font-medium uppercase">
 										{label}
 									</span>
 									{href ? (
 										<a
-											className="text-sm font-semibold hover:underline"
+											className="text-xs md:text-sm font-semibold hover:underline truncate"
 											href={href}
 										>
 											{value}
 										</a>
 									) : (
-										<span className="text-sm font-semibold">{value}</span>
+										<span className="text-xs md:text-sm font-semibold truncate">{value}</span>
 									)}
 								</div>
 							</div>
@@ -743,20 +752,21 @@ export function CustomerPageContent({
 					))}
 				</div>
 
-				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+				{/* Metrics - 2 columns on mobile, 4 on desktop */}
+				<div className="grid gap-2 md:gap-3 grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
 						<div
-							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							className="border-border/40 bg-background rounded-lg border px-3 py-2.5 md:py-3"
 							key={key}
 						>
-							<div className="flex items-center gap-3">
-								<Icon className="text-muted-foreground h-4 w-4" />
-								<div className="flex flex-col">
-									<span className="text-muted-foreground text-xs font-medium uppercase">
+							<div className="flex flex-col gap-1.5 md:gap-2">
+								<div className="flex items-center gap-2">
+									<Icon className="text-muted-foreground h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+									<span className="text-muted-foreground text-[0.65rem] md:text-xs font-medium uppercase leading-none">
 										{label}
 									</span>
-									<span className="text-sm font-semibold">{value}</span>
 								</div>
+								<span className="text-sm md:text-base font-semibold truncate">{value}</span>
 							</div>
 						</div>
 					))}

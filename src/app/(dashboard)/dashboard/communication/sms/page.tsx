@@ -32,6 +32,7 @@ import { PanelLeft } from "lucide-react";
 import {
     AlertTriangle,
     Archive,
+    ArrowLeft,
     Loader2,
     MessageSquare,
     MoreHorizontal,
@@ -514,32 +515,45 @@ export default function SmsPage() {
         });
     };
 
+    // Mobile: show list when no SMS selected, show detail when SMS selected
+    // Desktop: always show both panels side by side
+    const showListOnMobile = !selectedSms;
+    const showDetailOnMobile = !!selectedSms;
+
     return (
         <div className="flex h-full w-full flex-col overflow-hidden bg-sidebar">
-            <div className="flex flex-1 overflow-hidden min-h-0 gap-2">
-                {/* SMS List Panel */}
-                <div className="bg-card mb-1 w-full md:w-[400px] lg:w-[480px] shadow-sm lg:h-full lg:shadow-sm flex flex-col rounded-tr-2xl overflow-hidden">
+            <div className="flex flex-1 overflow-hidden min-h-0 md:gap-2">
+                {/* SMS List Panel - Hidden on mobile when SMS is selected */}
+                <div className={cn(
+                    "bg-card mb-1 shadow-sm flex flex-col overflow-hidden",
+                    "w-full h-full", // Mobile: full width/height
+                    "md:w-[400px] lg:w-[480px] md:rounded-tr-2xl", // Desktop: fixed width with rounded corner
+                    // Mobile visibility logic
+                    showListOnMobile ? "flex" : "hidden md:flex"
+                )}>
                     <div className="w-full h-full flex flex-col">
                         <div className="sticky top-0 z-15 flex items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
                             <div className="w-full">
                                 <div className="grid grid-cols-12 gap-2 mt-1">
                                     <div className="col-span-12 flex gap-2">
+                                        {/* Sidebar toggle - larger on mobile for touch */}
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-8 w-8 p-0 shrink-0"
+                                            className="h-10 w-10 p-0 md:h-8 md:w-8 shrink-0"
                                             onClick={toggleSidebar}
                                             title="Toggle sidebar"
                                         >
-                                            <PanelLeft className="h-4 w-4" />
+                                            <PanelLeft className="h-5 w-5 md:h-4 md:w-4" />
                                         </Button>
                                         <div className="relative flex-1">
+                                            {/* Search input - text-base on mobile to prevent iOS zoom */}
                                             <Input
                                                 type="search"
                                                 placeholder="Search SMS..."
                                                 value={searchInput}
                                                 onChange={(e) => setSearchInput(e.target.value)}
-                                                className="h-8 pl-9 pr-20 border-input bg-white dark:bg-[#141414] dark:border-none"
+                                                className="h-10 md:h-8 pl-9 pr-20 text-base md:text-sm border-input bg-white dark:bg-[#141414] dark:border-none"
                                             />
                                             <svg
                                                 width="10"
@@ -569,10 +583,10 @@ export default function SmsPage() {
                                             size="sm"
                                             onClick={handleRefresh}
                                             disabled={refreshing}
-                                            className="col-span-1 h-8 px-2 py-2 md:h-8 md:px-2 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 aria-busy:cursor-progress hover:bg-accent hover:text-accent-foreground"
+                                            className="h-10 w-10 p-0 md:h-8 md:w-8"
                                             title="Refresh"
                                         >
-                                            <RefreshCw className={`h-4 w-4 text-muted-foreground ${refreshing ? 'animate-spin' : ''}`} />
+                                            <RefreshCw className={`h-5 w-5 md:h-4 md:w-4 text-muted-foreground ${refreshing ? 'animate-spin' : ''}`} />
                                         </Button>
                                     </div>
                                 </div>
@@ -732,29 +746,42 @@ export default function SmsPage() {
                 </div>
 
                 {/* SMS Detail - Right Panel (iPhone-style chat interface) */}
-                <div className="bg-card mb-1 rounded-tl-2xl shadow-sm lg:h-full flex flex-col min-w-0 flex-1 overflow-hidden">
+                {/* Mobile: shown when SMS selected, Desktop: always visible as flex-1 */}
+                <div className={cn(
+                    "bg-card mb-1 shadow-sm flex flex-col min-w-0 overflow-hidden",
+                    "w-full h-full", // Mobile: full width/height
+                    "md:rounded-tl-2xl md:flex-1", // Desktop: rounded corner and flex
+                    showDetailOnMobile ? "flex" : "hidden md:flex"
+                )}>
                     <div className="relative flex-1 min-h-0 flex flex-col">
                         {selectedSms ? (
                             <>
                                 {/* Header Toolbar */}
                                 <div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
                                     <div className="flex flex-1 items-center gap-2">
+                                        {/* Back button (mobile) / Close button (desktop) */}
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => {
+                                                setSelectedSms(null);
+                                                selectedSmsRef.current = null;
+                                                setConversationMessages([]);
                                                 const params = new URLSearchParams();
                                                 if (folder && folder !== "inbox") params.set("folder", folder);
                                                 router.push(`/dashboard/communication/sms?${params.toString()}`, { scroll: false });
                                             }}
-                                            className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors"
+                                            className="h-10 w-10 p-0 md:h-8 md:w-8 hover:bg-accent/80 active:bg-accent transition-colors"
+                                            title="Back to list"
                                         >
-                                            <X className="h-4 w-4 text-muted-foreground" />
+                                            {/* Arrow on mobile, X on desktop */}
+                                            <ArrowLeft className="h-5 w-5 md:hidden text-muted-foreground" />
+                                            <X className="h-4 w-4 hidden md:block text-muted-foreground" />
                                         </Button>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/80 active:bg-accent transition-colors" title="More options">
-                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                        <Button variant="ghost" size="sm" className="h-10 w-10 p-0 md:h-8 md:w-8 hover:bg-accent/80 active:bg-accent transition-colors" title="More options">
+                                            <MoreHorizontal className="h-5 w-5 md:h-4 md:w-4 text-muted-foreground" />
                                         </Button>
                                     </div>
                                 </div>
@@ -912,15 +939,15 @@ export default function SmsPage() {
                                     <Button
                                         onClick={() => {
                                             if (typeof window !== "undefined") {
-                                                window.dispatchEvent(new CustomEvent("open-recipient-selector", { 
-                                                    detail: { type: "sms" } 
+                                                window.dispatchEvent(new CustomEvent("open-recipient-selector", {
+                                                    detail: { type: "sms" }
                                                 }));
                                             }
                                         }}
-                                        className="mt-4"
+                                        className="mt-4 h-12 px-6 md:h-11 md:px-5"
                                         size="lg"
                                     >
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="h-5 w-5 md:h-4 md:w-4 mr-2" />
                                         Create new SMS
                                     </Button>
                                 </div>

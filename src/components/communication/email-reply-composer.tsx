@@ -797,7 +797,7 @@ export function EmailReplyComposer({
 								value={subject}
 								onChange={(e) => setSubject(e.target.value)}
 								placeholder="Subject"
-								className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+								className="flex-1 bg-transparent text-base md:text-sm outline-none placeholder:text-muted-foreground"
 							/>
 						</div>
 					</div>
@@ -833,7 +833,8 @@ export function EmailReplyComposer({
 						onKeyDown={handleKeyDown}
 						placeholder="Write your reply..."
 						className={cn(
-							"w-full resize-none bg-transparent text-sm outline-none",
+							"w-full resize-none bg-transparent outline-none",
+							"text-base md:text-sm", // 16px on mobile to prevent iOS zoom
 							"placeholder:text-muted-foreground",
 							"min-h-[80px] max-h-[200px]",
 						)}

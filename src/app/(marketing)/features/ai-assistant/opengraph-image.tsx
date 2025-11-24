@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadOGFonts, OG_CONFIG, FeatureTemplate } from "@/lib/og";
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const alt = "AI Assistant - Your 24/7 Virtual Dispatcher";
 export const size = {
 	width: OG_CONFIG.width,

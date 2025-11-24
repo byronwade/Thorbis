@@ -146,20 +146,20 @@ export function CommunicationOverviewReport({ stats }: CommunicationOverviewRepo
 	}));
 
 	return (
-		<div className="flex w-full flex-col gap-4 p-6">
+		<div className="flex w-full flex-col gap-4 p-4 md:p-6">
 			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Communication Dashboard</h1>
-				<p className="text-muted-foreground mt-2">
+				<h1 className="text-2xl md:text-3xl font-bold tracking-tight">Communication Dashboard</h1>
+				<p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
 					Overview of all communication channels and activity
 				</p>
 			</div>
 
 			{/* All Charts Section - Grouped Together */}
 			<div className="space-y-4">
-				<h2 className="text-xl font-semibold">Charts & Analytics</h2>
-				
+				<h2 className="text-lg md:text-xl font-semibold">Charts & Analytics</h2>
+
 				{/* Main Charts Grid - Vercel Style */}
-			<div className="grid gap-3 lg:grid-cols-2">
+			<div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
 				{/* Daily Activity Chart */}
 				<div className="bg-card border border-border relative w-full rounded-[10px] p-3 pb-2 group/chart h-[240px] min-h-[240px] shadow-sm">
 					{/* Clickable Header */}
@@ -314,7 +314,7 @@ export function CommunicationOverviewReport({ stats }: CommunicationOverviewRepo
 			</div>
 
 			{/* Additional Stats Grid - Vercel Style */}
-			<div className="grid gap-3 lg:grid-cols-3">
+			<div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{/* Email Stats */}
 				<div className="bg-card border border-border relative w-full rounded-[10px] p-3 pb-2 group/chart h-[240px] min-h-[240px] shadow-sm">
 					<div className="-mx-3 -mt-3 p-1 pb-0 pr-0">
@@ -395,7 +395,7 @@ export function CommunicationOverviewReport({ stats }: CommunicationOverviewRepo
 			</div>
 
 			{/* Additional Charts Grid - 10 More Statistics */}
-			<div className="grid gap-3 lg:grid-cols-2">
+			<div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
 				{/* Response Time Trend */}
 				<div className="bg-card border border-border relative w-full rounded-[10px] p-3 pb-2 group/chart h-[240px] min-h-[240px] shadow-sm">
 					<div className="-mx-3 -mt-3 p-1 pb-0 pr-0">
@@ -707,7 +707,7 @@ export function CommunicationOverviewReport({ stats }: CommunicationOverviewRepo
 				</div>
 
 				{/* Additional Charts Grid */}
-				<div className="grid gap-3 lg:grid-cols-2">
+				<div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
 					{/* Unread Trend */}
 					<div className="bg-card border border-border relative w-full rounded-[10px] p-3 pb-2 group/chart h-[240px] min-h-[240px] shadow-sm">
 						<div className="-mx-3 -mt-3 p-1 pb-0 pr-0">

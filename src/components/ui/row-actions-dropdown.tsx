@@ -25,6 +25,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export type RowAction = {
 	/** Action label */
@@ -62,7 +63,15 @@ export function RowActionsDropdown({
 		<div data-no-row-click>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button className={className} size="icon" variant="ghost">
+					<Button
+						className={cn(
+							// Mobile: 40px touch target, Desktop: 36px
+							"md:size-9 size-10",
+							className
+						)}
+						size="icon"
+						variant="ghost"
+					>
 						<MoreHorizontal className="size-4" />
 						<span className="sr-only">Open menu</span>
 					</Button>

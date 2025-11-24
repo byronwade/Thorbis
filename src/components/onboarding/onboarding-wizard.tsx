@@ -1,28 +1,21 @@
 "use client";
 
 /**
- * Onboarding Wizard - Comprehensive 14-Step Setup
+ * Onboarding Wizard - Clean, Minimalist Design
  *
  * World-class onboarding experience across 5 phases:
- * - Phase 1: Getting Started (Welcome, Company, Profile)
+ * - Phase 1: Getting Started (Welcome, Company)
  * - Phase 2: Communication (Phone, Email, Notifications)
  * - Phase 3: Business Setup (Services, Team, Payments)
  * - Phase 4: Operations (Schedule, Reports, Settings)
  * - Phase 5: Launch (First Action, Complete)
- *
- * Uses wizard pattern with:
- * - Zustand for persistent state
- * - iPhone-style walkthroughs
- * - Progressive disclosure by business size
- * - Educational tooltips and info cards
  */
 
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { completeOnboardingWizard } from "@/actions/onboarding";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
 	useOnboardingStore,
 	STEP_CONFIG,
@@ -36,7 +29,6 @@ import {
 // Step Components
 import { WelcomeStep } from "@/components/onboarding/steps/welcome-step";
 import { CompanyStep } from "@/components/onboarding/steps/company-step";
-import { ProfileStep } from "@/components/onboarding/steps/profile-step";
 import { PhoneStep } from "@/components/onboarding/steps/phone-step";
 import { EmailStep } from "@/components/onboarding/steps/email-step";
 import { NotificationsStep } from "@/components/onboarding/steps/notifications-step";
@@ -53,22 +45,11 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Rocket,
-	Globe,
 	Check,
-	Sparkles,
-	Building2,
-	User,
 	Phone,
-	Mail,
-	Bell,
 	Wrench,
-	Users,
-	CreditCard,
 	Calendar,
-	BarChart3,
-	Settings,
-	Zap,
-	PartyPopper,
+	Loader2,
 } from "lucide-react";
 
 // =============================================================================
@@ -78,7 +59,6 @@ import {
 const STEP_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
-	"profile",
 	"phone",
 	"email",
 	"notifications",
@@ -92,63 +72,50 @@ const STEP_ORDER: OnboardingStep[] = [
 	"complete",
 ];
 
-const STEP_ICONS: Record<OnboardingStep, React.ElementType> = {
-	welcome: Sparkles,
-	company: Building2,
-	profile: User,
-	phone: Phone,
-	email: Mail,
-	notifications: Bell,
-	services: Wrench,
-	team: Users,
-	payments: CreditCard,
-	schedule: Calendar,
-	reports: BarChart3,
-	settings: Settings,
-	"first-action": Zap,
-	complete: PartyPopper,
+const PHASE_LABELS: Record<number, string> = {
+	1: "Getting Started",
+	2: "Communication",
+	3: "Business Setup",
+	4: "Operations",
+	5: "Launch",
 };
-
-const PHASE_NAMES = [
-	"Getting Started",
-	"Communication",
-	"Business Setup",
-	"Operations",
-	"Launch",
-];
 
 // Phase transition walkthroughs
 const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 	2: [
 		{
+			id: "phase-2",
 			title: "Time to Connect with Customers",
-			description: "Great job setting up your profile! Now let's configure how you'll communicate with customers.",
-			icon: Phone,
-			highlight: "Next up: Phone, Email, and Notifications",
+			description: "Great job setting up your company! Now let's configure how you'll communicate with customers.",
+			icon: <Phone className="h-8 w-8" />,
+			bullets: ["Phone & SMS setup", "Email configuration", "Notification preferences"],
 		},
 	],
 	3: [
 		{
+			id: "phase-3",
 			title: "Building Your Business",
 			description: "Communication is ready! Let's set up the core of your business - services, team, and payments.",
-			icon: Wrench,
-			highlight: "Next up: Services, Team, and Payments",
+			icon: <Wrench className="h-8 w-8" />,
+			bullets: ["Service catalog & pricing", "Team invitations", "Payment processing"],
 		},
 	],
 	4: [
 		{
+			id: "phase-4",
 			title: "Optimizing Operations",
 			description: "Your business core is configured! Now let's optimize how you work day-to-day.",
-			icon: Calendar,
-			highlight: "Next up: Schedule, Reports, and Settings",
+			icon: <Calendar className="h-8 w-8" />,
+			bullets: ["Business hours", "Dashboard widgets", "Key settings"],
 		},
 	],
 	5: [
 		{
+			id: "phase-5",
 			title: "Ready for Launch!",
 			description: "Almost there! Let's do one quick action to make sure everything works perfectly.",
-			icon: Rocket,
-			highlight: "Final step: Take your first action",
+			icon: <Rocket className="h-8 w-8" />,
+			bullets: ["Take your first action", "See your dashboard"],
 		},
 	],
 };
@@ -165,14 +132,16 @@ export function OnboardingWizard() {
 		setCurrentStep,
 		completedSteps,
 		skippedSteps,
-		markStepCompleted,
+		completeStep,
 		updateData,
 	} = useOnboardingStore();
 
 	// Walkthrough state
-	const [showWalkthrough, setShowWalkthrough] = React.useState(false);
-	const [walkthroughSlides, setWalkthroughSlides] = React.useState<WalkthroughSlide[]>([]);
-	const [pendingNavigation, setPendingNavigation] = React.useState<OnboardingStep | null>(null);
+	const [showWalkthrough, setShowWalkthrough] = useState(false);
+	const [walkthroughSlides, setWalkthroughSlides] = useState<WalkthroughSlide[]>([]);
+	const [pendingNavigation, setPendingNavigation] = useState<OnboardingStep | null>(null);
+	const [isCompleting, setIsCompleting] = useState(false);
+	const [completeError, setCompleteError] = useState<string | null>(null);
 
 	const currentStepIndex = STEP_ORDER.indexOf(currentStep);
 	const currentConfig = STEP_CONFIG[currentStep];
@@ -203,34 +172,36 @@ export function OnboardingWizard() {
 	}, [currentPhase]);
 
 	// Navigation validation
+	// TODO: Remove isDev bypass before production
+	const isDev = process.env.NODE_ENV === "development";
 	const canProceed = useMemo(() => {
+		// Bypass validation in development for testing
+		if (isDev) return true;
+
 		const config = STEP_CONFIG[currentStep];
 		if (!config.required) return true;
 
 		switch (currentStep) {
 			case "welcome":
-				return !!data.companySize && !!data.industry;
+				return !!data.path && !!data.industry;
 			case "company":
 				return !!data.companyName;
-			case "profile":
-				return !!data.userName;
 			default:
 				return true;
 		}
-	}, [currentStep, data]);
+	}, [currentStep, data, isDev]);
 
 	const goNext = useCallback(() => {
 		const nextIndex = currentStepIndex + 1;
 		if (nextIndex < STEP_ORDER.length) {
-			markStepCompleted(currentStep);
+			completeStep(currentStep);
 			const nextStep = STEP_ORDER[nextIndex];
 
-			// Check for phase transition walkthrough
 			if (!checkPhaseTransition(nextStep)) {
 				setCurrentStep(nextStep);
 			}
 		}
-	}, [currentStepIndex, currentStep, markStepCompleted, setCurrentStep, checkPhaseTransition]);
+	}, [currentStepIndex, currentStep, completeStep, setCurrentStep, checkPhaseTransition]);
 
 	const goBack = useCallback(() => {
 		const prevIndex = currentStepIndex - 1;
@@ -247,24 +218,19 @@ export function OnboardingWizard() {
 		}
 	}, [pendingNavigation, setCurrentStep]);
 
-	const [isCompleting, setIsCompleting] = useState(false);
-	const [completeError, setCompleteError] = useState<string | null>(null);
-
 	const handleComplete = useCallback(async () => {
 		setIsCompleting(true);
 		setCompleteError(null);
 
 		try {
-			// Call server action to mark onboarding as complete
 			const result = await completeOnboardingWizard({
 				path: data.path,
 				industry: data.industry,
 				companyName: data.companyName,
-				userName: data.userName,
 				phoneSetupType: data.phoneSetupType,
 				emailSetupType: data.emailSetupType,
 				services: data.services,
-				teamInvites: data.teamInvites,
+				teamInvites: data.teamMembers,
 				paymentSetupComplete: data.paymentSetupComplete,
 				completedSteps: completedSteps,
 				skippedSteps: skippedSteps,
@@ -276,10 +242,7 @@ export function OnboardingWizard() {
 				return;
 			}
 
-			// Mark onboarding as completed in local state
 			updateData({ onboardingCompleted: true });
-
-			// Navigate to dashboard
 			router.push("/dashboard");
 		} catch (error) {
 			setCompleteError(
@@ -288,12 +251,6 @@ export function OnboardingWizard() {
 			setIsCompleting(false);
 		}
 	}, [data, completedSteps, skippedSteps, updateData, router]);
-
-	// Get steps for current phase for mini progress
-	const phaseSteps = STEP_ORDER.filter(
-		(step) => STEP_CONFIG[step].phase === currentPhase
-	);
-	const phaseProgress = phaseSteps.indexOf(currentStep);
 
 	return (
 		<>
@@ -305,69 +262,79 @@ export function OnboardingWizard() {
 				/>
 			)}
 
-			<div className="flex h-full flex-col bg-background">
-				{/* Header with Progress */}
-				<div className="bg-background/80 backdrop-blur-xl sticky top-0 z-40 border-b">
-					<div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-						<div className="flex items-center gap-4 mb-4">
-							<div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-								<Globe className="h-5 w-5" />
-							</div>
-							<div className="flex-1">
-								<div className="flex items-center gap-2">
-									<h1 className="text-lg font-semibold">
-										{isLastStep ? "You're All Set!" : `Phase ${currentPhase}: ${PHASE_NAMES[currentPhase - 1]}`}
-									</h1>
-								</div>
-								<p className="text-sm text-muted-foreground">
+			<div className="min-h-screen bg-background flex flex-col">
+				{/* Minimal Header - No borders */}
+				<header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+						<div className="flex items-center justify-between h-14 sm:h-16">
+							{/* Left: Phase info */}
+							<div className="flex items-center gap-2 sm:gap-4 min-w-0">
+								<span className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+									{isLastStep ? "Complete" : PHASE_LABELS[currentPhase]}
+								</span>
+								<span className="hidden sm:inline text-muted-foreground/40">·</span>
+								<span className="hidden sm:inline text-sm text-muted-foreground truncate">
 									{currentConfig.title}
-									{!isLastStep && ` • ~${remainingMinutes} min remaining`}
-								</p>
+								</span>
+							</div>
+
+							{/* Right: Progress */}
+							<div className="flex items-center gap-2 sm:gap-4">
+								{!isLastStep && (
+									<span className="hidden sm:inline text-sm text-muted-foreground">
+										~{remainingMinutes} min left
+									</span>
+								)}
+								<span className="text-xs sm:text-sm font-medium tabular-nums">
+									{currentStepIndex + 1}/{STEP_ORDER.length}
+								</span>
 							</div>
 						</div>
 
-						{/* Main Progress Bar */}
-						<div className="space-y-2">
-							<Progress value={progress} className="h-2" />
-							<div className="flex justify-between text-xs text-muted-foreground">
-								<span>Step {currentStepIndex + 1} of {STEP_ORDER.length}</span>
-								<span>{Math.round(progress)}% complete</span>
-							</div>
+						{/* Progress Bar - Thin line */}
+						<div className="h-0.5 bg-muted/50">
+							<div
+								className="h-full bg-primary transition-all duration-300 ease-out"
+								style={{ width: `${progress}%` }}
+							/>
 						</div>
+					</div>
+				</header>
 
-						{/* Phase Steps Indicator */}
-						<div className="flex items-center justify-center gap-1.5 mt-3 overflow-x-auto pb-1">
+				{/* Step Progress Dots - Mobile friendly */}
+				<div className="bg-muted/20">
+					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+						<div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
 							{STEP_ORDER.map((step, index) => {
-								const Icon = STEP_ICONS[step];
-								const config = STEP_CONFIG[step];
 								const isActive = step === currentStep;
 								const isCompleted = completedSteps.includes(step);
-								const isSamePhase = config.phase === currentPhase;
+								const isPast = index < currentStepIndex;
 
 								return (
 									<button
 										key={step}
 										type="button"
 										onClick={() => {
-											if (isCompleted || index < currentStepIndex) {
+											if (isCompleted || isPast) {
 												setCurrentStep(step);
 											}
 										}}
-										disabled={!isCompleted && index > currentStepIndex}
-										title={config.title}
+										disabled={!isCompleted && !isPast}
 										className={cn(
-											"flex items-center justify-center rounded-full transition-all",
-											isSamePhase ? "h-8 w-8" : "h-6 w-6",
-											isActive && "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2",
-											isCompleted && !isActive && "bg-green-500 text-white cursor-pointer hover:bg-green-600",
-											!isActive && !isCompleted && "bg-muted text-muted-foreground",
-											!isSamePhase && "hidden sm:flex"
+											"relative flex items-center justify-center transition-all duration-200",
+											isActive ? "w-6 h-6 sm:w-8 sm:h-8" : "w-2 h-2 sm:w-3 sm:h-3",
+											isActive && "rounded-full bg-primary text-primary-foreground",
+											isCompleted && !isActive && "rounded-full bg-primary/20 hover:bg-primary/30 cursor-pointer",
+											!isActive && !isCompleted && !isPast && "rounded-full bg-muted",
+											isPast && !isCompleted && "rounded-full bg-muted-foreground/30"
 										)}
+										title={STEP_CONFIG[step].title}
 									>
-										{isCompleted && !isActive ? (
-											<Check className={cn(isSamePhase ? "h-4 w-4" : "h-3 w-3")} />
-										) : (
-											<Icon className={cn(isSamePhase ? "h-4 w-4" : "h-3 w-3")} />
+										{isActive && (
+											<span className="text-[10px] sm:text-xs font-medium">{index + 1}</span>
+										)}
+										{isCompleted && !isActive && (
+											<Check className="h-1.5 w-1.5 sm:h-2 sm:w-2 text-primary" />
 										)}
 									</button>
 								);
@@ -376,88 +343,110 @@ export function OnboardingWizard() {
 					</div>
 				</div>
 
-				{/* Step Content */}
-				<div className="flex-1 overflow-y-auto">
-					<div className="p-4 sm:p-6 max-w-4xl mx-auto">
-						{currentStep === "welcome" && <WelcomeStep />}
-						{currentStep === "company" && <CompanyStep />}
-						{currentStep === "profile" && <ProfileStep />}
-						{currentStep === "phone" && <PhoneStep />}
-						{currentStep === "email" && <EmailStep />}
-						{currentStep === "notifications" && <NotificationsStep />}
-						{currentStep === "services" && <ServicesStep />}
-						{currentStep === "team" && <TeamStep />}
-						{currentStep === "payments" && <PaymentsStep />}
-						{currentStep === "schedule" && <ScheduleStep />}
-						{currentStep === "reports" && <ReportsStep />}
-						{currentStep === "settings" && <SettingsStep />}
-						{currentStep === "first-action" && <FirstActionStep />}
-						{currentStep === "complete" && <CompleteStep />}
+				{/* Main Content - Fully responsive */}
+				<main className="flex-1">
+					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+						<div className="w-full max-w-3xl mx-auto">
+							{currentStep === "welcome" && <WelcomeStep />}
+							{currentStep === "company" && <CompanyStep />}
+							{currentStep === "phone" && <PhoneStep />}
+							{currentStep === "email" && <EmailStep />}
+							{currentStep === "notifications" && <NotificationsStep />}
+							{currentStep === "services" && <ServicesStep />}
+							{currentStep === "team" && <TeamStep />}
+							{currentStep === "payments" && <PaymentsStep />}
+							{currentStep === "schedule" && <ScheduleStep />}
+							{currentStep === "reports" && <ReportsStep />}
+							{currentStep === "settings" && <SettingsStep />}
+							{currentStep === "first-action" && <FirstActionStep />}
+							{currentStep === "complete" && <CompleteStep />}
+						</div>
 					</div>
-				</div>
+				</main>
 
-				{/* Footer Navigation */}
-				<div className="bg-background/80 backdrop-blur-xl sticky bottom-0 z-40 border-t">
-					<div className="flex items-center justify-between max-w-4xl mx-auto px-4 sm:px-6 py-4">
-						<Button
-							variant="outline"
-							onClick={goBack}
-							disabled={isFirstStep}
-							className={cn(isFirstStep && "invisible")}
-						>
-							<ChevronLeft className="mr-2 h-4 w-4" />
-							Back
-						</Button>
+				{/* Footer Navigation - No borders, responsive */}
+				<footer className="sticky bottom-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+						<div className="flex items-center justify-between h-16 sm:h-20 gap-2">
+							{/* Back Button */}
+							<div className="w-20 sm:w-32">
+								{!isFirstStep && (
+									<Button
+										variant="ghost"
+										onClick={goBack}
+										size="sm"
+										className="gap-1 sm:gap-2"
+									>
+										<ChevronLeft className="h-4 w-4" />
+										<span className="hidden sm:inline">Back</span>
+									</Button>
+								)}
+							</div>
 
-						<div className="flex flex-col items-end gap-2">
-							{completeError && (
-								<p className="text-sm text-destructive">{completeError}</p>
-							)}
-							<div className="flex gap-3">
-							{isLastStep ? (
-								<Button onClick={handleComplete} size="lg" disabled={isCompleting}>
-									{isCompleting ? (
-										<>
-											<span className="mr-2 h-4 w-4 animate-spin">⏳</span>
-											Completing...
-										</>
-									) : (
-										<>
-											<Rocket className="mr-2 h-4 w-4" />
-											Go to Dashboard
-										</>
-									)}
-								</Button>
-							) : (
-								<>
-									{!STEP_CONFIG[currentStep].required && (
-										<Button variant="ghost" onClick={goNext}>
-											Skip
-										</Button>
-									)}
-									<Button onClick={goNext} disabled={!canProceed}>
-										{currentStepIndex === STEP_ORDER.length - 2 ? (
+							{/* Center: Optional skip hint */}
+							<div className="flex-1 text-center">
+								{!STEP_CONFIG[currentStep].required && !isLastStep && (
+									<span className="text-xs sm:text-sm text-muted-foreground">
+										Optional
+									</span>
+								)}
+							</div>
+
+							{/* Forward Actions */}
+							<div className="flex justify-end gap-2 sm:gap-3">
+								{completeError && (
+									<p className="hidden sm:block text-sm text-destructive mr-2">{completeError}</p>
+								)}
+
+								{isLastStep ? (
+									<Button
+										onClick={handleComplete}
+										disabled={isCompleting}
+										size="sm"
+										className="gap-1 sm:gap-2"
+									>
+										{isCompleting ? (
 											<>
-												Finish Setup
-												<PartyPopper className="ml-2 h-4 w-4" />
+												<Loader2 className="h-4 w-4 animate-spin" />
+												<span className="hidden sm:inline">Saving...</span>
 											</>
 										) : (
 											<>
-												Continue
-												<ChevronRight className="ml-2 h-4 w-4" />
+												<span className="sm:hidden">Done</span>
+												<span className="hidden sm:inline">Go to Dashboard</span>
+												<Rocket className="h-4 w-4" />
 											</>
 										)}
 									</Button>
-								</>
-							)}
+								) : (
+									<>
+										{!STEP_CONFIG[currentStep].required && (
+											<Button
+												variant="ghost"
+												onClick={goNext}
+												size="sm"
+												className="hidden sm:inline-flex"
+											>
+												Skip
+											</Button>
+										)}
+										<Button
+											onClick={goNext}
+											disabled={!canProceed}
+											size="sm"
+											className="gap-1 sm:gap-2"
+										>
+											<span className="sm:hidden">Next</span>
+											<span className="hidden sm:inline">Continue</span>
+											<ChevronRight className="h-4 w-4" />
+										</Button>
+									</>
+								)}
 							</div>
 						</div>
 					</div>
-				</div>
+				</footer>
 			</div>
 		</>
 	);
 }
-
-// Need React import for useState (already imported above)
-import React from "react";

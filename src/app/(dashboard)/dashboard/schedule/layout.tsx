@@ -9,6 +9,9 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Applies the unified dashboard chrome (header + toolbar) to the schedule routes
  * while still letting the actual scheduler occupy the full viewport height.
+ *
+ * Mobile: Hides toolbar since mobile views have integrated navigation headers
+ * Desktop: Shows toolbar with view controls and date navigation
  */
 export default function ScheduleLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
@@ -26,6 +29,7 @@ export default function ScheduleLayout({ children }: { children: ReactNode }) {
 		},
 		toolbar: {
 			show: true,
+			hideOnMobile: true, // Hide on mobile - mobile views have integrated headers
 			title: <ScheduleToolbarTitle />,
 			actions: <ScheduleToolbarActions />,
 		},

@@ -12,10 +12,10 @@ type JobsShellProps = {
  */
 export function JobsShell({ children }: JobsShellProps) {
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4 md:space-y-6 p-4 md:p-6">
 			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Active Jobs</h1>
-				<p className="text-muted-foreground">
+				<h1 className="text-2xl md:text-3xl font-bold tracking-tight">Active Jobs</h1>
+				<p className="text-muted-foreground text-sm md:text-base">
 					Manage active work orders, job assignments, and technician tasks
 				</p>
 			</div>

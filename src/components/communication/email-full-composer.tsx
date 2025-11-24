@@ -3,6 +3,7 @@
 import { sendCustomerEmailAction } from "@/actions/communications";
 import { saveDraftAction, deleteDraftAction } from "@/actions/email-actions";
 import { Button } from "@/components/ui/button";
+import { toast as sonnerToast } from "sonner";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -46,6 +47,7 @@ import {
 	RecipientAutocomplete,
 	type Recipient,
 } from "@/components/communication/recipient-autocomplete";
+import { CustomerContextCard } from "@/components/communication/customer-context-card";
 
 type EmailAttachment = {
 	filename: string;
@@ -132,6 +134,7 @@ export function EmailFullComposer({
 	const [undoCountdown, setUndoCountdown] = useState(5);
 	const sendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	const countdownToastIdRef = useRef<string | number | null>(null);
 	const pendingEmailDataRef = useRef<{
 		to: string[];
 		subject: string;
@@ -147,6 +150,12 @@ export function EmailFullComposer({
 	const signature = useMemo(
 		() => signatureOptions.find((opt) => opt.id === signatureId) ?? signatureOptions[0],
 		[signatureId],
+	);
+
+	// Extract first customer recipient for context card
+	const customerRecipient = useMemo(
+		() => recipients.find((r) => r.type === "customer" && r.id),
+		[recipients],
 	);
 
 	// Mark as dirty when content changes
@@ -249,6 +258,10 @@ export function EmailFullComposer({
 			clearInterval(countdownIntervalRef.current);
 			countdownIntervalRef.current = null;
 		}
+		if (countdownToastIdRef.current !== null) {
+			sonnerToast.dismiss(countdownToastIdRef.current);
+			countdownToastIdRef.current = null;
+		}
 		setIsPendingSend(false);
 		setUndoCountdown(5);
 		pendingEmailDataRef.current = null;
@@ -258,6 +271,12 @@ export function EmailFullComposer({
 	const executeSend = useCallback(async () => {
 		const emailData = pendingEmailDataRef.current;
 		if (!emailData) return;
+
+		// Dismiss countdown toast
+		if (countdownToastIdRef.current !== null) {
+			sonnerToast.dismiss(countdownToastIdRef.current);
+			countdownToastIdRef.current = null;
+		}
 
 		setIsSending(true);
 		try {
@@ -334,9 +353,11 @@ export function EmailFullComposer({
 		setIsPendingSend(true);
 		setUndoCountdown(5);
 
-		toastApi.info(
+		// Create initial toast and store ID
+		let countdown = 5;
+		countdownToastIdRef.current = sonnerToast.info(
 			<div className="flex items-center justify-between gap-4 w-full">
-				<span>Sending email in {5}s...</span>
+				<span>Sending email in {countdown}s...</span>
 				<button
 					className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 					onClick={() => cancelSend()}
@@ -347,10 +368,30 @@ export function EmailFullComposer({
 			{ duration: UNDO_SEND_DELAY + 500 }
 		);
 
-		let countdown = 5;
+		// Update toast every second with new countdown
 		countdownIntervalRef.current = setInterval(() => {
 			countdown--;
 			setUndoCountdown(countdown);
+
+			// Update the toast with new countdown
+			if (countdownToastIdRef.current !== null && countdown > 0) {
+				sonnerToast.info(
+					<div className="flex items-center justify-between gap-4 w-full">
+						<span>Sending email in {countdown}s...</span>
+						<button
+							className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+							onClick={() => cancelSend()}
+						>
+							Undo
+						</button>
+					</div>,
+					{
+						id: countdownToastIdRef.current,
+						duration: UNDO_SEND_DELAY + 500
+					}
+				);
+			}
+
 			if (countdown <= 0 && countdownIntervalRef.current) {
 				clearInterval(countdownIntervalRef.current);
 				countdownIntervalRef.current = null;
@@ -590,7 +631,7 @@ export function EmailFullComposer({
 					<div className="flex items-start gap-2">
 						<span className="text-xs font-medium text-muted-foreground w-12 pt-2">To:</span>
 						<RecipientAutocomplete
-							recipients={recipients}
+							value={recipients}
 							onChange={setRecipients}
 							placeholder="Search customers, vendors, or type email..."
 							className="flex-1"
@@ -622,7 +663,7 @@ export function EmailFullComposer({
 						<div className="flex items-start gap-2">
 							<span className="text-xs font-medium text-muted-foreground w-12 pt-2">Cc:</span>
 							<RecipientAutocomplete
-								recipients={ccRecipients}
+								value={ccRecipients}
 								onChange={setCcRecipients}
 								placeholder="Add Cc recipients..."
 								className="flex-1"
@@ -645,7 +686,7 @@ export function EmailFullComposer({
 						<div className="flex items-start gap-2">
 							<span className="text-xs font-medium text-muted-foreground w-12 pt-2">Bcc:</span>
 							<RecipientAutocomplete
-								recipients={bccRecipients}
+								value={bccRecipients}
 								onChange={setBccRecipients}
 								placeholder="Add Bcc recipients..."
 								className="flex-1"
@@ -672,9 +713,21 @@ export function EmailFullComposer({
 							onChange={(e) => setSubject(e.target.value)}
 							placeholder="Subject"
 							className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+							autoComplete="off"
+							autoCorrect="off"
+							autoCapitalize="off"
+							spellCheck="true"
+							name="email-subject"
 						/>
 					</div>
 				</div>
+
+				{/* Customer Context Card */}
+				{customerRecipient?.id && (
+					<div className="px-3 py-2 border-b border-border/50">
+						<CustomerContextCard customerId={customerRecipient.id} />
+					</div>
+				)}
 
 				{/* Message Body */}
 				<div className="flex-1 flex flex-col min-h-0 overflow-hidden">

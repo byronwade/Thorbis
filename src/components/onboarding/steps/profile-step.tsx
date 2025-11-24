@@ -1,14 +1,10 @@
 "use client";
 
 /**
- * Profile Step - User Profile Setup
- *
- * Sets up the user's personal profile within the company.
- * Shows a preview of how they'll appear to customers and team.
+ * Profile Step - Clean User Profile Setup
  */
 
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { InfoCard } from "@/components/onboarding/info-cards/walkthrough-slide";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,7 +14,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { User, Upload, X, Mail, Phone, MessageSquare } from "lucide-react";
+import { User, X, Mail, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useRef } from "react";
 
@@ -75,10 +71,11 @@ export function ProfileStep() {
 	};
 
 	return (
-		<div className="space-y-6 max-w-2xl">
-			<div>
-				<h2 className="text-xl font-semibold">Set up your profile</h2>
-				<p className="text-sm text-muted-foreground">
+		<div className="space-y-10">
+			{/* Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-semibold">Your profile</h2>
+				<p className="text-muted-foreground">
 					This is how you'll appear to your team and customers.
 				</p>
 			</div>
@@ -214,57 +211,30 @@ export function ProfileStep() {
 
 			{/* Preview */}
 			{data.userName && (
-				<div className="rounded-xl bg-muted/30 p-4 space-y-3">
-					<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-						Preview - How customers see you
-					</p>
-
-					<div className="flex items-center gap-4 p-4 bg-background rounded-lg border">
+				<div className="pt-6 border-t">
+					<p className="text-xs text-muted-foreground mb-3">Preview</p>
+					<div className="flex items-center gap-4">
 						{data.userPhoto ? (
 							<img
 								src={data.userPhoto}
 								alt=""
-								className="h-14 w-14 rounded-full object-cover"
+								className="h-12 w-12 rounded-full object-cover"
 							/>
 						) : (
-							<div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
+							<div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
 								{getInitials(data.userName)}
 							</div>
 						)}
-						<div className="flex-1">
-							<p className="font-semibold">{data.userName}</p>
-							<p className="text-sm text-muted-foreground capitalize">
+						<div>
+							<p className="font-medium">{data.userName}</p>
+							<p className="text-sm text-muted-foreground">
 								{USER_ROLES.find((r) => r.value === data.userRole)?.label || "Team Member"}
 								{data.companyName && ` at ${data.companyName}`}
 							</p>
 						</div>
 					</div>
-
-					{/* Contact Preview */}
-					<div className="flex flex-wrap gap-4 text-sm">
-						{data.userEmail && (
-							<div className="flex items-center gap-2 text-muted-foreground">
-								<Mail className="h-4 w-4" />
-								{data.userEmail}
-							</div>
-						)}
-						{data.userPhone && (
-							<div className="flex items-center gap-2 text-muted-foreground">
-								<Phone className="h-4 w-4" />
-								{data.userPhone}
-							</div>
-						)}
-					</div>
 				</div>
 			)}
-
-			{/* Info Card */}
-			<InfoCard
-				icon={<MessageSquare className="h-5 w-5" />}
-				title="Personalized communication"
-				description="When you send messages to customers, they'll see your name and photo. This builds trust and makes communication feel more personal."
-				variant="tip"
-			/>
 		</div>
 	);
 }

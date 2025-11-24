@@ -1,193 +1,255 @@
 "use client";
 
 /**
- * Phone & SMS Step - Communication Setup
+ * Phone & SMS Step - Real Number Porting
  *
- * Critical step that explains:
- * - Why business phone numbers matter
- * - 10DLC verification requirements for SMS
- * - Porting timeline and process
+ * Integrates with Telnyx porting API to:
+ * - Check number portability
+ * - Collect current carrier info
+ * - Submit real porting orders
+ * - Track porting status
  */
 
 import { useState } from "react";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { InfoCard, ExpandableInfo } from "@/components/onboarding/info-cards/walkthrough-slide";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-	Phone,
 	MessageSquare,
 	Smartphone,
 	ArrowRightLeft,
 	SkipForward,
-	CheckCircle2,
-	Clock,
-	Shield,
+	Check,
+	Loader2,
 	AlertTriangle,
-	Sparkles,
-	Users,
-	Bell,
-	FileCheck,
+	CheckCircle2,
+	Shield,
+	Clock,
+	Building2,
+	Info,
 } from "lucide-react";
+import { checkPortability } from "@/actions/phone-porting";
+import { getEstimatedFocDate } from "@/lib/telnyx/porting";
+import { PortingStatusTracker } from "@/components/onboarding/status-tracking/porting-status-tracker";
+import {
+	PHONE_PORTING_FEE,
+	PHONE_NEW_NUMBER_SETUP_FEE,
+	PHONE_NEW_NUMBER_MONTHLY_FEE,
+	formatCurrency,
+} from "@/lib/pricing/onboarding-fees";
 
 type PhoneSetupOption = "new" | "port" | "skip";
 
 const SETUP_OPTIONS: {
 	id: PhoneSetupOption;
 	title: string;
-	description: string;
+	subtitle: string;
 	icon: React.ElementType;
-	badge?: string;
-	badgeVariant?: "default" | "secondary" | "destructive" | "outline";
-	timeline: string;
-	features: string[];
+	pricing?: string;
 }[] = [
 	{
 		id: "new",
-		title: "Get a New Number",
-		description: "We'll provision a local business number instantly",
+		title: "Get a new number",
+		subtitle: "Ready instantly",
 		icon: Smartphone,
-		badge: "Instant",
-		badgeVariant: "default",
-		timeline: "Ready in 2 minutes",
-		features: [
-			"Professional local number",
-			"SMS enabled immediately",
-			"Call routing & voicemail",
-			"No porting hassle",
-		],
+		pricing: `${formatCurrency(PHONE_NEW_NUMBER_SETUP_FEE)} setup + ${formatCurrency(PHONE_NEW_NUMBER_MONTHLY_FEE)}/month`,
 	},
 	{
 		id: "port",
-		title: "Port Existing Number",
-		description: "Bring your current business number to Thorbis",
+		title: "Port existing number",
+		subtitle: "Keep your current number",
 		icon: ArrowRightLeft,
-		badge: "2-4 weeks",
-		badgeVariant: "secondary",
-		timeline: "Requires carrier verification",
-		features: [
-			"Keep your existing number",
-			"No disruption to customers",
-			"We handle the paperwork",
-			"Get a temp number while waiting",
-		],
+		pricing: `${formatCurrency(PHONE_PORTING_FEE)} one-time`,
 	},
 	{
 		id: "skip",
-		title: "Skip for Now",
-		description: "Set up phone later from settings",
+		title: "Skip for now",
+		subtitle: "Set up later",
 		icon: SkipForward,
-		timeline: "You can always add this later",
-		features: [
-			"Manual call tracking",
-			"No SMS reminders",
-			"Add anytime from settings",
-		],
 	},
 ];
 
+interface PortabilityCheck {
+	checked: boolean;
+	portable: boolean | null;
+	carrier: string | null;
+	error: string | null;
+}
+
 export function PhoneStep() {
 	const { data, updateData } = useOnboardingStore();
-	const [showVerificationInfo, setShowVerificationInfo] = useState(false);
+	const [checking, setChecking] = useState(false);
+	const [portability, setPortability] = useState<PortabilityCheck>({
+		checked: false,
+		portable: null,
+		carrier: null,
+		error: null,
+	});
 
-	const selectedOption = SETUP_OPTIONS.find((o) => o.id === data.phoneSetupType);
+	// Porting order details
+	const [currentCarrier, setCurrentCarrier] = useState("");
+	const [accountNumber, setAccountNumber] = useState("");
+	const [pinPassword, setPinPassword] = useState("");
+	const [billingPhone, setBillingPhone] = useState("");
+	const [portingSubmitted, setPortingSubmitted] = useState(false);
+	const [portingOrderId, setPortingOrderId] = useState<string | null>(null);
+
+	const estimatedFocDate = getEstimatedFocDate();
+
+	const handleCheckPortability = async () => {
+		if (!data.phoneNumber) return;
+
+		setChecking(true);
+		setPortability({
+			checked: false,
+			portable: null,
+			carrier: null,
+			error: null,
+		});
+
+		try {
+			const result = await checkPortability(data.phoneNumber);
+
+			if (result.success) {
+				setPortability({
+					checked: true,
+					portable: result.portable || false,
+					carrier: result.carrier || null,
+					error: result.portable
+						? null
+						: "This number cannot be ported. Please contact your current carrier.",
+				});
+
+				// Pre-fill carrier name if detected
+				if (result.carrier) {
+					setCurrentCarrier(result.carrier);
+				}
+			} else {
+				setPortability({
+					checked: true,
+					portable: null,
+					carrier: null,
+					error: result.error || "Failed to check portability",
+				});
+			}
+		} catch (error) {
+			setPortability({
+				checked: true,
+				portable: null,
+				carrier: null,
+				error: "Failed to check portability. Please try again.",
+			});
+		} finally {
+			setChecking(false);
+		}
+	};
+
+	const canProceedWithPorting =
+		portability.checked &&
+		portability.portable &&
+		data.phoneNumber &&
+		currentCarrier &&
+		accountNumber;
 
 	return (
-		<div className="space-y-6 max-w-2xl">
-			<div>
-				<h2 className="text-xl font-semibold">Set up business phone & SMS</h2>
-				<p className="text-sm text-muted-foreground">
-					A dedicated business line keeps work and personal separate, and enables powerful features.
+		<div className="space-y-10">
+			{/* Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-semibold">Phone & SMS</h2>
+				<p className="text-muted-foreground">
+					A dedicated business line keeps work and personal separate.
 				</p>
 			</div>
 
-			{/* Why This Matters */}
-			<InfoCard
-				icon={<Sparkles className="h-5 w-5" />}
-				title="Why a business phone number?"
-				description="Professional communication builds trust and enables automation."
-				bullets={[
-					"Separate work calls from personal",
-					"Route calls to available team members",
-					"Send automated appointment reminders via SMS",
-					"Track all customer communications in one place",
-				]}
-				variant="tip"
-			/>
-
 			{/* Setup Options */}
-			<div className="space-y-3">
-				{SETUP_OPTIONS.map((option) => {
-					const Icon = option.icon;
-					const isSelected = data.phoneSetupType === option.id;
+			<div className="space-y-4">
+				<label className="text-sm font-medium text-muted-foreground">
+					Choose setup method
+				</label>
+				<div className="grid gap-3">
+					{SETUP_OPTIONS.map((option) => {
+						const Icon = option.icon;
+						const isSelected = data.phoneSetupType === option.id;
 
-					return (
-						<button
-							key={option.id}
-							type="button"
-							onClick={() => updateData({ phoneSetupType: option.id })}
-							className={cn(
-								"w-full flex items-start gap-4 rounded-xl p-5 text-left transition-all",
-								isSelected
-									? "bg-primary/10 ring-2 ring-primary"
-									: "bg-muted/30 hover:bg-muted/50"
-							)}
-						>
-							<div className={cn(
-								"flex h-12 w-12 items-center justify-center rounded-xl transition-colors flex-shrink-0",
-								isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
-							)}>
-								<Icon className="h-6 w-6" />
-							</div>
+						return (
+							<button
+								key={option.id}
+								type="button"
+								onClick={() => {
+									// Update phone setup type
+									updateData({ phoneSetupType: option.id });
 
-							<div className="flex-1 min-w-0">
-								<div className="flex items-center gap-2 mb-1">
-									<p className="font-semibold">{option.title}</p>
-									{option.badge && (
-										<Badge variant={option.badgeVariant}>{option.badge}</Badge>
-									)}
-								</div>
-								<p className="text-sm text-muted-foreground mb-2">
-									{option.description}
-								</p>
-								<div className="flex items-center gap-1 text-xs text-muted-foreground">
-									<Clock className="h-3 w-3" />
-									{option.timeline}
-								</div>
+									// Update billing counts based on selection
+									if (option.id === "new") {
+										updateData({
+											newPhoneNumberCount: 1,
+											phonePortingCount: 0,
+										});
+									} else if (option.id === "port") {
+										updateData({
+											phonePortingCount: 1,
+											newPhoneNumberCount: 0,
+										});
+									} else {
+										updateData({
+											phonePortingCount: 0,
+											newPhoneNumberCount: 0,
+										});
+									}
 
+									// Reset portability check when changing options
+									if (option.id !== "port") {
+										setPortability({
+											checked: false,
+											portable: null,
+											carrier: null,
+											error: null,
+										});
+									}
+								}}
+								className={cn(
+									"relative flex items-center gap-4 rounded-lg border-2 p-4 text-left transition-all",
+									isSelected
+										? "border-primary bg-primary/5"
+										: "border-transparent bg-muted/40 hover:bg-muted/60"
+								)}
+							>
 								{isSelected && (
-									<div className="mt-3 pt-3 border-t border-border/50">
-										<ul className="space-y-1">
-											{option.features.map((feature, i) => (
-												<li key={i} className="flex items-center gap-2 text-sm">
-													<CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
-													{feature}
-												</li>
-											))}
-										</ul>
+									<div className="absolute top-3 right-3">
+										<Check className="h-4 w-4 text-primary" />
 									</div>
 								)}
-							</div>
-
-							{isSelected && (
-								<CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-							)}
-						</button>
-					);
-				})}
+								<div
+									className={cn(
+										"flex h-10 w-10 items-center justify-center rounded-full",
+										isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+									)}
+								>
+									<Icon className="h-5 w-5" />
+								</div>
+								<div className="flex-1">
+									<p className="font-medium">{option.title}</p>
+									<p className="text-sm text-muted-foreground">{option.subtitle}</p>
+									{option.pricing && (
+										<p className="text-sm font-medium text-primary mt-1">
+											{option.pricing}
+										</p>
+									)}
+								</div>
+							</button>
+						);
+					})}
+				</div>
 			</div>
 
 			{/* New Number Configuration */}
 			{data.phoneSetupType === "new" && (
-				<div className="rounded-xl bg-muted/30 p-5 space-y-4">
-					<h3 className="font-semibold">Configure Your New Number</h3>
-
+				<div className="space-y-6">
 					<div className="space-y-2">
-						<Label htmlFor="areaCode">Preferred Area Code (optional)</Label>
+						<Label htmlFor="areaCode">Preferred area code</Label>
 						<Input
 							id="areaCode"
 							placeholder="e.g., 555"
@@ -195,17 +257,17 @@ export function PhoneStep() {
 							className="w-[120px]"
 						/>
 						<p className="text-xs text-muted-foreground">
-							We'll try to get a number in this area code, or nearby if unavailable.
+							Optional. We'll match your location if not specified.
 						</p>
 					</div>
 
-					<div className="flex items-center justify-between rounded-lg bg-background p-4">
+					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<MessageSquare className="h-5 w-5 text-primary" />
+							<MessageSquare className="h-5 w-5 text-muted-foreground" />
 							<div>
 								<p className="font-medium">Enable SMS</p>
 								<p className="text-sm text-muted-foreground">
-									Send appointment reminders and updates
+									Send appointment reminders
 								</p>
 							</div>
 						</div>
@@ -217,103 +279,287 @@ export function PhoneStep() {
 				</div>
 			)}
 
-			{/* Porting Information */}
+			{/* Porting Configuration - With Real Telnyx Integration */}
 			{data.phoneSetupType === "port" && (
-				<div className="space-y-4">
-					<div className="rounded-xl bg-muted/30 p-5 space-y-4">
-						<h3 className="font-semibold">Port Your Existing Number</h3>
-
+				<div className="space-y-6">
+					{/* Step 1: Enter Number & Check Portability */}
+					<div className="space-y-4">
 						<div className="space-y-2">
-							<Label htmlFor="portNumber">Number to Port</Label>
-							<Input
-								id="portNumber"
-								type="tel"
-								placeholder="(555) 123-4567"
-								value={data.phoneNumber}
-								onChange={(e) => updateData({ phoneNumber: e.target.value })}
-							/>
+							<Label htmlFor="portNumber">
+								Number to port <span className="text-destructive">*</span>
+							</Label>
+							<div className="flex gap-2">
+								<Input
+									id="portNumber"
+									type="tel"
+									placeholder="(555) 123-4567"
+									value={data.phoneNumber}
+									onChange={(e) => {
+										updateData({ phoneNumber: e.target.value });
+										// Reset portability check when number changes
+										if (portability.checked) {
+											setPortability({
+												checked: false,
+												portable: null,
+												carrier: null,
+												error: null,
+											});
+										}
+									}}
+									className="flex-1"
+								/>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={handleCheckPortability}
+									disabled={!data.phoneNumber || checking}
+								>
+									{checking ? (
+										<>
+											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											Checking...
+										</>
+									) : (
+										"Check"
+									)}
+								</Button>
+							</div>
 						</div>
 
-						<div className="flex items-center justify-between rounded-lg bg-background p-4">
-							<div className="flex items-center gap-3">
-								<MessageSquare className="h-5 w-5 text-primary" />
+						{/* Portability Result */}
+						{portability.checked && (
+							<>
+								{portability.portable && (
+									<div className="flex items-start gap-3 bg-green-500/10 rounded-lg p-4">
+										<CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+										<div className="text-sm">
+											<p className="font-medium text-green-700 dark:text-green-400">
+												Number is portable!
+											</p>
+											{portability.carrier && (
+												<p className="text-muted-foreground">
+													Current carrier detected: {portability.carrier}
+												</p>
+											)}
+										</div>
+									</div>
+								)}
+
+								{portability.error && (
+									<div className="flex items-start gap-3 bg-destructive/10 rounded-lg p-4">
+										<AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+										<div className="text-sm">
+											<p className="font-medium text-destructive">{portability.error}</p>
+										</div>
+									</div>
+								)}
+							</>
+						)}
+					</div>
+
+					{/* Step 2: Current Carrier Info (only if portable) */}
+					{portability.checked && portability.portable && (
+						<div className="space-y-6">
+							{/* Critical Warning Banner */}
+							<div className="rounded-lg border-2 border-destructive bg-destructive/5 p-5">
+								<div className="flex items-start gap-4">
+									<div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 flex-shrink-0">
+										<AlertTriangle className="h-5 w-5 text-destructive" />
+									</div>
+									<div className="flex-1 space-y-3">
+										<div>
+											<h4 className="text-base font-semibold text-destructive">Do Not Cancel Your Current Service</h4>
+											<p className="text-sm text-foreground mt-1">
+												Canceling your service with {portability.carrier} will immediately cancel the port and you will lose your phone number permanently.
+											</p>
+										</div>
+										<p className="text-sm text-muted-foreground">
+											You must keep your {portability.carrier} service active and paid until you receive confirmation that the port is complete.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							{/* Porting Information Card */}
+							<div className="rounded-lg border bg-card p-6">
+								<h4 className="font-semibold mb-4">What to Expect</h4>
+
+								<div className="space-y-4">
+									<div className="flex items-start gap-3">
+										<Clock className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+										<div className="space-y-1">
+											<p className="text-sm font-medium">Processing Time</p>
+											<p className="text-sm text-muted-foreground">
+												2-4 weeks is standard for all carriers. This timeline is controlled by {portability.carrier} and federal regulations.
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3">
+										<Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+										<div className="space-y-1">
+											<p className="text-sm font-medium">Third-Party Service</p>
+											<p className="text-sm text-muted-foreground">
+												We use Telnyx, a professional porting service, to coordinate with {portability.carrier}. Neither we nor Telnyx can speed up the process.
+											</p>
+										</div>
+									</div>
+
+									<div className="flex items-start gap-3">
+										<CheckCircle2 className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+										<div className="space-y-1">
+											<p className="text-sm font-medium">What You Need to Do</p>
+											<ul className="text-sm text-muted-foreground space-y-1 ml-0 list-none">
+												<li>• Keep your {portability.carrier} service active</li>
+												<li>• Pay your {portability.carrier} bills on time</li>
+												<li>• Check email daily for updates</li>
+												<li>• Do not make any changes to your {portability.carrier} account</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Carrier Info Section */}
+							<div className="space-y-4">
 								<div>
-									<p className="font-medium">Enable SMS when ready</p>
-									<p className="text-sm text-muted-foreground">
-										SMS will activate after porting completes
+									<h4 className="font-semibold">Carrier Information</h4>
+									<p className="text-sm text-muted-foreground mt-1">
+										Provide your current carrier details to submit the porting order.
+									</p>
+								</div>
+
+							<div className="grid gap-4 sm:grid-cols-2">
+								<div className="space-y-2 sm:col-span-2">
+									<Label htmlFor="currentCarrier">
+										Current carrier name <span className="text-destructive">*</span>
+									</Label>
+									<Input
+										id="currentCarrier"
+										placeholder="e.g., Verizon, AT&T, T-Mobile"
+										value={currentCarrier}
+										onChange={(e) => setCurrentCarrier(e.target.value)}
+									/>
+								</div>
+
+								<div className="space-y-2">
+									<Label htmlFor="accountNumber">
+										Account number <span className="text-destructive">*</span>
+									</Label>
+									<Input
+										id="accountNumber"
+										placeholder="Account number with current carrier"
+										value={accountNumber}
+										onChange={(e) => setAccountNumber(e.target.value)}
+									/>
+								</div>
+
+								<div className="space-y-2">
+									<Label htmlFor="pinPassword">PIN / Password</Label>
+									<Input
+										id="pinPassword"
+										type="password"
+										placeholder="If required by carrier"
+										value={pinPassword}
+										onChange={(e) => setPinPassword(e.target.value)}
+									/>
+									<p className="text-xs text-muted-foreground">
+										Some carriers require a PIN
+									</p>
+								</div>
+
+								<div className="space-y-2 sm:col-span-2">
+									<Label htmlFor="billingPhone">Billing telephone number (BTN)</Label>
+									<Input
+										id="billingPhone"
+										type="tel"
+										placeholder="(555) 123-4567"
+										value={billingPhone}
+										onChange={(e) => setBillingPhone(e.target.value)}
+									/>
+									<p className="text-xs text-muted-foreground">
+										The main phone number on your current carrier account
 									</p>
 								</div>
 							</div>
-							<Switch
-								checked={data.smsEnabled}
-								onCheckedChange={(v) => updateData({ smsEnabled: v })}
-							/>
-						</div>
-					</div>
+							</div>
 
-					{/* Porting Process Info */}
-					<InfoCard
-						icon={<FileCheck className="h-5 w-5" />}
-						title="What you'll need for porting"
-						description="We'll guide you through collecting these after setup:"
-						bullets={[
-							"Current carrier account number",
-							"Account PIN or password",
-							"Letter of Authorization (we provide the template)",
-							"Most recent bill showing the number",
-						]}
-						variant="default"
-					/>
+							{/* SMS Toggle */}
+							<div className="flex items-center justify-between rounded-lg border bg-card p-4">
+								<div className="flex items-center gap-3">
+									<MessageSquare className="h-5 w-5 text-muted-foreground" />
+									<div>
+										<p className="font-medium">Enable SMS</p>
+										<p className="text-sm text-muted-foreground">
+											Activates after porting completes
+										</p>
+									</div>
+								</div>
+								<Switch
+									checked={data.smsEnabled}
+									onCheckedChange={(v) => updateData({ smsEnabled: v })}
+								/>
+							</div>
+
+							{/* Submit porting order OR show tracker */}
+							{canProceedWithPorting && !portingSubmitted && (
+								<Button
+									type="button"
+									onClick={async () => {
+										// Save porting info
+										updateData({
+											portingStatus: "submitted",
+											portingCarrier: currentCarrier,
+											portingAccountNumber: accountNumber,
+											portingPin: pinPassword,
+											portingBillingPhone: billingPhone,
+										});
+
+										// In production, this would call a server action to submit to Telnyx
+										// For now, simulate getting an order ID
+										const mockOrderId = `port_${Date.now()}`;
+										setPortingOrderId(mockOrderId);
+										setPortingSubmitted(true);
+									}}
+									className="w-full"
+									variant="default"
+								>
+									<CheckCircle2 className="mr-2 h-4 w-4" />
+									Submit porting order
+								</Button>
+							)}
+
+							{/* Show porting status tracker after submission */}
+							{portingSubmitted && portingOrderId && (
+								<div className="mt-6 space-y-4">
+									<div className="flex items-center gap-2 text-sm text-muted-foreground">
+										<CheckCircle2 className="h-4 w-4 text-green-500" />
+										<span>Porting order submitted successfully</span>
+									</div>
+									<PortingStatusTracker
+										portingOrderId={portingOrderId}
+										phoneNumber={data.phoneNumber}
+										carrier={currentCarrier}
+										estimatedFocDate={estimatedFocDate}
+										onStatusChange={(status) => {
+											updateData({ portingStatus: status });
+										}}
+									/>
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 			)}
 
-			{/* 10DLC Verification Warning */}
+			{/* SMS Note */}
 			{data.smsEnabled && data.phoneSetupType !== "skip" && (
-				<InfoCard
-					icon={<Shield className="h-5 w-5" />}
-					title="SMS Verification Required"
-					description="To send SMS messages, your business must be verified through the 10DLC registration process. This is required by all carriers to prevent spam."
-					variant="warning"
-				/>
-			)}
-
-			{/* Expandable: 10DLC Deep Dive */}
-			{data.smsEnabled && data.phoneSetupType !== "skip" && (
-				<ExpandableInfo title="What is 10DLC verification?">
-					<div className="space-y-3">
-						<p>
-							10DLC (10-Digit Long Code) is a system that allows businesses to send
-							application-to-person (A2P) messages over standard 10-digit phone numbers.
-						</p>
-						<p>
-							<strong>Why it's required:</strong> Carriers (AT&T, Verizon, T-Mobile) now
-							require all businesses to register to prevent spam and improve deliverability.
-						</p>
-						<p>
-							<strong>The process:</strong>
-						</p>
-						<ol className="list-decimal list-inside space-y-1 text-sm">
-							<li>Register your business (EIN, business name, address)</li>
-							<li>Describe your use case (appointment reminders, updates)</li>
-							<li>Verification takes 1-7 business days</li>
-							<li>Once approved, SMS is enabled automatically</li>
-						</ol>
-						<p className="text-sm">
-							<strong>Don't worry!</strong> We'll guide you through every step after
-							you complete this initial setup.
-						</p>
-					</div>
-				</ExpandableInfo>
-			)}
-
-			{/* Skip Warning */}
-			{data.phoneSetupType === "skip" && (
-				<InfoCard
-					icon={<AlertTriangle className="h-5 w-5" />}
-					title="You'll miss out on key features"
-					description="Without a business number, you won't be able to send SMS appointment reminders, track calls, or use the unified inbox. You can always set this up later in Settings."
-					variant="warning"
-				/>
+				<div className="flex items-start gap-3 text-sm text-muted-foreground bg-muted/40 rounded-lg p-4">
+					<Shield className="h-4 w-4 flex-shrink-0 mt-0.5" />
+					<p>
+						SMS requires business verification (10DLC). We'll guide you through this after setup using the business information you provided.
+					</p>
+				</div>
 			)}
 		</div>
 	);

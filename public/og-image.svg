@@ -1,0 +1,45 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F0F0F"/>
+
+  <!-- Electric Blue Accent Line -->
+  <rect x="48" y="48" width="8" height="534" fill="#4F7BF7" rx="4"/>
+
+  <!-- Logo Text (Top Left) -->
+  <text x="80" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#F2F2F2">
+    Thorbis
+  </text>
+
+  <!-- Main Title -->
+  <text x="80" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="800" fill="#F2F2F2">
+    <tspan x="80" dy="0">Field Service Management</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#4F7BF7">
+    That Actually Works
+  </text>
+
+  <!-- Tagline -->
+  <text x="80" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="400" fill="#A3A3A3">
+    AI-powered scheduling, invoicing &amp; CRM for contractors
+  </text>
+
+  <!-- Pricing Badge Background -->
+  <rect x="80" y="500" width="280" height="60" fill="#262626" rx="12"/>
+
+  <!-- Pricing Badge Text -->
+  <text x="220" y="540" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#22C55E" text-anchor="middle">
+    $200/mo
+  </text>
+
+  <!-- Badge Subtitle -->
+  <text x="380" y="540" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400" fill="#737373">
+    All features included
+  </text>
+
+  <!-- Bottom Right - Website -->
+  <text x="1152" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="500" fill="#737373" text-anchor="end">
+    thorbis.com
+  </text>
+</svg>

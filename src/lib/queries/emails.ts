@@ -2,7 +2,7 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 
-export type EmailFolder = "inbox" | "spam" | "starred" | "sent" | "drafts" | "archive" | "snoozed" | "trash" | "bin";
+export type EmailFolder = "inbox" | "spam" | "starred" | "sent" | "drafts" | "archive" | "snoozed" | "trash" | "bin" | "all";
 
 export type EmailQueryParams = {
 	folder?: EmailFolder;
@@ -126,7 +126,7 @@ export const getEmails = cache(async (
 					.eq("is_archived", false)
 					.neq("status", "draft")
 					.or("category.is.null,category.neq.spam")
-					.or("snoozed_until.is.null,snoozed_until.lt.now()");
+					.or(`snoozed_until.is.null,snoozed_until.lt.${new Date().toISOString()}`);
 				break;
 			case "sent":
 				// Sent: outbound, not archived, not drafts
@@ -136,10 +136,13 @@ export const getEmails = cache(async (
 					.neq("status", "draft");
 				break;
 			case "spam":
-				query = query.eq("category", "spam");
+				// Spam: filtering done in-memory to catch both category=spam AND tags containing spam
+				// Don't filter at DB level to ensure we don't lose any spam-tagged emails
 				break;
 			case "starred":
-				query = query.contains("tags", ["starred"]).is("deleted_at", null);
+				// Starred filtering done in-memory after fetch due to JSONB query limitations
+				// The .contains() generates PostgreSQL array syntax {value} not JSONB ["value"]
+				query = query.is("deleted_at", null);
 				break;
 			case "archive":
 				query = query.eq("is_archived", true);
@@ -156,6 +159,10 @@ export const getEmails = cache(async (
 			case "bin":
 				query = query.not("deleted_at", "is", null);
 				break;
+			case "all":
+				// All mail: show everything except deleted (safety net - emails should never be lost)
+				// No additional filters - just non-deleted emails
+				break;
 		}
 	}
 
@@ -167,11 +174,17 @@ export const getEmails = cache(async (
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error("Failed to fetch emails:", error);
+		console.error("Failed to fetch emails:", {
+			message: error.message,
+			code: error.code,
+			details: error.details,
+			hint: error.hint,
+			fullError: JSON.stringify(error, null, 2)
+		});
 		return { emails: [], total: 0, hasMore: false };
 	}
 
-	const emails = (data ?? []).map(email => {
+	let emails = (data ?? []).map(email => {
 		// Parse to_address if it's a JSON string
 		let parsedToAddress = email.to_address;
 		if (typeof email.to_address === 'string') {
@@ -193,8 +206,29 @@ export const getEmails = cache(async (
 		} as EmailRecord;
 	});
 
-	const total = count ?? emails.length;
-	const hasMore = offset + emails.length < total;
+	// Post-process: filter by tags in-memory (JSONB array containment not supported by PostgREST cs operator)
+	let needsInMemoryCount = false;
+
+	if (folder === "starred") {
+		emails = emails.filter(email => {
+			const tags = email.tags;
+			return Array.isArray(tags) && tags.includes("starred");
+		});
+		needsInMemoryCount = true;
+	}
+
+	// Filter spam emails in-memory (catches both category=spam AND spam tag)
+	if (folder === "spam") {
+		emails = emails.filter(email => {
+			const tags = email.tags;
+			const hasSpamTag = Array.isArray(tags) && tags.includes("spam");
+			return email.category === "spam" || hasSpamTag;
+		});
+		needsInMemoryCount = true;
+	}
+
+	const total = needsInMemoryCount ? emails.length : (count ?? emails.length);
+	const hasMore = needsInMemoryCount ? false : (offset + emails.length < total);
 
 	return { emails, total, hasMore };
 });

@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadOGFonts, OG_CONFIG, IntegrationTemplate } from "@/lib/og";
 
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,
