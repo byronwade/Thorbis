@@ -56,28 +56,42 @@ export function PaymentCollectionStep() {
 		setError(null);
 
 		try {
-			// TODO: Call server action to create Stripe Checkout session
-			// const result = await createCheckoutSession({
-			//   phonePortingCount: data.phonePortingCount,
-			//   newPhoneNumberCount: data.newPhoneNumberCount,
-			//   gmailWorkspaceUsers: data.gmailWorkspaceUsers,
-			//   profitRhinoEnabled: data.profitRhinoEnabled,
-			//   paymentMethod: selectedMethod,
-			// });
+			// Get company and team member IDs from auth session
+			// NOTE: These should be retrieved from auth context/session
+			// For now, using placeholder values - will be updated when integrated
+			const companyId = data.companyId || ""; // From auth session
+			const teamMemberId = data.teamMemberId || ""; // From auth session
 
-			// if (result.success) {
-			//   window.location.href = result.checkoutUrl;
-			// } else {
-			//   setError(result.error);
-			// }
+			if (!companyId || !teamMemberId) {
+				setError("Missing company or user information. Please log in again.");
+				return;
+			}
 
-			// For now, simulate checkout
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-			console.log("Creating checkout session with method:", selectedMethod);
+			// Build success/cancel URLs
+			const baseUrl = window.location.origin;
+			const successUrl = `${baseUrl}/onboarding/payment/success?session_id={CHECKOUT_SESSION_ID}&company_id=${companyId}`;
+			const cancelUrl = `${baseUrl}/onboarding/payment/cancel`;
 
-			// In production, this would redirect to Stripe Checkout
-			// For now, mark as collected
-			updateData({ paymentMethodCollected: true });
+			// Create Stripe Checkout session
+			const result = await createOnboardingCheckoutSession({
+				companyId,
+				teamMemberId,
+				selections: {
+					phonePortingCount: data.phonePortingCount || 0,
+					newPhoneNumberCount: data.newPhoneNumberCount || 0,
+					gmailWorkspaceUsers: data.gmailWorkspaceUsers || 0,
+					profitRhinoEnabled: data.profitRhinoEnabled || false,
+				},
+				successUrl,
+				cancelUrl,
+			});
+
+			if (result.success && result.checkoutUrl) {
+				// Redirect to Stripe Checkout
+				window.location.href = result.checkoutUrl;
+			} else {
+				setError(result.error || "Failed to create checkout session");
+			}
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : "Failed to start checkout"

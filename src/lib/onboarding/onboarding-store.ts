@@ -23,6 +23,7 @@ export type OnboardingStep =
 	| "services"
 	| "team"
 	| "payments"
+	| "billing"
 	| "schedule"
 	| "reports"
 	| "settings"
@@ -231,6 +232,7 @@ export const STEPS_ORDER: OnboardingStep[] = [
 	"services",
 	"team",
 	"payments",
+	"billing",
 	"schedule",
 	"reports",
 	"settings",
@@ -253,6 +255,7 @@ export const STEP_CONFIG: Record<OnboardingStep, {
 	services: { title: "Services & Pricing", shortTitle: "Services", phase: 3, required: false, estimatedMinutes: 3 },
 	team: { title: "Team Setup", shortTitle: "Team", phase: 3, required: false, estimatedMinutes: 2 },
 	payments: { title: "Payment Processing", shortTitle: "Payments", phase: 3, required: false, estimatedMinutes: 3 },
+	billing: { title: "Platform Subscription", shortTitle: "Billing", phase: 3, required: false, estimatedMinutes: 3 },
 	schedule: { title: "Schedule", shortTitle: "Schedule", phase: 4, required: false, estimatedMinutes: 2 },
 	reports: { title: "Reports & Dashboard", shortTitle: "Reports", phase: 4, required: false, estimatedMinutes: 2 },
 	settings: { title: "Important Settings", shortTitle: "Settings", phase: 4, required: false, estimatedMinutes: 2 },

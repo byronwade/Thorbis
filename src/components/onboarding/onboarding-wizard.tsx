@@ -35,6 +35,7 @@ import { NotificationsStep } from "@/components/onboarding/steps/notifications-s
 import { ServicesStep } from "@/components/onboarding/steps/services-step";
 import { TeamStep } from "@/components/onboarding/steps/team-step";
 import { PaymentsStep } from "@/components/onboarding/steps/payments-step";
+import { PaymentCollectionStep } from "@/components/onboarding/steps/payment-collection-step";
 import { ScheduleStep } from "@/components/onboarding/steps/schedule-step";
 import { ReportsStep } from "@/components/onboarding/steps/reports-step";
 import { SettingsStep } from "@/components/onboarding/steps/settings-step";
@@ -65,6 +66,7 @@ const STEP_ORDER: OnboardingStep[] = [
 	"services",
 	"team",
 	"payments",
+	"billing",
 	"schedule",
 	"reports",
 	"settings",
@@ -355,6 +357,7 @@ export function OnboardingWizard() {
 							{currentStep === "services" && <ServicesStep />}
 							{currentStep === "team" && <TeamStep />}
 							{currentStep === "payments" && <PaymentsStep />}
+							{currentStep === "billing" && <PaymentCollectionStep />}
 							{currentStep === "schedule" && <ScheduleStep />}
 							{currentStep === "reports" && <ReportsStep />}
 							{currentStep === "settings" && <SettingsStep />}

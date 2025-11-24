@@ -1,18 +1,17 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, HomepageTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, HomepageTemplate, getLogoDataUrl } from "@/lib/og";
 
 /**
  * Default OG Image - Root Level Fallback
  *
- * This serves as the fallback for any pages that don't have
- * their own opengraph-image.tsx file. In Next.js, OG images
- * cascade from parent to child routes.
+ * REDESIGNED: Aggressive pain-first approach with huge pricing and social proof.
+ * Stops contractors scrolling with "$50K/Year" pain points and massive "$200/mo" pricing.
  */
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 
-export const alt = "Thorbis - Field Service Management Software | $200/mo";
+export const alt = "Stop Losing $50K/Year to Forgotten Callbacks | Thorbis $200/mo";
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,
@@ -20,9 +19,12 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([
+		loadOGFonts(),
+		getLogoDataUrl(),
+	]);
 
-	return new ImageResponse(<HomepageTemplate />, {
+	return new ImageResponse(<HomepageTemplate logoDataUrl={logoDataUrl} />, {
 		...size,
 		fonts,
 	});
