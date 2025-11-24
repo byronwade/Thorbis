@@ -11,11 +11,6 @@ export {
 	// Layout & Base Components
 	OGBaseLayout,
 	getLogoDataUrl,
-	// Social Proof & Pricing Components
-	SocialProofBar,
-	HugePricing,
-	StatBadge,
-	PricingComparison,
 	// Templates
 	HomepageTemplate,
 	FeatureTemplate,

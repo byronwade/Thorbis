@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 /**
- * OG Image Templates - REDESIGNED FOR CONTRACTOR BREAKTHROUGH
+ * OG Image Templates - CLEAN & PROFESSIONAL REDESIGN
  *
- * Aggressive pain-first approach with huge pricing and social proof.
- * Dark mode first, maximum information density.
+ * Simple, readable, professional design for contractor appeal.
+ * White background, clear hierarchy, massive pricing.
  */
 
 import { OG_CONFIG, OG_MESSAGING } from "./og-config";
 
-const { colors, typography, padding, socialProof } = OG_CONFIG;
+const { colors, typography, padding } = OG_CONFIG;
 
 /**
  * Logo component - uses actual Thorbis logo via HTTP fetch
@@ -22,68 +22,14 @@ export async function getLogoDataUrl() {
 }
 
 /**
- * Social Proof Bar - displays at bottom of all OG images
- */
-export function SocialProofBar() {
-	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "space-between",
-				gap: "24px",
-				backgroundColor: `${colors.border}`,
-				padding: "16px 24px",
-				borderRadius: "12px",
-				position: "absolute",
-				bottom: `${padding}px`,
-				left: `${padding}px`,
-				right: `${padding}px`,
-			}}
-		>
-			<span
-				style={{
-					color: colors.foreground,
-					fontSize: typography.small,
-					fontWeight: 600,
-				}}
-			>
-				{socialProof.customers}
-			</span>
-			<span
-				style={{
-					color: colors.accent,
-					fontSize: typography.small,
-					fontWeight: 700,
-				}}
-			>
-				{socialProof.rating}
-			</span>
-			<span
-				style={{
-					color: colors.foreground,
-					fontSize: typography.small,
-					fontWeight: 600,
-				}}
-			>
-				{socialProof.savings}
-			</span>
-		</div>
-	);
-}
-
-/**
- * Base layout wrapper for all OG images
- * Now includes real logo and social proof bar
+ * Clean Base Layout - Minimal & Professional
  */
 export function OGBaseLayout({
 	children,
 	logoDataUrl,
-	showSocialProof = true,
 }: {
 	children: React.ReactNode;
 	logoDataUrl?: string;
-	showSocialProof?: boolean;
 }) {
 	return (
 		<div
@@ -93,64 +39,46 @@ export function OGBaseLayout({
 				width: "100%",
 				height: "100%",
 				backgroundColor: colors.background,
-				padding: padding,
+				padding: `${padding * 1.5}px`,
 				fontFamily: "Inter, sans-serif",
 				position: "relative",
-				overflow: "hidden",
 			}}
 		>
-			{/* Aggressive gradient overlay - more prominent */}
-			<div
-				style={{
-					position: "absolute",
-					bottom: 0,
-					left: 0,
-					right: 0,
-					height: "300px",
-					background: `linear-gradient(to top, ${colors.primary}25, transparent)`,
-				}}
-			/>
-
-			{/* Electric blue accent bar - BOLD */}
+			{/* Subtle accent line - thin & elegant */}
 			<div
 				style={{
 					position: "absolute",
 					left: 0,
-					top: 0,
-					bottom: 0,
-					width: "8px",
+					top: `${padding}px`,
+					bottom: `${padding}px`,
+					width: "4px",
 					backgroundColor: colors.primary,
+					borderRadius: "0 4px 4px 0",
 				}}
 			/>
 
-			{/* Header row with logo */}
+			{/* Logo */}
 			<div
 				style={{
 					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-					marginBottom: "48px",
-					position: "relative",
-					zIndex: 1,
+					marginBottom: `${padding}px`,
 				}}
 			>
-				{/* Real Thorbis Logo */}
 				{logoDataUrl ? (
 					<img
 						src={logoDataUrl}
 						alt="Thorbis"
-						width="200"
-						height="50"
+						width="180"
+						height="45"
 						style={{ objectFit: "contain" }}
 					/>
 				) : (
-					// Fallback to text logo
 					<span
 						style={{
 							color: colors.foreground,
-							fontSize: "36px",
+							fontSize: "32px",
 							fontWeight: 800,
-							letterSpacing: "-1px",
+							letterSpacing: "-0.5px",
 						}}
 					>
 						THORBIS
@@ -158,310 +86,52 @@ export function OGBaseLayout({
 				)}
 			</div>
 
-			{/* Content area */}
+			{/* Content area - centered vertically */}
 			<div
 				style={{
 					display: "flex",
 					flexDirection: "column",
 					flex: 1,
 					justifyContent: "center",
-					position: "relative",
-					zIndex: 1,
-					paddingBottom: showSocialProof ? "80px" : "0", // Space for social proof bar
+					gap: `${padding}px`,
 				}}
 			>
 				{children}
 			</div>
 
-			{/* Social Proof Bar */}
-			{showSocialProof && <SocialProofBar />}
-		</div>
-	);
-}
-
-/**
- * HUGE pricing display - for homepage and pricing pages
- */
-export function HugePricing({
-	mainPrice = "$200/mo",
-	comparePrice,
-	annualComparison,
-}: {
-	mainPrice?: string;
-	comparePrice?: string;
-	annualComparison?: string;
-}) {
-	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				gap: "16px",
-				marginTop: "24px",
-			}}
-		>
-			{/* MASSIVE pricing */}
-			<div
-				style={{
-					color: colors.accent,
-					fontSize: typography.pricing,
-					fontWeight: 800,
-					lineHeight: 1,
-					letterSpacing: "-2px",
-				}}
-			>
-				{mainPrice}
-			</div>
-
-			{/* Competitor comparison with strikethrough */}
-			{comparePrice && (
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "16px",
-					}}
-				>
-					<span
-						style={{
-							color: colors.destructive,
-							fontSize: typography.title,
-							fontWeight: 700,
-							textDecoration: "line-through",
-							opacity: 0.7,
-						}}
-					>
-						{comparePrice}
-					</span>
-				</div>
-			)}
-
-			{/* Annual comparison */}
-			{annualComparison && (
-				<div
-					style={{
-						color: colors.mutedForeground,
-						fontSize: typography.small,
-						fontWeight: 600,
-					}}
-				>
-					{annualComparison}
-				</div>
-			)}
-		</div>
-	);
-}
-
-/**
- * Stat Badge - large number with label
- */
-export function StatBadge({ stat, label }: { stat: string; label: string }) {
-	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				backgroundColor: `${colors.primary}15`,
-				padding: "20px 32px",
-				borderRadius: "12px",
-				border: `2px solid ${colors.primary}40`,
-			}}
-		>
-			<div
-				style={{
-					color: colors.accent,
-					fontSize: typography.mega,
-					fontWeight: 800,
-					lineHeight: 1,
-				}}
-			>
-				{stat}
-			</div>
-			<div
-				style={{
-					color: colors.mutedForeground,
-					fontSize: typography.small,
-					fontWeight: 600,
-					marginTop: "8px",
-				}}
-			>
-				{label}
-			</div>
-		</div>
-	);
-}
-
-/**
- * Pricing Comparison - side by side
- */
-export function PricingComparison({
-	ourPrice,
-	ourAnnual,
-	theirPrice,
-	theirAnnual,
-	savings,
-}: {
-	ourPrice: string;
-	ourAnnual: string;
-	theirPrice: string;
-	theirAnnual: string;
-	savings: string;
-}) {
-	return (
-		<div
-			style={{
-				display: "flex",
-				gap: "32px",
-				alignItems: "center",
-				justifyContent: "center",
-				marginTop: "32px",
-			}}
-		>
-			{/* Our Pricing - GREEN */}
+			{/* Bottom tagline */}
 			<div
 				style={{
 					display: "flex",
-					flexDirection: "column",
 					alignItems: "center",
-					backgroundColor: `${colors.accent}20`,
-					padding: "24px 40px",
-					borderRadius: "16px",
-					border: `3px solid ${colors.accent}`,
+					gap: "16px",
+					marginTop: `${padding}px`,
 				}}
 			>
-				<div
+				<span
 					style={{
-						color: colors.accent,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1,
-					}}
-				>
-					{ourPrice}
-				</div>
-				<div
-					style={{
-						color: colors.foreground,
+						color: colors.muted,
 						fontSize: typography.small,
 						fontWeight: 600,
-						marginTop: "8px",
 					}}
 				>
-					{ourAnnual}
-				</div>
-				<div
-					style={{
-						color: colors.accent,
-						fontSize: typography.micro,
-						fontWeight: 700,
-						marginTop: "12px",
-						textTransform: "uppercase",
-					}}
-				>
-					THORBIS
-				</div>
+					thorbis.com
+				</span>
 			</div>
-
-			{/* VS */}
-			<div
-				style={{
-					color: colors.muted,
-					fontSize: typography.title,
-					fontWeight: 800,
-				}}
-			>
-				VS
-			</div>
-
-			{/* Their Pricing - RED */}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-					backgroundColor: `${colors.destructive}15`,
-					padding: "24px 40px",
-					borderRadius: "16px",
-					border: `3px solid ${colors.destructive}60`,
-					opacity: 0.7,
-				}}
-			>
-				<div
-					style={{
-						color: colors.destructive,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1,
-						textDecoration: "line-through",
-					}}
-				>
-					{theirPrice}
-				</div>
-				<div
-					style={{
-						color: colors.mutedForeground,
-						fontSize: typography.small,
-						fontWeight: 600,
-						marginTop: "8px",
-					}}
-				>
-					{theirAnnual}
-				</div>
-				<div
-					style={{
-						color: colors.destructive,
-						fontSize: typography.micro,
-						fontWeight: 700,
-						marginTop: "12px",
-						textTransform: "uppercase",
-					}}
-				>
-					COMPETITOR
-				</div>
-			</div>
-
-			{/* Savings callout */}
-			{savings && (
-				<div
-					style={{
-						position: "absolute",
-						top: "-40px",
-						backgroundColor: colors.warning,
-						color: colors.background,
-						padding: "12px 24px",
-						borderRadius: "8px",
-						fontSize: typography.badge,
-						fontWeight: 800,
-						textTransform: "uppercase",
-					}}
-				>
-					{savings}
-				</div>
-			)}
 		</div>
 	);
 }
 
 /**
- * Homepage Template - AGGRESSIVE REDESIGN
+ * Homepage Template - CLEAN & SIMPLE
  */
 export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 	const { homepage } = OG_MESSAGING;
 
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "32px",
-					alignItems: "center",
-					textAlign: "center",
-				}}
-			>
-				{/* PAIN POINT - Huge headline */}
+			{/* Headline */}
+			<div>
 				<h1
 					style={{
 						color: colors.foreground,
@@ -469,38 +139,130 @@ export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
 						fontWeight: 800,
 						lineHeight: 1.1,
 						margin: 0,
-						letterSpacing: "-1px",
+						marginBottom: "16px",
 					}}
 				>
-					{homepage.painPoint}
+					{homepage.headline}
 				</h1>
-
-				{/* Solution */}
-				<p
+				<h2
 					style={{
-						color: colors.mutedForeground,
+						color: colors.muted,
+						fontSize: typography.title,
+						fontWeight: 600,
+						lineHeight: 1.2,
+						margin: 0,
+					}}
+				>
+					{homepage.subheadline}
+				</h2>
+			</div>
+
+			{/* MASSIVE Pricing - Center Focus */}
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "20px",
+				}}
+			>
+				<div
+					style={{
+						color: colors.accent,
+						fontSize: typography.display,
+						fontWeight: 800,
+						lineHeight: 1,
+						letterSpacing: "-4px",
+					}}
+				>
+					{homepage.pricing}
+				</div>
+				<div
+					style={{
+						color: colors.muted,
 						fontSize: typography.subtitle,
 						fontWeight: 600,
-						margin: 0,
-						lineHeight: 1.4,
 					}}
 				>
-					{homepage.solution}
-				</p>
-
-				{/* HUGE Pricing */}
-				<HugePricing
-					mainPrice="$200/mo"
-					comparePrice="$3,100/mo"
-					annualComparison="Save $34,600/year vs ServiceTitan"
-				/>
+					{homepage.tagline}
+				</div>
 			</div>
 		</OGBaseLayout>
 	);
 }
 
 /**
- * Feature Template - PAIN-FIRST REDESIGN
+ * Pricing Template - SAVINGS FOCUS
+ */
+export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
+	return (
+		<OGBaseLayout logoDataUrl={logoDataUrl}>
+			{/* Headline */}
+			<div>
+				<h1
+					style={{
+						color: colors.foreground,
+						fontSize: typography.hero,
+						fontWeight: 800,
+						lineHeight: 1.1,
+						margin: 0,
+					}}
+				>
+					Simple Pricing
+				</h1>
+			</div>
+
+			{/* MASSIVE Pricing */}
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "24px",
+				}}
+			>
+				<div
+					style={{
+						color: colors.accent,
+						fontSize: typography.display,
+						fontWeight: 800,
+						lineHeight: 1,
+						letterSpacing: "-4px",
+					}}
+				>
+					$200
+				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "8px",
+					}}
+				>
+					<div
+						style={{
+							color: colors.foreground,
+							fontSize: typography.title,
+							fontWeight: 700,
+						}}
+					>
+						per month
+					</div>
+					<div
+						style={{
+							color: colors.muted,
+							fontSize: typography.subtitle,
+							fontWeight: 600,
+						}}
+					>
+						All Features • No Per-User Fees
+					</div>
+				</div>
+			</div>
+		</OGBaseLayout>
+	);
+}
+
+/**
+ * Feature Template - BENEFIT FOCUSED
  */
 export function FeatureTemplate({
 	feature,
@@ -513,53 +275,85 @@ export function FeatureTemplate({
 
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "32px",
-				}}
-			>
-				{/* Pain Point Headline */}
-				<h1
+			{/* Feature Title */}
+			<div>
+				<div
 					style={{
-						color: colors.warning,
-						fontSize: typography.title,
-						fontWeight: 800,
-						lineHeight: 1.2,
-						margin: 0,
+						display: "inline-block",
+						backgroundColor: `${colors.primary}15`,
+						color: colors.primary,
+						padding: "12px 24px",
+						borderRadius: "8px",
+						fontSize: typography.body,
+						fontWeight: 700,
+						textTransform: "uppercase",
+						letterSpacing: "0.5px",
+						marginBottom: "32px",
 					}}
 				>
-					{featureData.painPoint}
-				</h1>
-
-				{/* Solution */}
-				<h2
+					Feature
+				</div>
+				<h1
 					style={{
 						color: colors.foreground,
 						fontSize: typography.hero,
 						fontWeight: 800,
 						lineHeight: 1.1,
 						margin: 0,
-						letterSpacing: "-1px",
 					}}
 				>
-					{featureData.solution}
-				</h2>
+					{featureData.title}
+				</h1>
+			</div>
 
-				{/* Stat Badge */}
-				{featureData.stat && (
-					<div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
-						<StatBadge stat={featureData.stat} label="Average Result" />
-					</div>
-				)}
+			{/* Solution */}
+			<div
+				style={{
+					color: colors.muted,
+					fontSize: typography.title,
+					fontWeight: 600,
+					lineHeight: 1.3,
+				}}
+			>
+				{featureData.solution}
+			</div>
+
+			{/* Pricing Badge */}
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "16px",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: colors.accent,
+						color: "#FFFFFF",
+						padding: "16px 32px",
+						borderRadius: "12px",
+						fontSize: typography.title,
+						fontWeight: 800,
+					}}
+				>
+					$200/mo
+				</div>
+				<div
+					style={{
+						color: colors.muted,
+						fontSize: typography.subtitle,
+						fontWeight: 600,
+					}}
+				>
+					All Features Included
+				</div>
 			</div>
 		</OGBaseLayout>
 	);
 }
 
 /**
- * Industry Template - AGGRESSIVE PAIN + STATS
+ * Industry Template - CLEAN & PROFESSIONAL
  */
 export function IndustryTemplate({
 	industry,
@@ -572,69 +366,77 @@ export function IndustryTemplate({
 
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "32px",
-				}}
-			>
-				{/* Pain Point - RED WARNING */}
-				<h1
+			{/* Industry Badge */}
+			<div>
+				<div
 					style={{
-						color: colors.destructive,
-						fontSize: typography.title,
-						fontWeight: 800,
-						lineHeight: 1.2,
-						margin: 0,
+						display: "inline-block",
+						backgroundColor: `${colors.primary}15`,
+						color: colors.primary,
+						padding: "12px 24px",
+						borderRadius: "8px",
+						fontSize: typography.body,
+						fontWeight: 700,
 						textTransform: "uppercase",
+						letterSpacing: "0.5px",
+						marginBottom: "32px",
 					}}
 				>
-					⚠️ {industryData.painPoint}
-				</h1>
-
-				{/* Solution */}
-				<h2
+					{industryData.title}
+				</div>
+				<h1
 					style={{
 						color: colors.foreground,
 						fontSize: typography.hero,
 						fontWeight: 800,
 						lineHeight: 1.1,
 						margin: 0,
-						letterSpacing: "-1px",
 					}}
 				>
-					{industryData.solution}
-				</h2>
+					{industryData.subtitle}
+				</h1>
+			</div>
 
-				{/* Pricing */}
-				<div style={{ display: "flex", gap: "24px", marginTop: "16px" }}>
-					<div
-						style={{
-							backgroundColor: colors.accent,
-							color: colors.background,
-							padding: "16px 32px",
-							borderRadius: "12px",
-							fontSize: typography.subtitle,
-							fontWeight: 800,
-						}}
-					>
-						$200/mo
-					</div>
-					<div
-						style={{
-							backgroundColor: `${colors.border}`,
-							color: colors.mutedForeground,
-							padding: "16px 32px",
-							borderRadius: "12px",
-							fontSize: typography.small,
-							fontWeight: 600,
-							display: "flex",
-							alignItems: "center",
-						}}
-					>
-						{industryData.stat}
-					</div>
+			{/* Solution */}
+			<div
+				style={{
+					color: colors.muted,
+					fontSize: typography.title,
+					fontWeight: 600,
+					lineHeight: 1.3,
+				}}
+			>
+				{industryData.solution}
+			</div>
+
+			{/* Stats */}
+			<div
+				style={{
+					display: "flex",
+					gap: "24px",
+					alignItems: "center",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: colors.accent,
+						color: "#FFFFFF",
+						padding: "16px 32px",
+						borderRadius: "12px",
+						fontSize: typography.title,
+						fontWeight: 800,
+					}}
+				>
+					$200/mo
+				</div>
+				<div
+					style={{
+						color: colors.primary,
+						fontSize: typography.title,
+						fontWeight: 700,
+					}}
+				>
+					{industryData.stat}
 				</div>
 			</div>
 		</OGBaseLayout>
@@ -642,7 +444,7 @@ export function IndustryTemplate({
 }
 
 /**
- * Competitor Template - WARNING STYLE with ANNUAL SAVINGS
+ * Competitor Template - PRICE COMPARISON
  */
 export function CompetitorTemplate({
 	competitor,
@@ -654,190 +456,125 @@ export function CompetitorTemplate({
 	const compData = OG_MESSAGING.competitors[competitor];
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				width: "100%",
-				height: "100%",
-				backgroundColor: colors.background,
-				position: "relative",
-			}}
-		>
-			{/* WARNING BORDER - RED */}
-			<div
-				style={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					border: `8px solid ${colors.destructive}`,
-					borderRadius: "0",
-					pointerEvents: "none",
-				}}
-			/>
-
-			<OGBaseLayout logoDataUrl={logoDataUrl}>
-				<div
+		<OGBaseLayout logoDataUrl={logoDataUrl}>
+			{/* Title */}
+			<div>
+				<h1
 					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "32px",
-						alignItems: "center",
-						textAlign: "center",
+						color: colors.foreground,
+						fontSize: typography.hero,
+						fontWeight: 800,
+						lineHeight: 1.1,
+						margin: 0,
 					}}
 				>
-					{/* Title */}
-					<h1
-						style={{
-							color: colors.foreground,
-							fontSize: typography.title,
-							fontWeight: 800,
-							margin: 0,
-							textTransform: "uppercase",
-						}}
-					>
-						{compData.title}
-					</h1>
+					{compData.title}
+				</h1>
+			</div>
 
-					{/* HUGE Annual Savings */}
-					<div
-						style={{
-							backgroundColor: colors.warning,
-							color: colors.background,
-							padding: "20px 48px",
-							borderRadius: "16px",
-							fontSize: typography.mega,
-							fontWeight: 800,
-							letterSpacing: "-1px",
-							textTransform: "uppercase",
-						}}
-					>
-						{compData.annualSavings}
-					</div>
-
-					{/* Price Comparison */}
-					<PricingComparison
-						ourPrice={compData.ourPrice}
-						ourAnnual={compData.ourAnnual}
-						theirPrice={compData.theirPrice}
-						theirAnnual={compData.theirAnnual}
-						savings={compData.annualSavings}
-					/>
-
-					{/* Snark */}
-					<p
-						style={{
-							color: colors.mutedForeground,
-							fontSize: typography.small,
-							fontWeight: 600,
-							margin: 0,
-							fontStyle: "italic",
-						}}
-					>
-						{compData.snark}
-					</p>
-				</div>
-			</OGBaseLayout>
-		</div>
-	);
-}
-
-/**
- * Pricing Template - SAVINGS-FOCUSED
- */
-export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
-	const { pricing } = OG_MESSAGING;
-
-	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
+			{/* Price Comparison - Side by Side */}
 			<div
 				style={{
 					display: "flex",
-					flexDirection: "column",
-					gap: "32px",
+					gap: "48px",
 					alignItems: "center",
-					textAlign: "center",
 				}}
 			>
-				{/* Main Headline - SAVINGS */}
-				<h1
-					style={{
-						color: colors.accent,
-						fontSize: typography.pricing,
-						fontWeight: 800,
-						lineHeight: 1,
-						margin: 0,
-						letterSpacing: "-2px",
-					}}
-				>
-					{pricing.mainHeadline}
-				</h1>
-
-				{/* Comparison */}
+				{/* Thorbis Price */}
 				<div
 					style={{
 						display: "flex",
 						flexDirection: "column",
-						gap: "8px",
-						alignItems: "center",
+						gap: "12px",
 					}}
 				>
+					<div
+						style={{
+							color: colors.accent,
+							fontSize: typography.display,
+							fontWeight: 800,
+							lineHeight: 1,
+							letterSpacing: "-4px",
+						}}
+					>
+						$200
+					</div>
 					<div
 						style={{
 							color: colors.foreground,
-							fontSize: typography.hero,
-							fontWeight: 800,
-						}}
-					>
-						{pricing.comparison}
-					</div>
-					<div
-						style={{
-							color: colors.destructive,
-							fontSize: typography.title,
+							fontSize: typography.subtitle,
 							fontWeight: 700,
-							textDecoration: "line-through",
-							opacity: 0.7,
 						}}
 					>
-						{pricing.competitorPrice}
+						per month
 					</div>
 				</div>
 
-				{/* Guarantee badges */}
+				{/* VS */}
+				<div
+					style={{
+						color: colors.border,
+						fontSize: typography.hero,
+						fontWeight: 800,
+					}}
+				>
+					VS
+				</div>
+
+				{/* Competitor Price */}
 				<div
 					style={{
 						display: "flex",
-						gap: "16px",
-						flexWrap: "wrap",
-						justifyContent: "center",
-						marginTop: "16px",
+						flexDirection: "column",
+						gap: "12px",
+						opacity: 0.5,
 					}}
 				>
-					{["Money-Back Guarantee", "No Per-User Fees", "Cancel Anytime"].map((text) => (
-						<div
-							key={text}
-							style={{
-								backgroundColor: `${colors.primary}20`,
-								color: colors.primary,
-								padding: "12px 20px",
-								borderRadius: "8px",
-								fontSize: typography.small,
-								fontWeight: 700,
-							}}
-						>
-							{text}
-						</div>
-					))}
+					<div
+						style={{
+							color: colors.destructive,
+							fontSize: typography.display,
+							fontWeight: 800,
+							lineHeight: 1,
+							letterSpacing: "-4px",
+							textDecoration: "line-through",
+						}}
+					>
+						{compData.theirPrice.replace("/mo", "")}
+					</div>
+					<div
+						style={{
+							color: colors.muted,
+							fontSize: typography.subtitle,
+							fontWeight: 700,
+						}}
+					>
+						per month
+					</div>
 				</div>
+			</div>
+
+			{/* Savings */}
+			<div
+				style={{
+					backgroundColor: `${colors.accent}15`,
+					color: colors.accent,
+					padding: "20px 32px",
+					borderRadius: "12px",
+					fontSize: typography.title,
+					fontWeight: 700,
+					display: "inline-block",
+					alignSelf: "flex-start",
+				}}
+			>
+				{compData.annualSavings}
 			</div>
 		</OGBaseLayout>
 	);
 }
 
 /**
- * Blog Template
+ * Blog Template - SIMPLE
  */
 export function BlogTemplate({
 	title,
@@ -850,44 +587,35 @@ export function BlogTemplate({
 }) {
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-				{category && (
-					<div
-						style={{
-							backgroundColor: `${colors.primary}20`,
-							color: colors.primary,
-							padding: "8px 16px",
-							borderRadius: "6px",
-							fontSize: typography.small,
-							fontWeight: 700,
-							textTransform: "uppercase",
-							alignSelf: "flex-start",
-						}}
-					>
-						{category}
-					</div>
-				)}
-				<h1
+			{category && (
+				<div
 					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.2,
-						margin: 0,
+						display: "inline-block",
+						backgroundColor: `${colors.primary}15`,
+						color: colors.primary,
+						padding: "12px 24px",
+						borderRadius: "8px",
+						fontSize: typography.body,
+						fontWeight: 700,
+						textTransform: "uppercase",
+						letterSpacing: "0.5px",
+						marginBottom: "32px",
 					}}
 				>
-					{title}
-				</h1>
-				<p
-					style={{
-						color: colors.mutedForeground,
-						fontSize: typography.subtitle,
-						margin: 0,
-					}}
-				>
-					{OG_MESSAGING.blog.defaultSubtitle}
-				</p>
-			</div>
+					{category}
+				</div>
+			)}
+			<h1
+				style={{
+					color: colors.foreground,
+					fontSize: typography.hero,
+					fontWeight: 800,
+					lineHeight: 1.2,
+					margin: 0,
+				}}
+			>
+				{title}
+			</h1>
 		</OGBaseLayout>
 	);
 }
@@ -906,50 +634,41 @@ export function KBTemplate({
 }) {
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-				{category && (
-					<div
-						style={{
-							backgroundColor: `${colors.accent}20`,
-							color: colors.accent,
-							padding: "8px 16px",
-							borderRadius: "6px",
-							fontSize: typography.small,
-							fontWeight: 700,
-							textTransform: "uppercase",
-							alignSelf: "flex-start",
-						}}
-					>
-						{category}
-					</div>
-				)}
-				<h1
+			{category && (
+				<div
 					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.2,
-						margin: 0,
+						display: "inline-block",
+						backgroundColor: `${colors.accent}15`,
+						color: colors.accent,
+						padding: "12px 24px",
+						borderRadius: "8px",
+						fontSize: typography.body,
+						fontWeight: 700,
+						textTransform: "uppercase",
+						letterSpacing: "0.5px",
+						marginBottom: "32px",
 					}}
 				>
-					{title}
-				</h1>
-				<p
-					style={{
-						color: colors.mutedForeground,
-						fontSize: typography.subtitle,
-						margin: 0,
-					}}
-				>
-					{OG_MESSAGING.kb.defaultSubtitle}
-				</p>
-			</div>
+					{category}
+				</div>
+			)}
+			<h1
+				style={{
+					color: colors.foreground,
+					fontSize: typography.hero,
+					fontWeight: 800,
+					lineHeight: 1.2,
+					margin: 0,
+				}}
+			>
+				{title}
+			</h1>
 		</OGBaseLayout>
 	);
 }
 
 /**
- * Default/Fallback Template
+ * Default Template
  */
 export function DefaultTemplate({
 	title,
@@ -962,35 +681,33 @@ export function DefaultTemplate({
 }) {
 	return (
 		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-				<h1
+			<h1
+				style={{
+					color: colors.foreground,
+					fontSize: typography.hero,
+					fontWeight: 800,
+					lineHeight: 1.2,
+					margin: 0,
+				}}
+			>
+				{title}
+			</h1>
+			{subtitle && (
+				<p
 					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.2,
+						color: colors.muted,
+						fontSize: typography.title,
+						fontWeight: 600,
 						margin: 0,
 					}}
 				>
-					{title}
-				</h1>
-				{subtitle && (
-					<p
-						style={{
-							color: colors.mutedForeground,
-							fontSize: typography.subtitle,
-							fontWeight: 600,
-							margin: 0,
-						}}
-					>
-						{subtitle}
-					</p>
-				)}
-			</div>
+					{subtitle}
+				</p>
+			)}
 		</OGBaseLayout>
 	);
 }
 
-// Integration and Calculator templates (simplified versions)
+// Integration and Calculator templates
 export const IntegrationTemplate = DefaultTemplate;
 export const CalculatorTemplate = DefaultTemplate;

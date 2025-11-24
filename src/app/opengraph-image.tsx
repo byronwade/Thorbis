@@ -11,7 +11,7 @@ import { loadOGFonts, OG_CONFIG, HomepageTemplate, getLogoDataUrl } from "@/lib/
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 
-export const alt = "Stop Losing $50K/Year to Forgotten Callbacks | Thorbis $200/mo";
+export const alt = "Field Service Management That Contractors Actually Use | Thorbis $200/mo";
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,

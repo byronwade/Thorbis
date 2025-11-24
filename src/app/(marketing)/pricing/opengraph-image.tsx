@@ -4,7 +4,7 @@ import { loadOGFonts, OG_CONFIG, PricingTemplate, getLogoDataUrl } from "@/lib/o
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 
-export const alt = "Save $34,600/Year vs ServiceTitan | Thorbis $200/mo = $2,400/year";
+export const alt = "Simple Pricing - $200/mo | All Features, No Per-User Fees | Thorbis";
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,

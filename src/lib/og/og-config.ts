@@ -14,29 +14,27 @@ export const OG_CONFIG = {
 	padding: 48,
 	innerPadding: 32,
 
-	// Colors - Dark theme with electric blue accent
+	// Colors - CLEAN professional theme
 	colors: {
-		background: "#0F0F0F", // Near black
-		foreground: "#F2F2F2", // Near white
+		background: "#FFFFFF", // Clean white
+		foreground: "#0A0A0A", // Near black text
 		primary: "#4F7BF7", // Electric blue (Thorbis brand)
-		accent: "#22C55E", // Success green (for pricing badge)
-		muted: "#737373", // Gray text
-		mutedForeground: "#A3A3A3", // Lighter gray
-		border: "#262626", // Subtle border
+		accent: "#22C55E", // Success green (for pricing)
+		muted: "#6B7280", // Gray text
+		mutedForeground: "#9CA3AF", // Lighter gray
+		border: "#E5E7EB", // Subtle border
 		destructive: "#EF4444", // Red for competitor pricing
-		warning: "#FBBF24", // Warning yellow for urgency
+		dark: "#1F2937", // Dark elements
 	},
 
-	// Typography sizes - AGGRESSIVE scale for contractor appeal
+	// Typography sizes - CLEAN & READABLE scale
 	typography: {
-		pricing: 128, // HUGE pricing display ($200/mo)
-		mega: 96, // Massive stats/numbers
-		hero: 80, // Main hero text (increased from 72)
-		title: 64, // Page titles (increased from 56)
-		subtitle: 36, // Subtitles/descriptions (increased from 32)
-		badge: 28, // Badge text (increased from 24)
-		small: 22, // Small details (increased from 20)
-		micro: 18, // Very small text (increased from 16)
+		display: 180, // MASSIVE pricing ($200)
+		hero: 72, // Main headline
+		title: 48, // Secondary headline
+		subtitle: 28, // Supporting text
+		body: 24, // Body text
+		small: 20, // Small details
 	},
 
 	// Font weights
@@ -73,15 +71,12 @@ export const OG_CONFIG = {
  * Brand messaging for different page types
  */
 export const OG_MESSAGING = {
-	// Default/Homepage - AGGRESSIVE pain-first approach
+	// Default/Homepage - SIMPLE & POWERFUL
 	homepage: {
-		painPoint: "Stop Losing $50K/Year to Forgotten Callbacks",
-		solution: "Thorbis tracks every lead, books every job, sends every invoice",
-		pricing: "$200/mo vs $3,100/mo ServiceTitan",
-		// Legacy fallbacks
-		title: "Stop Losing $50K/Year",
-		subtitle: "to Forgotten Callbacks",
-		tagline: "Track every lead. Book every job. Send every invoice.",
+		headline: "Field Service Management",
+		subheadline: "That Contractors Actually Use",
+		pricing: "$200/mo",
+		tagline: "All Features. No Per-User Fees.",
 	},
 
 	// Feature pages - PAIN-FIRST with specific numbers
