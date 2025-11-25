@@ -1,21 +1,46 @@
 "use client";
 
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
+import { useState } from "react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * HoverCard with keyboard accessibility
+ * Opens on hover for mouse users and on focus for keyboard users
+ */
 function HoverCard({
+	children,
 	...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
-	return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />;
+	const [open, setOpen] = useState(false);
+
+	return (
+		<HoverCardPrimitive.Root
+			data-slot="hover-card"
+			open={open}
+			onOpenChange={setOpen}
+			openDelay={200}
+			closeDelay={100}
+			{...props}
+		>
+			{children}
+		</HoverCardPrimitive.Root>
+	);
 }
 
 function HoverCardTrigger({
+	children,
 	...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {
 	return (
-		<HoverCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+		<HoverCardPrimitive.Trigger
+			data-slot="hover-card-trigger"
+			{...props}
+		>
+			{children}
+		</HoverCardPrimitive.Trigger>
 	);
 }
 

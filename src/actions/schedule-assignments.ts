@@ -394,3 +394,124 @@ export async function unassignAppointment(scheduleId: string) {
 		};
 	}
 }
+
+/**
+ * Send "On My Way" SMS notification to customer
+ * Includes technician name and estimated arrival time
+ */
+export async function sendOnMyWayNotification(
+	scheduleId: string,
+	technicianName: string,
+	customerPhone: string,
+	destinationAddress?: string,
+) {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return { success: false, error: "Database not available" };
+	}
+
+	try {
+		// Get user and company info
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get company's Telnyx settings for the from number
+		const { data: membership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.single();
+
+		if (!membership?.company_id) {
+			return { success: false, error: "No active company membership" };
+		}
+
+		const { data: telnyxSettings } = await supabase
+			.from("company_telnyx_settings")
+			.select("phone_number, status")
+			.eq("company_id", membership.company_id)
+			.eq("status", "ready")
+			.single();
+
+		if (!telnyxSettings?.phone_number) {
+			return { success: false, error: "No phone number configured for SMS" };
+		}
+
+		// Get company name for the message
+		const { data: company } = await supabase
+			.from("companies")
+			.select("name")
+			.eq("id", membership.company_id)
+			.single();
+
+		// Build the "On My Way" message
+		let message = `Hi! ${technicianName} from ${company?.name || "your service provider"} is on the way to your appointment.`;
+
+		// Try to get travel time estimate if we have a destination
+		if (destinationAddress) {
+			try {
+				const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+				const travelResponse = await fetch(
+					`${baseUrl}/api/travel-time?destination=${encodeURIComponent(destinationAddress)}`,
+					{
+						headers: {
+							Cookie: `sb-access-token=${user.id}`, // Pass auth context
+						},
+					},
+				);
+
+				if (travelResponse.ok) {
+					const travelData = await travelResponse.json();
+					if (travelData.durationText) {
+						message += ` Estimated arrival: ${travelData.durationText}.`;
+					}
+				}
+			} catch {
+				// Travel time fetch failed - continue without it
+			}
+		}
+
+		message += " We'll see you soon!";
+
+		// Send the SMS via Telnyx
+		const { sendSMS } = await import("@/lib/telnyx/messaging");
+		const result = await sendSMS({
+			to: customerPhone,
+			from: telnyxSettings.phone_number,
+			text: message,
+		});
+
+		if (!result.success) {
+			return { success: false, error: "Failed to send SMS" };
+		}
+
+		// Update appointment status to dispatched
+		await supabase
+			.from("appointments")
+			.update({
+				status: "dispatched",
+				dispatched_at: new Date().toISOString(),
+			})
+			.eq("id", scheduleId);
+
+		return {
+			success: true,
+			message: "On My Way notification sent successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to send On My Way notification",
+		};
+	}
+}

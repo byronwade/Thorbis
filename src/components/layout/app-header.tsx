@@ -51,7 +51,9 @@ export async function AppHeader() {
 		if (error instanceof Error && error.message.includes("prerendering")) {
 			return null;
 		}
-		throw error;
+		// Log error for monitoring but don't expose details to user
+		console.error("AppHeader: Failed to fetch user data", error);
+		throw error; // Let error boundary handle it
 	}
 
 	// If no user, this should never happen because dashboard is protected by middleware

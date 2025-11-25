@@ -25,6 +25,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
 	Select,
 	SelectContent,
@@ -1065,8 +1066,7 @@ export function AddTeamMemberForm() {
 												<FormItem>
 													<FormLabel>Temporary Password</FormLabel>
 													<FormControl>
-														<Input
-															type="password"
+														<PasswordInput
 															placeholder="Min. 8 characters"
 															{...field}
 														/>

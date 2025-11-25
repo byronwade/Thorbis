@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, CalculatorTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, CalculatorTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -12,12 +12,13 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	return new ImageResponse(
 		<CalculatorTemplate
-			name="ROI Calculator"
-			description="See how much time and money you'll save with Thorbis"
+			title="ROI Calculator"
+			subtitle="See how much time and money you'll save with Thorbis"
+			logoDataUrl={logoDataUrl}
 		/>,
 		{
 			...size,

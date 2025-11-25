@@ -16,36 +16,23 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
-import { ChevronRight, Clock, MapPin, User } from "lucide-react";
+import { Car, ChevronRight, Clock, MapPin, Plus, Repeat, User } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
-	archiveAppointment,
-	arriveAppointment,
 	assignJobToTechnician,
-	cancelAppointment,
-	cancelJobAndAppointment,
-	closeAppointment,
-	dispatchAppointment,
-	unassignAppointment,
 	updateAppointmentTimes,
 } from "@/actions/schedule-assignments";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuSeparator,
-	ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { ScheduleJobContextMenu } from "./schedule-job-context-menu";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSchedule } from "@/hooks/use-schedule";
+import { useSchedule, useScheduleRealtime } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
 import { ScheduleCommandMenu } from "./schedule-command-menu";
@@ -83,13 +70,33 @@ const hasClientCoordinates = (event: unknown): event is ClientPointerEvent => {
 	);
 };
 
-// Get job type color based on title keywords
+// Priority-based color mapping (takes precedence)
+const getPriorityColor = (priority: Job["priority"]) => {
+	switch (priority) {
+		case "urgent":
+			return "border-l-4 border-l-red-500 border-red-400 dark:border-red-700";
+		case "high":
+			return "border-l-4 border-l-orange-500 border-orange-400 dark:border-orange-700";
+		case "medium":
+			return "border-l-4 border-l-yellow-500 border-yellow-400 dark:border-yellow-700";
+		case "low":
+		default:
+			return "border-slate-300 dark:border-slate-600";
+	}
+};
+
+// Get job type color based on priority first, then title keywords
 const getJobTypeColor = (job: Job) => {
+	// Priority takes precedence for urgent/high jobs
+	if (job.priority === "urgent" || job.priority === "high") {
+		return getPriorityColor(job.priority);
+	}
+
 	const title = job.title.toLowerCase();
 
-	// Emergency/Urgent - Muted Red
+	// Emergency/Urgent keywords (fallback if priority not set)
 	if (title.includes("emergency") || title.includes("urgent")) {
-		return "border-red-400 dark:border-red-700";
+		return "border-l-4 border-l-red-500 border-red-400 dark:border-red-700";
 	}
 
 	// Callbacks/Follow-ups - Muted Orange
@@ -128,6 +135,11 @@ const getJobTypeColor = (job: Job) => {
 		return "border-blue-400 dark:border-blue-700";
 	}
 
+	// Use priority color if set, otherwise default
+	if (job.priority && job.priority !== "low") {
+		return getPriorityColor(job.priority);
+	}
+
 	// Default - Neutral Gray
 	return "border-slate-300 dark:border-slate-600";
 };
@@ -140,6 +152,216 @@ type JobWithPosition = {
 	lane: number;
 	hasOverlap: boolean;
 };
+
+// Travel time gap between consecutive jobs
+type TravelGap = {
+	fromJobId: string;
+	toJobId: string;
+	fromJob: Job;
+	toJob: Job;
+	gapMinutes: number; // Time gap between jobs
+	estimatedTravelMinutes: number; // Estimated travel based on distance or default
+	leftPosition: number; // Pixel position for indicator
+	width: number; // Width of the gap in pixels
+	isTight: boolean; // True if gap < estimated travel time
+	isInsufficient: boolean; // True if gap significantly less than needed
+};
+
+// Calculate distance between two coordinates (Haversine formula)
+function calculateDistance(
+	lat1: number,
+	lng1: number,
+	lat2: number,
+	lng2: number,
+): number {
+	const R = 3959; // Earth's radius in miles
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLng = ((lng2 - lng1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.cos((lat1 * Math.PI) / 180) *
+			Math.cos((lat2 * Math.PI) / 180) *
+			Math.sin(dLng / 2) *
+			Math.sin(dLng / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	return R * c;
+}
+
+// Estimate travel time based on distance (assumes ~25 mph average in urban areas)
+function estimateTravelTime(distanceMiles: number): number {
+	const averageSpeedMph = 25;
+	return Math.ceil((distanceMiles / averageSpeedMph) * 60); // minutes
+}
+
+// Calculate travel gaps between consecutive jobs
+function calculateTravelGaps(
+	jobs: JobWithPosition[],
+	hourWidth: number,
+): TravelGap[] {
+	if (jobs.length < 2) return [];
+
+	// Sort jobs by start time (left position)
+	const sortedJobs = [...jobs].sort((a, b) => a.left - b.left);
+	const gaps: TravelGap[] = [];
+
+	for (let i = 0; i < sortedJobs.length - 1; i++) {
+		const currentJob = sortedJobs[i];
+		const nextJob = sortedJobs[i + 1];
+
+		// Skip if jobs overlap (lane stacking)
+		if (currentJob.left + currentJob.width > nextJob.left) {
+			continue;
+		}
+
+		const currentEnd =
+			currentJob.job.endTime instanceof Date
+				? currentJob.job.endTime
+				: new Date(currentJob.job.endTime);
+		const nextStart =
+			nextJob.job.startTime instanceof Date
+				? nextJob.job.startTime
+				: new Date(nextJob.job.startTime);
+
+		const gapMinutes = Math.round(
+			(nextStart.getTime() - currentEnd.getTime()) / (1000 * 60),
+		);
+
+		// Only show gaps >= 15 minutes (significant travel opportunity)
+		if (gapMinutes < 15) continue;
+
+		// Calculate estimated travel time based on distance
+		let estimatedTravelMinutes = 15; // Default minimum
+		const currentCoords = currentJob.job.location?.coordinates;
+		const nextCoords = nextJob.job.location?.coordinates;
+
+		if (currentCoords?.lat && currentCoords?.lng && nextCoords?.lat && nextCoords?.lng) {
+			const distance = calculateDistance(
+				currentCoords.lat,
+				currentCoords.lng,
+				nextCoords.lat,
+				nextCoords.lng,
+			);
+			estimatedTravelMinutes = Math.max(5, estimateTravelTime(distance));
+		}
+
+		const leftPosition = currentJob.left + currentJob.width;
+		const width = nextJob.left - leftPosition;
+
+		gaps.push({
+			fromJobId: currentJob.job.id,
+			toJobId: nextJob.job.id,
+			fromJob: currentJob.job,
+			toJob: nextJob.job,
+			gapMinutes,
+			estimatedTravelMinutes,
+			leftPosition,
+			width,
+			isTight: gapMinutes < estimatedTravelMinutes * 1.5,
+			isInsufficient: gapMinutes < estimatedTravelMinutes,
+		});
+	}
+
+	return gaps;
+}
+
+// Travel time indicator component
+const TravelTimeIndicator = memo(function TravelTimeIndicator({
+	gap,
+}: {
+	gap: TravelGap;
+}) {
+	// Only show if gap is at least 30 pixels wide (to fit content)
+	if (gap.width < 30) return null;
+
+	const formatDuration = (minutes: number): string => {
+		if (minutes < 60) return `${minutes}m`;
+		const hours = Math.floor(minutes / 60);
+		const mins = minutes % 60;
+		return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+	};
+
+	return (
+		<TooltipProvider>
+			<Tooltip delayDuration={100}>
+				<TooltipTrigger asChild>
+					<div
+						className="absolute flex items-center justify-center"
+						style={{
+							left: `${gap.leftPosition}px`,
+							width: `${gap.width}px`,
+							top: "50%",
+							transform: "translateY(-50%)",
+							height: "32px",
+						}}
+					>
+						<div
+							className={cn(
+								"flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium shadow-sm",
+								gap.isInsufficient
+									? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+									: gap.isTight
+										? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+										: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+							)}
+						>
+							<Car className="size-3" />
+							<span>{formatDuration(gap.gapMinutes)}</span>
+						</div>
+					</div>
+				</TooltipTrigger>
+				<TooltipContent className="max-w-64" side="top" sideOffset={4}>
+					<div className="space-y-1.5 text-xs">
+						<div className="font-semibold">Travel Time Gap</div>
+						<div className="text-muted-foreground">
+							<span className="font-medium text-foreground">
+								{formatDuration(gap.gapMinutes)}
+							</span>{" "}
+							available between jobs
+						</div>
+						<div className="text-muted-foreground">
+							Est. travel:{" "}
+							<span className="font-medium text-foreground">
+								{formatDuration(gap.estimatedTravelMinutes)}
+							</span>
+						</div>
+						{gap.isInsufficient && (
+							<div className="text-red-600 dark:text-red-400 font-medium">
+								⚠ Insufficient travel time
+							</div>
+						)}
+						{gap.isTight && !gap.isInsufficient && (
+							<div className="text-orange-600 dark:text-orange-400 font-medium">
+								⚠ Tight schedule
+							</div>
+						)}
+						<div className="border-t pt-1.5 mt-1.5 text-muted-foreground">
+							<div>
+								From: {gap.fromJob.customer?.name || "Unknown"} (ends{" "}
+								{format(
+									gap.fromJob.endTime instanceof Date
+										? gap.fromJob.endTime
+										: new Date(gap.fromJob.endTime),
+									"h:mm a",
+								)}
+								)
+							</div>
+							<div>
+								To: {gap.toJob.customer?.name || "Unknown"} (starts{" "}
+								{format(
+									gap.toJob.startTime instanceof Date
+										? gap.toJob.startTime
+										: new Date(gap.toJob.startTime),
+									"h:mm a",
+								)}
+								)
+							</div>
+						</div>
+					</div>
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
+	);
+});
 
 function detectOverlaps(
 	jobs: Array<{ job: Job; left: number; width: number }>,
@@ -301,206 +523,84 @@ const JobCard = memo(function JobCard({
 							style={{ zIndex: 60 }}
 						/>
 
-						<ContextMenu onOpenChange={setIsContextMenuOpen}>
-							<ContextMenuTrigger asChild>
+						<ScheduleJobContextMenu job={job} onOpenChange={setIsContextMenuOpen}>
+							<div
+								className={cn(
+									"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all hover:shadow-sm active:cursor-grabbing",
+									borderColor,
+									job.isUnassigned && "!border-red-500",
+									isSelected && "ring-primary shadow-md ring-1",
+									isDragging && "shadow-lg",
+									(job.status === "completed" || job.status === "closed") &&
+										"opacity-50",
+								)}
+								onClick={onSelect}
+							>
+								{/* Overlap indicator */}
+								{hasOverlap && (
+									<div className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[7px] font-bold text-white">
+										!
+									</div>
+								)}
+
+								{/* Recurring job indicator */}
+								{job.recurrence && (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div className="absolute -top-1 left-1 flex size-3.5 items-center justify-center rounded-full bg-violet-500">
+												<Repeat className="size-2 text-white" />
+											</div>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											<div className="flex flex-col gap-0.5">
+												<span className="font-medium">Recurring Job</span>
+												<span className="text-muted-foreground">
+													{job.recurrence.frequency === "daily"
+														? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} days` : "day"}`
+														: job.recurrence.frequency === "weekly"
+															? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} weeks` : "week"}`
+															: job.recurrence.frequency === "monthly"
+																? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} months` : "month"}`
+																: `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} years` : "year"}`}
+												</span>
+											</div>
+										</TooltipContent>
+									</Tooltip>
+								)}
+
+								{/* Customer Name - Primary */}
+								<span className="text-foreground flex-1 truncate text-xs font-semibold">
+									{job.customer?.name || "Unknown Customer"}
+								</span>
+
+								{/* Team Avatars */}
+								<TeamAvatarGroup
+									assignments={job.assignments}
+									maxVisible={3}
+									onAddMember={() => {
+										// TODO: Implement add team member
+									}}
+									onRemove={(_techId) => {
+										// TODO: Implement remove team member
+									}}
+								/>
+
+								{/* Status dot */}
 								<div
 									className={cn(
-										"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all hover:shadow-sm active:cursor-grabbing",
-										borderColor,
-										job.isUnassigned && "!border-red-500",
-										isSelected && "ring-primary shadow-md ring-1",
-										isDragging && "shadow-lg",
-										(job.status === "completed" || job.status === "closed") &&
-											"opacity-50",
+										"size-1.5 shrink-0 rounded-full",
+										job.status === "scheduled" && "bg-blue-500",
+										job.status === "dispatched" && "bg-sky-500",
+										job.status === "arrived" && "bg-emerald-400",
+										job.status === "in-progress" &&
+											"animate-pulse bg-amber-500",
+										job.status === "closed" && "bg-emerald-600",
+										job.status === "completed" && "bg-emerald-500",
+										job.status === "cancelled" && "bg-slate-400",
 									)}
-									onClick={onSelect}
-								>
-									{/* Overlap indicator */}
-									{hasOverlap && (
-										<div className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[7px] font-bold text-white">
-											!
-										</div>
-									)}
-
-									{/* Customer Name - Primary */}
-									<span className="text-foreground flex-1 truncate text-xs font-semibold">
-										{job.customer?.name || "Unknown Customer"}
-									</span>
-
-									{/* Team Avatars */}
-									<TeamAvatarGroup
-										assignments={job.assignments}
-										maxVisible={3}
-										onAddMember={() => {
-											// TODO: Implement add team member
-										}}
-										onRemove={(_techId) => {
-											// TODO: Implement remove team member
-										}}
-									/>
-
-									{/* Status dot */}
-									<div
-										className={cn(
-											"size-1.5 shrink-0 rounded-full",
-											job.status === "scheduled" && "bg-blue-500",
-											job.status === "dispatched" && "bg-sky-500",
-											job.status === "arrived" && "bg-emerald-400",
-											job.status === "in-progress" &&
-												"animate-pulse bg-amber-500",
-											job.status === "closed" && "bg-emerald-600",
-											job.status === "completed" && "bg-emerald-500",
-											job.status === "cancelled" && "bg-slate-400",
-										)}
-									/>
-								</div>
-							</ContextMenuTrigger>
-
-							<ContextMenuContent className="w-56">
-								<ContextMenuItem
-									disabled={!job.jobId}
-									onClick={() => {
-										if (job.jobId) {
-											window.location.href = `/dashboard/work/${job.jobId}`;
-										}
-									}}
-								>
-									View Job Details
-								</ContextMenuItem>
-
-								<ContextMenuSeparator />
-
-								<ContextMenuItem
-									disabled={[
-										"dispatched",
-										"arrived",
-										"closed",
-										"cancelled",
-									].includes(job.status)}
-									onClick={async () => {
-										const result = await dispatchAppointment(job.id);
-										if (result.success) {
-											toast.success("Appointment marked as dispatched");
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to dispatch");
-										}
-									}}
-								>
-									Mark Dispatched
-								</ContextMenuItem>
-								<ContextMenuItem
-									disabled={["arrived", "closed", "cancelled"].includes(
-										job.status,
-									)}
-									onClick={async () => {
-										const result = await arriveAppointment(job.id);
-										if (result.success) {
-											toast.success("Arrival recorded");
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to mark arrival");
-										}
-									}}
-								>
-									Mark Arrived
-								</ContextMenuItem>
-								<ContextMenuItem
-									disabled={["closed", "cancelled"].includes(job.status)}
-									onClick={async () => {
-										const result = await closeAppointment(job.id);
-										if (result.success) {
-											toast.success("Appointment closed");
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to close");
-										}
-									}}
-								>
-									Mark Closed
-								</ContextMenuItem>
-
-								<ContextMenuSeparator />
-
-								<ContextMenuItem
-									onClick={() => {
-										// TODO: Open reschedule dialog
-									}}
-								>
-									Reschedule
-								</ContextMenuItem>
-
-								<ContextMenuItem
-									onClick={() => {
-										// TODO: Implement duplicate
-									}}
-								>
-									Duplicate Appointment
-								</ContextMenuItem>
-
-								<ContextMenuSeparator />
-
-								<ContextMenuItem
-									className="text-orange-600 focus:text-orange-600"
-									disabled={job.status === "cancelled"}
-									onClick={async () => {
-										const result = await cancelAppointment(
-											job.id,
-											"Appointment cancelled by user",
-										);
-										if (result.success) {
-											toast.success(
-												"Appointment cancelled - job moved to unscheduled",
-											);
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to cancel");
-										}
-									}}
-								>
-									Cancel Appointment Only
-								</ContextMenuItem>
-
-								<ContextMenuItem
-									className="text-destructive focus:text-destructive"
-									disabled={job.status === "cancelled" || !job.jobId}
-									onClick={async () => {
-										if (!job.jobId) {
-											toast.error("No job linked to this appointment");
-											return;
-										}
-										const result = await cancelJobAndAppointment(
-											job.id,
-											job.jobId,
-											"Job and appointment cancelled by user",
-										);
-										if (result.success) {
-											toast.success("Job and appointment cancelled");
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to cancel");
-										}
-									}}
-								>
-									Cancel Job & Appointment
-								</ContextMenuItem>
-
-								<ContextMenuItem
-									className="text-destructive focus:text-destructive"
-									onClick={async () => {
-										const result = await archiveAppointment(job.id);
-										if (result.success) {
-											toast.success("Appointment archived");
-											// Note: Component manages state via useSchedule hook - refresh handled by parent
-										} else {
-											toast.error(result.error || "Failed to archive");
-										}
-									}}
-								>
-									Archive Appointment
-								</ContextMenuItem>
-							</ContextMenuContent>
-						</ContextMenu>
+								/>
+							</div>
+						</ScheduleJobContextMenu>
 
 						{/* Right Resize Handle */}
 						<div
@@ -518,9 +618,20 @@ const JobCard = memo(function JobCard({
 								<h4 className="text-foreground text-base font-bold">
 									{job.customer?.name || "Unknown Customer"}
 								</h4>
-								<Badge className="text-[10px] capitalize" variant="outline">
-									{job.status}
-								</Badge>
+								<div className="flex items-center gap-1.5">
+									{job.recurrence && (
+										<Badge
+											className="gap-0.5 bg-violet-100 px-1.5 py-0 text-[10px] text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
+											variant="outline"
+										>
+											<Repeat className="size-2.5" />
+											Recurring
+										</Badge>
+									)}
+									<Badge className="text-[10px] capitalize" variant="outline">
+										{job.status}
+									</Badge>
+								</div>
 							</div>
 							<p className="text-muted-foreground text-sm">{job.title}</p>
 						</div>
@@ -623,6 +734,9 @@ const TechnicianLane = memo(function TechnicianLane({
 	onResize,
 	onResizeComplete,
 	isDragActive,
+	onDoubleClick,
+	totalWidth,
+	timeRangeStart,
 }: {
 	technician: Technician;
 	jobs: JobWithPosition[];
@@ -637,11 +751,43 @@ const TechnicianLane = memo(function TechnicianLane({
 	) => void;
 	onResizeComplete: (jobId: string, hasChanges: boolean) => void;
 	isDragActive: boolean;
+	onDoubleClick: (technicianId: string, startTime: Date) => void;
+	totalWidth: number;
+	timeRangeStart: Date;
 }) {
 	const { setNodeRef, isOver } = useDroppable({
 		id: technician.id,
 		data: { technician },
 	});
+
+	// Calculate travel gaps between consecutive jobs
+	const travelGaps = useMemo(
+		() => calculateTravelGaps(jobs, HOUR_WIDTH),
+		[jobs],
+	);
+
+	// Handle double-click to create new job
+	const handleDoubleClick = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			// Only trigger on empty space (not on job cards)
+			if ((e.target as HTMLElement).closest(".job-card")) {
+				return;
+			}
+
+			const rect = e.currentTarget.getBoundingClientRect();
+			const clickX = e.clientX - rect.left;
+			const minutesFromStart = (clickX / totalWidth) * (24 * 60);
+
+			// Snap to 15-minute intervals
+			const snappedMinutes = Math.round(minutesFromStart / 15) * 15;
+
+			const newStartTime = new Date(timeRangeStart);
+			newStartTime.setMinutes(newStartTime.getMinutes() + snappedMinutes);
+
+			onDoubleClick(technician.id, newStartTime);
+		},
+		[totalWidth, timeRangeStart, technician.id, onDoubleClick],
+	);
 
 	return (
 		<div
@@ -652,6 +798,7 @@ const TechnicianLane = memo(function TechnicianLane({
 			)}
 			ref={setNodeRef}
 			style={{ height, minHeight: height, maxHeight: height }}
+			onDoubleClick={handleDoubleClick}
 		>
 			{/* Drop zone indicator */}
 			{isOver && (
@@ -663,31 +810,47 @@ const TechnicianLane = memo(function TechnicianLane({
 			)}
 
 			{jobs.length === 0 && !isDragActive ? (
-				<div className="pointer-events-none flex h-full items-center pl-4">
+				<div className="flex h-full items-center pl-4">
 					<div className="sticky left-16 z-20">
-						<div className="border-muted-foreground/30 bg-muted flex h-10 items-center gap-2 rounded-md border border-dashed px-4 py-2 shadow-sm">
-							<span className="text-muted-foreground text-xs font-semibold tracking-wide">
-								No appointments
-							</span>
-						</div>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div className="border-muted-foreground/30 bg-muted hover:border-primary/40 hover:bg-primary/5 flex h-10 cursor-pointer items-center gap-2 rounded-md border border-dashed px-4 py-2 shadow-sm transition-colors">
+									<Plus className="text-muted-foreground size-3.5" />
+									<span className="text-muted-foreground text-xs font-semibold tracking-wide">
+										Double-click to add job
+									</span>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent side="top" className="text-xs">
+								Double-click anywhere to schedule a job for {technician.name}
+							</TooltipContent>
+						</Tooltip>
 					</div>
 				</div>
 			) : (
-				jobs.map(({ job, left, width, top, hasOverlap }) => (
-					<JobCard
-						hasOverlap={hasOverlap}
-						isSelected={selectedJobId === job.id}
-						job={job}
-						key={job.id}
-						left={left}
-						onHover={onJobHover}
-						onResize={onResize}
-						onResizeComplete={onResizeComplete}
-						onSelect={() => onSelectJob(job.id)}
-						top={top}
-						width={width}
-					/>
-				))
+				<>
+					{/* Travel time indicators between jobs */}
+					{travelGaps.map((gap) => (
+						<TravelTimeIndicator gap={gap} key={`travel-${gap.fromJobId}-${gap.toJobId}`} />
+					))}
+
+					{/* Job cards */}
+					{jobs.map(({ job, left, width, top, hasOverlap }) => (
+						<JobCard
+							hasOverlap={hasOverlap}
+							isSelected={selectedJobId === job.id}
+							job={job}
+							key={job.id}
+							left={left}
+							onHover={onJobHover}
+							onResize={onResize}
+							onResizeComplete={onResizeComplete}
+							onSelect={() => onSelectJob(job.id)}
+							top={top}
+							width={width}
+						/>
+					))}
+				</>
 			)}
 		</div>
 	);
@@ -707,6 +870,7 @@ export function DispatchTimeline() {
 	const [unassignedOrder, setUnassignedOrder] = useState<string[]>([]);
 	const [commandMenuOpen, setCommandMenuOpen] = useState(false);
 	const [commandMenuDate, setCommandMenuDate] = useState<Date | null>(null);
+	const [quickCreateTechId, setQuickCreateTechId] = useState<string | null>(null);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const timelineRef = useRef<HTMLDivElement>(null);
 	const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -727,6 +891,9 @@ export function DispatchTimeline() {
 		loadMoreUnassignedJobs,
 	} = useSchedule();
 	const { currentDate } = useScheduleViewStore();
+
+	// Enable real-time updates for schedule changes
+	const { isConnected: isRealtimeConnected } = useScheduleRealtime();
 
 	// Get unassigned jobs
 	const unassignedJobs = useMemo(
@@ -1510,6 +1677,16 @@ export function DispatchTimeline() {
 		[dateObj],
 	);
 
+	// Handle double-click on timeline to create new job
+	const handleLaneDoubleClick = useCallback(
+		(technicianId: string, startTime: Date) => {
+			setQuickCreateTechId(technicianId);
+			setCommandMenuDate(startTime);
+			setCommandMenuOpen(true);
+		},
+		[],
+	);
+
 	if (!mounted || isLoading) {
 		// Conditional returns AFTER all hooks
 		return (
@@ -1570,10 +1747,28 @@ export function DispatchTimeline() {
 							style={{ width: SIDEBAR_WIDTH, minHeight: totalContentHeight }}
 						>
 							{/* Team Header - Sticky */}
-							<div className="bg-muted sticky top-0 z-40 flex h-11 shrink-0 items-center border-b px-4">
+							<div className="bg-muted sticky top-0 z-40 flex h-11 shrink-0 items-center justify-between border-b px-4">
 								<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 									Team
 								</span>
+								{/* Real-time connection indicator */}
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div
+											className={cn(
+												"size-2 rounded-full",
+												isRealtimeConnected
+													? "bg-green-500 animate-pulse"
+													: "bg-slate-400",
+											)}
+										/>
+									</TooltipTrigger>
+									<TooltipContent side="right" className="text-xs">
+										{isRealtimeConnected
+											? "Live updates active"
+											: "Connecting to live updates..."}
+									</TooltipContent>
+								</Tooltip>
 							</div>
 
 							{/* Team Members */}
@@ -1583,59 +1778,149 @@ export function DispatchTimeline() {
 									.includes("apprentice");
 								const hasJobs = jobs.length > 0;
 
+								// Calculate utilization (assuming 8 hour workday: 8am-5pm = 9 hours with lunch)
+								const WORK_DAY_MINUTES = 8 * 60; // 8 hours
+								const totalScheduledMinutes = jobs.reduce((acc, job) => {
+									const start =
+										job.startTime instanceof Date
+											? job.startTime
+											: new Date(job.startTime);
+									const end =
+										job.endTime instanceof Date
+											? job.endTime
+											: new Date(job.endTime);
+									return acc + (end.getTime() - start.getTime()) / (1000 * 60);
+								}, 0);
+								const utilizationPercent = Math.min(
+									100,
+									Math.round((totalScheduledMinutes / WORK_DAY_MINUTES) * 100),
+								);
+
+								// Color based on utilization
+								const utilizationColor =
+									utilizationPercent === 0
+										? "bg-slate-200 dark:bg-slate-700"
+										: utilizationPercent < 50
+											? "bg-emerald-500"
+											: utilizationPercent < 80
+												? "bg-amber-500"
+												: "bg-red-500";
+
 								return (
-									<div
-										className="flex items-center border-b px-3"
-										key={technician.id}
-										style={{ height, minHeight: height, maxHeight: height }}
-									>
-										<div className="flex w-full items-center gap-2.5">
-											<div className="relative">
-												<Avatar className="size-9">
-													<AvatarFallback
+									<Tooltip key={technician.id}>
+										<TooltipTrigger asChild>
+											<div
+												className="flex cursor-default items-center border-b px-3 hover:bg-muted/50"
+												style={{ height, minHeight: height, maxHeight: height }}
+											>
+												<div className="flex w-full items-center gap-2.5">
+													<div className="relative">
+														<Avatar className="size-9">
+															<AvatarFallback
+																className={cn(
+																	"text-xs font-semibold",
+																	isApprentice
+																		? "bg-amber-100 text-amber-700"
+																		: "bg-primary/10 text-primary",
+																)}
+															>
+																{technician.name
+																	.split(" ")
+																	.map((n) => n[0])
+																	.join("")
+																	.toUpperCase()}
+															</AvatarFallback>
+														</Avatar>
+														{/* Availability indicator */}
+														<div
+															className={cn(
+																"ring-card absolute -right-0.5 -bottom-0.5 size-3 rounded-full ring-2",
+																hasJobs ? "bg-warning" : "bg-success",
+															)}
+														/>
+													</div>
+													<div className="min-w-0 flex-1">
+														<div className="flex items-center gap-1.5">
+															<p className="truncate text-sm font-semibold">
+																{technician.name}
+															</p>
+															{isApprentice && (
+																<Badge
+																	className="px-1 py-0 text-[9px]"
+																	variant="outline"
+																>
+																	Apprentice
+																</Badge>
+															)}
+														</div>
+														{/* Utilization bar */}
+														<div className="mt-1 flex items-center gap-2">
+															<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+																<div
+																	className={cn(
+																		"h-full rounded-full transition-all",
+																		utilizationColor,
+																	)}
+																	style={{ width: `${utilizationPercent}%` }}
+																/>
+															</div>
+															<span className="text-muted-foreground text-[10px] tabular-nums">
+																{jobs.length} job{jobs.length !== 1 ? "s" : ""}
+															</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</TooltipTrigger>
+										<TooltipContent side="right" className="text-xs">
+											<div className="flex flex-col gap-1">
+												<div className="flex items-center justify-between gap-4">
+													<span className="font-medium">{technician.name}</span>
+													<span
 														className={cn(
-															"text-xs font-semibold",
-															isApprentice
-																? "bg-amber-100 text-amber-700"
-																: "bg-primary/10 text-primary",
+															"rounded px-1.5 py-0.5 text-[10px] font-medium",
+															hasJobs
+																? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+																: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
 														)}
 													>
-														{technician.name
-															.split(" ")
-															.map((n) => n[0])
-															.join("")
-															.toUpperCase()}
-													</AvatarFallback>
-												</Avatar>
-												{/* Availability indicator */}
-												<div
-													className={cn(
-														"ring-card absolute -right-0.5 -bottom-0.5 size-3 rounded-full ring-2",
-														hasJobs ? "bg-warning" : "bg-success",
-													)}
-													title={hasJobs ? "Busy" : "Available"}
-												/>
-											</div>
-											<div className="min-w-0 flex-1">
-												<div className="flex items-center gap-1.5">
-													<p className="truncate text-sm font-semibold">
-														{technician.name}
-													</p>
-													{isApprentice && (
-														<Badge
-															className="px-1 py-0 text-[9px]"
-															variant="outline"
-														>
-															Apprentice
-														</Badge>
-													)}
+														{hasJobs ? "Busy" : "Available"}
+													</span>
 												</div>
-												<p className="text-muted-foreground truncate text-xs">
+												<div className="text-muted-foreground">
 													{technician.role}
-												</p>
+												</div>
+												<div className="border-t pt-1 mt-1">
+													<div className="flex justify-between">
+														<span>Jobs Today:</span>
+														<span className="font-medium">{jobs.length}</span>
+													</div>
+													<div className="flex justify-between">
+														<span>Time Booked:</span>
+														<span className="font-medium">
+															{Math.round(totalScheduledMinutes / 60)}h{" "}
+															{Math.round(totalScheduledMinutes % 60)}m
+														</span>
+													</div>
+													<div className="flex justify-between">
+														<span>Utilization:</span>
+														<span
+															className={cn(
+																"font-medium",
+																utilizationPercent < 50
+																	? "text-emerald-600"
+																	: utilizationPercent < 80
+																		? "text-amber-600"
+																		: "text-red-600",
+															)}
+														>
+															{utilizationPercent}%
+														</span>
+													</div>
+												</div>
 											</div>
-										</div>
-									</div>
+										</TooltipContent>
+									</Tooltip>
 								);
 							})}
 						</div>
@@ -1760,6 +2045,9 @@ export function DispatchTimeline() {
 										onSelectJob={selectJob}
 										selectedJobId={selectedJobId}
 										technician={technician}
+										onDoubleClick={handleLaneDoubleClick}
+										totalWidth={totalWidth}
+										timeRangeStart={timeRange.start}
 									/>
 								))}
 							</div>
@@ -1792,8 +2080,17 @@ export function DispatchTimeline() {
 			{/* Command Menu */}
 			<ScheduleCommandMenu
 				isOpen={commandMenuOpen}
-				onClose={() => setCommandMenuOpen(false)}
+				onClose={() => {
+					setCommandMenuOpen(false);
+					setQuickCreateTechId(null);
+				}}
 				selectedDate={commandMenuDate}
+				selectedTechnicianId={quickCreateTechId}
+				selectedTechnicianName={
+					quickCreateTechId
+						? technicians.find((t) => t.id === quickCreateTechId)?.name
+						: undefined
+				}
 				unassignedJobs={unassignedJobs}
 			/>
 		</DndContext>

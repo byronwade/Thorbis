@@ -1,10 +1,10 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, FeatureTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, FeatureTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 
-export const alt = "Marketing Automation - Turn Happy Customers Into Repeat Business";
+export const alt = "Marketing Automation - 92% Renewal Rate | Turn Customers Into Revenue";
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,
@@ -12,10 +12,16 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([
+		loadOGFonts(),
+		getLogoDataUrl(),
+	]);
 
-	return new ImageResponse(<FeatureTemplate slug="marketing" />, {
-		...size,
-		fonts,
-	});
+	return new ImageResponse(
+		<FeatureTemplate slug="marketing" logoDataUrl={logoDataUrl} />,
+		{
+			...size,
+			fonts,
+		}
+	);
 }

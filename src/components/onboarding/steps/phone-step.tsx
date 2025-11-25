@@ -164,6 +164,80 @@ export function PhoneStep() {
 				</p>
 			</div>
 
+			{/* Info Card - What is phone porting? */}
+			{!data.phoneSetupType && (
+				<div className="rounded-lg border bg-muted/30 p-4">
+					<button
+						type="button"
+						className="w-full flex items-center justify-between text-left"
+						onClick={(e) => {
+							const content = (e.currentTarget.nextElementSibling as HTMLElement);
+							if (content) {
+								content.classList.toggle("hidden");
+							}
+						}}
+					>
+						<span className="text-sm font-medium flex items-center gap-2">
+							<Info className="h-4 w-4 text-primary" />
+							Not sure which option to choose?
+						</span>
+						<span className="text-sm text-muted-foreground">Show comparison</span>
+					</button>
+					<div className="hidden mt-4 pt-4 border-t">
+						<div className="grid sm:grid-cols-2 gap-4">
+							<div className="space-y-2 p-3 rounded bg-background">
+								<p className="font-medium text-sm">Get a new number</p>
+								<ul className="space-y-1 text-sm text-muted-foreground">
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										Ready in minutes
+									</li>
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										No paperwork required
+									</li>
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										Choose your area code
+									</li>
+									<li className="flex items-center gap-2 text-amber-600">
+										<AlertTriangle className="h-3.5 w-3.5" />
+										Customers need new number
+									</li>
+								</ul>
+								<p className="text-xs text-primary font-medium pt-2">
+									Best for: New businesses, side projects
+								</p>
+							</div>
+							<div className="space-y-2 p-3 rounded bg-background">
+								<p className="font-medium text-sm">Port existing number</p>
+								<ul className="space-y-1 text-sm text-muted-foreground">
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										Keep your current number
+									</li>
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										No customer confusion
+									</li>
+									<li className="flex items-center gap-2">
+										<Check className="h-3.5 w-3.5 text-green-500" />
+										One-time fee only
+									</li>
+									<li className="flex items-center gap-2 text-amber-600">
+										<Clock className="h-3.5 w-3.5" />
+										Takes 2-4 weeks
+									</li>
+								</ul>
+								<p className="text-xs text-primary font-medium pt-2">
+									Best for: Established businesses
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{/* Setup Options */}
 			<div className="space-y-4">
 				<label className="text-sm font-medium text-muted-foreground">

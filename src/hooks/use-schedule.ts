@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { fetchScheduleData } from "@/lib/schedule-data";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
@@ -329,26 +329,168 @@ export function useSchedule() {
 }
 
 /**
- * Hook for real-time schedule updates
- * TODO: Implement WebSocket connection
+ * Hook for real-time schedule updates via Supabase
+ * Subscribes to appointments table for INSERT, UPDATE, DELETE events
  */
-function useScheduleRealtime() {
-	const scheduleStore = useScheduleStore();
+export function useScheduleRealtime() {
+	const companyId = useScheduleStore((state) => state.companyId);
+	const updateJob = useScheduleStore((state) => state.updateJob);
+	const deleteJob = useScheduleStore((state) => state.deleteJob);
+	const addJob = useScheduleStore((state) => state.addJob);
+	const getJobById = useScheduleStore((state) => state.getJobById);
+	const syncWithServer = useScheduleStore((state) => state.syncWithServer);
+	const lastSync = useScheduleStore((state) => state.lastSync);
+	const [isConnected, setIsConnected] = useState(false);
+	const [connectionError, setConnectionError] = useState<string | null>(null);
 
 	useEffect(() => {
-		// TODO: Setup WebSocket connection
-		// const ws = new WebSocket('wss://api.example.com/schedule')
-		// ws.onmessage = (event) => {
-		//   const update = JSON.parse(event.data)
-		//   handleScheduleUpdate(update)
-		// }
-		// return () => ws.close()
-	}, []);
+		if (!companyId) {
+			return;
+		}
+
+		const supabase = createClient();
+		if (!supabase) {
+			setConnectionError("Database connection not available");
+			return;
+		}
+
+		const channelName = `schedule-realtime-${companyId}`;
+
+		const channel = supabase
+			.channel(channelName)
+			.on(
+				"postgres_changes",
+				{
+					event: "*",
+					schema: "public",
+					table: "appointments",
+					filter: `company_id=eq.${companyId}`,
+				},
+				async (payload) => {
+					const { eventType, new: newRecord, old: oldRecord } = payload;
+
+					switch (eventType) {
+						case "DELETE": {
+							// Remove job from store
+							const jobId = (oldRecord as { id?: string })?.id;
+							if (jobId) {
+								deleteJob(jobId);
+							}
+							break;
+						}
+
+						case "UPDATE": {
+							// For updates, try to merge changes into existing job
+							const record = newRecord as Record<string, unknown>;
+							const jobId = record.id as string;
+
+							if (!jobId) break;
+
+							const existingJob = getJobById(jobId);
+
+							if (existingJob) {
+								// Merge updates into existing job
+								const updates: Partial<Job> = {};
+
+								if (record.title !== undefined) {
+									updates.title = record.title as string;
+								}
+								if (record.description !== undefined) {
+									updates.description = record.description as string;
+								}
+								if (record.status !== undefined) {
+									updates.status = mapStatus(record.status as string);
+								}
+								if (record.start_time !== undefined) {
+									updates.startTime = new Date(record.start_time as string);
+								}
+								if (record.end_time !== undefined) {
+									updates.endTime = new Date(record.end_time as string);
+								}
+								if (record.assigned_to !== undefined) {
+									// Assignment changed - need to handle technician change
+									if (record.assigned_to === null) {
+										updates.isUnassigned = true;
+										updates.technicianId = "";
+										updates.assignments = [];
+									} else {
+										updates.isUnassigned = false;
+										updates.technicianId = record.assigned_to as string;
+									}
+								}
+
+								if (Object.keys(updates).length > 0) {
+									updateJob(jobId, updates);
+								}
+							} else {
+								// Job not in store - fetch fresh data
+								await syncWithServer();
+							}
+							break;
+						}
+
+						case "INSERT": {
+							// For new jobs, we need full data with joins
+							// Trigger a sync to get complete job with customer/property data
+							await syncWithServer();
+							break;
+						}
+					}
+				},
+			)
+			.subscribe((status) => {
+				if (status === "SUBSCRIBED") {
+					setIsConnected(true);
+					setConnectionError(null);
+				} else if (status === "CHANNEL_ERROR") {
+					setIsConnected(false);
+					setConnectionError("Failed to connect to real-time updates");
+				} else if (status === "CLOSED") {
+					setIsConnected(false);
+				}
+			});
+
+		return () => {
+			supabase.removeChannel(channel);
+			setIsConnected(false);
+		};
+	}, [
+		companyId,
+		updateJob,
+		deleteJob,
+		addJob,
+		getJobById,
+		syncWithServer,
+	]);
 
 	return {
-		isConnected: false,
-		lastUpdate: scheduleStore.lastSync,
+		isConnected,
+		connectionError,
+		lastUpdate: lastSync,
 	};
+}
+
+// Helper to map database status to Job status
+function mapStatus(status: string): Job["status"] {
+	const normalized = status?.toLowerCase() ?? "scheduled";
+	switch (normalized) {
+		case "scheduled":
+		case "dispatched":
+		case "arrived":
+		case "closed":
+		case "cancelled":
+			return normalized as Job["status"];
+		case "in-progress":
+		case "in_progress":
+		case "inprogress":
+			return "in-progress";
+		case "completed":
+		case "complete":
+		case "done":
+			return "completed";
+		default:
+			return "scheduled";
+	}
 }
 
 /**

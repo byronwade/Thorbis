@@ -42,11 +42,19 @@ const nextConfig: NextConfig = {
 	// DISABLED: Complex cacheLife config - temporarily disabled for testing
 	// cacheLife: { ... },
 
-	// DISABLED: Experimental features - temporarily disabled for testing
-	// experimental: {
-	// 	optimizePackageImports: [ ... ],
-	// 	optimizeCss: true,
-	// },
+	// Experimental performance optimizations
+	experimental: {
+		// Tree-shake heavy packages - reduces bundle size and build time
+		optimizePackageImports: [
+			"lucide-react",
+			"@radix-ui/react-icons",
+			"recharts",
+			"date-fns",
+			"@supabase/supabase-js",
+			"ai",
+			"zod",
+		],
+	},
 
 	// Turbopack config - required for Next.js 16 when webpack config is present
 	turbopack: {

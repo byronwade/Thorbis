@@ -11,6 +11,10 @@ import { getPurchaseOrdersStatsData } from "@/components/work/purchase-orders/pu
 import { getTeamStatsData } from "@/components/work/team/team-stats";
 import { getVendorsStatsData } from "@/components/work/vendors/vendors-stats";
 
+// Cache stats for 60 seconds, allow stale for 2 more minutes while revalidating
+// Private cache since stats are company-specific
+const CACHE_CONTROL = "private, max-age=60, stale-while-revalidate=120";
+
 /**
  * API route to fetch stats for work pages
  * GET /api/work-stats/[page]
@@ -62,7 +66,11 @@ export async function GET(
 				return NextResponse.json({ error: "Invalid page" }, { status: 400 });
 		}
 
-		return NextResponse.json({ stats });
+		return NextResponse.json({ stats }, {
+			headers: {
+				"Cache-Control": CACHE_CONTROL,
+			},
+		});
 	} catch (error) {
 		console.error(`Error fetching stats for ${page}:`, error);
 		return NextResponse.json(

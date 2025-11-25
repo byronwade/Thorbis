@@ -9,9 +9,16 @@
  * - Phase 3: Business Setup (Services, Team, Payments)
  * - Phase 4: Operations (Schedule, Reports, Settings)
  * - Phase 5: Launch (First Action, Complete)
+ *
+ * Features:
+ * - Auto-save progress with visual indicator
+ * - Multi-company support with context banner
+ * - Contextual help tooltips
+ * - Improved skip step UX
+ * - Error boundary for graceful failures
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect, Component, type ErrorInfo, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { completeOnboardingWizard } from "@/actions/onboarding";
@@ -25,10 +32,17 @@ import {
 	WalkthroughSlideshow,
 	type WalkthroughSlide,
 } from "@/components/onboarding/info-cards/walkthrough-slide";
+import {
+	AutoSaveIndicator,
+	CompanyContextBanner,
+	SkipConfirmation,
+} from "@/components/onboarding/progress-banner";
 
 // Step Components
 import { WelcomeStep } from "@/components/onboarding/steps/welcome-step";
 import { CompanyStep } from "@/components/onboarding/steps/company-step";
+import { DataImportStep } from "@/components/onboarding/steps/data-import-step";
+import { IntegrationsStep } from "@/components/onboarding/steps/integrations-step";
 import { PhoneStep } from "@/components/onboarding/steps/phone-step";
 import { EmailStep } from "@/components/onboarding/steps/email-step";
 import { NotificationsStep } from "@/components/onboarding/steps/notifications-step";
@@ -46,12 +60,82 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Rocket,
-	Check,
 	Phone,
 	Wrench,
 	Calendar,
 	Loader2,
+	AlertTriangle,
+	RefreshCw,
 } from "lucide-react";
+
+// =============================================================================
+// ERROR BOUNDARY
+// =============================================================================
+
+interface ErrorBoundaryState {
+	hasError: boolean;
+	error: Error | null;
+}
+
+class OnboardingErrorBoundary extends Component<
+	{ children: ReactNode; onReset: () => void },
+	ErrorBoundaryState
+> {
+	constructor(props: { children: ReactNode; onReset: () => void }) {
+		super(props);
+		this.state = { hasError: false, error: null };
+	}
+
+	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+		return { hasError: true, error };
+	}
+
+	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+		console.error("Onboarding error:", error, errorInfo);
+	}
+
+	render() {
+		if (this.state.hasError) {
+			return (
+				<div className="min-h-screen bg-background flex items-center justify-center p-4">
+					<div className="max-w-md w-full text-center space-y-4">
+						<div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+							<AlertTriangle className="h-8 w-8 text-destructive" />
+						</div>
+						<h2 className="text-xl font-semibold">Something went wrong</h2>
+						<p className="text-muted-foreground text-sm">
+							Don't worry - your progress has been saved. Try refreshing the page.
+						</p>
+						<div className="flex justify-center gap-3 pt-2">
+							<Button
+								variant="outline"
+								onClick={() => {
+									this.setState({ hasError: false, error: null });
+									this.props.onReset();
+								}}
+							>
+								<RefreshCw className="h-4 w-4 mr-2" />
+								Try again
+							</Button>
+							<Button
+								onClick={() => window.location.reload()}
+							>
+								Refresh page
+							</Button>
+						</div>
+						{process.env.NODE_ENV === "development" && this.state.error && (
+							<pre className="mt-4 text-left text-xs bg-muted p-3 rounded overflow-auto max-h-32">
+								{this.state.error.message}
+							</pre>
+						)}
+					</div>
+				</div>
+			);
+		}
+
+		return this.props.children;
+	}
+}
 
 // =============================================================================
 // CONSTANTS
@@ -60,6 +144,8 @@ import {
 const STEP_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
+	"data-import",
+	"integrations",
 	"phone",
 	"email",
 	"notifications",
@@ -126,7 +212,37 @@ const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 // MAIN COMPONENT
 // =============================================================================
 
-export function OnboardingWizard() {
+// Skip step consequences for UX
+const SKIP_CONSEQUENCES: Partial<Record<OnboardingStep, string[]>> = {
+	phone: [
+		"You won't have a business phone number",
+		"Customers can't call or text through the platform",
+		"No SMS appointment reminders",
+	],
+	email: [
+		"Emails will come from noreply@thorbis.com",
+		"May have lower deliverability",
+		"Less professional appearance",
+	],
+	services: [
+		"You'll need to add services manually later",
+		"No pre-built pricing templates",
+	],
+	team: [
+		"Team members won't have access yet",
+		"You can invite them later from Settings",
+	],
+	payments: [
+		"Can't accept online payments",
+		"Manual payment tracking only",
+	],
+	schedule: [
+		"Default business hours (9-5, Mon-Fri)",
+		"No service area defined",
+	],
+};
+
+function OnboardingWizardInner() {
 	const router = useRouter();
 	const {
 		data,
@@ -135,7 +251,9 @@ export function OnboardingWizard() {
 		completedSteps,
 		skippedSteps,
 		completeStep,
+		skipStep,
 		updateData,
+		isSaving,
 	} = useOnboardingStore();
 
 	// Walkthrough state
@@ -144,6 +262,19 @@ export function OnboardingWizard() {
 	const [pendingNavigation, setPendingNavigation] = useState<OnboardingStep | null>(null);
 	const [isCompleting, setIsCompleting] = useState(false);
 	const [completeError, setCompleteError] = useState<string | null>(null);
+
+	// Skip confirmation state
+	const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+
+	// Auto-save state
+	const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+	// Track saves
+	useEffect(() => {
+		if (!isSaving) {
+			setLastSaved(new Date());
+		}
+	}, [isSaving, data]);
 
 	const currentStepIndex = STEP_ORDER.indexOf(currentStep);
 	const currentConfig = STEP_CONFIG[currentStep];
@@ -212,6 +343,24 @@ export function OnboardingWizard() {
 		}
 	}, [currentStepIndex, setCurrentStep]);
 
+	// Handle skip with confirmation for important steps
+	const handleSkipRequest = useCallback(() => {
+		const hasConsequences = SKIP_CONSEQUENCES[currentStep];
+		if (hasConsequences && hasConsequences.length > 0) {
+			setShowSkipConfirm(true);
+		} else {
+			// No consequences, skip directly
+			skipStep(currentStep);
+			goNext();
+		}
+	}, [currentStep, skipStep, goNext]);
+
+	const handleSkipConfirm = useCallback(() => {
+		setShowSkipConfirm(false);
+		skipStep(currentStep);
+		goNext();
+	}, [currentStep, skipStep, goNext]);
+
 	const handleWalkthroughComplete = useCallback(() => {
 		setShowWalkthrough(false);
 		if (pendingNavigation) {
@@ -264,37 +413,56 @@ export function OnboardingWizard() {
 				/>
 			)}
 
+			{/* Skip Confirmation Modal */}
+			{showSkipConfirm && (
+				<SkipConfirmation
+					stepName={currentConfig.title}
+					consequences={SKIP_CONSEQUENCES[currentStep]}
+					onSkip={handleSkipConfirm}
+					onCancel={() => setShowSkipConfirm(false)}
+				/>
+			)}
+
 			<div className="min-h-screen bg-background flex flex-col">
-				{/* Minimal Header - No borders */}
-				<header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-						<div className="flex items-center justify-between h-14 sm:h-16">
-							{/* Left: Phase info */}
-							<div className="flex items-center gap-2 sm:gap-4 min-w-0">
-								<span className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
-									{isLastStep ? "Complete" : PHASE_LABELS[currentPhase]}
-								</span>
-								<span className="hidden sm:inline text-muted-foreground/40">·</span>
-								<span className="hidden sm:inline text-sm text-muted-foreground truncate">
+				{/* Minimal Unified Header */}
+				<header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+					<div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
+						<div className="flex items-center justify-between h-14">
+							{/* Left: Logo + Step */}
+							<div className="flex items-center gap-3 min-w-0">
+								<span className="font-semibold text-lg tracking-tight">Thorbis</span>
+								<span className="text-muted-foreground/40 hidden sm:inline">|</span>
+								<span className="text-sm text-muted-foreground hidden sm:inline truncate">
 									{currentConfig.title}
 								</span>
 							</div>
 
-							{/* Right: Progress */}
-							<div className="flex items-center gap-2 sm:gap-4">
-								{!isLastStep && (
-									<span className="hidden sm:inline text-sm text-muted-foreground">
-										~{remainingMinutes} min left
+							{/* Center: Progress bar (desktop) */}
+							<div className="hidden md:flex items-center gap-3 flex-1 max-w-xs mx-8">
+								<div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+									<div
+										className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
+										style={{ width: `${progress}%` }}
+									/>
+								</div>
+								<span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
+									{Math.round(progress)}%
+								</span>
+							</div>
+
+							{/* Right: Time + Save status */}
+							<div className="flex items-center gap-3">
+								<AutoSaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
+								{!isLastStep && remainingMinutes > 0 && (
+									<span className="text-xs text-muted-foreground hidden sm:inline">
+										~{remainingMinutes} min
 									</span>
 								)}
-								<span className="text-xs sm:text-sm font-medium tabular-nums">
-									{currentStepIndex + 1}/{STEP_ORDER.length}
-								</span>
 							</div>
 						</div>
 
-						{/* Progress Bar - Thin line */}
-						<div className="h-0.5 bg-muted/50">
+						{/* Progress Bar - Mobile only */}
+						<div className="h-1 bg-muted/50 md:hidden -mx-4 sm:-mx-6">
 							<div
 								className="h-full bg-primary transition-all duration-300 ease-out"
 								style={{ width: `${progress}%` }}
@@ -303,54 +471,13 @@ export function OnboardingWizard() {
 					</div>
 				</header>
 
-				{/* Step Progress Dots - Mobile friendly */}
-				<div className="bg-muted/20">
-					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-						<div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
-							{STEP_ORDER.map((step, index) => {
-								const isActive = step === currentStep;
-								const isCompleted = completedSteps.includes(step);
-								const isPast = index < currentStepIndex;
-
-								return (
-									<button
-										key={step}
-										type="button"
-										onClick={() => {
-											if (isCompleted || isPast) {
-												setCurrentStep(step);
-											}
-										}}
-										disabled={!isCompleted && !isPast}
-										className={cn(
-											"relative flex items-center justify-center transition-all duration-200",
-											isActive ? "w-6 h-6 sm:w-8 sm:h-8" : "w-2 h-2 sm:w-3 sm:h-3",
-											isActive && "rounded-full bg-primary text-primary-foreground",
-											isCompleted && !isActive && "rounded-full bg-primary/20 hover:bg-primary/30 cursor-pointer",
-											!isActive && !isCompleted && !isPast && "rounded-full bg-muted",
-											isPast && !isCompleted && "rounded-full bg-muted-foreground/30"
-										)}
-										title={STEP_CONFIG[step].title}
-									>
-										{isActive && (
-											<span className="text-[10px] sm:text-xs font-medium">{index + 1}</span>
-										)}
-										{isCompleted && !isActive && (
-											<Check className="h-1.5 w-1.5 sm:h-2 sm:w-2 text-primary" />
-										)}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-				</div>
-
-				{/* Main Content - Fully responsive */}
+				{/* Main Content */}
 				<main className="flex-1">
-					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-						<div className="w-full max-w-3xl mx-auto">
+					<div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 							{currentStep === "welcome" && <WelcomeStep />}
 							{currentStep === "company" && <CompanyStep />}
+							{currentStep === "data-import" && <DataImportStep />}
+							{currentStep === "integrations" && <IntegrationsStep />}
 							{currentStep === "phone" && <PhoneStep />}
 							{currentStep === "email" && <EmailStep />}
 							{currentStep === "notifications" && <NotificationsStep />}
@@ -363,61 +490,40 @@ export function OnboardingWizard() {
 							{currentStep === "settings" && <SettingsStep />}
 							{currentStep === "first-action" && <FirstActionStep />}
 							{currentStep === "complete" && <CompleteStep />}
-						</div>
 					</div>
 				</main>
 
-				{/* Footer Navigation - No borders, responsive */}
-				<footer className="sticky bottom-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-					<div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-						<div className="flex items-center justify-between h-16 sm:h-20 gap-2">
-							{/* Back Button */}
-							<div className="w-20 sm:w-32">
-								{!isFirstStep && (
-									<Button
-										variant="ghost"
-										onClick={goBack}
-										size="sm"
-										className="gap-1 sm:gap-2"
-									>
-										<ChevronLeft className="h-4 w-4" />
-										<span className="hidden sm:inline">Back</span>
-									</Button>
-								)}
-							</div>
-
-							{/* Center: Optional skip hint */}
-							<div className="flex-1 text-center">
-								{!STEP_CONFIG[currentStep].required && !isLastStep && (
-									<span className="text-xs sm:text-sm text-muted-foreground">
-										Optional
-									</span>
-								)}
-							</div>
+				{/* Minimal Footer Navigation */}
+				<footer className="sticky bottom-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/40">
+					<div className="w-full max-w-2xl mx-auto px-4 sm:px-6">
+						<div className="flex items-center justify-between h-16 gap-4">
+							{/* Back */}
+							{!isFirstStep ? (
+								<Button variant="ghost" onClick={goBack} size="sm">
+									<ChevronLeft className="h-4 w-4 mr-1" />
+									Back
+								</Button>
+							) : (
+								<div />
+							)}
 
 							{/* Forward Actions */}
-							<div className="flex justify-end gap-2 sm:gap-3">
+							<div className="flex items-center gap-2">
 								{completeError && (
-									<p className="hidden sm:block text-sm text-destructive mr-2">{completeError}</p>
+									<p className="text-sm text-destructive mr-2">{completeError}</p>
 								)}
 
 								{isLastStep ? (
-									<Button
-										onClick={handleComplete}
-										disabled={isCompleting}
-										size="sm"
-										className="gap-1 sm:gap-2"
-									>
+									<Button onClick={handleComplete} disabled={isCompleting}>
 										{isCompleting ? (
 											<>
-												<Loader2 className="h-4 w-4 animate-spin" />
-												<span className="hidden sm:inline">Saving...</span>
+												<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+												Saving...
 											</>
 										) : (
 											<>
-												<span className="sm:hidden">Done</span>
-												<span className="hidden sm:inline">Go to Dashboard</span>
-												<Rocket className="h-4 w-4" />
+												Go to Dashboard
+												<Rocket className="h-4 w-4 ml-2" />
 											</>
 										)}
 									</Button>
@@ -426,22 +532,16 @@ export function OnboardingWizard() {
 										{!STEP_CONFIG[currentStep].required && (
 											<Button
 												variant="ghost"
-												onClick={goNext}
+												onClick={handleSkipRequest}
 												size="sm"
-												className="hidden sm:inline-flex"
+												className="text-muted-foreground"
 											>
 												Skip
 											</Button>
 										)}
-										<Button
-											onClick={goNext}
-											disabled={!canProceed}
-											size="sm"
-											className="gap-1 sm:gap-2"
-										>
-											<span className="sm:hidden">Next</span>
-											<span className="hidden sm:inline">Continue</span>
-											<ChevronRight className="h-4 w-4" />
+										<Button onClick={goNext} disabled={!canProceed}>
+											Continue
+											<ChevronRight className="h-4 w-4 ml-1" />
 										</Button>
 									</>
 								)}
@@ -451,5 +551,19 @@ export function OnboardingWizard() {
 				</footer>
 			</div>
 		</>
+	);
+}
+
+// =============================================================================
+// EXPORTED COMPONENT (with error boundary)
+// =============================================================================
+
+export function OnboardingWizard() {
+	const { resetOnboarding } = useOnboardingStore();
+
+	return (
+		<OnboardingErrorBoundary onReset={() => {}}>
+			<OnboardingWizardInner />
+		</OnboardingErrorBoundary>
 	);
 }

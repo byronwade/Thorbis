@@ -1,58 +1,337 @@
 /* eslint-disable @next/next/no-img-element */
 /**
- * OG Image Templates - CLEAN & PROFESSIONAL REDESIGN
+ * OG Image Templates v2.0 - STUNNING REDESIGN
  *
- * Simple, readable, professional design for contractor appeal.
- * White background, clear hierarchy, massive pricing.
+ * Eye-catching, unique designs for each page type.
+ * Bold gradients, geometric patterns, strong visual hierarchy.
  */
 
-import { OG_CONFIG, OG_MESSAGING } from "./og-config";
+import {
+	OG_CONFIG,
+	OG_MESSAGING,
+	type FeatureSlug,
+	type IndustrySlug,
+	type CompetitorSlug,
+} from "./og-config";
 
-const { colors, typography, padding } = OG_CONFIG;
+const { colors, typography } = OG_CONFIG;
 
 /**
- * Logo component - uses actual Thorbis logo via HTTP fetch
- * Edge runtime compatible (no Node.js Buffer API)
+ * Logo loader - Edge Runtime compatible
  */
-export async function getLogoDataUrl() {
+export async function getLogoDataUrl(): Promise<string | undefined> {
 	try {
 		const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
 		const response = await fetch(`${baseUrl}/ThorbisLogo.png`);
 
-		if (!response.ok) {
-			console.error('Failed to fetch logo:', response.status);
-			return undefined;
-		}
+		if (!response.ok) return undefined;
 
 		const arrayBuffer = await response.arrayBuffer();
-
-		// Convert ArrayBuffer to base64 using Edge-compatible method
 		const bytes = new Uint8Array(arrayBuffer);
-		let binary = '';
+		let binary = "";
 		for (let i = 0; i < bytes.byteLength; i++) {
 			binary += String.fromCharCode(bytes[i]);
 		}
-		const base64 = btoa(binary);
-
-		return `data:image/png;base64,${base64}`;
-	} catch (error) {
-		console.error('Error loading logo:', error);
+		return `data:image/png;base64,${btoa(binary)}`;
+	} catch {
 		return undefined;
 	}
 }
 
+// ============================================================================
+// SHARED COMPONENTS
+// ============================================================================
+
 /**
- * Dark Mode Professional Layout with Gradient Accents
+ * Gradient background with glow effects
  */
-export function OGBaseLayout({
-	children,
-	logoDataUrl,
+function GradientBackground({
+	gradient,
 	variant = "default",
 }: {
-	children: React.ReactNode;
-	logoDataUrl?: string;
-	variant?: "default" | "pricing" | "feature" | "competitor";
+	gradient: [string, string];
+	variant?: "default" | "diagonal" | "radial" | "split";
 }) {
+	const [color1, color2] = gradient;
+
+	return (
+		<>
+			{/* Base dark background */}
+			<div
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					backgroundColor: colors.background,
+				}}
+			/>
+
+			{/* Primary gradient accent */}
+			{variant === "default" && (
+				<div
+					style={{
+						position: "absolute",
+						top: 0,
+						right: 0,
+						width: "70%",
+						height: "100%",
+						background: `linear-gradient(135deg, ${color1}15 0%, ${color2}08 50%, transparent 100%)`,
+					}}
+				/>
+			)}
+
+			{variant === "diagonal" && (
+				<div
+					style={{
+						position: "absolute",
+						top: "-50%",
+						right: "-20%",
+						width: "100%",
+						height: "200%",
+						background: `linear-gradient(135deg, ${color1}20 0%, ${color2}10 100%)`,
+						transform: "rotate(-15deg)",
+					}}
+				/>
+			)}
+
+			{variant === "radial" && (
+				<div
+					style={{
+						position: "absolute",
+						top: "-30%",
+						right: "-10%",
+						width: "80%",
+						height: "160%",
+						background: `radial-gradient(ellipse at center, ${color1}25 0%, ${color2}10 40%, transparent 70%)`,
+					}}
+				/>
+			)}
+
+			{variant === "split" && (
+				<>
+					<div
+						style={{
+							position: "absolute",
+							bottom: 0,
+							left: 0,
+							width: "100%",
+							height: "40%",
+							background: `linear-gradient(to top, ${color1}20 0%, transparent 100%)`,
+						}}
+					/>
+					<div
+						style={{
+							position: "absolute",
+							top: 0,
+							right: 0,
+							width: "50%",
+							height: "100%",
+							background: `linear-gradient(to left, ${color2}15 0%, transparent 100%)`,
+						}}
+					/>
+				</>
+			)}
+
+			{/* Accent glow orbs */}
+			<div
+				style={{
+					position: "absolute",
+					top: "10%",
+					right: "5%",
+					width: "400px",
+					height: "400px",
+					background: `radial-gradient(circle, ${color1}30 0%, transparent 60%)`,
+					filter: "blur(60px)",
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					bottom: "20%",
+					left: "10%",
+					width: "300px",
+					height: "300px",
+					background: `radial-gradient(circle, ${color2}20 0%, transparent 60%)`,
+					filter: "blur(40px)",
+				}}
+			/>
+
+			{/* Geometric accent line */}
+			<div
+				style={{
+					position: "absolute",
+					left: 0,
+					top: "10%",
+					bottom: "10%",
+					width: "6px",
+					background: `linear-gradient(to bottom, ${color1}, ${color2})`,
+					borderRadius: "0 4px 4px 0",
+				}}
+			/>
+		</>
+	);
+}
+
+/**
+ * Grid pattern overlay
+ */
+function GridPattern({ opacity = 0.03 }: { opacity?: number }) {
+	return (
+		<div
+			style={{
+				position: "absolute",
+				top: 0,
+				left: 0,
+				right: 0,
+				bottom: 0,
+				backgroundImage: `linear-gradient(rgba(255,255,255,${opacity}) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,${opacity}) 1px, transparent 1px)`,
+				backgroundSize: "60px 60px",
+			}}
+		/>
+	);
+}
+
+/**
+ * Logo and brand header
+ */
+function BrandHeader({ logoDataUrl }: { logoDataUrl?: string }) {
+	return (
+		<div
+			style={{
+				display: "flex",
+				alignItems: "center",
+				gap: "16px",
+			}}
+		>
+			{logoDataUrl && (
+				<img
+					src={logoDataUrl}
+					alt="Thorbis"
+					width="48"
+					height="48"
+					style={{ objectFit: "contain" }}
+				/>
+			)}
+			<span
+				style={{
+					color: colors.foreground,
+					fontSize: 32,
+					fontWeight: 800,
+					letterSpacing: "-0.5px",
+				}}
+			>
+				Thorbis
+			</span>
+		</div>
+	);
+}
+
+/**
+ * Badge component
+ */
+function Badge({
+	children,
+	color = colors.primary,
+}: {
+	children: React.ReactNode;
+	color?: string;
+}) {
+	return (
+		<div
+			style={{
+				display: "flex",
+				alignItems: "center",
+				backgroundColor: `${color}20`,
+				color: color,
+				padding: "10px 20px",
+				borderRadius: "8px",
+				fontSize: 18,
+				fontWeight: 700,
+				textTransform: "uppercase",
+				letterSpacing: "1px",
+			}}
+		>
+			{children}
+		</div>
+	);
+}
+
+/**
+ * Stat display with large number
+ */
+function StatDisplay({
+	value,
+	unit,
+	label,
+	color = colors.accent,
+	size = "large",
+}: {
+	value: string;
+	unit?: string;
+	label: string;
+	color?: string;
+	size?: "large" | "medium" | "small";
+}) {
+	const sizes = {
+		large: { value: typography.display, unit: typography.hero, label: typography.body },
+		medium: { value: typography.hero, unit: typography.title, label: typography.caption },
+		small: { value: typography.title, unit: typography.subtitle, label: typography.caption },
+	};
+
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+			<div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+				<span
+					style={{
+						color: color,
+						fontSize: sizes[size].value,
+						fontWeight: 800,
+						lineHeight: 1,
+						letterSpacing: "-3px",
+					}}
+				>
+					{value}
+				</span>
+				{unit && (
+					<span
+						style={{
+							color: color,
+							fontSize: sizes[size].unit,
+							fontWeight: 700,
+							lineHeight: 1,
+						}}
+					>
+						{unit}
+					</span>
+				)}
+			</div>
+			<span
+				style={{
+					color: colors.mutedForeground,
+					fontSize: sizes[size].label,
+					fontWeight: 600,
+					textTransform: "uppercase",
+					letterSpacing: "1px",
+				}}
+			>
+				{label}
+			</span>
+		</div>
+	);
+}
+
+// ============================================================================
+// PAGE TEMPLATES
+// ============================================================================
+
+/**
+ * HOMEPAGE - Bold hero with stats
+ */
+export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
+	const { homepage } = OG_MESSAGING;
+
 	return (
 		<div
 			style={{
@@ -60,665 +339,662 @@ export function OGBaseLayout({
 				flexDirection: "column",
 				width: "100%",
 				height: "100%",
-				backgroundColor: colors.background,
-				padding: `${padding * 1.5}px`,
+				padding: "56px 64px",
 				fontFamily: "Inter, sans-serif",
 				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
 			}}
 		>
-			{/* Premium gradient accents */}
-			<div
-				style={{
-					position: "absolute",
-					right: 0,
-					top: 0,
-					width: "600px",
-					height: "600px",
-					background: `radial-gradient(circle at top right, ${colors.primary}20, ${colors.accent}08 50%, transparent 70%)`,
-					pointerEvents: "none",
-				}}
-			/>
-			<div
-				style={{
-					position: "absolute",
-					left: 0,
-					bottom: 0,
-					width: "400px",
-					height: "400px",
-					background: `radial-gradient(circle at bottom left, ${colors.accent}12, transparent 60%)`,
-					pointerEvents: "none",
-				}}
-			/>
+			<GradientBackground gradient={["#4B7BF5", "#A855F7"]} variant="radial" />
+			<GridPattern opacity={0.02} />
 
-			{/* Electric accent line with premium glow */}
-			<div
-				style={{
-					position: "absolute",
-					left: 0,
-					top: `${padding}px`,
-					bottom: `${padding}px`,
-					width: "8px",
-					background: `linear-gradient(to bottom, ${colors.primary}, ${colors.accent})`,
-					borderRadius: "0 6px 6px 0",
-					boxShadow: `0 0 30px ${colors.primary}50, 0 0 60px ${colors.primary}30, inset 0 0 20px ${colors.primary}20`,
-				}}
-			/>
+			{/* Content */}
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				{/* Header */}
+				<BrandHeader logoDataUrl={logoDataUrl} />
 
-			{/* Logo & Brand - Minimal */}
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "18px",
-					marginBottom: "180px",
-					flexWrap: "nowrap",
-				}}
-			>
-				{logoDataUrl ? (
-					<>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								width: "56px",
-								height: "56px",
-								flexShrink: 0,
-							}}
-						>
-							<img
-								src={logoDataUrl}
-								alt="Thorbis Logo"
-								width="56"
-								height="56"
-								style={{
-									objectFit: "contain",
-									filter: "drop-shadow(0 4px 12px rgba(79, 123, 247, 0.3))",
-								}}
-							/>
-						</div>
-						<span
+				{/* Main content */}
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "32px", marginTop: "-40px" }}>
+					{/* Headline */}
+					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+						<h1
 							style={{
 								color: colors.foreground,
-								fontSize: "36px",
+								fontSize: typography.hero,
 								fontWeight: 800,
-								letterSpacing: "-0.8px",
-								lineHeight: "56px",
-								whiteSpace: "nowrap",
+								lineHeight: 1.1,
+								margin: 0,
+								letterSpacing: "-2px",
 							}}
 						>
-							Thorbis
-						</span>
-					</>
-				) : (
-					<span
+							{homepage.headline}
+						</h1>
+						<h2
+							style={{
+								color: colors.accent,
+								fontSize: typography.hero,
+								fontWeight: 800,
+								lineHeight: 1.1,
+								margin: 0,
+								letterSpacing: "-2px",
+							}}
+						>
+							{homepage.subheadline}
+						</h2>
+					</div>
+
+					{/* Tagline */}
+					<p
 						style={{
-							color: colors.foreground,
-							fontSize: "32px",
-							fontWeight: 800,
-							letterSpacing: "-0.8px",
-							whiteSpace: "nowrap",
+							color: colors.mutedForeground,
+							fontSize: typography.subtitle,
+							fontWeight: 500,
+							margin: 0,
 						}}
 					>
-						Thorbis
+						{homepage.tagline}
+					</p>
+
+					{/* Stats row */}
+					<div style={{ display: "flex", gap: "48px", marginTop: "16px" }}>
+						{homepage.stats.map((stat, i) => (
+							<div key={i} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+								<span
+									style={{
+										color: colors.foreground,
+										fontSize: typography.title,
+										fontWeight: 800,
+										letterSpacing: "-1px",
+									}}
+								>
+									{stat.value}
+								</span>
+								<span
+									style={{
+										color: colors.mutedForeground,
+										fontSize: typography.caption,
+										fontWeight: 600,
+										textTransform: "uppercase",
+										letterSpacing: "1px",
+									}}
+								>
+									{stat.label}
+								</span>
+							</div>
+						))}
+					</div>
+				</div>
+
+				{/* Footer */}
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com
 					</span>
-				)}
-			</div>
-
-			{/* Content area - centered vertically */}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					flex: 1,
-					justifyContent: "center",
-					gap: "45px",
-				}}
-			>
-				{children}
-			</div>
-
-			{/* Bottom tagline */}
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "16px",
-					marginTop: "auto",
-					paddingTop: "200px",
-				}}
-			>
-				<span
-					style={{
-						color: colors.muted,
-						fontSize: typography.small,
-						fontWeight: 600,
-					}}
-				>
-					thorbis.com
-				</span>
+				</div>
 			</div>
 		</div>
 	);
 }
 
 /**
- * Homepage Template - CLEAN & SIMPLE
+ * PRICING - Dramatic savings focus
  */
-export function HomepageTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
-	const { homepage } = OG_MESSAGING;
+export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
+	const { pricing } = OG_MESSAGING;
 
 	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{/* Headline */}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "20px",
-				}}
-			>
-				<h1
-					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.15,
-						margin: 0,
-					}}
-				>
-					{homepage.headline}
-				</h1>
-				<h2
-					style={{
-						color: colors.muted,
-						fontSize: typography.title,
-						fontWeight: 600,
-						lineHeight: 1.3,
-						margin: 0,
-					}}
-				>
-					{homepage.subheadline}
-				</h2>
-			</div>
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={["#3D9B4F", "#4DB861"]} variant="diagonal" />
+			<GridPattern opacity={0.02} />
 
-			{/* MASSIVE Pricing - Center Focus */}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "20px",
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "16px",
-					}}
-				>
-					<span
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					{/* Savings headline */}
+					<Badge color={colors.accent}>Annual Savings</Badge>
+
+					<h1
 						style={{
 							color: colors.accent,
 							fontSize: typography.display,
 							fontWeight: 800,
 							lineHeight: 1,
-							letterSpacing: "-3.2px",
+							margin: 0,
+							letterSpacing: "-4px",
 						}}
 					>
-						$200
-					</span>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "12px",
-						}}
-					>
+						{pricing.headline}
+					</h1>
+
+					{/* Price display */}
+					<div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginTop: "8px" }}>
 						<span
 							style={{
-								color: colors.accent,
+								color: colors.foreground,
 								fontSize: typography.hero,
 								fontWeight: 800,
-								lineHeight: 1,
-								letterSpacing: "-1.8px",
+								letterSpacing: "-2px",
 							}}
 						>
-							/mo
+							{pricing.price}
 						</span>
 						<span
 							style={{
-								color: colors.muted,
-								fontSize: typography.subtitle,
-								fontWeight: 500,
-								lineHeight: 1,
+								color: colors.mutedForeground,
+								fontSize: typography.title,
+								fontWeight: 700,
 							}}
 						>
-							+ usage
+							{pricing.period}
+						</span>
+						<span
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.subtitle,
+								fontWeight: 500,
+								marginLeft: "16px",
+							}}
+						>
+							{pricing.comparison}
 						</span>
 					</div>
+
+					{/* Features */}
+					<div style={{ display: "flex", gap: "24px", marginTop: "16px" }}>
+						{pricing.features.slice(0, 4).map((feature, i) => (
+							<div
+								key={i}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+									color: colors.mutedForeground,
+									fontSize: typography.caption,
+									fontWeight: 600,
+								}}
+							>
+								<div
+									style={{
+										width: "8px",
+										height: "8px",
+										borderRadius: "50%",
+										backgroundColor: colors.accent,
+									}}
+								/>
+								{feature}
+							</div>
+						))}
+					</div>
 				</div>
-				<div
-					style={{
-						display: "flex",
-						color: colors.muted,
-						fontSize: typography.subtitle,
-						fontWeight: 600,
-						lineHeight: 1.2,
-					}}
-				>
-					{homepage.tagline}
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/pricing
+					</span>
 				</div>
 			</div>
-		</OGBaseLayout>
+		</div>
 	);
 }
 
 /**
- * Pricing Template - SAVINGS FOCUS
+ * FEATURE - Dynamic feature showcase
  */
-export function PricingTemplate({ logoDataUrl }: { logoDataUrl?: string }) {
-	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{/* Headline */}
-			<div>
-				<h1
-					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.1,
-						margin: 0,
-					}}
-				>
-					Simple Pricing
-				</h1>
-			</div>
+export function FeatureTemplate({
+	slug,
+	logoDataUrl,
+}: {
+	slug: FeatureSlug;
+	logoDataUrl?: string;
+}) {
+	const feature = OG_MESSAGING.features[slug];
+	if (!feature) return <GenericTemplate title="Feature" logoDataUrl={logoDataUrl} />;
 
-			{/* MASSIVE Pricing */}
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "24px",
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "baseline",
-						gap: "16px",
-					}}
-				>
-					<span
+	const [color1, color2] = feature.gradient;
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={feature.gradient as [string, string]} variant="split" />
+			<GridPattern opacity={0.02} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flex: 1, alignItems: "center", gap: "64px", marginTop: "-40px" }}>
+					{/* Left side - Content */}
+					<div style={{ display: "flex", flexDirection: "column", flex: 1, gap: "24px" }}>
+						<Badge color={color1}>Feature</Badge>
+
+						<h1
+							style={{
+								color: colors.foreground,
+								fontSize: typography.hero,
+								fontWeight: 800,
+								lineHeight: 1.1,
+								margin: 0,
+								letterSpacing: "-2px",
+							}}
+						>
+							{feature.title}
+						</h1>
+
+						<h2
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.title,
+								fontWeight: 600,
+								margin: 0,
+							}}
+						>
+							{feature.headline}
+						</h2>
+
+						{/* Price badge */}
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								gap: "16px",
+								marginTop: "16px",
+							}}
+						>
+							<div
+								style={{
+									backgroundColor: colors.accent,
+									color: "#FFFFFF",
+									padding: "12px 24px",
+									borderRadius: "8px",
+									fontSize: typography.body,
+									fontWeight: 800,
+								}}
+							>
+								$200/mo
+							</div>
+							<span
+								style={{
+									color: colors.mutedForeground,
+									fontSize: typography.caption,
+									fontWeight: 600,
+								}}
+							>
+								All Features Included
+							</span>
+						</div>
+					</div>
+
+					{/* Right side - Stat */}
+					<div
 						style={{
-							color: colors.accent,
-							fontSize: typography.display,
-							fontWeight: 800,
-							lineHeight: 1,
-							letterSpacing: "-3.5px",
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+							justifyContent: "center",
+							width: "280px",
+							height: "280px",
+							borderRadius: "24px",
+							background: `linear-gradient(135deg, ${color1}20, ${color2}10)`,
+							border: `2px solid ${color1}30`,
 						}}
 					>
-						$200
+						<StatDisplay
+							value={feature.stat.value}
+							unit={feature.stat.unit}
+							label={feature.stat.label}
+							color={color1}
+							size="large"
+						/>
+					</div>
+				</div>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/features/{slug}
 					</span>
-					<span
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * INDUSTRY - Industry-specific showcase
+ */
+export function IndustryTemplate({
+	slug,
+	logoDataUrl,
+}: {
+	slug: IndustrySlug;
+	logoDataUrl?: string;
+}) {
+	const industry = OG_MESSAGING.industries[slug];
+	if (!industry) return <GenericTemplate title="Industry Solution" logoDataUrl={logoDataUrl} />;
+
+	const [color1, color2] = industry.gradient;
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={industry.gradient as [string, string]} variant="radial" />
+			<GridPattern opacity={0.02} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					<Badge color={color1}>{industry.title}</Badge>
+
+					<h1
 						style={{
-							color: colors.accent,
+							color: colors.foreground,
 							fontSize: typography.hero,
 							fontWeight: 800,
-							lineHeight: 1,
+							lineHeight: 1.1,
+							margin: 0,
 							letterSpacing: "-2px",
 						}}
 					>
-						/mo
-					</span>
-					<span
+						{industry.headline}
+					</h1>
+
+					<p
 						style={{
 							color: colors.mutedForeground,
 							fontSize: typography.subtitle,
 							fontWeight: 500,
-							lineHeight: 1,
+							margin: 0,
 						}}
 					>
-						+ usage
+						{industry.painPoint}
+					</p>
+
+					{/* Stats row */}
+					<div style={{ display: "flex", gap: "48px", marginTop: "16px" }}>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								padding: "20px 32px",
+								borderRadius: "12px",
+								background: `linear-gradient(135deg, ${color1}20, ${color2}10)`,
+								border: `2px solid ${color1}30`,
+							}}
+						>
+							<span
+								style={{
+									color: color1,
+									fontSize: typography.title,
+									fontWeight: 800,
+									letterSpacing: "-1px",
+								}}
+							>
+								{industry.stat.value}
+							</span>
+							<span
+								style={{
+									color: colors.mutedForeground,
+									fontSize: typography.caption,
+									fontWeight: 600,
+									textTransform: "uppercase",
+								}}
+							>
+								{industry.stat.label}
+							</span>
+						</div>
+
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								padding: "20px 32px",
+								borderRadius: "12px",
+								backgroundColor: colors.accent,
+							}}
+						>
+							<span
+								style={{
+									color: "#FFFFFF",
+									fontSize: typography.title,
+									fontWeight: 800,
+								}}
+							>
+								$200/mo
+							</span>
+							<span
+								style={{
+									color: "rgba(255,255,255,0.8)",
+									fontSize: typography.caption,
+									fontWeight: 600,
+								}}
+							>
+								All Features
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/industries/{slug}
 					</span>
 				</div>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "8px",
-					}}
-				>
-					<div
-						style={{
-							color: colors.muted,
-							fontSize: typography.subtitle,
-							fontWeight: 600,
-						}}
-					>
-						All Features • No Per-User Fees
-					</div>
-				</div>
 			</div>
-		</OGBaseLayout>
+		</div>
 	);
 }
 
 /**
- * Feature Template - BENEFIT FOCUSED
- */
-export function FeatureTemplate({
-	feature,
-	logoDataUrl,
-}: {
-	feature: keyof typeof OG_MESSAGING.features;
-	logoDataUrl?: string;
-}) {
-	const featureData = OG_MESSAGING.features[feature];
-
-	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{/* Feature Title */}
-			<div>
-				<div
-					style={{
-						display: "inline-block",
-						backgroundColor: `${colors.primary}15`,
-						color: colors.primary,
-						padding: "12px 24px",
-						borderRadius: "8px",
-						fontSize: typography.body,
-						fontWeight: 700,
-						textTransform: "uppercase",
-						letterSpacing: "0.5px",
-						marginBottom: "32px",
-					}}
-				>
-					Feature
-				</div>
-				<h1
-					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.1,
-						margin: 0,
-					}}
-				>
-					{featureData.title}
-				</h1>
-			</div>
-
-			{/* Solution */}
-			<div
-				style={{
-					color: colors.muted,
-					fontSize: typography.title,
-					fontWeight: 600,
-					lineHeight: 1.3,
-				}}
-			>
-				{featureData.solution}
-			</div>
-
-			{/* Pricing Badge */}
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "16px",
-				}}
-			>
-				<div
-					style={{
-						backgroundColor: colors.accent,
-						color: "#FFFFFF",
-						padding: "16px 32px",
-						borderRadius: "12px",
-						fontSize: typography.title,
-						fontWeight: 800,
-					}}
-				>
-					$200/mo
-				</div>
-				<div
-					style={{
-						color: colors.muted,
-						fontSize: typography.subtitle,
-						fontWeight: 600,
-					}}
-				>
-					All Features Included
-				</div>
-			</div>
-		</OGBaseLayout>
-	);
-}
-
-/**
- * Industry Template - CLEAN & PROFESSIONAL
- */
-export function IndustryTemplate({
-	industry,
-	logoDataUrl,
-}: {
-	industry: keyof typeof OG_MESSAGING.industries;
-	logoDataUrl?: string;
-}) {
-	const industryData = OG_MESSAGING.industries[industry];
-
-	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{/* Industry Badge */}
-			<div>
-				<div
-					style={{
-						display: "inline-block",
-						backgroundColor: `${colors.primary}15`,
-						color: colors.primary,
-						padding: "12px 24px",
-						borderRadius: "8px",
-						fontSize: typography.body,
-						fontWeight: 700,
-						textTransform: "uppercase",
-						letterSpacing: "0.5px",
-						marginBottom: "32px",
-					}}
-				>
-					{industryData.title}
-				</div>
-				<h1
-					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.1,
-						margin: 0,
-					}}
-				>
-					{industryData.subtitle}
-				</h1>
-			</div>
-
-			{/* Solution */}
-			<div
-				style={{
-					color: colors.muted,
-					fontSize: typography.title,
-					fontWeight: 600,
-					lineHeight: 1.3,
-				}}
-			>
-				{industryData.solution}
-			</div>
-
-			{/* Stats */}
-			<div
-				style={{
-					display: "flex",
-					gap: "24px",
-					alignItems: "center",
-				}}
-			>
-				<div
-					style={{
-						backgroundColor: colors.accent,
-						color: "#FFFFFF",
-						padding: "16px 32px",
-						borderRadius: "12px",
-						fontSize: typography.title,
-						fontWeight: 800,
-					}}
-				>
-					$200/mo
-				</div>
-				<div
-					style={{
-						color: colors.primary,
-						fontSize: typography.title,
-						fontWeight: 700,
-					}}
-				>
-					{industryData.stat}
-				</div>
-			</div>
-		</OGBaseLayout>
-	);
-}
-
-/**
- * Competitor Template - PRICE COMPARISON
+ * COMPETITOR - VS Battle comparison
  */
 export function CompetitorTemplate({
-	competitor,
+	slug,
 	logoDataUrl,
 }: {
-	competitor: keyof typeof OG_MESSAGING.competitors;
+	slug: CompetitorSlug;
 	logoDataUrl?: string;
 }) {
-	const compData = OG_MESSAGING.competitors[competitor];
+	const competitor = OG_MESSAGING.competitors[slug];
+	if (!competitor) return <GenericTemplate title="Compare" logoDataUrl={logoDataUrl} />;
+
+	const [color1, color2] = competitor.gradient;
 
 	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{/* Title */}
-			<div>
-				<h1
-					style={{
-						color: colors.foreground,
-						fontSize: typography.hero,
-						fontWeight: 800,
-						lineHeight: 1.1,
-						margin: 0,
-					}}
-				>
-					{compData.title}
-				</h1>
-			</div>
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={competitor.gradient as [string, string]} variant="split" />
 
-			{/* Price Comparison - Side by Side */}
-			<div
-				style={{
-					display: "flex",
-					gap: "48px",
-					alignItems: "center",
-				}}
-			>
-				{/* Thorbis Price */}
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "12px",
-					}}
-				>
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "32px", marginTop: "-40px" }}>
+					{/* VS Header */}
+					<div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+						<span
+							style={{
+								color: colors.foreground,
+								fontSize: typography.title,
+								fontWeight: 800,
+							}}
+						>
+							Thorbis
+						</span>
+						<span
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.subtitle,
+								fontWeight: 800,
+							}}
+						>
+							VS
+						</span>
+						<span
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.title,
+								fontWeight: 800,
+							}}
+						>
+							{competitor.name}
+						</span>
+					</div>
+
+					{/* Price comparison */}
+					<div style={{ display: "flex", alignItems: "flex-end", gap: "48px" }}>
+						{/* Our price */}
+						<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+							<span
+								style={{
+									color: colors.accent,
+									fontSize: typography.display,
+									fontWeight: 800,
+									lineHeight: 1,
+									letterSpacing: "-4px",
+								}}
+							>
+								{competitor.ourPrice}
+							</span>
+							<span
+								style={{
+									color: colors.foreground,
+									fontSize: typography.subtitle,
+									fontWeight: 700,
+								}}
+							>
+								/month
+							</span>
+						</div>
+
+						{/* Their price */}
+						<div style={{ display: "flex", flexDirection: "column", gap: "8px", opacity: 0.5 }}>
+							<span
+								style={{
+									color: colors.destructive,
+									fontSize: typography.hero,
+									fontWeight: 800,
+									lineHeight: 1,
+									letterSpacing: "-2px",
+									textDecoration: "line-through",
+								}}
+							>
+								{competitor.theirPrice}
+							</span>
+							<span
+								style={{
+									color: colors.mutedForeground,
+									fontSize: typography.body,
+									fontWeight: 600,
+								}}
+							>
+								/month
+							</span>
+						</div>
+					</div>
+
+					{/* Savings callout */}
 					<div
 						style={{
-							color: colors.accent,
-							fontSize: typography.display,
-							fontWeight: 800,
-							lineHeight: 1,
-							letterSpacing: "-4px",
+							display: "flex",
+							alignItems: "center",
+							gap: "16px",
+							padding: "16px 32px",
+							borderRadius: "12px",
+							background: `linear-gradient(135deg, ${color1}20, ${color2}10)`,
+							border: `2px solid ${color1}40`,
+							alignSelf: "flex-start",
 						}}
 					>
-						$200
+						<span
+							style={{
+								color: color1,
+								fontSize: typography.title,
+								fontWeight: 800,
+							}}
+						>
+							Save {competitor.savings}
+						</span>
+						<span
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.body,
+								fontWeight: 600,
+							}}
+						>
+							{competitor.savingsPeriod}
+						</span>
 					</div>
-					<div
+
+					{/* Headline */}
+					<p
 						style={{
-							color: colors.foreground,
+							color: colors.mutedForeground,
 							fontSize: typography.subtitle,
-							fontWeight: 700,
+							fontWeight: 600,
+							margin: 0,
 						}}
 					>
-						per month
-					</div>
+						{competitor.headline}
+					</p>
 				</div>
 
-				{/* VS */}
-				<div
-					style={{
-						color: colors.border,
-						fontSize: typography.hero,
-						fontWeight: 800,
-					}}
-				>
-					VS
-				</div>
-
-				{/* Competitor Price */}
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: "12px",
-						opacity: 0.5,
-					}}
-				>
-					<div
-						style={{
-							color: colors.destructive,
-							fontSize: typography.display,
-							fontWeight: 800,
-							lineHeight: 1,
-							letterSpacing: "-4px",
-							textDecoration: "line-through",
-						}}
-					>
-						{compData.theirPrice.replace("/mo", "")}
-					</div>
-					<div
-						style={{
-							color: colors.muted,
-							fontSize: typography.subtitle,
-							fontWeight: 700,
-						}}
-					>
-						per month
-					</div>
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/vs/{slug}
+					</span>
 				</div>
 			</div>
-
-			{/* Savings */}
-			<div
-				style={{
-					backgroundColor: `${colors.accent}15`,
-					color: colors.accent,
-					padding: "20px 32px",
-					borderRadius: "12px",
-					fontSize: typography.title,
-					fontWeight: 700,
-					display: "inline-block",
-					alignSelf: "flex-start",
-				}}
-			>
-				{compData.annualSavings}
-			</div>
-		</OGBaseLayout>
+		</div>
 	);
 }
 
 /**
- * Blog Template - SIMPLE
+ * BLOG - Clean editorial style
  */
 export function BlogTemplate({
 	title,
@@ -729,43 +1005,76 @@ export function BlogTemplate({
 	category?: string;
 	logoDataUrl?: string;
 }) {
+	const { blog } = OG_MESSAGING;
+	const [color1, color2] = blog.gradient;
+
 	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{category && (
-				<div
-					style={{
-						display: "inline-block",
-						backgroundColor: `${colors.primary}15`,
-						color: colors.primary,
-						padding: "12px 24px",
-						borderRadius: "8px",
-						fontSize: typography.body,
-						fontWeight: 700,
-						textTransform: "uppercase",
-						letterSpacing: "0.5px",
-						marginBottom: "32px",
-					}}
-				>
-					{category}
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={blog.gradient as [string, string]} variant="default" />
+			<GridPattern opacity={0.015} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					<Badge color={color1}>{category || blog.defaultCategory}</Badge>
+
+					<h1
+						style={{
+							color: colors.foreground,
+							fontSize: title.length > 50 ? typography.title : typography.hero,
+							fontWeight: 800,
+							lineHeight: 1.2,
+							margin: 0,
+							letterSpacing: "-1px",
+							maxWidth: "900px",
+						}}
+					>
+						{title}
+					</h1>
+
+					<div style={{ display: "flex", alignItems: "center", gap: "24px", marginTop: "16px" }}>
+						<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 600 }}>
+							Thorbis Blog
+						</span>
+						<div
+							style={{
+								width: "4px",
+								height: "4px",
+								borderRadius: "50%",
+								backgroundColor: colors.mutedForeground,
+							}}
+						/>
+						<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 600 }}>
+							Field Service Insights
+						</span>
+					</div>
 				</div>
-			)}
-			<h1
-				style={{
-					color: colors.foreground,
-					fontSize: typography.hero,
-					fontWeight: 800,
-					lineHeight: 1.2,
-					margin: 0,
-				}}
-			>
-				{title}
-			</h1>
-		</OGBaseLayout>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/blog
+					</span>
+				</div>
+			</div>
+		</div>
 	);
 }
 
 /**
- * Knowledge Base Template
+ * KNOWLEDGE BASE - Help center style
  */
 export function KBTemplate({
 	title,
@@ -776,45 +1085,280 @@ export function KBTemplate({
 	category?: string;
 	logoDataUrl?: string;
 }) {
+	const { kb } = OG_MESSAGING;
+	const [color1] = kb.gradient;
+
 	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			{category && (
-				<div
-					style={{
-						display: "inline-block",
-						backgroundColor: `${colors.accent}15`,
-						color: colors.accent,
-						padding: "12px 24px",
-						borderRadius: "8px",
-						fontSize: typography.body,
-						fontWeight: 700,
-						textTransform: "uppercase",
-						letterSpacing: "0.5px",
-						marginBottom: "32px",
-					}}
-				>
-					{category}
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={kb.gradient as [string, string]} variant="default" />
+			<GridPattern opacity={0.015} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					<Badge color={color1}>{category || kb.defaultCategory}</Badge>
+
+					<h1
+						style={{
+							color: colors.foreground,
+							fontSize: title.length > 50 ? typography.title : typography.hero,
+							fontWeight: 800,
+							lineHeight: 1.2,
+							margin: 0,
+							letterSpacing: "-1px",
+							maxWidth: "900px",
+						}}
+					>
+						{title}
+					</h1>
+
+					<div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "16px" }}>
+						<div
+							style={{
+								backgroundColor: `${color1}20`,
+								color: color1,
+								padding: "8px 16px",
+								borderRadius: "6px",
+								fontSize: typography.caption,
+								fontWeight: 700,
+							}}
+						>
+							Help Center
+						</div>
+						<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 600 }}>
+							Step-by-step guides & tutorials
+						</span>
+					</div>
 				</div>
-			)}
-			<h1
-				style={{
-					color: colors.foreground,
-					fontSize: typography.hero,
-					fontWeight: 800,
-					lineHeight: 1.2,
-					margin: 0,
-				}}
-			>
-				{title}
-			</h1>
-		</OGBaseLayout>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/kb
+					</span>
+				</div>
+			</div>
+		</div>
 	);
 }
 
 /**
- * Default Template
+ * GENERIC - Fallback template
  */
-export function DefaultTemplate({
+export function GenericTemplate({
+	title,
+	subtitle,
+	logoDataUrl,
+}: {
+	title: string;
+	subtitle?: string;
+	logoDataUrl?: string;
+}) {
+	const { generic } = OG_MESSAGING;
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={generic.gradient as [string, string]} variant="default" />
+			<GridPattern opacity={0.02} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "20px", marginTop: "-40px" }}>
+					<h1
+						style={{
+							color: colors.foreground,
+							fontSize: title.length > 40 ? typography.title : typography.hero,
+							fontWeight: 800,
+							lineHeight: 1.2,
+							margin: 0,
+							letterSpacing: "-1px",
+							maxWidth: "900px",
+						}}
+					>
+						{title}
+					</h1>
+
+					{subtitle && (
+						<p
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.subtitle,
+								fontWeight: 500,
+								margin: 0,
+								maxWidth: "700px",
+							}}
+						>
+							{subtitle}
+						</p>
+					)}
+
+					{/* Price badge */}
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "16px",
+							marginTop: "24px",
+						}}
+					>
+						<div
+							style={{
+								backgroundColor: colors.accent,
+								color: "#FFFFFF",
+								padding: "12px 24px",
+								borderRadius: "8px",
+								fontSize: typography.body,
+								fontWeight: 800,
+							}}
+						>
+							$200/mo
+						</div>
+						<span
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.caption,
+								fontWeight: 600,
+							}}
+						>
+							All Features Included
+						</span>
+					</div>
+				</div>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com
+					</span>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * DEFAULT - Alias for GenericTemplate
+ */
+export const DefaultTemplate = GenericTemplate;
+
+/**
+ * INTEGRATION - Integration showcase
+ */
+export function IntegrationTemplate({
+	name,
+	description,
+	logoDataUrl,
+}: {
+	name: string;
+	description?: string;
+	logoDataUrl?: string;
+}) {
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={["#4B7BF5", "#A855F7"]} variant="radial" />
+			<GridPattern opacity={0.02} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					<Badge color="#4B7BF5">Integration</Badge>
+
+					<h1
+						style={{
+							color: colors.foreground,
+							fontSize: typography.hero,
+							fontWeight: 800,
+							lineHeight: 1.2,
+							margin: 0,
+							letterSpacing: "-1px",
+						}}
+					>
+						{name}
+					</h1>
+
+					{description && (
+						<p
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.subtitle,
+								fontWeight: 500,
+								margin: 0,
+							}}
+						>
+							{description}
+						</p>
+					)}
+
+					<div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "16px" }}>
+						<div
+							style={{
+								backgroundColor: colors.accent,
+								color: "#FFFFFF",
+								padding: "12px 24px",
+								borderRadius: "8px",
+								fontSize: typography.body,
+								fontWeight: 800,
+							}}
+						>
+							Connect in Minutes
+						</div>
+						<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 600 }}>
+							No Code Required
+						</span>
+					</div>
+				</div>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/integrations
+					</span>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * CALCULATOR - Tool showcase
+ */
+export function CalculatorTemplate({
 	title,
 	subtitle,
 	logoDataUrl,
@@ -824,34 +1368,79 @@ export function DefaultTemplate({
 	logoDataUrl?: string;
 }) {
 	return (
-		<OGBaseLayout logoDataUrl={logoDataUrl}>
-			<h1
-				style={{
-					color: colors.foreground,
-					fontSize: typography.hero,
-					fontWeight: 800,
-					lineHeight: 1.2,
-					margin: 0,
-				}}
-			>
-				{title}
-			</h1>
-			{subtitle && (
-				<p
-					style={{
-						color: colors.muted,
-						fontSize: typography.title,
-						fontWeight: 600,
-						margin: 0,
-					}}
-				>
-					{subtitle}
-				</p>
-			)}
-		</OGBaseLayout>
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				height: "100%",
+				padding: "56px 64px",
+				fontFamily: "Inter, sans-serif",
+				position: "relative",
+				overflow: "hidden",
+				backgroundColor: colors.background,
+			}}
+		>
+			<GradientBackground gradient={["#F5C842", "#E64980"]} variant="diagonal" />
+			<GridPattern opacity={0.02} />
+
+			<div style={{ display: "flex", flexDirection: "column", position: "relative", zIndex: 1, height: "100%" }}>
+				<BrandHeader logoDataUrl={logoDataUrl} />
+
+				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: "24px", marginTop: "-40px" }}>
+					<Badge color="#F5C842">Free Tool</Badge>
+
+					<h1
+						style={{
+							color: colors.foreground,
+							fontSize: typography.hero,
+							fontWeight: 800,
+							lineHeight: 1.2,
+							margin: 0,
+							letterSpacing: "-1px",
+						}}
+					>
+						{title}
+					</h1>
+
+					{subtitle && (
+						<p
+							style={{
+								color: colors.mutedForeground,
+								fontSize: typography.subtitle,
+								fontWeight: 500,
+								margin: 0,
+							}}
+						>
+							{subtitle}
+						</p>
+					)}
+
+					<div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "16px" }}>
+						<div
+							style={{
+								backgroundColor: "#F5C842",
+								color: "#FFFFFF",
+								padding: "12px 24px",
+								borderRadius: "8px",
+								fontSize: typography.body,
+								fontWeight: 800,
+							}}
+						>
+							Calculate Now
+						</div>
+						<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 600 }}>
+							100% Free, No Signup
+						</span>
+					</div>
+				</div>
+
+				<div style={{ display: "flex" }}>
+					<span style={{ color: colors.mutedForeground, fontSize: typography.caption, fontWeight: 500 }}>
+						thorbis.com/free-tools
+					</span>
+				</div>
+			</div>
+		</div>
 	);
 }
-
-// Integration and Calculator templates
-export const IntegrationTemplate = DefaultTemplate;
-export const CalculatorTemplate = DefaultTemplate;

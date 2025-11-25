@@ -185,6 +185,21 @@ export function EmailStep() {
 				</p>
 			</div>
 
+			{/* Why email setup matters */}
+			{!data.emailSetupType && (
+				<div className="rounded-lg border bg-primary/5 p-4">
+					<div className="flex items-start gap-3">
+						<Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+						<div className="space-y-2">
+							<p className="text-sm font-medium">Why does this matter?</p>
+							<p className="text-sm text-muted-foreground">
+								Emails from your own domain (e.g., yourcompany.com) have better deliverability and look more professional than generic addresses. Customers are more likely to open emails from a familiar sender.
+							</p>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{/* Setup Options */}
 			<div className="space-y-4">
 				<div className="grid gap-3">
@@ -282,6 +297,14 @@ export function EmailStep() {
 					{/* Domain Input */}
 					{!data.customDomain ? (
 						<div className="space-y-4">
+							{/* Time estimate warning */}
+							<div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+								<Clock className="h-4 w-4 text-amber-600 flex-shrink-0" />
+								<p className="text-sm text-amber-700 dark:text-amber-400">
+									DNS verification takes <strong>15 minutes to 48 hours</strong> depending on your provider. You can continue setup and verify later.
+								</p>
+							</div>
+
 							<div className="space-y-2">
 								<Label htmlFor="customDomain">Your Domain</Label>
 								<div className="flex gap-2">
@@ -315,6 +338,60 @@ export function EmailStep() {
 								<p className="text-xs text-muted-foreground">
 									Enter the domain you own (not Gmail, Yahoo, etc.)
 								</p>
+							</div>
+
+							{/* DNS Setup Guide */}
+							<div className="rounded-lg border bg-muted/30">
+								<button
+									type="button"
+									className="w-full flex items-center justify-between p-4 text-left"
+									onClick={(e) => {
+										const content = (e.currentTarget.nextElementSibling as HTMLElement);
+										if (content) {
+											content.classList.toggle("hidden");
+										}
+									}}
+								>
+									<span className="text-sm font-medium">How to add DNS records</span>
+									<span className="text-sm text-muted-foreground">Show guide</span>
+								</button>
+								<div className="hidden px-4 pb-4">
+									<ol className="space-y-3 text-sm text-muted-foreground">
+										<li className="flex gap-3">
+											<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">1</span>
+											<div>
+												<p className="font-medium text-foreground">Log in to your domain provider</p>
+												<p>Common providers: GoDaddy, Namecheap, Cloudflare, Google Domains</p>
+											</div>
+										</li>
+										<li className="flex gap-3">
+											<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">2</span>
+											<div>
+												<p className="font-medium text-foreground">Find DNS settings</p>
+												<p>Look for "DNS", "DNS Management", or "Name Servers"</p>
+											</div>
+										</li>
+										<li className="flex gap-3">
+											<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">3</span>
+											<div>
+												<p className="font-medium text-foreground">Add the records we provide</p>
+												<p>Copy each record exactly as shown (TXT and CNAME types)</p>
+											</div>
+										</li>
+										<li className="flex gap-3">
+											<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">4</span>
+											<div>
+												<p className="font-medium text-foreground">Wait for propagation</p>
+												<p>Changes can take 15 minutes to 48 hours to take effect worldwide</p>
+											</div>
+										</li>
+									</ol>
+									<div className="mt-4 p-3 bg-background rounded">
+										<p className="text-xs text-muted-foreground">
+											Need help? Contact support with your domain provider name and we'll guide you through the process.
+										</p>
+									</div>
+								</div>
 							</div>
 
 							<div className="flex items-start gap-3 text-sm text-muted-foreground bg-muted/40 rounded-lg p-4">

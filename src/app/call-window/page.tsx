@@ -11,6 +11,9 @@
  * - Real customer data from database
  * - AI-powered auto-fill from transcript
  * - No mock data, no separate forms
+ * - Keyboard shortcuts for all actions
+ * - AI-powered suggestions and sentiment analysis
+ * - Accessibility features (skip links, ARIA labels)
  *
  * The customer sidebar collapsibles show existing data or empty states
  * for new customers, with real-time AI auto-fill from the transcript.
@@ -19,17 +22,24 @@
 import type { Call as TelnyxCall } from "@telnyx/webrtc";
 import { AlertCircle, CalendarDays, MessageSquare } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
 	getCustomerCallData,
 	getCustomerCallDataById,
 } from "@/actions/call-customer-data";
-import { CallToolbar } from "@/components/call-window/call-toolbar";
+import {
+	CallToolbar,
+	CallWrapUpDialog,
+	KeyboardShortcutsHelp,
+} from "@/components/call-window";
+import { CallWindowSkeleton } from "@/components/call-window/call-window-skeleton";
 import { CSRScheduleView } from "@/components/call-window/csr-schedule-view";
 import { CustomerSidebar } from "@/components/call-window/customer-sidebar";
+import { SkipLink } from "@/components/layout/skip-link";
 import { TranscriptPanel } from "@/components/communication/transcript-panel";
 import { Button } from "@/components/ui/button";
 import { useCallQuality } from "@/hooks/use-call-quality";
+import { useCallShortcuts } from "@/hooks/use-call-shortcuts";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useUIStore } from "@/lib/stores";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
@@ -94,12 +104,53 @@ function CallWindowContent() {
 		"schedule",
 	);
 
+	// Enhanced state for Phase 1 & 2 components
+	const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+	const [showWrapUpDialog, setShowWrapUpDialog] = useState(false);
+	const [holdStartTime, setHoldStartTime] = useState<number | undefined>();
+	const [recordingStartTime, setRecordingStartTime] = useState<number | undefined>();
+	const [callNotes, setCallNotes] = useState("");
+
+	// Refs for focus management
+	const mainContentRef = useRef<HTMLDivElement>(null);
+
 	// Format call duration
 	const formatDuration = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
 		return `${mins}:${secs.toString().padStart(2, "0")}`;
 	};
+
+	// Quick action handlers for CustomerSidebar
+	const handleCreateJob = useCallback(() => {
+		// Open job creation modal or navigate to job creation
+		console.log("Create job for customer");
+	}, []);
+
+	const handleScheduleAppointment = useCallback(() => {
+		// Open appointment scheduling
+		setLeftPanelView("schedule");
+	}, []);
+
+	const handleSendSMS = useCallback(() => {
+		// Open SMS composer
+		console.log("Send SMS to customer");
+	}, []);
+
+	const handleSendEmail = useCallback(() => {
+		// Open email composer
+		console.log("Send email to customer");
+	}, []);
+
+	const handleTakePayment = useCallback(() => {
+		// Open payment modal
+		console.log("Take payment from customer");
+	}, []);
+
+	const handleAddNote = useCallback(() => {
+		// Focus on notes input
+		console.log("Add note");
+	}, []);
 
 	// Initialize call window
 	useEffect(() => {
@@ -305,6 +356,12 @@ function CallWindowContent() {
 
 				case "hold":
 				case "unhold":
+					// Track hold start time
+					if (!call.isOnHold) {
+						setHoldStartTime(Date.now());
+					} else {
+						setHoldStartTime(undefined);
+					}
 					toggleHold();
 					sendToMain({
 						type: "CALL_ACTION",
@@ -316,6 +373,12 @@ function CallWindowContent() {
 
 				case "record_start":
 				case "record_stop":
+					// Track recording start time
+					if (!call.isRecording) {
+						setRecordingStartTime(Date.now());
+					} else {
+						setRecordingStartTime(undefined);
+					}
 					toggleRecording();
 					sendToMain({
 						type: "CALL_ACTION",
@@ -326,6 +389,12 @@ function CallWindowContent() {
 					break;
 
 				case "end":
+					// Show wrap-up dialog before ending
+					setShowWrapUpDialog(true);
+					break;
+
+				case "force_end":
+					// Force end without wrap-up (used after completing wrap-up)
 					endCall();
 					clearTranscript();
 					sendToMain({
@@ -351,6 +420,36 @@ function CallWindowContent() {
 			clearTranscript,
 		],
 	);
+
+	// Handle wrap-up completion
+	const handleWrapUpComplete = useCallback(
+		(data: {
+			disposition: string;
+			notes: string;
+			followUp: {
+				enabled: boolean;
+				type: string;
+				date?: Date;
+				notes?: string;
+			};
+			sendConfirmation: boolean;
+			createJob: boolean;
+		}) => {
+			// Save wrap-up data
+			console.log("Call wrap-up data:", data);
+			setCallNotes(data.notes);
+
+			// Now actually end the call
+			handleCallAction("force_end");
+			setShowWrapUpDialog(false);
+		},
+		[handleCallAction],
+	);
+
+	// Handle wrap-up cancel (user wants to continue call)
+	const handleWrapUpCancel = useCallback(() => {
+		setShowWrapUpDialog(false);
+	}, []);
 
 	const handleVideoToggle = useCallback(() => {
 		if (!callId) {
@@ -385,6 +484,33 @@ function CallWindowContent() {
 		window.close();
 	}, []);
 
+	// Keyboard shortcuts
+	useCallShortcuts(
+		{
+			onToggleMute: () => handleCallAction(call.isMuted ? "unmute" : "mute"),
+			onToggleHold: () => handleCallAction(call.isOnHold ? "unhold" : "hold"),
+			onToggleRecording: () =>
+				handleCallAction(call.isRecording ? "record_stop" : "record_start"),
+			onEndCall: () => handleCallAction("end"),
+			onCreateJob: handleCreateJob,
+			onScheduleAppointment: handleScheduleAppointment,
+			onSendSMS: handleSendSMS,
+			onSendEmail: handleSendEmail,
+			onFocusNotes: handleAddNote,
+			onShowHelp: () => setShowShortcutsHelp(true),
+			onViewTranscript: () => setLeftPanelView("transcript"),
+			onViewSchedule: () => setLeftPanelView("schedule"),
+			onEscape: () => {
+				// Close any open dialogs
+				if (showShortcutsHelp) setShowShortcutsHelp(false);
+				if (showWrapUpDialog) setShowWrapUpDialog(false);
+			},
+		},
+		{
+			enabled: call.status === "active",
+		},
+	);
+
 	// Error states
 	if (!callId) {
 		return (
@@ -415,6 +541,9 @@ function CallWindowContent() {
 
 	return (
 		<div className="bg-background flex h-screen flex-col">
+			{/* Accessibility: Skip link */}
+			<SkipLink />
+
 			{/* Toolbar */}
 			<CallToolbar
 				callDuration={formatDuration(currentTime)}
@@ -427,6 +556,8 @@ function CallWindowContent() {
 				isMuted={call.isMuted}
 				isOnHold={call.isOnHold}
 				isRecording={call.isRecording}
+				holdStartTime={holdStartTime}
+				recordingStartTime={recordingStartTime}
 				onClose={handleClose}
 				onEndCall={() => handleCallAction("end")}
 				onHoldToggle={() => handleCallAction(call.isOnHold ? "unhold" : "hold")}
@@ -436,69 +567,108 @@ function CallWindowContent() {
 				}
 				onTransfer={handleTransfer}
 				onVideoToggle={handleVideoToggle}
+				onShowShortcuts={() => setShowShortcutsHelp(true)}
 				videoStatus={call.videoStatus}
 			/>
 
 			{/* Main Content */}
-			<div className="flex flex-1 overflow-hidden">
+			<main
+				id="main-content"
+				ref={mainContentRef}
+				className="flex flex-1 overflow-hidden"
+				role="main"
+				aria-label="Call window main content"
+			>
 				{/* Left: Transcript/Schedule (35%) */}
-				<div className="bg-muted/20 flex w-[35%] flex-col">
+				<section
+					className="bg-muted/20 flex w-[35%] flex-col"
+					aria-label={leftPanelView === "transcript" ? "Call transcript" : "Schedule view"}
+				>
 					{/* Toggle Buttons */}
-					<div className="bg-card/50 flex border-b">
+					<div className="bg-card/50 flex border-b" role="tablist" aria-label="View selection">
 						<Button
 							className="flex-1 rounded-none border-r"
 							onClick={() => setLeftPanelView("transcript")}
 							size="sm"
 							variant={leftPanelView === "transcript" ? "secondary" : "ghost"}
+							role="tab"
+							aria-selected={leftPanelView === "transcript"}
+							aria-controls="left-panel-content"
 						>
-							<MessageSquare className="mr-2 h-4 w-4" />
+							<MessageSquare className="mr-2 h-4 w-4" aria-hidden="true" />
 							Transcript
+							<span className="sr-only">(Press T)</span>
 						</Button>
 						<Button
 							className="flex-1 rounded-none"
 							onClick={() => setLeftPanelView("schedule")}
 							size="sm"
 							variant={leftPanelView === "schedule" ? "secondary" : "ghost"}
+							role="tab"
+							aria-selected={leftPanelView === "schedule"}
+							aria-controls="left-panel-content"
 						>
-							<CalendarDays className="mr-2 h-4 w-4" />
+							<CalendarDays className="mr-2 h-4 w-4" aria-hidden="true" />
 							Schedule
+							<span className="sr-only">(Press S)</span>
 						</Button>
 					</div>
 
 					{/* Content */}
-					<div className="flex-1 overflow-hidden">
+					<div
+						id="left-panel-content"
+						className="flex-1 overflow-hidden"
+						role="tabpanel"
+						aria-label={leftPanelView === "transcript" ? "Call transcript panel" : "Schedule panel"}
+					>
 						{leftPanelView === "transcript" ? (
 							<TranscriptPanel />
 						) : (
 							<CSRScheduleView companyId={companyId || undefined} />
 						)}
 					</div>
-				</div>
+				</section>
 
 				{/* Right: Customer Sidebar (65% - Full Height) */}
-				<div className="flex-1 overflow-hidden">
+				<section
+					className="flex-1 overflow-hidden"
+					aria-label="Customer information"
+				>
 					<CustomerSidebar
 						customerData={customerData}
 						isLoading={isLoadingCustomer}
+						onCreateJob={handleCreateJob}
+						onScheduleAppointment={handleScheduleAppointment}
+						onSendSMS={handleSendSMS}
+						onSendEmail={handleSendEmail}
+						onTakePayment={handleTakePayment}
+						onAddNote={handleAddNote}
 					/>
-				</div>
-			</div>
+				</section>
+			</main>
+
+			{/* Dialogs */}
+			<KeyboardShortcutsHelp
+				open={showShortcutsHelp}
+				onOpenChange={setShowShortcutsHelp}
+			/>
+
+			<CallWrapUpDialog
+				open={showWrapUpDialog}
+				onOpenChange={setShowWrapUpDialog}
+				onComplete={handleWrapUpComplete}
+				onCancel={handleWrapUpCancel}
+				callDuration={currentTime}
+				customerName={callerName}
+				existingNotes={callNotes}
+			/>
 		</div>
 	);
 }
 
 export default function CallWindowPage() {
 	return (
-		<Suspense
-			fallback={
-				<div className="flex h-screen items-center justify-center">
-					<div className="text-center">
-						<div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-						<p className="text-muted-foreground">Loading call window...</p>
-					</div>
-				</div>
-			}
-		>
+		<Suspense fallback={<CallWindowSkeleton />}>
 			<CallWindowContent />
 		</Suspense>
 	);

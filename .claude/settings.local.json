@@ -182,7 +182,11 @@
       "Bash(time npm run build:*)",
       "Bash(sort:*)",
       "WebFetch(domain:ogimage.org)",
-      "WebFetch(domain:www.ogimage.gallery)"
+      "WebFetch(domain:www.ogimage.gallery)",
+      "WebFetch(domain:og-image-generators.vercel.app)",
+      "Bash(timeout 90 npx tsc:*)",
+      "Bash(npx eslint:*)",
+      "Bash(for file in work/*-table.tsx customers/*-table.tsx inventory/*-table.tsx properties/property-details/*-table.tsx work/job-details/*-table.tsx)"
     ],
     "deny": [],
     "ask": []

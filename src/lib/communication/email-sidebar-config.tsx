@@ -1,19 +1,39 @@
 import {
 	Archive,
+	Building2,
 	Clock,
 	File,
 	Inbox,
+	Info,
 	Mail,
 	Plus,
 	Send,
 	ShieldAlert,
 	Star,
 	Tag,
+	User,
+	CreditCard,
+	TrendingUp,
+	HelpCircle,
 } from "lucide-react";
 import type { CommunicationSidebarConfig } from "@/components/communication/communication-sidebar";
 import { CreateFolderDialog } from "@/components/communication/create-folder-dialog";
 
 type FolderCounts = {
+	// Personal inbox counts
+	personal_inbox?: number;
+	personal_drafts?: number;
+	personal_sent?: number;
+	personal_archive?: number;
+	personal_starred?: number;
+
+	// Company inbox counts (by category)
+	company_support?: number;
+	company_sales?: number;
+	company_billing?: number;
+	company_general?: number;
+
+	// Legacy counts (deprecated, for backwards compatibility)
 	all?: number;
 	inbox?: number;
 	drafts?: number;
@@ -92,60 +112,66 @@ export function getEmailSidebarConfig(
 	return {
 		navGroups: [
 			{
-				label: "Core",
+				label: "MY INBOX",
 				items: [
 					{
-						title: "All Mail",
-						url: "/dashboard/communication/email?folder=all",
-						icon: Mail,
-						badge: counts?.all && counts.all > 0 ? counts.all : undefined,
-					},
-					{
 						title: "Inbox",
-						url: "/dashboard/communication/email?folder=inbox",
+						url: "/dashboard/communication/email?inbox=personal&folder=inbox",
 						icon: Inbox,
-						badge: counts?.inbox && counts.inbox > 0 ? counts.inbox : undefined,
-					},
-					{
-						title: "Drafts",
-						url: "/dashboard/communication/email?folder=drafts",
-						icon: File,
-						badge: counts?.drafts && counts.drafts > 0 ? counts.drafts : undefined,
+						badge: counts?.personal_inbox && counts.personal_inbox > 0 ? counts.personal_inbox : undefined,
 					},
 					{
 						title: "Sent",
-						url: "/dashboard/communication/email?folder=sent",
+						url: "/dashboard/communication/email?inbox=personal&folder=sent",
 						icon: Send,
-						badge: counts?.sent && counts.sent > 0 ? counts.sent : undefined,
+						badge: counts?.personal_sent && counts.personal_sent > 0 ? counts.personal_sent : undefined,
+					},
+					{
+						title: "Drafts",
+						url: "/dashboard/communication/email?inbox=personal&folder=drafts",
+						icon: File,
+						badge: counts?.personal_drafts && counts.personal_drafts > 0 ? counts.personal_drafts : undefined,
+					},
+					{
+						title: "Starred",
+						url: "/dashboard/communication/email?inbox=personal&folder=starred",
+						icon: Star,
+						badge: counts?.personal_starred && counts.personal_starred > 0 ? counts.personal_starred : undefined,
+					},
+					{
+						title: "Archive",
+						url: "/dashboard/communication/email?inbox=personal&folder=archive",
+						icon: Archive,
+						badge: counts?.personal_archive && counts.personal_archive > 0 ? counts.personal_archive : undefined,
 					},
 				],
 			},
 			{
-				label: "Management",
+				label: "COMPANY INBOX",
 				items: [
 					{
-						title: "Starred",
-						url: "/dashboard/communication/email?folder=starred",
-						icon: Star,
-						badge: counts?.starred && counts.starred > 0 ? counts.starred : undefined,
+						title: "Support",
+						url: "/dashboard/communication/email?inbox=company&category=support",
+						icon: HelpCircle,
+						badge: counts?.company_support && counts.company_support > 0 ? counts.company_support : undefined,
 					},
 					{
-						title: "Snoozed",
-						url: "/dashboard/communication/email?folder=snoozed",
-						icon: Clock,
-						badge: counts?.snoozed && counts.snoozed > 0 ? counts.snoozed : undefined,
+						title: "Sales",
+						url: "/dashboard/communication/email?inbox=company&category=sales",
+						icon: TrendingUp,
+						badge: counts?.company_sales && counts.company_sales > 0 ? counts.company_sales : undefined,
 					},
 					{
-						title: "Spam",
-						url: "/dashboard/communication/email?folder=spam",
-						icon: ShieldAlert,
-						badge: counts?.spam && counts.spam > 0 ? counts.spam : undefined,
+						title: "Billing",
+						url: "/dashboard/communication/email?inbox=company&category=billing",
+						icon: CreditCard,
+						badge: counts?.company_billing && counts.company_billing > 0 ? counts.company_billing : undefined,
 					},
 					{
-						title: "Archive",
-						url: "/dashboard/communication/email?folder=archive",
-						icon: Archive,
-						badge: counts?.archive && counts.archive > 0 ? counts.archive : undefined,
+						title: "General",
+						url: "/dashboard/communication/email?inbox=company&category=general",
+						icon: Info,
+						badge: counts?.company_general && counts.company_general > 0 ? counts.company_general : undefined,
 					},
 				],
 			},

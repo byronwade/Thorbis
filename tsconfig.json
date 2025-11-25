@@ -12,7 +12,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true, // Enables faster builds by ensuring each file can be transpiled independently
 		"jsx": "react-jsx",
-		"incremental": false, // DISABLED: May cause hangs - disable incremental compilation
+		"incremental": true, // Re-enabled for faster rebuilds - stores .tsbuildinfo
 		"plugins": [
 			{
 				"name": "next"

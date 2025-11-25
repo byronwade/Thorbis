@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, CompetitorTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, CompetitorTemplate, getLogoDataUrl } from "@/lib/og";
+import type { CompetitorSlug } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -13,21 +14,10 @@ export const alt = "Thorbis vs Competitors - Compare Field Service Software";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	const fonts = await loadOGFonts();
-
-	const competitorNames: Record<string, string> = {
-		servicetitan: "ServiceTitan",
-		"housecall-pro": "Housecall Pro",
-		jobber: "Jobber",
-		fieldedge: "FieldEdge",
-		servicem8: "ServiceM8",
-		workiz: "Workiz",
-	};
-
-	const competitorName = competitorNames[slug] || slug;
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	return new ImageResponse(
-		<CompetitorTemplate slug={slug} competitorName={competitorName} />,
+		<CompetitorTemplate slug={slug as CompetitorSlug} logoDataUrl={logoDataUrl} />,
 		{
 			...size,
 			fonts,

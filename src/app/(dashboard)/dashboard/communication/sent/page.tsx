@@ -5,9 +5,10 @@
 
 "use client";
 
-import CommunicationPage from "../page";
+import dynamic from "next/dynamic";
+
+const CommunicationPage = dynamic(() => import("../page"), { ssr: false });
 
 export default function SentPage() {
 	return <CommunicationPage />;
 }
-

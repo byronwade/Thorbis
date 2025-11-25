@@ -5,9 +5,25 @@
  * Replaces duplicate implementations scattered across components.
  */
 
+import {
+	AlertCircle,
+	Calendar,
+	Check,
+	CheckCircle,
+	Clock,
+	FileText,
+	Loader,
+	type LucideIcon,
+	Mail,
+	X,
+	XCircle,
+} from "lucide-react";
+
 export type BadgeConfig = {
 	className: string;
 	label: string;
+	icon?: LucideIcon;
+	ariaLabel?: string; // Descriptive label for screen readers
 };
 
 /**
@@ -19,24 +35,34 @@ export function getJobStatusBadgeConfig(status: string): BadgeConfig {
 			className:
 				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Quoted",
+			icon: FileText,
+			ariaLabel: "Job status: Quoted",
 		},
 		scheduled: {
 			className:
 				"border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400",
 			label: "Scheduled",
+			icon: Calendar,
+			ariaLabel: "Job status: Scheduled",
 		},
 		in_progress: {
 			className: "border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600",
 			label: "In Progress",
+			icon: Loader,
+			ariaLabel: "Job status: In Progress",
 		},
 		completed: {
 			className:
 				"border-green-500/50 bg-green-500 text-white hover:bg-green-600",
 			label: "Completed",
+			icon: CheckCircle,
+			ariaLabel: "Job status: Completed",
 		},
 		cancelled: {
 			className: "border-red-500/50 bg-red-500 text-white hover:bg-red-600",
 			label: "Cancelled",
+			icon: XCircle,
+			ariaLabel: "Job status: Cancelled",
 		},
 	};
 
@@ -57,31 +83,43 @@ function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 			className:
 				"border-green-500/30 bg-green-500 text-white hover:bg-green-600 shadow-sm",
 			label: "Paid",
+			icon: CheckCircle,
+			ariaLabel: "Invoice status: Paid",
 		},
 		unpaid: {
 			className:
 				"border-yellow-200/50 bg-yellow-50/50 text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-950/30 dark:text-yellow-400 shadow-sm",
 			label: "Unpaid",
+			icon: Clock,
+			ariaLabel: "Invoice status: Unpaid",
 		},
 		overdue: {
 			className:
 				"border-red-500/30 bg-red-500 text-white hover:bg-red-600 shadow-sm ring-1 ring-red-500/20",
 			label: "Overdue",
+			icon: AlertCircle,
+			ariaLabel: "Invoice status: Overdue - requires immediate attention",
 		},
 		draft: {
 			className:
 				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50 shadow-sm",
 			label: "Draft",
+			icon: FileText,
+			ariaLabel: "Invoice status: Draft",
 		},
 		sent: {
 			className:
 				"border-blue-200/50 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-400 shadow-sm",
 			label: "Sent",
+			icon: Mail,
+			ariaLabel: "Invoice status: Sent",
 		},
 		pending: {
 			className:
 				"bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 shadow-sm",
 			label: "Pending",
+			icon: Clock,
+			ariaLabel: "Invoice status: Pending",
 		},
 	};
 

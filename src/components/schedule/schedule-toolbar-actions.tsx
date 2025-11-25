@@ -1,12 +1,22 @@
 "use client";
 
 import {
+	AlertTriangle,
+	ArrowRight,
 	CalendarDays,
 	ChevronLeft,
 	ChevronRight,
+	CircleDot,
 	Columns3,
 	HelpCircle,
+	Keyboard,
 	LayoutGrid,
+	Palette,
+	Phone,
+	Repeat,
+	Settings2,
+	Wrench,
+	Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +25,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
 	Tooltip,
@@ -28,39 +39,90 @@ import { cn } from "@/lib/utils";
 const jobTypeLegend = [
 	{
 		label: "Emergency / Urgent",
-		classes: "border-red-400 bg-red-50 text-red-700 dark:bg-red-950",
+		description: "High priority service calls",
+		icon: AlertTriangle,
+		borderClass: "border-l-red-400 dark:border-l-red-700",
+		dotClass: "bg-red-500",
 	},
 	{
 		label: "Callback / Follow Up",
-		classes:
-			"border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
+		description: "Return visits & follow-ups",
+		icon: Phone,
+		borderClass: "border-l-orange-400 dark:border-l-orange-700",
+		dotClass: "bg-orange-500",
 	},
 	{
 		label: "Meetings / Events",
-		classes:
-			"border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
+		description: "Training & team events",
+		icon: CalendarDays,
+		borderClass: "border-l-purple-400 dark:border-l-purple-700",
+		dotClass: "bg-purple-500",
 	},
 	{
 		label: "Install / New Work",
-		classes: "border-green-400 bg-green-50 text-green-700 dark:bg-green-950",
+		description: "New installations & setups",
+		icon: Settings2,
+		borderClass: "border-l-green-400 dark:border-l-green-700",
+		dotClass: "bg-green-500",
 	},
 	{
 		label: "Service / Maintenance",
-		classes: "border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950",
+		description: "Regular service calls",
+		icon: Wrench,
+		borderClass: "border-l-blue-400 dark:border-l-blue-700",
+		dotClass: "bg-blue-500",
 	},
 	{
 		label: "Standard / Other",
-		classes: "border-slate-300 bg-slate-50 text-slate-700 dark:bg-slate-900",
+		description: "General appointments",
+		icon: CircleDot,
+		borderClass: "border-l-slate-300 dark:border-l-slate-700",
+		dotClass: "bg-slate-400",
 	},
 ];
 
-const statusLegend = [
-	{ label: "Scheduled", classes: "bg-blue-500" },
-	{ label: "Dispatched", classes: "bg-sky-500" },
-	{ label: "Arrived", classes: "bg-emerald-400" },
-	{ label: "In Progress", classes: "bg-amber-500 animate-pulse" },
-	{ label: "Closed", classes: "bg-emerald-600" },
-	{ label: "Cancelled", classes: "bg-slate-400" },
+const statusWorkflow = [
+	{
+		label: "Scheduled",
+		description: "Job is booked",
+		color: "bg-blue-500",
+		step: 1,
+	},
+	{
+		label: "Dispatched",
+		description: "Tech en route",
+		color: "bg-sky-500",
+		step: 2,
+	},
+	{
+		label: "Arrived",
+		description: "Tech on site",
+		color: "bg-emerald-400",
+		step: 3,
+	},
+	{
+		label: "In Progress",
+		description: "Work started",
+		color: "bg-amber-500",
+		step: 4,
+		pulse: true,
+	},
+	{
+		label: "Closed",
+		description: "Work complete",
+		color: "bg-emerald-600",
+		step: 5,
+	},
+];
+
+const keyboardShortcuts = [
+	{ keys: ["T"], description: "Go to Today" },
+	{ keys: ["N"], description: "New Job" },
+	{ keys: ["["], description: "Previous Period" },
+	{ keys: ["]"], description: "Next Period" },
+	{ keys: ["1"], description: "Timeline View" },
+	{ keys: ["2"], description: "Monthly View" },
+	{ keys: ["3"], description: "Kanban View" },
 ];
 
 export function ScheduleToolbarActions() {
@@ -151,39 +213,191 @@ export function ScheduleToolbarActions() {
 						<HelpCircle className="size-4" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent align="end" className="w-64 space-y-4 text-sm">
-					<div>
-						<p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-							Job Type Colors
-						</p>
-						<div className="space-y-1.5">
-							{jobTypeLegend.map((item) => (
-								<div
-									className="bg-card/70 flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs"
-									key={item.label}
-								>
-									<span
-										className={cn("h-4 w-4 rounded-full border", item.classes)}
-									/>
-									<span className="text-foreground">{item.label}</span>
-								</div>
-							))}
+				<PopoverContent align="end" className="w-80 p-0">
+					{/* Header */}
+					<div className="border-b px-4 py-3">
+						<div className="flex items-center gap-2">
+							<div className="bg-primary/10 flex size-8 items-center justify-center rounded-md">
+								<Palette className="text-primary size-4" />
+							</div>
+							<div>
+								<h4 className="text-sm font-semibold">Schedule Guide</h4>
+								<p className="text-muted-foreground text-xs">
+									Colors, statuses & shortcuts
+								</p>
+							</div>
 						</div>
 					</div>
 
-					<div>
-						<p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
-							Status Dot Legend
-						</p>
-						<div className="grid grid-cols-2 gap-2 text-xs">
-							{statusLegend.map((item) => (
-								<div className="flex items-center gap-2" key={item.label}>
-									<span
-										className={cn("h-2.5 w-2.5 rounded-full", item.classes)}
-									/>
-									<span>{item.label}</span>
+					<div className="max-h-[400px] overflow-y-auto">
+						{/* Job Type Colors */}
+						<div className="p-4">
+							<div className="mb-3 flex items-center gap-2">
+								<Zap className="text-muted-foreground size-3.5" />
+								<span className="text-xs font-semibold uppercase tracking-wide">
+									Job Types
+								</span>
+							</div>
+							<div className="space-y-2">
+								{jobTypeLegend.map((item) => {
+									const Icon = item.icon;
+									return (
+										<div
+											className={cn(
+												"flex items-center gap-3 rounded-lg border-l-4 bg-card/50 px-3 py-2",
+												item.borderClass
+											)}
+											key={item.label}
+										>
+											<div className="bg-muted flex size-7 shrink-0 items-center justify-center rounded-md">
+												<Icon className="text-muted-foreground size-3.5" />
+											</div>
+											<div className="flex-1 min-w-0">
+												<p className="text-sm font-medium truncate">
+													{item.label}
+												</p>
+												<p className="text-muted-foreground text-xs truncate">
+													{item.description}
+												</p>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+
+						<Separator />
+
+						{/* Status Workflow */}
+						<div className="p-4">
+							<div className="mb-3 flex items-center gap-2">
+								<ArrowRight className="text-muted-foreground size-3.5" />
+								<span className="text-xs font-semibold uppercase tracking-wide">
+									Status Workflow
+								</span>
+							</div>
+
+							{/* Visual workflow diagram */}
+							<div className="mb-3">
+								<div className="flex items-center justify-between gap-1">
+									{statusWorkflow.map((status, idx) => (
+										<div key={status.label} className="flex items-center flex-1">
+											<div
+												className={cn(
+													"h-1.5 flex-1 rounded-full",
+													status.color,
+													status.pulse && "animate-pulse"
+												)}
+											/>
+											{idx < statusWorkflow.length - 1 && (
+												<ArrowRight className="text-muted-foreground mx-0.5 size-2.5 shrink-0" />
+											)}
+										</div>
+									))}
 								</div>
-							))}
+							</div>
+
+							<div className="grid grid-cols-2 gap-2">
+								{statusWorkflow.map((status) => (
+									<div
+										className="flex items-center gap-2 rounded-md px-2 py-1.5"
+										key={status.label}
+									>
+										<span
+											className={cn(
+												"size-2.5 rounded-full shrink-0",
+												status.color,
+												status.pulse && "animate-pulse"
+											)}
+										/>
+										<div className="min-w-0">
+											<p className="text-xs font-medium">{status.label}</p>
+											<p className="text-muted-foreground text-[10px] truncate">
+												{status.description}
+											</p>
+										</div>
+									</div>
+								))}
+								{/* Cancelled status - separate */}
+								<div className="flex items-center gap-2 rounded-md px-2 py-1.5">
+									<span className="bg-slate-400 size-2.5 rounded-full shrink-0" />
+									<div className="min-w-0">
+										<p className="text-xs font-medium">Cancelled</p>
+										<p className="text-muted-foreground text-[10px]">
+											Job cancelled
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<Separator />
+
+						{/* Special Indicators */}
+						<div className="p-4">
+							<div className="mb-3 flex items-center gap-2">
+								<Repeat className="text-muted-foreground size-3.5" />
+								<span className="text-xs font-semibold uppercase tracking-wide">
+									Special Indicators
+								</span>
+							</div>
+							<div className="space-y-2">
+								<div className="bg-card/50 flex items-center gap-3 rounded-lg border px-3 py-2">
+									<Repeat className="text-primary size-4 shrink-0" />
+									<div>
+										<p className="text-xs font-medium">Recurring Job</p>
+										<p className="text-muted-foreground text-[10px]">
+											Repeats on a schedule
+										</p>
+									</div>
+								</div>
+								<div className="bg-card/50 flex items-center gap-3 rounded-lg border px-3 py-2">
+									<div className="flex -space-x-1">
+										<div className="bg-primary size-4 rounded-full border-2 border-background" />
+										<div className="bg-emerald-500 size-4 rounded-full border-2 border-background" />
+									</div>
+									<div>
+										<p className="text-xs font-medium">Multi-Tech Job</p>
+										<p className="text-muted-foreground text-[10px]">
+											Multiple technicians assigned
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<Separator />
+
+						{/* Keyboard Shortcuts */}
+						<div className="p-4">
+							<div className="mb-3 flex items-center gap-2">
+								<Keyboard className="text-muted-foreground size-3.5" />
+								<span className="text-xs font-semibold uppercase tracking-wide">
+									Keyboard Shortcuts
+								</span>
+							</div>
+							<div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+								{keyboardShortcuts.map((shortcut) => (
+									<div
+										className="flex items-center justify-between"
+										key={shortcut.description}
+									>
+										<span className="text-muted-foreground text-xs">
+											{shortcut.description}
+										</span>
+										<div className="flex gap-0.5">
+											{shortcut.keys.map((key) => (
+												<kbd
+													className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-[10px]"
+													key={key}
+												>
+													{key}
+												</kbd>
+											))}
+										</div>
+									</div>
+								))}
+							</div>
 						</div>
 					</div>
 				</PopoverContent>

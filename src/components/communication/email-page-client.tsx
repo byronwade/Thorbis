@@ -1,6 +1,6 @@
 "use client";
 
-import type { EmailRecord, EmailsResult, EmailFolder } from "@/lib/queries/emails";
+import type { EmailRecord, EmailsResult, EmailFolder, InboxType, EmailCategory } from "@/lib/queries/emails";
 import {
 	archiveEmailAction,
 	archiveAllEmailsAction,
@@ -85,21 +85,30 @@ import { USER_ROLES } from "@/types/roles";
 
 type EmailPageClientProps = {
 	initialEmails: EmailsResult;
-	initialFolder: EmailFolder | "inbox";
+	initialInboxType: InboxType;
+	initialFolder?: EmailFolder;
+	initialCategory?: EmailCategory;
 	initialEmailId: string | null;
 	companyId: string | null;
 };
 
 export function EmailPageClient({
 	initialEmails,
+	initialInboxType,
 	initialFolder,
+	initialCategory,
 	initialEmailId,
 	companyId,
 }: EmailPageClientProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
-	const folder: string = searchParams?.get("folder") || initialFolder;
+
+	// Read current inbox type and folder/category from URL
+	const inboxType: InboxType = (searchParams?.get("inbox") as InboxType) || initialInboxType;
+	const folder = searchParams?.get("folder") || initialFolder;
+	const category = searchParams?.get("category") || initialCategory;
+
 	const emailIdFromPath = params?.id as string | undefined;
 	const emailIdFromQuery = searchParams?.get("id");
 	const emailId = emailIdFromPath || emailIdFromQuery || initialEmailId;
@@ -192,7 +201,9 @@ export function EmailPageClient({
 					limit: 50,
 					offset: 0,
 					type: "all",
-					folder: (folder || "inbox") as EmailFolder,
+					inboxType,
+					folder: inboxType === "personal" ? (folder as EmailFolder) : undefined,
+					category: inboxType === "company" ? (category as EmailCategory) : undefined,
 					search: searchQuery || undefined,
 					sortBy: "created_at",
 					sortOrder: "desc"
@@ -242,7 +253,7 @@ export function EmailPageClient({
 				setRefreshing(false);
 			}
 		});
-	}, [searchQuery, folder]);
+	}, [searchQuery, folder, inboxType, category]);
 
 	// Refetch when search changes (NOT on initial mount - we have server data)
 	useEffect(() => {
@@ -279,14 +290,22 @@ export function EmailPageClient({
 		};
 	}, [fetchEmails, composeMode]);
 
-	// Refetch when folder changes (but not on initial mount)
+	// Refetch when inbox type, folder, or category changes (but not on initial mount)
 	const initialFolderRef = useRef(folder);
+	const initialInboxTypeRef = useRef(inboxType);
+	const initialCategoryRef = useRef(category);
 	useEffect(() => {
-		if (folder !== initialFolderRef.current) {
+		const folderChanged = folder !== initialFolderRef.current;
+		const inboxTypeChanged = inboxType !== initialInboxTypeRef.current;
+		const categoryChanged = category !== initialCategoryRef.current;
+
+		if (folderChanged || inboxTypeChanged || categoryChanged) {
 			initialFolderRef.current = folder;
+			initialInboxTypeRef.current = inboxType;
+			initialCategoryRef.current = category;
 			fetchEmails();
 		}
-	}, [folder, fetchEmails]);
+	}, [folder, inboxType, category, fetchEmails]);
 
 	// Handle search input with debounce
 	useEffect(() => {

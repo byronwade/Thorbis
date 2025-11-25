@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { AppHeader } from "@/components/layout/app-header";
+import { AppHeaderErrorBoundary } from "@/components/layout/app-header-error-boundary";
 import { DashboardAuthWrapper } from "@/components/layout/dashboard-auth-wrapper";
 import { IncomingCallNotificationWrapper } from "@/components/layout/incoming-call-notification-wrapper";
 import { MobileBottomTabsWrapper } from "@/components/layout/mobile-bottom-tabs-wrapper";
@@ -25,10 +26,12 @@ export default function DashboardLayout({
 }>) {
 	return (
 		<div data-dashboard-layout className="flex h-full flex-col overflow-hidden">
-			{/* Header with company context - wrapped in Suspense for PPR */}
-			<Suspense fallback={<HeaderSkeleton />}>
-				<AppHeader />
-			</Suspense>
+			{/* Header with company context - wrapped in error boundary and Suspense for PPR */}
+			<AppHeaderErrorBoundary>
+				<Suspense fallback={<HeaderSkeleton />}>
+					<AppHeader />
+				</Suspense>
+			</AppHeaderErrorBoundary>
 
 			{/* Desktop + toast notifications bootstrap */}
 			<NotificationsInitializer />
@@ -42,7 +45,7 @@ export default function DashboardLayout({
 			</Suspense>
 
 			{/* Page content - each page has its own Suspense boundaries */}
-			<main className="flex-1 flex flex-col overflow-y-auto pb-16 lg:pb-0">
+			<main id="main-content" className="flex-1 flex flex-col overflow-y-auto pb-16 lg:pb-0">
 				{children}
 			</main>
 

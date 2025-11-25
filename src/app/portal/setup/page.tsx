@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { StandardFormField } from "@/components/ui/standard-form-field";
 import { createClient } from "@/lib/supabase/server";
 
@@ -228,18 +229,13 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 							htmlFor="password"
 							required
 						>
-							<div className="relative">
-								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
-								<Input
-									className="pl-10"
-									id="password"
-									minLength={8}
-									name="password"
-									placeholder="Enter a secure password"
-									required
-									type="password"
-								/>
-							</div>
+							<PasswordInput
+								id="password"
+								minLength={8}
+								name="password"
+								placeholder="Enter a secure password"
+								required
+							/>
 							<p className="text-muted-foreground text-xs">
 								Must be at least 8 characters
 							</p>
@@ -251,18 +247,13 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 							htmlFor="confirmPassword"
 							required
 						>
-							<div className="relative">
-								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
-								<Input
-									className="pl-10"
-									id="confirmPassword"
-									minLength={8}
-									name="confirmPassword"
-									placeholder="Re-enter your password"
-									required
-									type="password"
-								/>
-							</div>
+							<PasswordInput
+								id="confirmPassword"
+								minLength={8}
+								name="confirmPassword"
+								placeholder="Re-enter your password"
+								required
+							/>
 						</StandardFormField>
 
 						{/* Security notice */}

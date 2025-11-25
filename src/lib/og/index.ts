@@ -1,25 +1,38 @@
 /**
- * OG Image Generation System
+ * OG Image Generation System v2.0
  *
  * Next.js 16 programmatic OG image generation.
- * Dark mode first, bold & minimalistic design.
+ * Eye-catching designs with bold gradients and strong visual hierarchy.
  */
 
-export { OG_CONFIG, OG_MESSAGING, SOCIAL_CONFIGS, type OGPageType } from "./og-config";
-export { loadOGFonts, loadSingleFont, loadInterFont } from "./og-fonts";
+// Config & Types
 export {
-	// Layout & Base Components
-	OGBaseLayout,
+	OG_CONFIG,
+	OG_MESSAGING,
+	OG_PATTERNS,
+	type OGPageType,
+	type FeatureSlug,
+	type IndustrySlug,
+	type CompetitorSlug,
+} from "./og-config";
+
+// Font Loading
+export { loadOGFonts, loadSingleFont, loadInterFont } from "./og-fonts";
+
+// Templates
+export {
+	// Utility
 	getLogoDataUrl,
-	// Templates
+	// Page Templates
 	HomepageTemplate,
+	PricingTemplate,
 	FeatureTemplate,
 	IndustryTemplate,
 	CompetitorTemplate,
-	PricingTemplate,
 	BlogTemplate,
 	KBTemplate,
 	IntegrationTemplate,
 	CalculatorTemplate,
+	GenericTemplate,
 	DefaultTemplate,
 } from "./og-templates";

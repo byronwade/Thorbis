@@ -1,8 +1,13 @@
 /**
- * OG Image Configuration
+ * OG Image Configuration v2.0
  *
- * Design system for programmatic OG image generation.
- * Dark mode first, bold & minimalistic.
+ * DARK MODE FIRST - Matching Dashboard Color Scheme
+ *
+ * Design Philosophy:
+ * - Dark backgrounds matching dashboard dark mode
+ * - Electric blue primary accent (hsl 221 73% 56%)
+ * - Consistent with app's visual identity
+ * - Light text on dark for eye-catching social previews
  */
 
 export const OG_CONFIG = {
@@ -10,376 +15,380 @@ export const OG_CONFIG = {
 	width: 1200,
 	height: 630,
 
-	// Margins and spacing (Golden Ratio based: 1.618)
-	padding: 56, // ~56px for premium feel
-	innerPadding: 35, // 56 / 1.618 ≈ 35
+	// Generous spacing for visual breathing room
+	padding: 64,
 
-	// Colors - DARK MODE PROFESSIONAL
+	// Design System - MATCHING DASHBOARD DARK MODE
+	// Note: OG images use slightly higher contrast for social media visibility
 	colors: {
-		background: "#0A0A0A", // Deep black
-		foreground: "#FFFFFF", // White text
-		primary: "#4F7BF7", // Electric blue (Thorbis brand)
-		accent: "#22C55E", // Success green (for pricing)
-		muted: "#A1A1AA", // Light gray text
-		mutedForeground: "#71717A", // Muted gray
-		border: "#27272A", // Dark border
-		destructive: "#EF4444", // Red for competitor pricing
-		dark: "#18181B", // Darker elements
+		// Core palette - Dashboard dark mode colors
+		background: "#0F0F0F", // hsl(0 0% 6%) - dashboard dark background
+		foreground: "#FFFFFF", // Pure white for maximum contrast on social
+		muted: "#1F1F1F", // hsl(0 0% 12%) - dashboard muted background
+		mutedForeground: "#B3B3B3", // hsl(0 0% 70%) - lighter for OG readability
+		secondaryText: "#CCCCCC", // hsl(0 0% 80%) - secondary text
+
+		// Brand colors - Dashboard primary
+		primary: "#4B7BF5", // hsl(221 73% 56%) - dashboard primary/electric blue
+		primaryLight: "#6B92F7", // Lighter variant
+		primaryDark: "#3A62D4", // Darker variant
+
+		// Accent colors - Dashboard semantic colors
+		accent: "#3D9B4F", // hsl(142.1 70.6% 45.3%) - dashboard success
+		accentLight: "#4DB861", // Light green
+		accentGlow: "#3D9B4F40", // Green with alpha
+
+		// Semantic colors - Dashboard variants
+		destructive: "#9B3D3D", // hsl(0 62.8% 30.6%) - dashboard destructive (dark)
+		warning: "#F5C842", // hsl(47.9 95.8% 53.1%) - dashboard warning
+		info: "#4B7BF5", // Same as primary - dashboard info
+
+		// Chart/Gradient colors - Dashboard chart palette
+		gradient1: "#4B7BF5", // hsl(221 73% 56%) - chart-1 blue
+		gradient2: "#A855F7", // hsl(280 87.3% 65.3%) - chart-4 purple
+		gradient3: "#E64980", // hsl(340 82.2% 52.5%) - chart-5 pink
+		gradient4: "#3D9B4F", // hsl(142.1 70.6% 45.3%) - chart-2 green
+
+		// Dark variations for cards - Dashboard card colors
+		card: "#1A1A1A", // hsl(0 0% 10%) - dashboard card
+		cardHover: "#242424", // hsl(0 0% 14%) - dashboard accent
+		border: "#333333", // hsl(0 0% 20%) - dashboard border
 	},
 
-	// Typography sizes - Clean & Professional scale
+	// Typography - STRONG HIERARCHY
 	typography: {
-		display: 145, // Pricing ($200) - impactful but not overwhelming
-		hero: 60, // Main headlines - clear hierarchy
-		title: 36, // Secondary headlines - balanced
-		subtitle: 26, // Supporting text - readable
-		body: 22, // Body text - comfortable
-		small: 18, // Small details - clear
-		micro: 14, // Micro text - subtle
+		// Display sizes for maximum impact
+		mega: 180, // For single numbers/prices
+		display: 120, // Large headlines
+		hero: 72, // Main headlines
+		title: 48, // Section titles
+		subtitle: 32, // Supporting headlines
+		body: 24, // Body copy
+		caption: 20, // Small text
+		micro: 16, // Fine print
 	},
 
-	// Font weights (all now loaded for premium typography)
+	// Font weights
 	weights: {
 		regular: 400,
-		medium: 500, // Now loaded!
+		medium: 500,
 		semibold: 600,
 		bold: 700,
-		extrabold: 800, // Now loaded!
+		extrabold: 800,
+		black: 900,
 	},
 
-	// Logo dimensions
-	logo: {
-		width: 160,
-		height: 40,
+	// Gradients - DASHBOARD COLOR SCHEME
+	gradients: {
+		// Primary brand gradient (dashboard blue to purple)
+		primary: "linear-gradient(135deg, #4B7BF5 0%, #A855F7 50%, #E64980 100%)",
+		// Success/savings gradient (dashboard success green)
+		success: "linear-gradient(135deg, #3D9B4F 0%, #4DB861 50%, #5CC975 100%)",
+		// Warm comparison gradient (dashboard warning to destructive)
+		warm: "linear-gradient(135deg, #F5C842 0%, #9B3D3D 100%)",
+		// Cool professional gradient (dashboard blue to purple)
+		cool: "linear-gradient(135deg, #4B7BF5 0%, #6B92F7 50%, #A855F7 100%)",
+		// Dark premium gradient (dashboard card to background)
+		dark: "linear-gradient(180deg, #1A1A1A 0%, #0F0F0F 100%)",
+		// Accent glow (dashboard primary blue)
+		glow: "radial-gradient(ellipse at center, rgba(75, 123, 245, 0.3) 0%, transparent 70%)",
 	},
 
-	// Pricing badge
-	pricingBadge: {
-		text: "$200/mo",
-		subtitle: "All features included",
-	},
-
-	// Social proof - builds trust and credibility
-	socialProof: {
-		customers: "500+ Contractors",
-		rating: "4.9★",
-		savings: "Save $34,600/year avg",
-		guarantee: "Money-Back Guarantee",
+	// Shadow effects - Dashboard primary color
+	shadows: {
+		glow: "0 0 60px rgba(75, 123, 245, 0.4), 0 0 120px rgba(75, 123, 245, 0.2)",
+		greenGlow: "0 0 60px rgba(61, 155, 79, 0.4), 0 0 120px rgba(61, 155, 79, 0.2)",
+		text: "0 4px 20px rgba(0, 0, 0, 0.5)",
 	},
 } as const;
 
 /**
- * Brand messaging for different page types
+ * Rich messaging content for each page type
  */
 export const OG_MESSAGING = {
-	// Default/Homepage - SIMPLE & POWERFUL
+	// Homepage - BOLD IMPACT
 	homepage: {
-		headline: "Field Service Management",
-		subheadline: "That Contractors Actually Use",
-		pricing: "$200/mo",
-		tagline: "All Features. No Per-User Fees.",
+		headline: "Run Your Entire Business",
+		subheadline: "For $200/month",
+		tagline: "No Per-User Fees. No Hidden Costs. Just Results.",
+		stats: [
+			{ value: "500+", label: "Contractors" },
+			{ value: "$34K", label: "Avg Savings" },
+			{ value: "4.9", label: "Rating" },
+		],
 	},
 
-	// Feature pages - PAIN-FIRST with specific numbers
+	// Pricing - SAVINGS FOCUS
+	pricing: {
+		headline: "Save $34,600/Year",
+		price: "$200",
+		period: "/mo",
+		comparison: "vs $3,100/mo with ServiceTitan",
+		features: [
+			"All Features Included",
+			"Unlimited Users",
+			"No Setup Fees",
+			"Cancel Anytime",
+		],
+	},
+
+	// Feature pages - Using dashboard chart colors
 	features: {
 		scheduling: {
-			painPoint: "Techs Waste 2+ Hours Daily on Double-Bookings",
-			solution: "Smart Scheduling Saves 12 Hours/Week",
-			stat: "Save 12 hrs/week",
-			icon: "calendar",
-			// Legacy
 			title: "Smart Scheduling",
-			subtitle: "Stop losing jobs to double-bookings",
+			headline: "Never Double-Book Again",
+			stat: { value: "12", unit: "hrs", label: "saved weekly" },
+			icon: "calendar",
+			gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 		},
 		invoicing: {
-			painPoint: "Slow Invoicing Costs You $2,400/Month in Delays",
-			solution: "One-Click Invoicing Gets You Paid 2x Faster",
-			stat: "Get paid 2x faster",
-			icon: "receipt",
-			// Legacy
 			title: "One-Click Invoicing",
-			subtitle: "Get paid 2x faster with automated billing",
+			headline: "Get Paid 2x Faster",
+			stat: { value: "2x", unit: "", label: "faster payments" },
+			icon: "receipt",
+			gradient: ["#3D9B4F", "#4DB861"], // Dashboard success green
 		},
 		crm: {
-			painPoint: "Lost Customer Data Kills $30K+ in Repeat Business",
-			solution: "Built-in CRM Tracks Every Customer Interaction",
-			stat: "+19% avg ticket",
-			icon: "users",
-			// Legacy
 			title: "Built-in CRM",
-			subtitle: "Know your customers, grow your business",
+			headline: "Know Every Customer",
+			stat: { value: "+19%", unit: "", label: "avg ticket size" },
+			icon: "users",
+			gradient: ["#A855F7", "#C084FC"], // Dashboard chart-4 purple
 		},
 		"ai-assistant": {
-			painPoint: "After-Hours Calls Go Straight to Competitors",
-			solution: "AI Assistant Books Jobs 24/7 While You Sleep",
-			stat: "Never miss a lead",
-			icon: "bot",
-			// Legacy
 			title: "AI Assistant",
-			subtitle: "Your 24/7 virtual dispatcher",
+			headline: "Book Jobs 24/7",
+			stat: { value: "24/7", unit: "", label: "availability" },
+			icon: "bot",
+			gradient: ["#E64980", "#F06292"], // Dashboard chart-5 pink
 		},
 		"mobile-app": {
-			painPoint: "Paperwork Eats 15% of Your Technician's Day",
-			solution: "Mobile App Lets Techs Complete Jobs On-Site",
-			stat: "15% more jobs/day",
-			icon: "smartphone",
-			// Legacy
 			title: "Mobile App",
-			subtitle: "Run your business from anywhere",
+			headline: "Run Business Anywhere",
+			stat: { value: "+15%", unit: "", label: "more jobs daily" },
+			icon: "smartphone",
+			gradient: ["#F5C842", "#F7D460"], // Dashboard warning yellow
 		},
 		"customer-portal": {
-			painPoint: "Phone Tag Loses You 30% of Online Inquiries",
-			solution: "Customer Portal Books Jobs While You're Busy",
-			stat: "+30% online bookings",
-			icon: "layout",
-			// Legacy
 			title: "Customer Portal",
-			subtitle: "Self-service booking that customers love",
+			headline: "Self-Service Booking",
+			stat: { value: "+30%", unit: "", label: "online bookings" },
+			icon: "layout",
+			gradient: ["#4B7BF5", "#A855F7"], // Dashboard blue to purple
 		},
 		quickbooks: {
-			painPoint: "Manual Data Entry Costs 8 Hours/Week",
-			solution: "QuickBooks Sync: Zero Data Entry, Perfect Books",
-			stat: "Save 8 hrs/week",
-			icon: "refresh",
-			// Legacy
 			title: "QuickBooks Sync",
-			subtitle: "Automatic accounting, zero data entry",
+			headline: "Zero Data Entry",
+			stat: { value: "8", unit: "hrs", label: "saved weekly" },
+			icon: "refresh",
+			gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 		},
 		marketing: {
-			painPoint: "One-Time Customers Cost You 60% Profit Potential",
-			solution: "Marketing Automation Turns Customers Into Repeat Revenue",
-			stat: "92% renewal rate",
-			icon: "megaphone",
-			// Legacy
 			title: "Marketing Automation",
-			subtitle: "Turn happy customers into repeat business",
+			headline: "Turn Customers Into Repeat Revenue",
+			stat: { value: "92%", unit: "", label: "renewal rate" },
+			icon: "megaphone",
+			gradient: ["#E64980", "#A855F7"], // Dashboard pink to purple
 		},
 	},
 
-	// Industry pages - AGGRESSIVE pain with dollar amounts
+	// Industry pages - Using dashboard chart colors
 	industries: {
 		hvac: {
-			painPoint: "HVAC Contractors Lose $50K/Year in Service Agreements",
-			solution: "92% Renewal Rate • Save 12 Hours/Week on Paperwork",
-			stat: "92% renewal rate",
-			// Legacy
 			title: "HVAC Software",
-			subtitle: "Built for techs who hate paperwork",
-			pain: "Stop losing $50K/year in service agreements",
+			headline: "Built for Techs Who Hate Paperwork",
+			stat: { value: "92%", label: "renewal rate" },
+			painPoint: "Stop losing $50K/year in service agreements",
+			gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 		},
 		plumbing: {
-			painPoint: "Plumbers Lose 30% of Emergency Calls to Slow Response",
-			solution: "From Leak to Paid Invoice in 45 Minutes",
-			stat: "45 min response",
-			// Legacy
 			title: "Plumbing Software",
-			subtitle: "From leak to invoice in minutes",
-			pain: "Stop losing emergency calls",
+			headline: "From Leak to Invoice in Minutes",
+			stat: { value: "45min", label: "avg response" },
+			painPoint: "Stop losing emergency calls",
+			gradient: ["#3D9B4F", "#4DB861"], // Dashboard success green
 		},
 		electrical: {
-			painPoint: "Electricians Waste $15K/Month on Forgotten Follow-Ups",
-			solution: "Track Every Wire, Every Job, Every Dollar",
-			stat: "+$15K/mo revenue",
-			// Legacy
 			title: "Electrical Contractor Software",
-			subtitle: "Wire your business for growth",
-			pain: "Stop losing follow-up revenue",
+			headline: "Track Every Wire, Every Dollar",
+			stat: { value: "+$15K", label: "monthly revenue" },
+			painPoint: "Stop losing follow-up revenue",
+			gradient: ["#F5C842", "#F7D460"], // Dashboard warning yellow
 		},
 		landscaping: {
-			painPoint: "Landscapers Waste 10 Hours/Week on Route Planning",
-			solution: "Route Optimization Saves 10 Hours Weekly",
-			stat: "Save 10 hrs/week",
-			// Legacy
 			title: "Landscaping Software",
-			subtitle: "Grow your business, not your headaches",
-			pain: "Stop wasting time on routes",
+			headline: "Optimized Routes, Maximum Profits",
+			stat: { value: "10hrs", label: "saved weekly" },
+			painPoint: "Stop wasting time on routes",
+			gradient: ["#3D9B4F", "#5CC975"], // Dashboard success green variant
 		},
 		cleaning: {
-			painPoint: "Cleaning Services Lose $20K/Year to Double-Bookings",
-			solution: "Spotless Scheduling, Zero Double-Books",
-			stat: "Zero double-books",
-			// Legacy
 			title: "Cleaning Service Software",
-			subtitle: "Spotless scheduling, spotless profits",
-			pain: "Stop losing jobs to double-bookings",
+			headline: "Spotless Scheduling",
+			stat: { value: "0", label: "double-bookings" },
+			painPoint: "Stop losing jobs to scheduling chaos",
+			gradient: ["#A855F7", "#C084FC"], // Dashboard chart-4 purple
 		},
 		handyman: {
-			painPoint: "Handymen Juggle 5 Apps, Waste 3 Hours Daily",
-			solution: "One App for Everything: Schedule to Invoice",
-			stat: "Save 3 hrs/day",
-			// Legacy
 			title: "Handyman Software",
-			subtitle: "Fix more, stress less",
-			pain: "Stop juggling multiple apps",
+			headline: "One App for Everything",
+			stat: { value: "3hrs", label: "saved daily" },
+			painPoint: "Stop juggling multiple apps",
+			gradient: ["#E64980", "#F06292"], // Dashboard chart-5 pink
 		},
 		"pest-control": {
-			painPoint: "Pest Control Loses $40K/Year in Recurring Service",
-			solution: "Automated Recurring Service, 95% Retention",
-			stat: "95% retention",
-			// Legacy
 			title: "Pest Control Software",
-			subtitle: "Eliminate scheduling chaos",
-			pain: "Stop losing recurring revenue",
+			headline: "Automated Recurring Service",
+			stat: { value: "95%", label: "retention rate" },
+			painPoint: "Stop losing recurring revenue",
+			gradient: ["#9B3D3D", "#B84545"], // Dashboard destructive (muted)
 		},
 		roofing: {
-			painPoint: "Roofers Lose Estimates Without Photo Documentation",
-			solution: "Photo-Based Estimates Close 40% More Jobs",
-			stat: "+40% close rate",
-			// Legacy
 			title: "Roofing Software",
-			subtitle: "Estimate to invoice, all covered",
-			pain: "Stop losing estimates",
+			headline: "Photo-Based Estimates",
+			stat: { value: "+40%", label: "close rate" },
+			painPoint: "Stop losing estimates",
+			gradient: ["#999999", "#B3B3B3"], // Dashboard muted-foreground
 		},
 		"pool-service": {
-			painPoint: "Pool Services Forget Chemical Logs, Risk Liability",
-			solution: "Automated Chemical Tracking + Route Optimization",
-			stat: "100% compliant",
-			// Legacy
 			title: "Pool Service Software",
-			subtitle: "Dive into organized operations",
-			pain: "Stop risking liability",
+			headline: "Chemical Tracking + Routes",
+			stat: { value: "100%", label: "compliant" },
+			painPoint: "Stop risking liability",
+			gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 		},
 		"appliance-repair": {
-			painPoint: "Appliance Techs Lose $25K/Year in Warranty Claims",
-			solution: "Warranty Tracking Captures Every Covered Repair",
-			stat: "+$25K/yr revenue",
-			// Legacy
 			title: "Appliance Repair Software",
-			subtitle: "Parts, labor, profit - tracked",
-			pain: "Stop missing warranty revenue",
+			headline: "Warranty Tracking Built-In",
+			stat: { value: "+$25K", label: "yearly revenue" },
+			painPoint: "Stop missing warranty claims",
+			gradient: ["#A855F7", "#4B7BF5"], // Dashboard purple to blue
 		},
 		locksmith: {
-			painPoint: "Locksmiths Miss Emergency Calls, Lose $35K/Year",
-			solution: "24/7 Emergency Dispatch Captures Every Call",
-			stat: "Never miss calls",
-			// Legacy
 			title: "Locksmith Software",
-			subtitle: "Unlock your business potential",
-			pain: "Stop missing emergency revenue",
+			headline: "24/7 Emergency Dispatch",
+			stat: { value: "0", label: "missed calls" },
+			painPoint: "Stop missing emergency revenue",
+			gradient: ["#A855F7", "#C084FC"], // Dashboard chart-4 purple
 		},
 		"garage-door": {
-			painPoint: "Garage Door Services Lose Track of Spring Replacements",
-			solution: "Spring Tracking Increases Replacement Revenue 50%",
-			stat: "+50% replacements",
-			// Legacy
 			title: "Garage Door Software",
-			subtitle: "Open doors to more revenue",
-			pain: "Stop missing replacement opportunities",
+			headline: "Spring Tracking System",
+			stat: { value: "+50%", label: "replacements" },
+			painPoint: "Stop missing opportunities",
+			gradient: ["#999999", "#666666"], // Dashboard muted tones
 		},
 	},
 
-	// Competitor comparison pages - AGGRESSIVE annual savings
+	// Competitor comparison pages - Using dashboard chart colors
 	competitors: {
 		servicetitan: {
-			title: "Thorbis vs ServiceTitan",
-			annualSavings: "Save $34,600/Year",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "$3,100/mo",
-			theirAnnual: "$37,200/year",
-			subtitle: "Same Power. 93% Less Cost.",
-			snark: "Enterprise features without the enterprise BS",
+			name: "ServiceTitan",
+			ourPrice: "$200",
+			theirPrice: "$3,100",
+			savings: "$34,600",
+			savingsPeriod: "/year",
+			headline: "Same Features. 93% Less.",
+			gradient: ["#3D9B4F", "#4DB861"], // Dashboard success green (savings)
 		},
 		"housecall-pro": {
-			title: "Thorbis vs Housecall Pro",
-			annualSavings: "Save $4,800/Year (5 techs)",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "$49/user × 5",
-			theirAnnual: "$7,200/year",
-			subtitle: "More Features. Zero Per-User Fees.",
-			snark: "Why pay per tech when you can pay one price?",
+			name: "Housecall Pro",
+			ourPrice: "$200",
+			theirPrice: "$600",
+			savings: "$4,800",
+			savingsPeriod: "/year",
+			headline: "No Per-User Fees. Ever.",
+			gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 		},
 		jobber: {
-			title: "Thorbis vs Jobber",
-			annualSavings: "Save Up to $1,200/Year",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "$300/mo",
-			theirAnnual: "$3,600/year",
-			subtitle: "AI-Powered. Not AI-Washed.",
-			snark: "Real automation, not just buzzwords",
+			name: "Jobber",
+			ourPrice: "$200",
+			theirPrice: "$300",
+			savings: "$1,200",
+			savingsPeriod: "/year",
+			headline: "Real AI. Not AI-Washed.",
+			gradient: ["#A855F7", "#C084FC"], // Dashboard chart-4 purple
 		},
 		fieldedge: {
-			title: "Thorbis vs FieldEdge",
-			annualSavings: "They Hide Pricing. We Don't.",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "Call for Quote",
-			theirAnnual: "$25,000+ typically",
-			subtitle: "Transparent Pricing. Modern UX.",
-			snark: "If they won't show pricing, you can't afford it",
+			name: "FieldEdge",
+			ourPrice: "$200",
+			theirPrice: "???",
+			savings: "$25,000+",
+			savingsPeriod: "/year est",
+			headline: "Transparent Pricing. Always.",
+			gradient: ["#F5C842", "#F7D460"], // Dashboard warning yellow
 		},
 		servicem8: {
-			title: "Thorbis vs ServiceM8",
-			annualSavings: "Save $1,200/Year",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "$300/mo",
-			theirAnnual: "$3,600/year",
-			subtitle: "Built for Growth. Not Just Getting By.",
-			snark: "Scale without switching platforms",
+			name: "ServiceM8",
+			ourPrice: "$200",
+			theirPrice: "$300",
+			savings: "$1,200",
+			savingsPeriod: "/year",
+			headline: "Built for Growth. Not Limits.",
+			gradient: ["#E64980", "#F06292"], // Dashboard chart-5 pink
 		},
 		workiz: {
-			title: "Thorbis vs Workiz",
-			annualSavings: "Save $300/Year + No Hidden Fees",
-			ourPrice: "$200/mo",
-			ourAnnual: "$2,400/year",
-			theirPrice: "$225/mo",
-			theirAnnual: "$2,700/year",
-			subtitle: "All Features Included. Always.",
-			snark: "No feature gates, no surprises",
+			name: "Workiz",
+			ourPrice: "$200",
+			theirPrice: "$225",
+			savings: "$300+",
+			savingsPeriod: "/year",
+			headline: "All Features. No Gates.",
+			gradient: ["#4B7BF5", "#A855F7"], // Dashboard blue to purple
 		},
 	},
 
-	// Pricing page - SAVINGS-FOCUSED
-	pricing: {
-		mainHeadline: "Save $34,600/Year",
-		comparison: "$200/mo = $2,400/year",
-		competitorPrice: "vs ServiceTitan $37,200/year",
-		guarantee: "Money-Back Guarantee • No Per-User Fees • Cancel Anytime",
-		// Legacy
-		title: "Save $34,600/Year vs ServiceTitan",
-		subtitle: "No per-user fees. No hidden costs. Ever.",
-		highlight: "$200/mo = $2,400/year",
-	},
-
-	// Blog
+	// Blog defaults - Dashboard chart colors
 	blog: {
-		defaultSubtitle: "Insights for field service professionals",
+		defaultCategory: "Insights",
+		gradient: ["#4B7BF5", "#A855F7"], // Dashboard blue to purple
 	},
 
-	// Knowledge base
+	// Knowledge base defaults - Dashboard chart colors
 	kb: {
-		defaultSubtitle: "Learn how to get the most from Thorbis",
+		defaultCategory: "Help Center",
+		gradient: ["#3D9B4F", "#4DB861"], // Dashboard success green
+	},
+
+	// Generic page defaults - Dashboard primary
+	generic: {
+		gradient: ["#4B7BF5", "#6B92F7"], // Dashboard primary blue
 	},
 } as const;
 
 /**
- * Social media specific configurations
+ * Visual element patterns for different templates
  */
-export const SOCIAL_CONFIGS = {
-	// OpenGraph (Facebook, LinkedIn, etc.)
-	opengraph: {
-		width: 1200,
-		height: 630,
+export const OG_PATTERNS = {
+	// Geometric patterns
+	dots: {
+		size: 4,
+		spacing: 20,
+		opacity: 0.1,
 	},
-	// Twitter/X
-	twitter: {
-		width: 1200,
-		height: 630,
-		cardType: "summary_large_image" as const,
+	grid: {
+		size: 40,
+		opacity: 0.05,
+	},
+	diagonal: {
+		angle: 45,
+		spacing: 30,
+		opacity: 0.08,
 	},
 } as const;
 
 export type OGPageType =
 	| "homepage"
+	| "pricing"
 	| "feature"
 	| "industry"
 	| "competitor"
-	| "pricing"
 	| "blog"
 	| "kb"
 	| "integration"
 	| "calculator"
-	| "default";
+	| "generic";
+
+export type FeatureSlug = keyof typeof OG_MESSAGING.features;
+export type IndustrySlug = keyof typeof OG_MESSAGING.industries;
+export type CompetitorSlug = keyof typeof OG_MESSAGING.competitors;

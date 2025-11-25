@@ -1,11 +1,16 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { getActiveTeamMemberId } from "@/lib/auth/company-context";
 
 export type EmailFolder = "inbox" | "spam" | "starred" | "sent" | "drafts" | "archive" | "snoozed" | "trash" | "bin" | "all";
+export type InboxType = "personal" | "company";
+export type EmailCategory = "support" | "sales" | "billing" | "general";
 
 export type EmailQueryParams = {
+	inboxType?: InboxType;
 	folder?: EmailFolder;
+	category?: EmailCategory;
 	search?: string;
 	limit?: number;
 	offset?: number;
@@ -51,14 +56,18 @@ export type EmailsResult = {
 };
 
 /**
- * Cached email fetching function using React.cache()
+ * Cached email fetching function using React.cache() with dual-inbox support
  * This ensures multiple components calling getEmails in the same request
  * only trigger one database query
+ *
+ * Supports two inbox types:
+ * - Personal: mailbox_owner_id = team_member_id (user's workspace email)
+ * - Company: mailbox_owner_id IS NULL (shared categories: support, sales, billing, general)
  */
 export const getEmails = cache(async (
 	params: EmailQueryParams = {}
 ): Promise<EmailsResult> => {
-	const { folder, search, limit = 50, offset = 0 } = params;
+	const { inboxType = "personal", folder, category, search, limit = 50, offset = 0 } = params;
 
 	const companyId = await getActiveCompanyId();
 	if (!companyId) {
@@ -97,6 +106,8 @@ export const getEmails = cache(async (
 			updated_at,
 			is_archived,
 			snoozed_until,
+			mailbox_owner_id,
+			email_category,
 			customer:customers!customer_id(
 				id,
 				first_name,
@@ -110,6 +121,26 @@ export const getEmails = cache(async (
 		.eq("type", "email")
 		.order("created_at", { ascending: false })
 		.range(offset, offset + limit - 1);
+
+	// Apply inbox type filter
+	if (inboxType === "personal") {
+		// Personal inbox: only emails where mailbox_owner_id = current team member
+		const teamMemberId = await getActiveTeamMemberId();
+		if (teamMemberId) {
+			query = query.eq("mailbox_owner_id", teamMemberId);
+		} else {
+			// No team member ID means user can't see personal emails
+			return { emails: [], total: 0, hasMore: false };
+		}
+	} else if (inboxType === "company") {
+		// Company inbox: only emails where mailbox_owner_id IS NULL (shared emails)
+		query = query.is("mailbox_owner_id", null);
+
+		// If category specified, filter by email_category
+		if (category) {
+			query = query.eq("email_category", category);
+		}
+	}
 
 	// Apply deleted_at filter based on folder (trash needs deleted emails, others don't)
 	if (folder !== "trash" && folder !== "bin") {

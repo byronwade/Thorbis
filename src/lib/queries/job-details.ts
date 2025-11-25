@@ -117,7 +117,8 @@ const getJobAppointments = cache(
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
 			.is("deleted_at", null)
-			.order("start_time", { ascending: false });
+			.order("start_time", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -137,7 +138,8 @@ const getJobInvoices = cache(
 			.select("*")
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -157,7 +159,8 @@ const getJobEstimates = cache(
 			.select("*")
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -177,7 +180,8 @@ const getJobPayments = cache(
 			.select("*")
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -197,7 +201,8 @@ const getJobPurchaseOrders = cache(
 			.select("*")
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -245,7 +250,8 @@ const getJobNotes = cache(async (jobId: string, companyId: string) => {
 		.eq("job_id", jobId)
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
-		.order("created_at", { ascending: false });
+		.order("created_at", { ascending: false })
+		.limit(100);
 
 	return result;
 });
@@ -265,7 +271,8 @@ const getCustomerNotes = cache(
 			.eq("customer_id", customerId)
 			.eq("company_id", companyId)
 			.is("deleted_at", null)
-			.order("created_at", { ascending: false });
+			.order("created_at", { ascending: false })
+			.limit(100);
 
 		return result;
 	},
@@ -289,7 +296,8 @@ const getEnrichedJobAppointments = cache(
 			.eq("job_id", jobId)
 			.eq("company_id", companyId)
 			.is("deleted_at", null)
-			.order("start_time", { ascending: false });
+			.order("start_time", { ascending: false })
+			.limit(100);
 
 		let enrichedAppointments = appointments || [];
 

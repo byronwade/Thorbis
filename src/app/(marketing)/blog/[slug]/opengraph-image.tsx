@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, BlogTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, BlogTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -13,7 +13,7 @@ export const alt = "Thorbis Blog";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	// Format slug to title
 	const title = slug
@@ -21,7 +21,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ");
 
-	return new ImageResponse(<BlogTemplate title={title} category="Blog" />, {
+	return new ImageResponse(<BlogTemplate title={title} category="Blog" logoDataUrl={logoDataUrl} />, {
 		...size,
 		fonts,
 	});

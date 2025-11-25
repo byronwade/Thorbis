@@ -31,7 +31,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type FetcherFn<T> = () => Promise<{ data: T | null; error: Error | null }>;
 
@@ -43,7 +43,7 @@ interface ProgressiveDataOptions {
 }
 
 export function useProgressiveData<T>(
-	_queryKey: string,
+	queryKey: string,
 	fetcher: FetcherFn<T>,
 	options: ProgressiveDataOptions = {},
 ) {
@@ -53,8 +53,16 @@ export function useProgressiveData<T>(
 	const [error, setError] = useState<Error | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
+	// Track last fetched key to detect when to refetch
+	const lastFetchedKeyRef = useRef<string | null>(null);
+
 	useEffect(() => {
 		if (!enabled) {
+			return;
+		}
+
+		// Skip if we've already fetched for this key
+		if (lastFetchedKeyRef.current === queryKey && data !== null) {
 			return;
 		}
 
@@ -66,6 +74,7 @@ export function useProgressiveData<T>(
 				const result = await fetcher();
 				if (result.error) throw result.error;
 				setData(result.data);
+				lastFetchedKeyRef.current = queryKey;
 			} catch (err) {
 				setError(
 					err instanceof Error ? err : new Error("Failed to fetch data"),
@@ -76,8 +85,7 @@ export function useProgressiveData<T>(
 		};
 
 		fetchData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [enabled]);
+	}, [enabled, queryKey, fetcher, data]);
 
 	return { data, error, isLoading };
 }

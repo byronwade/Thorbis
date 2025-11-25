@@ -1,10 +1,10 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, HomepageTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, HomepageTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
 
-export const alt = "Thorbis - Field Service Management That Actually Works";
+export const alt = "Thorbis - Run Your Entire Business For $200/month";
 export const size = {
 	width: OG_CONFIG.width,
 	height: OG_CONFIG.height,
@@ -12,9 +12,12 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([
+		loadOGFonts(),
+		getLogoDataUrl(),
+	]);
 
-	return new ImageResponse(<HomepageTemplate />, {
+	return new ImageResponse(<HomepageTemplate logoDataUrl={logoDataUrl} />, {
 		...size,
 		fonts,
 	});

@@ -40,26 +40,11 @@ import {
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import {
-	archiveAppointment,
-	arriveAppointment,
-	cancelAppointment,
-	cancelJobAndAppointment,
-	closeAppointment,
-	completeAppointment,
-	dispatchAppointment,
-	updateAppointmentTimes,
-} from "@/actions/schedule-assignments";
+import { updateAppointmentTimes } from "@/actions/schedule-assignments";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuSeparator,
-	ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { ScheduleJobContextMenu } from "./schedule-job-context-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -350,104 +335,13 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 		<PopoverRoot onOpenChange={setIsEditOpen} open={isEditOpen}>
 			<TooltipProvider>
 				<Tooltip delayDuration={200}>
-					<ContextMenu onOpenChange={setIsContextMenuOpen}>
+					<ScheduleJobContextMenu job={job} onOpenChange={setIsContextMenuOpen}>
 						<TooltipTrigger asChild>
 							<PopoverTrigger asChild>
-								<ContextMenuTrigger asChild>{pillContent}</ContextMenuTrigger>
+								{pillContent}
 							</PopoverTrigger>
 						</TooltipTrigger>
-						<ContextMenuContent className="w-56">
-							<ContextMenuItem
-								onClick={() => {
-									if (job.jobId) {
-										router.push(`/dashboard/work/${job.jobId}`);
-									}
-								}}
-							>
-								<ExternalLink className="mr-2 size-4" />
-								View Job Details
-							</ContextMenuItem>
-
-							<ContextMenuSeparator />
-
-							<ContextMenuItem
-								disabled={job.status === "dispatched"}
-								onClick={() => handleAction("Dispatching", dispatchAppointment)}
-							>
-								<Truck className="mr-2 size-4" />
-								Mark Dispatched
-							</ContextMenuItem>
-
-							<ContextMenuItem
-								disabled={job.status === "arrived"}
-								onClick={() =>
-									handleAction("Marking arrived", arriveAppointment)
-								}
-							>
-								<MapPin className="mr-2 size-4" />
-								Mark Arrived
-							</ContextMenuItem>
-
-							<ContextMenuItem
-								disabled={job.status === "closed"}
-								onClick={() => handleAction("Closing", closeAppointment)}
-							>
-								<UserCheck className="mr-2 size-4" />
-								Mark Closed
-							</ContextMenuItem>
-
-							<ContextMenuItem
-								onClick={() => handleAction("Completing", completeAppointment)}
-							>
-								<CheckCircle2 className="mr-2 size-4" />
-								Mark Complete
-							</ContextMenuItem>
-
-							<ContextMenuSeparator />
-
-							<ContextMenuItem>
-								<Calendar className="mr-2 size-4" />
-								Reschedule
-							</ContextMenuItem>
-
-							<ContextMenuItem>
-								<Copy className="mr-2 size-4" />
-								Duplicate
-							</ContextMenuItem>
-
-							<ContextMenuSeparator />
-
-							<ContextMenuItem
-								className="text-orange-600 dark:text-orange-400"
-								onClick={() =>
-									handleAction("Cancelling appointment", cancelAppointment)
-								}
-							>
-								<XCircle className="mr-2 size-4" />
-								Cancel Appointment Only
-							</ContextMenuItem>
-
-							<ContextMenuItem
-								className="text-red-600 dark:text-red-400"
-								onClick={() =>
-									handleAction("Cancelling job & appointment", (scheduleId) =>
-										cancelJobAndAppointment(scheduleId, job.jobId ?? ""),
-									)
-								}
-							>
-								<XCircle className="mr-2 size-4" />
-								Cancel Job & Appointment
-							</ContextMenuItem>
-
-							<ContextMenuItem
-								className="text-destructive"
-								onClick={() => handleAction("Archiving", archiveAppointment)}
-							>
-								<Archive className="mr-2 size-4" />
-								Archive Job
-							</ContextMenuItem>
-						</ContextMenuContent>
-					</ContextMenu>
+					</ScheduleJobContextMenu>
 					<TooltipContent className="max-w-xs" side="top">
 						{tooltipContent}
 					</TooltipContent>

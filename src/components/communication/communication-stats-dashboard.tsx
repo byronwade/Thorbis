@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getCommunicationStatsAction } from "@/actions/communication-stats-actions";
-import { CommunicationStatsSkeleton } from "./communication-stats-skeleton";
 import { CommunicationOverviewReport } from "./reports/communication-overview-report";
 import { EmailAnalyticsReport } from "./reports/email-analytics-report";
 import { SmsAnalyticsReport } from "./reports/sms-analytics-report";
@@ -95,52 +92,15 @@ type CommunicationStatsData = {
 	avgCallDuration: number;
 };
 
-export function CommunicationStatsDashboard() {
+type CommunicationStatsDashboardProps = {
+	initialStats: CommunicationStatsData;
+	initialReport?: string;
+};
+
+export function CommunicationStatsDashboard({ initialStats, initialReport }: CommunicationStatsDashboardProps) {
 	const searchParams = useSearchParams();
-	const report = searchParams.get("report") || "overview";
-	const [stats, setStats] = useState<CommunicationStatsData | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		const fetchStats = async () => {
-			try {
-				setLoading(true);
-				const result = await getCommunicationStatsAction(30);
-				
-				if (result.success && result.data) {
-					setStats(result.data);
-					setError(null);
-				} else {
-					setError(result.error || "Failed to load statistics");
-				}
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Unknown error");
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchStats();
-		// Refresh every 60 seconds
-		const interval = setInterval(fetchStats, 60000);
-		return () => clearInterval(interval);
-	}, []);
-
-	if (loading) {
-		return <CommunicationStatsSkeleton />;
-	}
-
-	if (error || !stats) {
-		return (
-			<div className="flex h-full items-center justify-center">
-				<div className="text-center">
-					<p className="text-lg font-semibold text-destructive">Error loading statistics</p>
-					<p className="text-sm text-muted-foreground mt-2">{error || "No data available"}</p>
-				</div>
-			</div>
-		);
-	}
+	const report = searchParams.get("report") || initialReport || "overview";
+	const stats = initialStats;
 
 	// Render the appropriate report based on query parameter
 	switch (report) {

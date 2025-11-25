@@ -500,7 +500,7 @@ export function AdyenOnboardingTracker({
 					</p>
 					<ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
 						<li>Accept credit and debit card payments</li>
-						<li>Process high-value transactions (>$10k)</li>
+						<li>Process high-value transactions (&gt;$10k)</li>
 						<li>Use Tap-to-Pay for card-present payments</li>
 						<li>Accept ACH payments through Adyen</li>
 					</ul>

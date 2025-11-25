@@ -42,7 +42,12 @@ export async function GET(request: NextRequest) {
 			if (!result.success) {
 				return NextResponse.json({ error: result.error }, { status: 500 });
 			}
-			return NextResponse.json({ data: result.data });
+			// Cache quota check for 60 seconds (private since user-specific)
+			return NextResponse.json({ data: result.data }, {
+				headers: {
+					"Cache-Control": "private, max-age=60, stale-while-revalidate=120",
+				},
+			});
 		}
 
 		// Default: return stats
@@ -52,7 +57,12 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: result.error }, { status: 500 });
 		}
 
-		return NextResponse.json({ data: result.data });
+		// Cache usage stats for 60 seconds (private since user-specific)
+		return NextResponse.json({ data: result.data }, {
+			headers: {
+				"Cache-Control": "private, max-age=60, stale-while-revalidate=120",
+			},
+		});
 	} catch (_error) {
 		return NextResponse.json(
 			{ error: "Internal server error" },

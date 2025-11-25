@@ -1,12 +1,15 @@
 /**
- * Email Communication Page - Server Component
+ * Email Communication Page - Server Component with Dual-Inbox Support
  *
  * Uses Server Component pattern for initial data fetching:
  * - Data fetched server-side with React.cache() for deduplication
  * - Client component receives pre-fetched data for instant render
  * - No client-side useEffect data fetching on initial load
  *
- * Route: /dashboard/communication/email?folder=inbox
+ * Dual-Inbox Routes:
+ * - Personal: /dashboard/communication/email?inbox=personal&folder=inbox
+ * - Company: /dashboard/communication/email?inbox=company&category=support
+ * - Legacy: /dashboard/communication/email?folder=inbox (defaults to personal)
  */
 
 import { Suspense } from "react";
@@ -15,8 +18,13 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { EmailPageClient } from "@/components/communication/email-page-client";
 import { Loader2 } from "lucide-react";
 
+export type InboxType = "personal" | "company";
+export type EmailCategory = "support" | "sales" | "billing" | "general";
+
 type SearchParams = Promise<{
+	inbox?: InboxType;
 	folder?: string;
+	category?: EmailCategory;
 	id?: string;
 	compose?: string;
 }>;
@@ -36,19 +44,34 @@ function EmailPageSkeleton() {
 // Async server component that fetches data
 async function EmailPageData({ searchParams }: { searchParams: SearchParams }) {
 	const params = await searchParams;
-	const folder = (params?.folder || "inbox") as EmailFolder;
+
+	// Determine inbox type (defaults to personal for backwards compatibility)
+	const inboxType: InboxType = (params?.inbox as InboxType) || "personal";
+
+	// For personal inbox, use folder (inbox, sent, drafts, etc.)
+	// For company inbox, use category (support, sales, billing, general)
+	const folder = params?.folder as EmailFolder | undefined;
+	const category = params?.category as EmailCategory | undefined;
 	const emailId = params?.id || null;
 
 	// Fetch data server-side using cached query
 	const [emails, companyId] = await Promise.all([
-		getEmails({ folder, limit: 50, offset: 0 }),
+		getEmails({
+			inboxType,
+			folder: inboxType === "personal" ? folder || "inbox" : undefined,
+			category: inboxType === "company" ? category || "support" : undefined,
+			limit: 50,
+			offset: 0,
+		}),
 		getActiveCompanyId(),
 	]);
 
 	return (
 		<EmailPageClient
 			initialEmails={emails}
+			initialInboxType={inboxType}
 			initialFolder={folder}
+			initialCategory={category}
 			initialEmailId={emailId}
 			companyId={companyId}
 		/>

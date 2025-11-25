@@ -265,3 +265,100 @@ function WorkDetailSkeleton({
 		</div>
 	);
 }
+
+/**
+ * FormSkeleton - Loading skeleton for forms
+ *
+ * Use for form loading states in dialogs, pages, or modals.
+ * Prevents layout shift when form hydrates.
+ *
+ * @param fields - Number of form fields to show (default: 4)
+ * @param showActions - Show submit/cancel buttons (default: true)
+ */
+export function FormSkeleton({
+	fields = 4,
+	showActions = true,
+}: {
+	fields?: number;
+	showActions?: boolean;
+} = {}) {
+	return (
+		<div className="space-y-6">
+			{Array.from({ length: fields }).map((_, i) => (
+				<div className="space-y-2" key={i}>
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="h-10 w-full" />
+				</div>
+			))}
+			{showActions && (
+				<div className="flex gap-2">
+					<Skeleton className="h-10 w-24" />
+					<Skeleton className="h-10 w-24" />
+				</div>
+			)}
+		</div>
+	);
+}
+
+/**
+ * PageHeaderSkeleton - Loading skeleton for page headers
+ *
+ * Use for page title + actions skeleton
+ * Consistent with AppToolbar and page header patterns
+ */
+export function PageHeaderSkeleton() {
+	return (
+		<div className="flex items-center justify-between border-b p-4">
+			<div className="space-y-2">
+				<Skeleton className="h-8 w-48" />
+				<Skeleton className="h-4 w-64" />
+			</div>
+			<div className="flex gap-2">
+				<Skeleton className="h-9 w-24" />
+				<Skeleton className="h-9 w-32" />
+			</div>
+		</div>
+	);
+}
+
+/**
+ * CardListSkeleton - Loading skeleton for card-based lists
+ *
+ * Use for dashboard cards, product grids, etc.
+ * Alternative to table-based layouts
+ *
+ * @param cards - Number of cards to show (default: 6)
+ * @param columns - Grid columns (default: 3)
+ */
+export function CardListSkeleton({
+	cards = 6,
+	columns = 3,
+}: {
+	cards?: number;
+	columns?: number;
+} = {}) {
+	const gridClass = {
+		1: "grid-cols-1",
+		2: "md:grid-cols-2",
+		3: "md:grid-cols-2 lg:grid-cols-3",
+		4: "md:grid-cols-2 lg:grid-cols-4",
+	}[columns] || "md:grid-cols-2 lg:grid-cols-3";
+
+	return (
+		<div className={`grid gap-4 ${gridClass}`}>
+			{Array.from({ length: cards }).map((_, i) => (
+				<Card key={i}>
+					<CardHeader>
+						<Skeleton className="h-6 w-3/4" />
+						<Skeleton className="h-4 w-1/2" />
+					</CardHeader>
+					<CardContent>
+						<Skeleton className="h-32 w-full" />
+					</CardContent>
+				</Card>
+			))}
+		</div>
+	);
+}
+
+export { KPICardSkeleton, ChartSkeleton, WorkDetailSkeleton };

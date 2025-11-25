@@ -21,6 +21,7 @@ import { LucideIcon, ChevronRight, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ComponentProps } from "react";
+import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
 
 /**
  * Navigation group configuration for communication sidebar
@@ -119,6 +120,7 @@ export function CommunicationSidebar({
 }: CommunicationSidebarProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const scrollRef = useSidebarScroll();
     const { navGroups, primaryAction, additionalSections } = config;
     
     // Helper to check if URL matches current pathname + searchParams
@@ -171,7 +173,7 @@ export function CommunicationSidebar({
                 )}
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent ref={scrollRef}>
                 {/* Navigation Groups */}
                 <NavGrouped groups={navGroups} pathname={pathname ?? undefined} searchParams={searchParams} />
 

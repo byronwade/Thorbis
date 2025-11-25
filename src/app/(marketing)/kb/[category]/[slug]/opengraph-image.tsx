@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, KBTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, KBTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -17,7 +17,7 @@ export default async function Image({
 	params: Promise<{ category: string; slug: string }>;
 }) {
 	const { category, slug } = await params;
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	// Format slug to title
 	const title = slug
@@ -31,7 +31,7 @@ export default async function Image({
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ");
 
-	return new ImageResponse(<KBTemplate title={title} category={categoryName} />, {
+	return new ImageResponse(<KBTemplate title={title} category={categoryName} logoDataUrl={logoDataUrl} />, {
 		...size,
 		fonts,
 	});

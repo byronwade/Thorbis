@@ -86,8 +86,12 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
 function FormLabel({
 	className,
+	children,
+	required,
 	...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.ComponentProps<typeof LabelPrimitive.Root> & {
+	required?: boolean;
+}) {
 	const { error, formItemId } = useFormField();
 
 	return (
@@ -97,11 +101,21 @@ function FormLabel({
 			data-slot="form-label"
 			htmlFor={formItemId}
 			{...props}
-		/>
+		>
+			{children}
+			{required && (
+				<span className="text-destructive ml-1" aria-label="required">
+					*
+				</span>
+			)}
+		</Label>
 	);
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+function FormControl({
+	required,
+	...props
+}: React.ComponentProps<typeof Slot> & { required?: boolean }) {
 	const { error, formItemId, formDescriptionId, formMessageId } =
 		useFormField();
 
@@ -111,6 +125,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
 				error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`
 			}
 			aria-invalid={!!error}
+			aria-required={required}
 			data-slot="form-control"
 			id={formItemId}
 			{...props}
@@ -144,6 +159,9 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 			className={cn("text-destructive text-sm", className)}
 			data-slot="form-message"
 			id={formMessageId}
+			role="alert"
+			aria-live="polite"
+			aria-atomic="true"
 			{...props}
 		>
 			{body}

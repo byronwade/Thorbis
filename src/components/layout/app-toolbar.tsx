@@ -282,8 +282,10 @@ export function AppToolbar({
 										size="sm"
 										className="h-8 w-8 p-0"
 										onClick={() => setIsMobileMenuOpen(false)}
+										aria-label="Close menu"
 									>
 										<X className="h-4 w-4" />
+										<span className="sr-only">Close menu</span>
 									</Button>
 								</SheetTitle>
 							</SheetHeader>

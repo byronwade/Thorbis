@@ -1,10 +1,16 @@
 "use client";
 
 /**
- * Customer Sidebar Component
+ * Customer Sidebar Component - Enhanced for CSR Efficiency
  *
  * Left sidebar showing customer data, jobs, invoices, appointments, etc.
- * Uses the same CollapsibleDataSection component as job details pages.
+ *
+ * Enhanced features:
+ * - Alert banner for critical customer information
+ * - Sticky stats bar always visible
+ * - Previous call summary for context
+ * - Quick actions panel
+ * - Reorganized sections for faster access
  */
 
 import {
@@ -46,20 +52,66 @@ import {
 import type { CustomerCallData } from "@/types/call-window";
 import { DEFAULT_CSR_REMINDERS } from "@/types/csr-reminders";
 
+import { CustomerAlertBanner } from "./customer-alert-banner";
+import { CustomerStatsBar } from "./customer-stats-bar";
+import { PreviousCallSummary } from "./previous-call-summary";
+import { QuickActionsPanel } from "./quick-actions-panel";
+
 type CustomerSidebarProps = {
 	customerData: CustomerCallData | null;
 	isLoading?: boolean;
+	// Quick action handlers
+	onCreateJob?: () => void;
+	onScheduleAppointment?: () => void;
+	onSendSMS?: () => void;
+	onSendEmail?: () => void;
+	onTakePayment?: () => void;
+	onAddNote?: () => void;
+	// Previous call data
+	previousCall?: {
+		id: string;
+		date: string;
+		duration: number;
+		disposition: string;
+		csrName: string;
+		notes?: string;
+		topics?: string[];
+		sentiment?: "positive" | "neutral" | "negative";
+		followUpScheduled?: boolean;
+		issueResolved?: boolean;
+	} | null;
 };
 
 export function CustomerSidebar({
 	customerData,
 	isLoading,
+	onCreateJob,
+	onScheduleAppointment,
+	onSendSMS,
+	onSendEmail,
+	onTakePayment,
+	onAddNote,
+	previousCall,
 }: CustomerSidebarProps) {
 	// TODO: Fetch CSR reminders from user settings/company settings
 	// For now, use default reminders
 	const csrReminders = DEFAULT_CSR_REMINDERS.filter((r) => r.enabled).sort(
 		(a, b) => a.order - b.order,
 	);
+
+	// Calculate open balance from unpaid invoices
+	const openBalance = customerData?.invoices
+		.filter((inv) => inv.status === "unpaid" || inv.status === "overdue")
+		.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0;
+
+	// Get last visit date from appointments or jobs
+	const lastVisitDate = customerData?.jobs
+		.filter((job) => job.status === "completed")
+		.sort((a, b) => {
+			const dateA = a.completed_at || a.updated_at || "";
+			const dateB = b.completed_at || b.updated_at || "";
+			return new Date(dateB).getTime() - new Date(dateA).getTime();
+		})[0]?.completed_at || null;
 
 	if (isLoading) {
 		return (
@@ -727,37 +779,74 @@ export function CustomerSidebar({
 	];
 
 	return (
-		<ScrollArea className="h-full">
-			<div className="flex flex-col gap-4 p-4">
-				{/* CSR Reminders */}
-				{csrReminders.length > 0 && (
-					<section className="border-primary/20 bg-primary/5 overflow-hidden rounded-xl border shadow-sm">
-						<div className="flex items-start gap-3 p-4">
-							<div className="bg-primary/10 rounded-full p-2">
-								<Lightbulb className="text-primary h-4 w-4" />
-							</div>
-							<div className="flex-1 space-y-2">
-								<h3 className="text-foreground text-sm font-semibold">
-									Call Reminders
-								</h3>
-								<ul className="text-muted-foreground space-y-1.5 text-xs">
-									{csrReminders.map((reminder) => (
-										<li className="flex items-start gap-2" key={reminder.id}>
-											<span className="text-primary mt-0.5">•</span>
-											<span>{reminder.text}</span>
-										</li>
-									))}
-								</ul>
-							</div>
-						</div>
-					</section>
-				)}
+		<div className="flex h-full flex-col">
+			{/* Sticky Stats Bar - Always visible */}
+			{customer && stats && (
+				<CustomerStatsBar
+					stats={stats}
+					openBalance={openBalance}
+					lastVisitDate={lastVisitDate}
+				/>
+			)}
 
-				{/* Customer Stats & Tags */}
-				{customer && (
-					<section className="border-border/60 bg-card overflow-hidden rounded-xl border shadow-sm">
-						<div className="space-y-4 p-4">
-							{/* Customer Tags */}
+			<ScrollArea className="flex-1">
+				<div className="flex flex-col gap-4 p-4">
+					{/* Customer Alert Banner - Critical info first */}
+					{customerData && stats && (
+						<CustomerAlertBanner
+							customerData={customerData}
+							stats={stats}
+							onTakePayment={onTakePayment}
+						/>
+					)}
+
+					{/* Previous Call Summary - Context for this call */}
+					<PreviousCallSummary lastCall={previousCall ?? null} />
+
+					{/* Quick Actions Panel */}
+					<section className="border-border/60 bg-card overflow-hidden rounded-xl border p-4 shadow-sm">
+						<QuickActionsPanel
+							onCreateJob={onCreateJob || (() => {})}
+							onScheduleAppointment={onScheduleAppointment || (() => {})}
+							onSendSMS={onSendSMS || (() => {})}
+							onSendEmail={onSendEmail || (() => {})}
+							onTakePayment={onTakePayment}
+							onAddNote={onAddNote || (() => {})}
+							customerEmail={customer?.email}
+							customerPhone={customer?.phone}
+							hasOutstandingBalance={openBalance > 0}
+							outstandingAmount={openBalance}
+							layout="grid"
+						/>
+					</section>
+
+					{/* CSR Reminders - Condensed */}
+					{csrReminders.length > 0 && (
+						<section className="border-primary/20 bg-primary/5 overflow-hidden rounded-xl border shadow-sm">
+							<div className="flex items-start gap-3 p-4">
+								<div className="bg-primary/10 rounded-full p-2">
+									<Lightbulb className="text-primary h-4 w-4" />
+								</div>
+								<div className="flex-1 space-y-2">
+									<h3 className="text-foreground text-sm font-semibold">
+										Call Reminders
+									</h3>
+									<ul className="text-muted-foreground space-y-1.5 text-xs">
+										{csrReminders.map((reminder) => (
+											<li className="flex items-start gap-2" key={reminder.id}>
+												<span className="text-primary mt-0.5">•</span>
+												<span>{reminder.text}</span>
+											</li>
+										))}
+									</ul>
+								</div>
+							</div>
+						</section>
+					)}
+
+					{/* Customer Tags */}
+					{customer && (
+						<section className="border-border/60 bg-card overflow-hidden rounded-xl border p-4 shadow-sm">
 							<div className="space-y-2">
 								<div className="flex items-center justify-between">
 									<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
@@ -790,65 +879,22 @@ export function CustomerSidebar({
 									</Badge>
 								</div>
 							</div>
+						</section>
+					)}
 
-							{/* Customer Stats */}
-							<div className="space-y-2">
-								<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-									Customer Stats
-								</h4>
-								<div className="grid grid-cols-4 gap-2">
-									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
-										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
-											Revenue
-										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">
-											{formatCurrency(stats.totalRevenue)}
-										</p>
-									</div>
-									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
-										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
-											Active
-										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">
-											{stats.activeJobs}
-										</p>
-									</div>
-									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
-										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
-											Invoices
-										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">
-											{stats.openInvoices}
-										</p>
-									</div>
-									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
-										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
-											Since
-										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">
-											{stats.customerSince
-												? new Date(stats.customerSince).getFullYear()
-												: "N/A"}
-										</p>
-									</div>
-								</div>
-							</div>
+					{/* Customer Data Sections */}
+					<section className="border-border/60 bg-card overflow-hidden rounded-xl border shadow-sm">
+						<div className="flex flex-col gap-4 p-0">
+							<UnifiedAccordion
+								defaultOpenSection={null}
+								enableReordering={false}
+								sections={sections}
+								storageKey="call-window-customer-sidebar"
+							/>
 						</div>
 					</section>
-				)}
-
-				{/* Customer Data Sections */}
-				<section className="border-border/60 bg-card overflow-hidden rounded-xl border shadow-sm">
-					<div className="flex flex-col gap-4 p-0">
-						<UnifiedAccordion
-							defaultOpenSection={null}
-							enableReordering={false}
-							sections={sections}
-							storageKey="call-window-customer-sidebar"
-						/>
-					</div>
-				</section>
-			</div>
-		</ScrollArea>
+				</div>
+			</ScrollArea>
+		</div>
 	);
 }

@@ -2,36 +2,20 @@
 
 import { format } from "date-fns";
 import {
-	Archive,
 	Calendar as CalendarIcon,
-	CheckCircle2,
 	Clock,
-	Copy,
-	ExternalLink,
 	MapPin,
-	Truck,
-	UserCheck,
-	XCircle,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import {
-	archiveAppointment,
 	arriveAppointment,
 	cancelAppointment,
-	cancelJobAndAppointment,
 	closeAppointment,
 	completeAppointment,
 	dispatchAppointment,
 } from "@/actions/schedule-assignments";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuSeparator,
-	ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { ScheduleJobContextMenu } from "./schedule-job-context-menu";
 import { EntityKanban } from "@/components/ui/entity-kanban";
 import type {
 	KanbanItemBase,
@@ -155,180 +139,70 @@ const getStatusColor = (status: Job["status"]) => {
 };
 
 function JobCard({ item }: { item: ScheduleKanbanItem }) {
-	const router = useRouter();
 	const { entity: job } = item;
 	const startTime =
 		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 	const endTime =
 		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
-	const handleAction = async (
-		action: string,
-		actionFn: (id: string) => Promise<{ success: boolean; error?: string }>,
-	) => {
-		const toastId = toast.loading(`${action}...`);
-		const result = await actionFn(job.id);
-
-		if (result.success) {
-			toast.success(`${action} successful`, { id: toastId });
-		} else {
-			toast.error(result.error || `Failed to ${action.toLowerCase()}`, {
-				id: toastId,
-			});
-		}
-	};
-
-	const cardContent = (
-		<div
-			className={cn(
-				"relative -m-4 flex flex-col gap-2 rounded-xl border-l-4 p-4",
-				getJobTypeColor(job),
-			)}
-		>
-			{/* Status Dot */}
-			<div className="absolute top-4 right-4">
-				<div
-					className={cn("size-2 rounded-full", getStatusColor(job.status))}
-				/>
-			</div>
-
-			{/* Customer Name */}
-			<div className="pr-4">
-				<h3 className="text-foreground truncate text-sm leading-tight font-semibold">
-					{job.customer?.name || "Unknown Customer"}
-				</h3>
-				<p className="text-muted-foreground truncate text-xs">{job.title}</p>
-			</div>
-
-			{/* Time & Date */}
-			<div className="flex flex-col gap-1">
-				<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-					<Clock className="size-3 shrink-0" />
-					<span className="truncate">
-						{format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
-					</span>
-				</div>
-				<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-					<CalendarIcon className="size-3 shrink-0" />
-					<span className="truncate">{format(startTime, "MMM d, yyyy")}</span>
-				</div>
-			</div>
-
-			{/* Location */}
-			{job.location?.address?.street && (
-				<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-					<MapPin className="size-3 shrink-0" />
-					<span className="truncate">{job.location.address.street}</span>
-				</div>
-			)}
-
-			{/* Team Avatars */}
-			{job.assignments.length > 0 && (
-				<div className="border-t pt-2">
-					<TeamAvatarGroup
-						assignments={job.assignments}
-						jobId={job.id}
-						maxVisible={3}
-						size="sm"
+	return (
+		<ScheduleJobContextMenu job={job}>
+			<div
+				className={cn(
+					"relative -m-4 flex flex-col gap-2 rounded-xl border-l-4 p-4",
+					getJobTypeColor(job),
+				)}
+			>
+				{/* Status Dot */}
+				<div className="absolute top-4 right-4">
+					<div
+						className={cn("size-2 rounded-full", getStatusColor(job.status))}
 					/>
 				</div>
-			)}
-		</div>
-	);
 
-	return (
-		<ContextMenu>
-			<ContextMenuTrigger asChild>{cardContent}</ContextMenuTrigger>
-			<ContextMenuContent className="w-56">
-				<ContextMenuItem
-					onClick={() => {
-						if (job.jobId) {
-							router.push(`/dashboard/work/${job.jobId}`);
-						}
-					}}
-				>
-					<ExternalLink className="mr-2 size-4" />
-					View Job Details
-				</ContextMenuItem>
+				{/* Customer Name */}
+				<div className="pr-4">
+					<h3 className="text-foreground truncate text-sm leading-tight font-semibold">
+						{job.customer?.name || "Unknown Customer"}
+					</h3>
+					<p className="text-muted-foreground truncate text-xs">{job.title}</p>
+				</div>
 
-				<ContextMenuSeparator />
+				{/* Time & Date */}
+				<div className="flex flex-col gap-1">
+					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+						<Clock className="size-3 shrink-0" />
+						<span className="truncate">
+							{format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
+						</span>
+					</div>
+					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+						<CalendarIcon className="size-3 shrink-0" />
+						<span className="truncate">{format(startTime, "MMM d, yyyy")}</span>
+					</div>
+				</div>
 
-				<ContextMenuItem
-					disabled={job.status === "dispatched"}
-					onClick={() => handleAction("Dispatching", dispatchAppointment)}
-				>
-					<Truck className="mr-2 size-4" />
-					Mark Dispatched
-				</ContextMenuItem>
+				{/* Location */}
+				{job.location?.address?.street && (
+					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+						<MapPin className="size-3 shrink-0" />
+						<span className="truncate">{job.location.address.street}</span>
+					</div>
+				)}
 
-				<ContextMenuItem
-					disabled={job.status === "arrived"}
-					onClick={() => handleAction("Marking arrived", arriveAppointment)}
-				>
-					<MapPin className="mr-2 size-4" />
-					Mark Arrived
-				</ContextMenuItem>
-
-				<ContextMenuItem
-					disabled={job.status === "closed"}
-					onClick={() => handleAction("Closing", closeAppointment)}
-				>
-					<UserCheck className="mr-2 size-4" />
-					Mark Closed
-				</ContextMenuItem>
-
-				<ContextMenuItem
-					onClick={() => handleAction("Completing", completeAppointment)}
-				>
-					<CheckCircle2 className="mr-2 size-4" />
-					Mark Complete
-				</ContextMenuItem>
-
-				<ContextMenuSeparator />
-
-				<ContextMenuItem>
-					<CalendarIcon className="mr-2 size-4" />
-					Reschedule
-				</ContextMenuItem>
-
-				<ContextMenuItem>
-					<Copy className="mr-2 size-4" />
-					Duplicate
-				</ContextMenuItem>
-
-				<ContextMenuSeparator />
-
-				<ContextMenuItem
-					className="text-orange-600 dark:text-orange-400"
-					onClick={() =>
-						handleAction("Cancelling appointment", cancelAppointment)
-					}
-				>
-					<XCircle className="mr-2 size-4" />
-					Cancel Appointment Only
-				</ContextMenuItem>
-
-				<ContextMenuItem
-					className="text-red-600 dark:text-red-400"
-					onClick={() =>
-						handleAction("Cancelling job & appointment", (scheduleId) =>
-							cancelJobAndAppointment(scheduleId, job.jobId ?? ""),
-						)
-					}
-				>
-					<XCircle className="mr-2 size-4" />
-					Cancel Job & Appointment
-				</ContextMenuItem>
-
-				<ContextMenuItem
-					className="text-destructive"
-					onClick={() => handleAction("Archiving", archiveAppointment)}
-				>
-					<Archive className="mr-2 size-4" />
-					Archive Job
-				</ContextMenuItem>
-			</ContextMenuContent>
-		</ContextMenu>
+				{/* Team Avatars */}
+				{job.assignments.length > 0 && (
+					<div className="border-t pt-2">
+						<TeamAvatarGroup
+							assignments={job.assignments}
+							jobId={job.id}
+							maxVisible={3}
+							size="sm"
+						/>
+					</div>
+				)}
+			</div>
+		</ScheduleJobContextMenu>
 	);
 }
 

@@ -6,19 +6,20 @@
 
 type ProgressRecord = Record<string, unknown> | null | undefined;
 
-const COMPLETION_STEPS = ["step5", "step4"];
-
-function isStepCompleted(step: unknown): boolean {
-	if (!step || typeof step !== "object") {
-		return false;
-	}
-	const record = step as Record<string, unknown>;
-	const completed = record.completed;
-	return completed === true;
-}
+// Must match STEPS_ORDER from onboarding-store.ts
+const REQUIRED_STEPS = ["welcome", "company"] as const;
+const FINAL_STEP = "complete" as const;
 
 /**
  * Determine whether onboarding is complete based on stored progress metadata.
+ *
+ * Completion criteria (in priority order):
+ * 1. `completedAt` timestamp exists (set by completeOnboardingWizard action)
+ * 2. `onboardingCompleted` flag is true in progress data
+ * 3. "complete" step exists in completedSteps array
+ *
+ * Note: We intentionally check multiple signals for backward compatibility
+ * with older onboarding records that may have different data structures.
  */
 export function isOnboardingComplete(options: {
 	progress?: ProgressRecord;
@@ -26,6 +27,7 @@ export function isOnboardingComplete(options: {
 }): boolean {
 	const { progress, completedAt } = options;
 
+	// Primary check: completedAt timestamp from database
 	if (completedAt) {
 		return true;
 	}
@@ -36,11 +38,87 @@ export function isOnboardingComplete(options: {
 
 	const progressRecord = progress as Record<string, unknown>;
 
-	if (progressRecord.completed === true) {
+	// Check onboardingCompleted flag
+	if (progressRecord.onboardingCompleted === true) {
 		return true;
 	}
 
-	return COMPLETION_STEPS.some((stepKey) =>
-		isStepCompleted(progressRecord[stepKey]),
-	);
+	// Check if completedSteps array includes the final step
+	const completedSteps = progressRecord.completedSteps;
+	if (Array.isArray(completedSteps) && completedSteps.includes(FINAL_STEP)) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Get onboarding progress percentage based on completed steps.
+ */
+export function getOnboardingProgress(options: {
+	progress?: ProgressRecord;
+}): number {
+	const { progress } = options;
+
+	if (!progress || typeof progress !== "object") {
+		return 0;
+	}
+
+	const progressRecord = progress as Record<string, unknown>;
+	const completedSteps = progressRecord.completedSteps;
+	const skippedSteps = progressRecord.skippedSteps;
+
+	if (!Array.isArray(completedSteps)) {
+		return 0;
+	}
+
+	const totalSteps = 14; // Total steps in onboarding
+	const finishedCount = completedSteps.length + (Array.isArray(skippedSteps) ? skippedSteps.length : 0);
+
+	return Math.round((finishedCount / totalSteps) * 100);
+}
+
+/**
+ * Check if required steps are completed.
+ * Returns which required steps are missing if any.
+ */
+export function getMissingRequiredSteps(options: {
+	progress?: ProgressRecord;
+}): string[] {
+	const { progress } = options;
+
+	if (!progress || typeof progress !== "object") {
+		return [...REQUIRED_STEPS];
+	}
+
+	const progressRecord = progress as Record<string, unknown>;
+	const completedSteps = progressRecord.completedSteps;
+
+	if (!Array.isArray(completedSteps)) {
+		return [...REQUIRED_STEPS];
+	}
+
+	return REQUIRED_STEPS.filter((step) => !completedSteps.includes(step));
+}
+
+/**
+ * Get the current onboarding step from progress data.
+ */
+export function getCurrentOnboardingStep(options: {
+	progress?: ProgressRecord;
+}): string {
+	const { progress } = options;
+
+	if (!progress || typeof progress !== "object") {
+		return "welcome";
+	}
+
+	const progressRecord = progress as Record<string, unknown>;
+	const currentStep = progressRecord.currentStep;
+
+	if (typeof currentStep === "string" && currentStep.length > 0) {
+		return currentStep;
+	}
+
+	return "welcome";
 }

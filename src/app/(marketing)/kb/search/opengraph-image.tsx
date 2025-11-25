@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, DefaultTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, KBTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -12,12 +12,13 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	return new ImageResponse(
-		<DefaultTemplate
+		<KBTemplate
 			title="Search Help Center"
-			subtitle="Find answers to your questions about Thorbis"
+			category="Knowledge Base"
+			logoDataUrl={logoDataUrl}
 		/>,
 		{
 			...size,

@@ -9,6 +9,7 @@ import { Archive, Download, FileText, Plus, Send } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useUrlFilters } from "@/hooks/use-url-filters";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -59,6 +60,9 @@ export function InvoicesTable({
 	totalCount,
 	currentPage = 1,
 }: InvoicesTableProps) {
+	// Sync filters with URL parameters
+	useUrlFilters(useInvoiceFiltersStore);
+
 	// Get filters from global store
 	const filters = useInvoiceFiltersStore((state) => state.filters);
 
@@ -352,7 +356,7 @@ export function InvoicesTable({
 				enableSelection={true}
 				enableVirtualization={enableVirtualization}
 				entity="invoices"
-				getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
+				getHighlightClass={() => "bg-destructive/50 dark:bg-destructive/20"}
 				getItemId={(invoice) => invoice.id}
 				isArchived={(invoice) => !!(invoice.archived_at || invoice.deleted_at)}
 				isHighlighted={isHighlighted}

@@ -57,15 +57,19 @@ export function StatusBadge({
 		config = getJobStatusBadgeConfig(status);
 	}
 
+	const Icon = config.icon;
+
 	return (
 		<Badge
 			className={cn(
-				"px-2 py-0.5 text-[11px] font-medium transition-all duration-200",
+				"inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium transition-all duration-200",
 				config.className,
 				className,
 			)}
 			variant={variant}
+			aria-label={config.ariaLabel || config.label}
 		>
+			{Icon && <Icon className="h-3 w-3" aria-hidden="true" />}
 			{config.label}
 		</Badge>
 	);

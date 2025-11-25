@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
 
@@ -144,42 +145,10 @@ type MobileBottomTabsProps = {
 export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 	const pathname = usePathname();
 	const [isMoreOpen, setIsMoreOpen] = useState(false);
-	const [isClosing, setIsClosing] = useState(false);
-	const moreMenuRef = useRef<HTMLDivElement>(null);
 
 	// Hide bottom tabs on TV route and welcome route
 	const isTVRoute = pathname === "/dashboard/tv";
 	const isWelcomeRoute = pathname === "/welcome";
-
-	// Handle closing animation
-	const ANIMATION_DURATION = 300;
-	const closeMoreMenu = useCallback(() => {
-		setIsClosing(true);
-		setTimeout(() => {
-			setIsMoreOpen(false);
-			setIsClosing(false);
-		}, ANIMATION_DURATION);
-	}, []);
-
-	// Handle escape key to close menu
-	useEffect(() => {
-		const handleEscapeKey = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				closeMoreMenu();
-			}
-		};
-
-		if (isMoreOpen) {
-			document.addEventListener("keydown", handleEscapeKey);
-			// Prevent body scroll when menu is open
-			document.body.style.overflow = "hidden";
-		}
-
-		return () => {
-			document.removeEventListener("keydown", handleEscapeKey);
-			document.body.style.overflow = "";
-		};
-	}, [isMoreOpen, closeMoreMenu]);
 
 	// Don't render on TV or welcome routes
 	if (isTVRoute || isWelcomeRoute) {
@@ -257,6 +226,8 @@ export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 									key={tab.label}
 									onClick={tab.onClick}
 									type="button"
+									aria-label="Open more menu"
+									aria-expanded={isMoreOpen}
 								>
 									<div className="relative">
 										<Icon className="h-6 w-6" />
@@ -280,10 +251,13 @@ export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 								<div className="relative">
 									<Icon className="h-6 w-6" />
 									{typeof tab.badge === 'number' && tab.badge > 0 && (
-										<span className="absolute top-0 right-0 flex h-2 w-2">
-											<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-											<span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-										</span>
+										<>
+											<span className="absolute top-0 right-0 flex h-2 w-2">
+												<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+												<span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+											</span>
+											<span className="sr-only">{tab.badge} unread {tab.badge === 1 ? 'message' : 'messages'}</span>
+										</>
 									)}
 									{isActive && (
 										<div className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
@@ -296,30 +270,23 @@ export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 				</div>
 			</nav>
 
-			{/* More Menu - Full Screen Overlay */}
-			{isMoreOpen && (
-				<>
-					{/* Full Screen Overlay */}
-					<div
-						className={`fixed inset-0 z-50 bg-background lg:hidden ${
-							isClosing ? "fade-out animate-out" : "fade-in animate-in"
-						}`}
-						ref={moreMenuRef}
-					>
+			{/* More Menu - Full Screen Overlay with Dialog (includes focus trap) */}
+			<Dialog.Root open={isMoreOpen} onOpenChange={setIsMoreOpen}>
+				<Dialog.Portal>
+					<Dialog.Overlay className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 lg:hidden" />
+					<Dialog.Content className="fixed inset-0 z-50 flex flex-col bg-background lg:hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
 						{/* Header with Close Button */}
 						<div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
 							<div className="flex items-center justify-between px-4 h-14">
-								<div className="flex flex-col">
-									<h2 className="text-lg font-bold tracking-tight">More</h2>
-								</div>
-								<button
+								<Dialog.Title className="text-lg font-bold tracking-tight">
+									More
+								</Dialog.Title>
+								<Dialog.Close
 									className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-accent/80 transition-colors active:scale-95"
-									onClick={closeMoreMenu}
-									type="button"
 									aria-label="Close menu"
 								>
 									<X className="h-6 w-6" />
-								</button>
+								</Dialog.Close>
 							</div>
 						</div>
 
@@ -339,7 +306,7 @@ export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 											}`}
 											href={item.href}
 											key={item.href}
-											onClick={closeMoreMenu}
+											onClick={() => setIsMoreOpen(false)}
 										>
 											<div
 												className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${item.iconBg} ${
@@ -369,9 +336,9 @@ export function MobileBottomTabs({ unreadCount = 0 }: MobileBottomTabsProps) {
 								})}
 							</div>
 						</div>
-					</div>
-				</>
-			)}
+					</Dialog.Content>
+				</Dialog.Portal>
+			</Dialog.Root>
 		</>
 	);
 }

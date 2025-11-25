@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useScheduleKeyboardShortcuts } from "@/hooks/use-schedule-keyboard-shortcuts";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { deserializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
@@ -33,6 +34,9 @@ export function SchedulePageClient({
 		() => (initialData ? deserializeScheduleBootstrap(initialData) : null),
 		[initialData],
 	);
+
+	// Enable keyboard shortcuts (T=today, N=new, [/]=nav, 1/2/3=views)
+	useScheduleKeyboardShortcuts();
 
 	useEffect(() => {
 		if (payload) {

@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, FeatureTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, FeatureTemplate, getLogoDataUrl } from "@/lib/og";
+import type { FeatureSlug } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -13,9 +14,9 @@ export const alt = "Thorbis Feature";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
-	return new ImageResponse(<FeatureTemplate slug={slug} />, {
+	return new ImageResponse(<FeatureTemplate slug={slug as FeatureSlug} logoDataUrl={logoDataUrl} />, {
 		...size,
 		fonts,
 	});

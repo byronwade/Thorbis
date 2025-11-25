@@ -17,6 +17,8 @@ export type OnboardingPath = "solo" | "small" | "growing" | "enterprise";
 export type OnboardingStep =
 	| "welcome"
 	| "company"
+	| "data-import"
+	| "integrations"
 	| "phone"
 	| "email"
 	| "notifications"
@@ -57,6 +59,7 @@ export interface OnboardingData {
 	path: OnboardingPath | null;
 	teamSize: string;
 	industry: string;
+	referralSource: string; // How did you hear about us?
 
 	// Company profile & business verification
 	// Basic info
@@ -99,6 +102,11 @@ export interface OnboardingData {
 	ownerAddress: string;
 	ownerOwnershipPercent: number;
 
+	// Additional business info (optional, for recommendations)
+	yearsInBusiness: string;
+	numberOfEmployees: string;
+	annualRevenueRange: string;
+
 	// Phone & SMS
 	phoneSetupType: "new" | "port" | "skip" | null;
 	phoneNumber: string;
@@ -122,6 +130,21 @@ export interface OnboardingData {
 	quietHoursEnabled: boolean;
 	quietHoursStart: string;
 	quietHoursEnd: string;
+
+	// Data Import (from competitor software)
+	previousSoftware: string | null; // housecall-pro, jobber, servicetitan, etc.
+	dataImportCompleted: Record<string, { recordCount: number; importedAt: string }> | null;
+	importedCustomerCount: number;
+	importedPriceBookCount: number;
+	importedEquipmentCount: number;
+	importedJobCount: number;
+
+	// Integrations
+	quickbooksConnected: boolean;
+	quickbooksCompanyId: string | null;
+	quickbooksLastSync: string | null;
+	googleCalendarConnected: boolean;
+	googleCalendarId: string | null;
 
 	// Services
 	services: ServiceItem[];
@@ -226,6 +249,8 @@ export interface OnboardingState {
 export const STEPS_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
+	"data-import",
+	"integrations",
 	"phone",
 	"email",
 	"notifications",
@@ -249,6 +274,8 @@ export const STEP_CONFIG: Record<OnboardingStep, {
 }> = {
 	welcome: { title: "Welcome", shortTitle: "Start", phase: 1, required: true, estimatedMinutes: 1 },
 	company: { title: "Company Details", shortTitle: "Company", phase: 1, required: true, estimatedMinutes: 2 },
+	"data-import": { title: "Import Data", shortTitle: "Import", phase: 1, required: false, estimatedMinutes: 5 },
+	integrations: { title: "Connect Apps", shortTitle: "Apps", phase: 1, required: false, estimatedMinutes: 2 },
 	phone: { title: "Phone & SMS", shortTitle: "Phone", phase: 2, required: false, estimatedMinutes: 3 },
 	email: { title: "Email Setup", shortTitle: "Email", phase: 2, required: false, estimatedMinutes: 2 },
 	notifications: { title: "Notifications", shortTitle: "Alerts", phase: 2, required: false, estimatedMinutes: 2 },
@@ -302,6 +329,7 @@ const initialData: OnboardingData = {
 	path: null,
 	teamSize: "",
 	industry: "",
+	referralSource: "",
 
 	// Basic info
 	companyName: "",
@@ -343,6 +371,11 @@ const initialData: OnboardingData = {
 	ownerAddress: "",
 	ownerOwnershipPercent: 100,
 
+	// Additional business info
+	yearsInBusiness: "",
+	numberOfEmployees: "",
+	annualRevenueRange: "",
+
 	phoneSetupType: null,
 	phoneNumber: "",
 	smsEnabled: true,
@@ -363,6 +396,21 @@ const initialData: OnboardingData = {
 	quietHoursEnabled: false,
 	quietHoursStart: "22:00",
 	quietHoursEnd: "07:00",
+
+	// Data Import
+	previousSoftware: null,
+	dataImportCompleted: null,
+	importedCustomerCount: 0,
+	importedPriceBookCount: 0,
+	importedEquipmentCount: 0,
+	importedJobCount: 0,
+
+	// Integrations
+	quickbooksConnected: false,
+	quickbooksCompanyId: null,
+	quickbooksLastSync: null,
+	googleCalendarConnected: false,
+	googleCalendarId: null,
 
 	services: [],
 	servicesImportedFrom: null,

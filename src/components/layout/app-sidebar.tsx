@@ -101,6 +101,7 @@ import {
 } from "@/lib/icons/icon-registry";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
 
 // Navigation sections for each route
 const navigationSections = {
@@ -2261,6 +2262,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
+	const scrollRef = useSidebarScroll();
 
 	const currentSection = getCurrentSection(pathname);
 	const navItems = navigationSections[currentSection];
@@ -2324,7 +2326,7 @@ export function AppSidebar({
 					<CommunicationSwitcher />
 				</div>
 			)}
-			<SidebarContent>
+			<SidebarContent ref={scrollRef}>
 
 				{isReportingSection ? (
 					// Use custom collapsible navigation for reporting

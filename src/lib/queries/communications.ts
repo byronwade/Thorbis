@@ -158,6 +158,18 @@ export const getCommunications = cache(
 
 		// Filter by permissions (post-fetch)
 		// This is necessary because RLS policies can't easily express complex permission logic
+		//
+		// TODO: PERFORMANCE OPTIMIZATION NEEDED
+		// This loop has an N+1 query pattern - each iteration calls canViewCommunication()
+		// which makes 1-3 database queries. For 50 communications, this is 50-150 queries!
+		//
+		// Suggested fixes:
+		// 1. Batch fetch all team member permissions once before loop
+		// 2. Move permission logic to PostgreSQL RLS policies
+		// 3. Create a batch permission check function
+		//
+		// Impact: Low-Medium (only affects users with complex permission setups)
+		// React.cache() mitigates duplicate work across components
 		const filtered: Communication[] = [];
 
 		for (const comm of communications) {
@@ -368,15 +380,16 @@ export async function getAssignedCommunications(
 
 /**
  * Get communication by ID with permission check
+ * Uses React.cache() for request-level deduplication
  *
  * @param communicationId - Communication ID
  * @param teamMemberId - Team member viewing
  * @returns Promise<Communication | null>
  */
-export async function getCommunicationById(
+export const getCommunicationById = cache(async (
 	communicationId: string,
 	teamMemberId: string
-): Promise<Communication | null> {
+): Promise<Communication | null> => {
 	const supabase = await createServiceSupabaseClient();
 
 	const { data: comm, error } = await supabase
@@ -440,19 +453,20 @@ export async function getCommunicationById(
 				}
 			: undefined,
 	};
-}
+});
 
 /**
  * Get communication count by category for a team member
+ * Uses React.cache() for request-level deduplication
  *
  * @param teamMemberId - Team member ID
  * @param companyId - Company ID
  * @returns Promise<Record<EmailCategory, number>>
  */
-export async function getCommunicationCountsByCategory(
+export const getCommunicationCountsByCategory = cache(async (
 	teamMemberId: string,
 	companyId: string
-): Promise<Record<string, number>> {
+): Promise<Record<string, number>> => {
 	const categories = await getEmailCategories(teamMemberId, "read");
 
 	const counts: Record<string, number> = {};
@@ -468,4 +482,4 @@ export async function getCommunicationCountsByCategory(
 	}
 
 	return counts;
-}
+});

@@ -44,12 +44,14 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 		// Convert blob to buffer
 		const buffer = Buffer.from(await template.arrayBuffer());
 
-		// Return file
+		// Return file with long-term caching (templates are static)
+		// Cache for 1 day, allow stale for 1 week while revalidating
 		return new NextResponse(buffer, {
 			headers: {
 				"Content-Type":
 					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Content-Disposition": `attachment; filename="${type}_import_template.xlsx"`,
+				"Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 			},
 		});
 	} catch (_error) {

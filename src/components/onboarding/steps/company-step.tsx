@@ -21,9 +21,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Building2, Upload, X, Shield, AlertTriangle } from "lucide-react";
+import { Building2, Upload, X, Shield, AlertTriangle, HelpCircle, Users, DollarSign, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useRef } from "react";
+import { HelpTooltip, HELP_CONTENT } from "@/components/onboarding/help-tooltip";
 
 const TIMEZONES = [
 	{ value: "America/New_York", label: "Eastern Time" },
@@ -48,6 +49,36 @@ const BUSINESS_TYPES = [
 	{ value: "corporation", label: "Corporation", description: "C-Corp or S-Corp" },
 	{ value: "partnership", label: "Partnership", description: "General or Limited Partnership" },
 	{ value: "non_profit", label: "Non-Profit", description: "501(c) organization" },
+];
+
+const EMPLOYEE_RANGES = [
+	{ value: "1", label: "Just me" },
+	{ value: "2-5", label: "2-5 employees" },
+	{ value: "6-10", label: "6-10 employees" },
+	{ value: "11-25", label: "11-25 employees" },
+	{ value: "26-50", label: "26-50 employees" },
+	{ value: "51-100", label: "51-100 employees" },
+	{ value: "100+", label: "100+ employees" },
+];
+
+const REVENUE_RANGES = [
+	{ value: "under-100k", label: "Under $100K" },
+	{ value: "100k-250k", label: "$100K - $250K" },
+	{ value: "250k-500k", label: "$250K - $500K" },
+	{ value: "500k-1m", label: "$500K - $1M" },
+	{ value: "1m-5m", label: "$1M - $5M" },
+	{ value: "5m-10m", label: "$5M - $10M" },
+	{ value: "10m+", label: "$10M+" },
+	{ value: "prefer-not-say", label: "Prefer not to say" },
+];
+
+const YEARS_IN_BUSINESS = [
+	{ value: "new", label: "Starting a new business" },
+	{ value: "under-1", label: "Less than 1 year" },
+	{ value: "1-2", label: "1-2 years" },
+	{ value: "3-5", label: "3-5 years" },
+	{ value: "6-10", label: "6-10 years" },
+	{ value: "10+", label: "10+ years" },
 ];
 
 export function CompanyStep() {
@@ -503,6 +534,96 @@ export function CompanyStep() {
 							value={data.ownerOwnershipPercent}
 							onChange={(e) => updateData({ ownerOwnershipPercent: parseInt(e.target.value) || 0 })}
 						/>
+					</div>
+				</div>
+			</div>
+
+			{/* Section 6: Business Size & Experience */}
+			<div className="space-y-6">
+				<div className="flex items-center gap-2 text-sm font-medium">
+					<Users className="h-4 w-4 text-primary" />
+					<span>Business Size</span>
+					<span className="text-muted-foreground font-normal">(optional)</span>
+				</div>
+
+				<p className="text-sm text-muted-foreground -mt-2">
+					This helps us recommend the right features and pricing for your business.
+				</p>
+
+				<div className="grid gap-6 sm:grid-cols-3">
+					<div className="space-y-2">
+						<div className="flex items-center gap-1.5">
+							<Label htmlFor="yearsInBusiness">Years in business</Label>
+							<HelpTooltip
+								tooltip="How long have you been operating?"
+								details="This helps us understand your business maturity and recommend appropriate features. New businesses may benefit from our getting-started guides."
+							/>
+						</div>
+						<Select
+							value={data.yearsInBusiness}
+							onValueChange={(v) => updateData({ yearsInBusiness: v })}
+						>
+							<SelectTrigger id="yearsInBusiness">
+								<SelectValue placeholder="Select" />
+							</SelectTrigger>
+							<SelectContent>
+								{YEARS_IN_BUSINESS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-2">
+						<div className="flex items-center gap-1.5">
+							<Label htmlFor="numberOfEmployees">Team size</Label>
+							<HelpTooltip
+								tooltip="Number of people in your company"
+								details="This helps us recommend the right team management features and pricing tier for your business."
+							/>
+						</div>
+						<Select
+							value={data.numberOfEmployees}
+							onValueChange={(v) => updateData({ numberOfEmployees: v })}
+						>
+							<SelectTrigger id="numberOfEmployees">
+								<SelectValue placeholder="Select" />
+							</SelectTrigger>
+							<SelectContent>
+								{EMPLOYEE_RANGES.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="space-y-2">
+						<div className="flex items-center gap-1.5">
+							<Label htmlFor="annualRevenueRange">Annual revenue</Label>
+							<HelpTooltip
+								tooltip="Approximate annual revenue"
+								details="This is completely optional and confidential. It helps us recommend appropriate payment processing limits and financial features."
+							/>
+						</div>
+						<Select
+							value={data.annualRevenueRange}
+							onValueChange={(v) => updateData({ annualRevenueRange: v })}
+						>
+							<SelectTrigger id="annualRevenueRange">
+								<SelectValue placeholder="Select" />
+							</SelectTrigger>
+							<SelectContent>
+								{REVENUE_RANGES.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 			</div>

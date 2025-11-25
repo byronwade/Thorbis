@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadOGFonts, OG_CONFIG, IntegrationTemplate } from "@/lib/og";
+import { loadOGFonts, OG_CONFIG, IntegrationTemplate, getLogoDataUrl } from "@/lib/og";
 
 export const runtime = "edge";
 export const revalidate = 86400; // 24 hours
@@ -37,7 +37,7 @@ const integrationDescriptions: Record<string, { name: string; description: strin
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	const fonts = await loadOGFonts();
+	const [fonts, logoDataUrl] = await Promise.all([loadOGFonts(), getLogoDataUrl()]);
 
 	const integration = integrationDescriptions[slug] || {
 		name: slug.charAt(0).toUpperCase() + slug.slice(1),
@@ -45,7 +45,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 	};
 
 	return new ImageResponse(
-		<IntegrationTemplate name={integration.name} description={integration.description} />,
+		<IntegrationTemplate name={integration.name} description={integration.description} logoDataUrl={logoDataUrl} />,
 		{
 			...size,
 			fonts,
