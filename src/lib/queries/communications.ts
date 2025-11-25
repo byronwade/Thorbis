@@ -107,8 +107,7 @@ export const getCommunications = cache(
 			.select(
 				`
 			*,
-			customer:customers(id, first_name, last_name, email),
-			assignedTeamMember:team_members!assigned_to(id, first_name, last_name)
+			customer:customers(id, first_name, last_name, email)
 		`
 			)
 			.eq("company_id", companyId);
@@ -186,7 +185,7 @@ export const getCommunications = cache(
 				mailboxOwnerId: comm.mailbox_owner_id,
 				assignedTo: comm.assigned_to,
 				visibilityScope: comm.visibility_scope as VisibilityScope | null,
-				emailCategory: comm.email_category as EmailCategory | undefined,
+				emailCategory: comm.category as EmailCategory | undefined,
 			});
 
 			if (canView) {
@@ -204,8 +203,7 @@ export const getCommunications = cache(
 					mailboxOwnerId: comm.mailbox_owner_id,
 					assignedTo: comm.assigned_to,
 					visibilityScope: comm.visibility_scope as VisibilityScope | null | undefined,
-					emailCategory: comm.email_category as EmailCategory | undefined,
-					gmailMessageId: comm.gmail_message_id || undefined,
+					emailCategory: comm.category as EmailCategory | undefined,
 					createdAt: comm.created_at,
 					customer: comm.customer
 						? {
@@ -213,13 +211,6 @@ export const getCommunications = cache(
 								firstName: comm.customer.first_name || undefined,
 								lastName: comm.customer.last_name || undefined,
 								email: comm.customer.email || undefined,
-							}
-						: undefined,
-					assignedTeamMember: comm.assignedTeamMember
-						? {
-								id: comm.assignedTeamMember.id,
-								firstName: comm.assignedTeamMember.first_name,
-								lastName: comm.assignedTeamMember.last_name,
 							}
 						: undefined,
 				});
@@ -298,8 +289,7 @@ export async function getSharedCommunications(
 		.select(
 			`
 			*,
-			customer:customers(id, first_name, last_name, email),
-			assignedTeamMember:team_members!assigned_to(id, first_name, last_name)
+			customer:customers(id, first_name, last_name, email)
 		`
 		)
 		.eq("company_id", companyId)
@@ -315,7 +305,7 @@ export async function getSharedCommunications(
 	const filtered: Communication[] = [];
 
 	for (const comm of communications) {
-		const category = (comm.email_category as EmailCategory) || "support";
+		const category = (comm.category as EmailCategory) || "support";
 
 		// Check if user has access to this category
 		if (categories.includes("all") || categories.includes(category)) {
@@ -342,7 +332,6 @@ export async function getSharedCommunications(
 					assignedTo: comm.assigned_to,
 					visibilityScope: comm.visibility_scope as VisibilityScope | null | undefined,
 					emailCategory: category,
-					gmailMessageId: comm.gmail_message_id || undefined,
 					createdAt: comm.created_at,
 					customer: comm.customer
 						? {
@@ -350,13 +339,6 @@ export async function getSharedCommunications(
 								firstName: comm.customer.first_name || undefined,
 								lastName: comm.customer.last_name || undefined,
 								email: comm.customer.email || undefined,
-							}
-						: undefined,
-					assignedTeamMember: comm.assignedTeamMember
-						? {
-								id: comm.assignedTeamMember.id,
-								firstName: comm.assignedTeamMember.first_name,
-								lastName: comm.assignedTeamMember.last_name,
 							}
 						: undefined,
 				});
@@ -406,8 +388,7 @@ export const getCommunicationById = cache(async (
 		.select(
 			`
 			*,
-			customer:customers(id, first_name, last_name, email),
-			assignedTeamMember:team_members!assigned_to(id, first_name, last_name)
+			customer:customers(id, first_name, last_name, email)
 		`
 		)
 		.eq("id", communicationId)
@@ -422,7 +403,7 @@ export const getCommunicationById = cache(async (
 		mailboxOwnerId: comm.mailbox_owner_id,
 		assignedTo: comm.assigned_to,
 		visibilityScope: comm.visibility_scope as VisibilityScope | null,
-		emailCategory: comm.email_category as EmailCategory | undefined,
+		emailCategory: comm.category as EmailCategory | undefined,
 	});
 
 	if (!canView) {
@@ -443,8 +424,7 @@ export const getCommunicationById = cache(async (
 		mailboxOwnerId: comm.mailbox_owner_id,
 		assignedTo: comm.assigned_to,
 		visibilityScope: comm.visibility_scope as VisibilityScope | null | undefined,
-		emailCategory: comm.email_category as EmailCategory | undefined,
-		gmailMessageId: comm.gmail_message_id || undefined,
+		emailCategory: comm.category as EmailCategory | undefined,
 		createdAt: comm.created_at,
 		customer: comm.customer
 			? {
@@ -452,13 +432,6 @@ export const getCommunicationById = cache(async (
 					firstName: comm.customer.first_name || undefined,
 					lastName: comm.customer.last_name || undefined,
 					email: comm.customer.email || undefined,
-				}
-			: undefined,
-		assignedTeamMember: comm.assignedTeamMember
-			? {
-					id: comm.assignedTeamMember.id,
-					firstName: comm.assignedTeamMember.first_name,
-					lastName: comm.assignedTeamMember.last_name,
 				}
 			: undefined,
 	};
@@ -522,8 +495,7 @@ export const getCompanyCommunications = cache(
 			.select(
 				`
 			*,
-			customer:customers(id, first_name, last_name, email),
-			assignedTeamMember:team_members!assigned_to(id, first_name, last_name)
+			customer:customers(id, first_name, last_name, email)
 		`
 			)
 			.eq("company_id", companyId)
@@ -594,15 +566,13 @@ export const getCompanyCommunications = cache(
 			mailboxOwnerId: comm.mailbox_owner_id,
 			assignedTo: comm.assigned_to,
 			visibilityScope: comm.visibility_scope as VisibilityScope | null | undefined,
-			emailCategory: comm.email_category as EmailCategory | undefined,
-			gmailMessageId: comm.gmail_message_id || undefined,
+			emailCategory: comm.category as EmailCategory | undefined,
 			autoLinked: comm.auto_linked || undefined,
 			linkConfidence: comm.link_confidence || undefined,
 			linkMethod: comm.link_method || undefined,
 			internalNotes: comm.internal_notes || undefined,
 			internalNotesUpdatedAt: comm.internal_notes_updated_at || undefined,
 			internalNotesUpdatedBy: comm.internal_notes_updated_by || undefined,
-			contentType: comm.content_type || undefined,
 			createdAt: comm.created_at,
 			customer: comm.customer
 				? {
@@ -610,13 +580,6 @@ export const getCompanyCommunications = cache(
 						firstName: comm.customer.first_name || undefined,
 						lastName: comm.customer.last_name || undefined,
 						email: comm.customer.email || undefined,
-					}
-				: undefined,
-			assignedTeamMember: comm.assignedTeamMember
-				? {
-						id: comm.assignedTeamMember.id,
-						firstName: comm.assignedTeamMember.first_name,
-						lastName: comm.assignedTeamMember.last_name,
 					}
 				: undefined,
 		}));

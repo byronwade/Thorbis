@@ -22,7 +22,6 @@ import {
 	Calendar,
 	Car,
 	Check,
-	CheckSquare,
 	ChevronRight,
 	Clock,
 	ClipboardCheck,
@@ -36,7 +35,6 @@ import {
 	Search,
 	Send,
 	Settings,
-	Square,
 	Star,
 	User,
 	Users,
@@ -2217,8 +2215,8 @@ export function DispatchTimeline() {
 							style={{ width: SIDEBAR_WIDTH, minHeight: totalContentHeight }}
 						>
 							{/* Team Header with Summary - Sticky */}
-							<div className="bg-muted sticky top-0 z-40 shrink-0 border-b">
-								<div className="flex h-11 items-center justify-between px-4">
+							<div className="bg-muted sticky top-0 z-40 h-11 shrink-0 border-b">
+								<div className="flex h-full items-center justify-between px-4">
 									<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 										Team
 									</span>
@@ -2241,74 +2239,7 @@ export function DispatchTimeline() {
 										</TooltipContent>
 									</Tooltip>
 								</div>
-
-								{/* Quick Stats Row - simplified */}
-								<div className="flex items-center justify-between border-t px-4 py-2">
-									<span className="text-muted-foreground text-xs">
-										{teamWorkloadSummary.totalJobs} jobs today
-									</span>
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<Button
-												size="sm"
-												variant="ghost"
-												className={cn(
-													"h-6 w-6 p-0",
-													isSelectionMode && "bg-primary text-primary-foreground",
-												)}
-												onClick={toggleSelectionMode}
-											>
-												{isSelectionMode ? (
-													<CheckSquare className="size-3.5" />
-												) : (
-													<Square className="size-3.5" />
-												)}
-											</Button>
-										</TooltipTrigger>
-										<TooltipContent side="right" className="text-xs">
-											{isSelectionMode ? "Exit selection" : "Select multiple"}
-										</TooltipContent>
-									</Tooltip>
-								</div>
-
-								{/* Bulk Actions (only when selecting) */}
-								{isSelectionMode && selectedJobIds.size > 0 && (
-									<div className="flex items-center gap-2 border-t px-3 py-1.5">
-										<span className="text-muted-foreground text-xs">
-											{selectedJobIds.size} selected
-										</span>
-										<div className="ml-auto flex items-center gap-1">
-											<Button
-												size="sm"
-												variant="ghost"
-												className="h-6 px-2 text-xs"
-												onClick={handleBulkDispatch}
-												disabled={isBulkActionPending}
-											>
-												Dispatch
-											</Button>
-											<Button
-												size="sm"
-												variant="ghost"
-												className="h-6 px-2 text-xs"
-												onClick={handleBulkComplete}
-												disabled={isBulkActionPending}
-											>
-												Complete
-											</Button>
-											<Button
-												size="sm"
-												variant="ghost"
-												className="h-6 w-6 p-0"
-												onClick={clearSelection}
-											>
-												<X className="size-3" />
-											</Button>
-										</div>
-									</div>
-								)}
-
-								</div>
+							</div>
 
 							{/* Team Members */}
 							{technicianLanes.map(({ technician, jobs, height }) => {
