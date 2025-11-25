@@ -107,7 +107,6 @@ export const getEmails = cache(async (
 			is_archived,
 			snoozed_until,
 			mailbox_owner_id,
-			email_category,
 			customer:customers!customer_id(
 				id,
 				first_name,
@@ -136,9 +135,9 @@ export const getEmails = cache(async (
 		// Company inbox: only emails where mailbox_owner_id IS NULL (shared emails)
 		query = query.is("mailbox_owner_id", null);
 
-		// If category specified, filter by email_category
+		// If category specified, filter by category
 		if (category) {
-			query = query.eq("email_category", category);
+			query = query.eq("category", category);
 		}
 	}
 

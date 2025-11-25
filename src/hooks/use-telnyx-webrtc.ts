@@ -397,6 +397,8 @@ export function useTelnyxWebRTC(
 
 		// Handle incoming call
 		client.on("telnyx.notification", (notification: INotification) => {
+			console.log("📨 WebRTC notification:", notification.type);
+
 			if (notification.type !== "callUpdate") {
 				return;
 			}
@@ -405,8 +407,17 @@ export function useTelnyxWebRTC(
 
 			if (!call) {
 				// Guard against undefined call object
+				console.warn("⚠️ WebRTC: callUpdate notification with undefined call");
 				return;
 			}
+
+			console.log("📨 WebRTC callUpdate:", {
+				callId: call.id,
+				state: call.state,
+				direction: call.direction,
+				cause: (call as any).cause,
+				sipCode: (call as any).sipCode,
+			});
 
 			// Update call state
 			const callState = mapTelnyxCallState(call.state);
@@ -505,31 +516,71 @@ export function useTelnyxWebRTC(
 	 */
 	const makeCall = useCallback(
 		async (destination: string, callerIdNumber?: string) => {
-			if (!(clientRef.current && isConnected)) {
-				throw new Error("Not connected to Telnyx");
-			}
-			const call = await clientRef.current.newCall({
-				destinationNumber: destination,
-				callerNumber: callerIdNumber,
+			// Normalize phone numbers to E.164 format
+			const normalizeToE164 = (phone: string): string => {
+				const digits = phone.replace(/\D/g, "");
+				if (digits.length === 10) {
+					return `+1${digits}`;
+				}
+				if (digits.length === 11 && digits.startsWith("1")) {
+					return `+${digits}`;
+				}
+				if (digits.length > 10 && !phone.startsWith("+")) {
+					return `+${digits}`;
+				}
+				return phone.startsWith("+") ? phone : `+${digits}`;
+			};
+
+			const normalizedDestination = normalizeToE164(destination);
+			const normalizedCallerId = callerIdNumber ? normalizeToE164(callerIdNumber) : undefined;
+
+			console.log("📞 WebRTC makeCall:", {
+				destination,
+				normalizedDestination,
+				callerIdNumber,
+				normalizedCallerId,
+				isConnected,
+				hasClient: !!clientRef.current,
 			});
 
-			activeCallRef.current = call;
+			if (!(clientRef.current && isConnected)) {
+				console.error("❌ WebRTC makeCall: Not connected to Telnyx");
+				throw new Error("Not connected to Telnyx");
+			}
 
-			// Set initial call state immediately
-			const callInfo: WebRTCCall = {
-				id: call.id,
-				state: "connecting",
-				direction: "outbound",
-				remoteNumber: destination,
-				localNumber: callerIdNumber || "",
-				duration: 0,
-				isMuted: false,
-				isHeld: false,
-				isRecording: false,
-			};
-			setCurrentCall(callInfo);
+			try {
+				console.log("📞 WebRTC: Calling newCall()...");
+				const call = await clientRef.current.newCall({
+					destinationNumber: normalizedDestination,
+					callerNumber: normalizedCallerId,
+				});
 
-			return call;
+				console.log("📞 WebRTC: newCall() returned:", {
+					callId: call?.id,
+					callState: (call as any)?.state,
+				});
+
+				activeCallRef.current = call;
+
+				// Set initial call state immediately
+				const callInfo: WebRTCCall = {
+					id: call.id,
+					state: "connecting",
+					direction: "outbound",
+					remoteNumber: destination,
+					localNumber: callerIdNumber || "",
+					duration: 0,
+					isMuted: false,
+					isHeld: false,
+					isRecording: false,
+				};
+				setCurrentCall(callInfo);
+
+				return call;
+			} catch (error) {
+				console.error("❌ WebRTC makeCall error:", error);
+				throw error;
+			}
 		},
 		[isConnected],
 	);

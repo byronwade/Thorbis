@@ -619,31 +619,14 @@ export function PhoneDropdown({
 		});
 	}, [customers, customerSearchQuery]);
 
-	// Make call via WebRTC
-	const handleWebRTCCall = useCallback(async () => {
-		const to = toNumber.replace(/\D/g, "");
-		if (!to || !webrtc.isConnected) return;
-
-		try {
-			await webrtc.makeCall(to, fromNumber);
-			toast.success(
-				selectedCustomer
-					? `Calling ${getCustomerName(selectedCustomer)}`
-					: `Calling ${formatPhone(toNumber)}`
-			);
-		} catch (error) {
-			console.error("WebRTC call error:", error);
-			toast.error("Failed to start call via WebRTC");
-
-			// Fallback to API
-			toast.info("Falling back to API mode...");
-			handleAPICall();
-		}
-	}, [toNumber, fromNumber, selectedCustomer, webrtc, toast]);
-
-	// Make call via API (fallback)
+	// Make call via API (used for fallback and API mode)
 	const handleAPICall = useCallback(async () => {
-		if (!companyId || isPending) return;
+		if (isPending) return;
+
+		if (!companyId) {
+			toast.error("No company selected. Please select a company first.");
+			return;
+		}
 
 		const to = toNumber.replace(/\D/g, "");
 		if (!to) {
@@ -695,6 +678,42 @@ export function PhoneDropdown({
 			}
 		});
 	}, [companyId, toNumber, fromNumber, selectedCustomer, isPending, toast, handleOpenChange]);
+
+	// Make call via WebRTC (primary mode)
+	const handleWebRTCCall = useCallback(async () => {
+		const to = toNumber.replace(/\D/g, "");
+		if (!to) {
+			toast.error("Please enter a valid phone number");
+			return;
+		}
+
+		if (!webrtc.isConnected) {
+			toast.error("WebRTC not connected. Trying API mode...");
+			handleAPICall();
+			return;
+		}
+
+		if (!fromNumber) {
+			toast.error("Please select a company phone number");
+			return;
+		}
+
+		try {
+			await webrtc.makeCall(to, fromNumber);
+			toast.success(
+				selectedCustomer
+					? `Calling ${getCustomerName(selectedCustomer)}`
+					: `Calling ${formatPhone(toNumber)}`
+			);
+		} catch (error) {
+			console.error("WebRTC call error:", error);
+			toast.error("Failed to start call via WebRTC");
+
+			// Fallback to API
+			toast.info("Falling back to API mode...");
+			handleAPICall();
+		}
+	}, [toNumber, fromNumber, selectedCustomer, webrtc, toast, handleAPICall]);
 
 	// Start call based on mode
 	const handleStartCall = useCallback(() => {

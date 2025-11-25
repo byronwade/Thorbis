@@ -1,97 +1,89 @@
 import {
-	BarChart3,
-	Clock,
-	Mail,
-	MessageSquare,
-	Phone,
+	Archive,
+	CreditCard,
+	File,
+	HelpCircle,
+	Inbox,
+	Info,
+	Send,
+	Star,
 	TrendingUp,
-	Users,
-	Activity,
-	PieChart,
-	LineChart,
 } from "lucide-react";
 import type { CommunicationSidebarConfig } from "@/components/communication/communication-sidebar";
 
 /**
- * Get communication reports sidebar configuration
- * Shows different report types users can view
+ * Get communication sidebar configuration for the main communication hub
+ * Matches the email sidebar structure with MY INBOX and COMPANY INBOX sections
  */
 export function getCommunicationReportsSidebarConfig(): CommunicationSidebarConfig {
 	return {
 		navGroups: [
 			{
-				label: "Overview",
+				label: "MY INBOX",
 				items: [
 					{
-						title: "Dashboard",
-						url: "/dashboard/communication",
-						icon: BarChart3,
+						title: "Inbox",
+						url: "/dashboard/communication/email?inbox=personal&folder=inbox",
+						icon: Inbox,
 					},
 					{
-						title: "Activity Summary",
-						url: "/dashboard/communication?report=activity",
-						icon: Activity,
+						title: "Sent",
+						url: "/dashboard/communication/email?inbox=personal&folder=sent",
+						icon: Send,
+					},
+					{
+						title: "Drafts",
+						url: "/dashboard/communication/email?inbox=personal&folder=drafts",
+						icon: File,
+					},
+					{
+						title: "Starred",
+						url: "/dashboard/communication/email?inbox=personal&folder=starred",
+						icon: Star,
+					},
+					{
+						title: "Archive",
+						url: "/dashboard/communication/email?inbox=personal&folder=archive",
+						icon: Archive,
 					},
 				],
 			},
 			{
-				label: "Channel Analytics",
+				label: "COMPANY INBOX",
 				items: [
 					{
-						title: "Email Analytics",
-						url: "/dashboard/communication?report=email",
-						icon: Mail,
+						title: "Support",
+						url: "/dashboard/communication/email?inbox=company&category=support",
+						icon: HelpCircle,
 					},
 					{
-						title: "SMS Analytics",
-						url: "/dashboard/communication?report=sms",
-						icon: MessageSquare,
-					},
-					{
-						title: "Call Analytics",
-						url: "/dashboard/communication?report=calls",
-						icon: Phone,
-					},
-				],
-			},
-			{
-				label: "Performance Metrics",
-				items: [
-					{
-						title: "Response Times",
-						url: "/dashboard/communication?report=response-times",
-						icon: Clock,
-					},
-					{
-						title: "Team Performance",
-						url: "/dashboard/communication?report=team",
-						icon: Users,
-					},
-					{
-						title: "Trends & Growth",
-						url: "/dashboard/communication?report=trends",
+						title: "Sales",
+						url: "/dashboard/communication/email?inbox=company&category=sales",
 						icon: TrendingUp,
 					},
-				],
-			},
-			{
-				label: "Distribution",
-				items: [
 					{
-						title: "Channel Distribution",
-						url: "/dashboard/communication?report=distribution",
-						icon: PieChart,
+						title: "Billing",
+						url: "/dashboard/communication/email?inbox=company&category=billing",
+						icon: CreditCard,
 					},
 					{
-						title: "Time Series",
-						url: "/dashboard/communication?report=time-series",
-						icon: LineChart,
+						title: "General",
+						url: "/dashboard/communication/email?inbox=company&category=general",
+						icon: Info,
 					},
 				],
 			},
 		],
-		primaryAction: null, // No primary action for reports
-		additionalSections: [],
+		primaryAction: undefined,
+		additionalSections: [
+			{
+				label: "Folders",
+				items: [],
+				scrollable: true,
+				scrollHeight: "h-[200px]",
+				defaultOpen: true,
+			},
+		],
 	};
 }
 
