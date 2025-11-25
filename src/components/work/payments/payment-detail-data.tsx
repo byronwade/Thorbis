@@ -48,7 +48,7 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Get active company ID
@@ -56,7 +56,7 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Verify user has access to the active company and get their role

@@ -808,7 +808,7 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
 
 		// Revalidate and redirect to onboarding
 		revalidatePath("/", "layout");
-		redirect("/welcome");
+		redirect("/dashboard");
 	} catch (caughtError) {
 		if (caughtError instanceof z.ZodError) {
 			return {

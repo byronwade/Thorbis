@@ -47,13 +47,13 @@ export async function MaterialDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Fetch material with price book item

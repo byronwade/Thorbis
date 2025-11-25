@@ -51,7 +51,7 @@ export async function EstimateDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Get active company ID
@@ -59,7 +59,7 @@ export async function EstimateDetailData({
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Fetch complete estimate data with tags via RPC (single optimized query)

@@ -26,14 +26,14 @@ export async function InvoicesData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Get active company ID
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	const currentPage = Number(searchParams?.page) || 1;

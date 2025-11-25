@@ -66,18 +66,8 @@ export async function GET(request: Request) {
 			}
 
 			// Successfully authenticated with complete profile
-			// Check if user has an active company to determine redirect
-			const { data: hasCompany } = await supabase
-				.from("company_memberships")
-				.select("company_id")
-				.eq("user_id", data.user.id)
-				.eq("status", "active")
-				.limit(1)
-				.maybeSingle();
-
-			const redirectPath = hasCompany ? "/dashboard" : "/welcome";
-
-			return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
+			// Always redirect to dashboard - onboarding redirects temporarily disabled
+			return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
 		} catch (_error) {
 			return NextResponse.redirect(
 				`${requestUrl.origin}/login?error=${encodeURIComponent("An unexpected error occurred")}`,

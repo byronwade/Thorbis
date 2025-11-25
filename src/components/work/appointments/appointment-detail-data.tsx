@@ -46,7 +46,7 @@ export async function AppointmentDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Get active company ID
@@ -54,7 +54,7 @@ export async function AppointmentDetailData({
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Fetch appointment with all related data

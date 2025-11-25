@@ -50,7 +50,7 @@ export async function ServiceAgreementDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Get active company ID
@@ -58,7 +58,7 @@ export async function ServiceAgreementDetailData({
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/welcome");
+		redirect("/dashboard");
 	}
 
 	// Fetch service agreement

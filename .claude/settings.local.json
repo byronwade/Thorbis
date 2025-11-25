@@ -191,7 +191,19 @@
       "Bash(do echo \"=== $table ===\" grep -E \"key:|hideOnMobile:\" \"$table\")",
       "Bash(/dev/null)",
       "Bash(xxd:*)",
-      "Bash(timeout 180 pnpm build:*)"
+      "Bash(timeout 180 pnpm build:*)",
+      "Bash(src/actions/auth.ts )",
+      "Bash(src/components/settings/team/settings-team-member-detail-data.tsx )",
+      "Bash(src/components/properties/property-details/property-detail-data.tsx )",
+      "Bash(src/components/work/invoices/invoices-data.tsx )",
+      "Bash(src/components/work/invoices/invoices-stats.tsx )",
+      "Bash(src/components/work/payments/payment-detail-data.tsx )",
+      "Bash(src/components/work/materials/material-detail-data.tsx )",
+      "Bash(src/components/work/appointments/appointment-detail-data.tsx )",
+      "Bash(src/components/work/contracts/contract-detail-data.tsx )",
+      "Bash(src/components/work/estimates/estimate-detail-data.tsx )",
+      "Bash(src/components/work/maintenance-plans/maintenance-plan-detail-data.tsx )",
+      "Bash(src/components/work/service-agreements/service-agreement-detail-data.tsx)"
     ],
     "deny": [],
     "ask": []
