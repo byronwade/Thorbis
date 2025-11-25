@@ -1,57 +1,106 @@
 /**
- * Communication Statistics Dashboard - Server Component with ISR
+ * Company Communications Hub - Server Component with PPR
  *
- * Displays charts and statistics for all communication channels
- * Supports different report views via URL query parameters
+ * Company-wide view of ALL communications across all team members
+ * Shows emails, SMS, calls, and voicemails for the entire company
  *
- * Uses ISR (Incremental Static Regeneration) instead of client-side polling:
- * - Data fetched server-side and cached
- * - Auto-revalidates every 5 minutes
- * - No client-side polling/setInterval
+ * Features:
+ * - Company-wide communications timeline (not user-specific)
+ * - Type filtering (All, Email, SMS, Call, Voicemail)
+ * - Auto-linking suggestions to customers/jobs/properties
+ * - Internal notes for CSR collaboration
+ * - Link to customer/job detail pages
+ *
+ * Note: For personal user-specific inboxes, see:
+ * - /dashboard/communication/email (My Email)
+ * - /dashboard/communication/sms (My SMS)
+ * - /dashboard/communication/calls (My Calls)
+ *
+ * Uses Server Component pattern for initial data fetching:
+ * - Data fetched server-side with React.cache() for deduplication
+ * - Client component receives pre-fetched data for instant render
+ * - No client-side useEffect data fetching on initial load
  */
 
 import { Suspense } from "react";
-import { getCommunicationStatsAction } from "@/actions/communication-stats-actions";
-import { CommunicationStatsDashboard } from "@/components/communication/communication-stats-dashboard";
-import { CommunicationStatsSkeleton } from "@/components/communication/communication-stats-skeleton";
-
-// ISR: Revalidate every 5 minutes (replaces 5-minute client-side polling)
-export const revalidate = 300;
+import { redirect, notFound } from "next/navigation";
+import { getCompanyCommunications } from "@/lib/queries/communications";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
+import { UnifiedInboxPageClient } from "@/components/communication/unified-inbox-page-client";
+import { Loader2 } from "lucide-react";
 
 type SearchParams = Promise<{
-	report?: string;
+	id?: string;
+	type?: "email" | "sms" | "call" | "voicemail";
 }>;
 
-async function StatsData({ searchParams }: { searchParams: SearchParams }) {
-	const params = await searchParams;
-	const report = params?.report || "overview";
-
-	// Fetch stats server-side
-	const result = await getCommunicationStatsAction(30);
-
-	if (!result.success || !result.data) {
-		return (
-			<div className="flex h-full items-center justify-center">
-				<div className="text-center">
-					<p className="text-lg font-semibold text-destructive">Error loading statistics</p>
-					<p className="text-sm text-muted-foreground mt-2">{result.error || "No data available"}</p>
-				</div>
+// Loading skeleton for Suspense boundary
+function UnifiedInboxSkeleton() {
+	return (
+		<div className="flex h-full w-full items-center justify-center bg-sidebar">
+			<div className="text-center">
+				<Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+				<p className="text-sm text-muted-foreground">Loading communications...</p>
 			</div>
-		);
-	}
-
-	return <CommunicationStatsDashboard initialStats={result.data} initialReport={report} />;
+		</div>
+	);
 }
 
-export default async function CommunicationStatsPage({
+// Async server component that fetches data
+async function UnifiedInboxData({ searchParams }: { searchParams: SearchParams }) {
+	const params = await searchParams;
+	const selectedId = params?.id || null;
+
+	// Get authenticated user and company
+	const supabase = await createClient();
+	if (!supabase) {
+		return notFound();
+	}
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		redirect("/sign-in");
+	}
+
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		redirect("/dashboard");
+	}
+
+	// Get team member ID (assuming user.id maps to team_members)
+	// TODO: Update this to use actual team member lookup
+	const teamMemberId = user.id;
+
+	// Fetch ALL company communications (no permission filtering)
+	// This shows company-wide view for admins/managers
+	const communications = await getCompanyCommunications(companyId, {
+		limit: 100,
+		type: params?.type,
+	});
+
+	return (
+		<UnifiedInboxPageClient
+			initialCommunications={communications}
+			companyId={companyId}
+			teamMemberId={teamMemberId}
+			selectedId={selectedId}
+		/>
+	);
+}
+
+export default async function UnifiedInboxPage({
 	searchParams,
 }: {
 	searchParams: SearchParams;
 }) {
 	return (
-		<div className="flex w-full flex-col">
-			<Suspense fallback={<CommunicationStatsSkeleton />}>
-				<StatsData searchParams={searchParams} />
+		<div className="flex h-full w-full">
+			<Suspense fallback={<UnifiedInboxSkeleton />}>
+				<UnifiedInboxData searchParams={searchParams} />
 			</Suspense>
 		</div>
 	);

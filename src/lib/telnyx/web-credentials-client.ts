@@ -6,7 +6,9 @@ type WebRTCCredentialsResult = Awaited<ReturnType<typeof getWebRTCCredentials>>;
 type Credential = NonNullable<WebRTCCredentialsResult["credential"]>;
 
 const STORAGE_KEY = "telnyx-webrtc-credential";
-const EXPIRY_BUFFER_MS = 60 * 1000; // refresh 1 minute before expiration
+// Refresh 5 minutes before expiration (Telnyx recommended buffer)
+// This prevents credential expiry during active calls
+const EXPIRY_BUFFER_MS = 5 * 60 * 1000;
 
 let credentialsPromise: Promise<WebRTCCredentialsResult> | null = null;
 

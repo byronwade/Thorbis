@@ -10,19 +10,161 @@ import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
 import {
 	AlertCircle,
+	Briefcase,
+	Calendar,
 	ChevronLeft,
 	ChevronRight,
+	ClipboardCheck,
 	Clock,
+	HardHat,
 	MapPin,
+	Phone,
 	Search,
+	Settings,
+	Star,
+	Users,
+	Wrench,
+	Zap,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { Job } from "./schedule-types";
+import type { AppointmentCategory, Job, JobType } from "./schedule-types";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+// Job type visual configuration - consistent with timeline and kanban views
+type JobTypeConfig = {
+	borderColor: string;
+	bgColor: string;
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
+};
+
+const JOB_TYPE_CONFIG: Record<JobType | "default", JobTypeConfig> = {
+	emergency: {
+		borderColor: "border-l-red-500",
+		bgColor: "bg-red-500/10",
+		icon: Zap,
+		label: "Emergency",
+	},
+	repair: {
+		borderColor: "border-l-orange-500",
+		bgColor: "bg-orange-500/10",
+		icon: Wrench,
+		label: "Repair",
+	},
+	installation: {
+		borderColor: "border-l-green-500",
+		bgColor: "bg-green-500/10",
+		icon: HardHat,
+		label: "Installation",
+	},
+	maintenance: {
+		borderColor: "border-l-blue-500",
+		bgColor: "bg-blue-500/10",
+		icon: Settings,
+		label: "Maintenance",
+	},
+	premium_maintenance: {
+		borderColor: "border-l-violet-500",
+		bgColor: "bg-violet-500/10",
+		icon: Star,
+		label: "Premium",
+	},
+	inspection: {
+		borderColor: "border-l-cyan-500",
+		bgColor: "bg-cyan-500/10",
+		icon: Search,
+		label: "Inspection",
+	},
+	service: {
+		borderColor: "border-l-sky-500",
+		bgColor: "bg-sky-500/10",
+		icon: ClipboardCheck,
+		label: "Service",
+	},
+	service_call: {
+		borderColor: "border-l-teal-500",
+		bgColor: "bg-teal-500/10",
+		icon: Phone,
+		label: "Service Call",
+	},
+	estimate: {
+		borderColor: "border-l-amber-500",
+		bgColor: "bg-amber-500/10",
+		icon: ClipboardCheck,
+		label: "Estimate",
+	},
+	callback: {
+		borderColor: "border-l-pink-500",
+		bgColor: "bg-pink-500/10",
+		icon: Phone,
+		label: "Callback",
+	},
+	other: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Other",
+	},
+	default: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Job",
+	},
+};
+
+const getJobTypeConfig = (job: Job): JobTypeConfig => {
+	const config = job.jobType ? JOB_TYPE_CONFIG[job.jobType] : JOB_TYPE_CONFIG.default;
+	return config || JOB_TYPE_CONFIG.default;
+};
+
+// Appointment category visual configuration
+type AppointmentCategoryConfig = {
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
+	bgColor: string;
+	textColor: string;
+	borderStyle: string;
+};
+
+const APPOINTMENT_CATEGORY_CONFIG: Record<AppointmentCategory, AppointmentCategoryConfig> = {
+	job: {
+		icon: Briefcase,
+		label: "Job",
+		bgColor: "bg-blue-500/10",
+		textColor: "text-blue-600 dark:text-blue-400",
+		borderStyle: "border-solid",
+	},
+	meeting: {
+		icon: Users,
+		label: "Meeting",
+		bgColor: "bg-purple-500/10",
+		textColor: "text-purple-600 dark:text-purple-400",
+		borderStyle: "border-dashed",
+	},
+	event: {
+		icon: Calendar,
+		label: "Event",
+		bgColor: "bg-emerald-500/10",
+		textColor: "text-emerald-600 dark:text-emerald-400",
+		borderStyle: "border-dotted",
+	},
+};
+
+const getAppointmentCategoryConfig = (job: Job): AppointmentCategoryConfig => {
+	const category = job.appointmentCategory || "job";
+	return APPOINTMENT_CATEGORY_CONFIG[category];
+};
 
 function UnassignedJobCard({
 	job,
@@ -81,12 +223,50 @@ function UnassignedJobCard({
 			</div>
 
 			<div className="space-y-2">
-				{/* Title */}
-				<div className="pr-6">
-					<p className="text-foreground text-sm font-semibold">{job.title}</p>
-					{job.customer?.name && (
-						<p className="text-muted-foreground text-xs">{job.customer.name}</p>
-					)}
+				{/* Appointment Category + Job Type + Title */}
+				<div className="flex items-start gap-2 pr-6">
+					<TooltipProvider>
+						{/* Appointment Category Icon */}
+						{(() => {
+							const catConfig = getAppointmentCategoryConfig(job);
+							const CatIcon = catConfig.icon;
+							return (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className={cn("mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm", catConfig.bgColor)}>
+											<CatIcon className={cn("size-2.5", catConfig.textColor)} />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent side="top" className="text-xs">
+										{catConfig.label}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})()}
+						{/* Job Type Icon */}
+						{(() => {
+							const typeConfig = getJobTypeConfig(job);
+							const TypeIcon = typeConfig.icon;
+							return (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded", typeConfig.bgColor)}>
+											<TypeIcon className={cn("size-3", typeConfig.borderColor.replace("border-l-", "text-"))} />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent side="top" className="text-xs">
+										{typeConfig.label}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})()}
+					</TooltipProvider>
+					<div className="min-w-0 flex-1">
+						<p className="text-foreground text-sm font-semibold">{job.title}</p>
+						{job.customer?.name && (
+							<p className="text-muted-foreground text-xs">{job.customer.name}</p>
+						)}
+					</div>
 				</div>
 
 				{/* Time */}
@@ -150,8 +330,8 @@ export function UnassignedPanel({
 		id: dropId,
 	});
 
-	const jobs = Array.isArray(unassignedJobs) ? unassignedJobs : [];
-	const activeJob = jobs.find((job) => job.id === activeJobId);
+	const rawJobs = Array.isArray(unassignedJobs) ? unassignedJobs : [];
+	const activeJob = rawJobs.find((job) => job.id === activeJobId);
 	const [searchValue, setSearchValue] = useState(searchQuery ?? "");
 	const lastSentSearch = useRef(searchQuery ?? "");
 	const trimmedSearch = searchValue.trim();
@@ -174,6 +354,17 @@ export function UnassignedPanel({
 		}, 400);
 		return () => clearTimeout(handler);
 	}, [trimmedSearch, onSearchChange]);
+
+	// Sort jobs by time (urgent first, then by start time)
+	const jobs = useMemo(() => {
+		return [...rawJobs].sort((a, b) => {
+			// Urgent jobs first
+			if (a.priority === "urgent" && b.priority !== "urgent") return -1;
+			if (b.priority === "urgent" && a.priority !== "urgent") return 1;
+			// Then by start time
+			return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+		});
+	}, [rawJobs]);
 
 	return (
 		<>
@@ -209,21 +400,14 @@ export function UnassignedPanel({
 							</CollapsibleTrigger>
 
 							<div className="border-b px-3 py-2">
-								<div className="flex items-center gap-2">
-									<div className="relative flex-1">
-										<Search className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2" />
-										<Input
-											className="pl-8 text-sm"
-											placeholder="Search jobs..."
-											value={searchValue}
-											onChange={(event) => setSearchValue(event.target.value)}
-										/>
-									</div>
-									<Badge variant="outline" className="text-[10px]">
-										{totalCount !== undefined
-											? `${jobs.length} / ${totalCount}`
-											: jobs.length}
-									</Badge>
+								<div className="relative">
+									<Search className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2" />
+									<Input
+										className="pl-8 text-sm"
+										placeholder="Search..."
+										value={searchValue}
+										onChange={(event) => setSearchValue(event.target.value)}
+									/>
 								</div>
 							</div>
 

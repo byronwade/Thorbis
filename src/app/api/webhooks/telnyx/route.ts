@@ -28,8 +28,13 @@ import {
 	getEventType,
 	isCallEvent,
 	isMessageEvent,
+	isWebhookDuplicateAsync,
+	isWebhookTimestampValid,
+	markWebhookProcessedAsync,
 	type MessageReceivedPayload,
-	validateWebhook,
+	parseWebhookPayload,
+	verifyWebhookSignature,
+	type WebhookEventType,
 	type WebhookPayload,
 } from "@/lib/telnyx/webhooks";
 import { addToDLQ } from "@/lib/telnyx/dead-letter-queue";
@@ -48,71 +53,133 @@ type CommunicationInsert =
 /**
  * POST /api/webhooks/telnyx
  *
- * Handles all incoming Telnyx webhook events with production-grade reliability
+ * Handles all incoming Telnyx webhook events with production-grade reliability.
+ *
+ * Flow:
+ * 1. Verify signature (fail-closed in production)
+ * 2. Validate timestamp (replay protection)
+ * 3. Parse payload
+ * 4. Get company context from phone number
+ * 5. Check for duplicates (database-backed, multi-tenant)
+ * 6. Process event
+ * 7. Mark as processed
  */
 export async function POST(request: NextRequest) {
 	const startTime = Date.now();
-	let correlationId = `wh_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-	let eventType: string | undefined;
+	const correlationId = `wh_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+	let eventType: WebhookEventType | undefined;
 	let webhookId: string | undefined;
+	let companyId: string | undefined;
+	let body: string | undefined;
 
 	try {
 		// Get request body as text for signature verification
-		const body = await request.text();
+		body = await request.text();
 
 		// Get headers for signature verification
 		const headersList = await headers();
 		const signature = headersList.get("telnyx-signature-ed25519") || "";
 		const timestamp = headersList.get("telnyx-timestamp") || "";
 
-		// Comprehensive webhook validation (signature, timestamp, payload, deduplication)
-		const validationResult = validateWebhook({
-			rawPayload: body,
+		// Step 1: Verify signature (FAIL-CLOSED in production)
+		const signatureResult = verifyWebhookSignature({
+			payload: body,
 			signature,
 			timestamp,
 			correlationId,
 		});
 
-		// Use the correlation ID from validation
-		correlationId = validationResult.correlationId;
-
-		if (!validationResult.valid) {
-			telnyxLogger.warn("Webhook validation failed", {
+		if (!signatureResult.valid) {
+			telnyxLogger.warn("Webhook signature verification failed", {
 				correlationId,
-				error: validationResult.error,
-				errorCode: validationResult.errorCode,
+				error: signatureResult.error,
 			});
-
 			telnyxMetrics.recordWebhook(false);
-
 			return NextResponse.json(
-				createWebhookResponse(false, validationResult.error || "Validation failed"),
-				{ status: validationResult.errorCode === "WEBHOOK_SIGNATURE_INVALID" ? 401 : 400 },
+				createWebhookResponse(false, signatureResult.error || "Invalid signature"),
+				{ status: 401 },
 			);
 		}
 
-		// Handle duplicate webhooks (already processed)
-		if (validationResult.isDuplicate) {
-			telnyxLogger.info("Duplicate webhook skipped", {
+		// Step 2: Validate timestamp (replay protection)
+		const timestampResult = isWebhookTimestampValid(timestamp);
+		if (!timestampResult.valid) {
+			telnyxLogger.warn("Webhook timestamp validation failed", {
 				correlationId,
-				webhookId: validationResult.payload?.data.id,
+				error: timestampResult.error,
 			});
-
-			// Return success to prevent Telnyx from retrying
-			return NextResponse.json(createWebhookResponse(true, "Already processed"), { status: 200 });
+			telnyxMetrics.recordWebhook(false);
+			return NextResponse.json(
+				createWebhookResponse(false, timestampResult.error || "Invalid timestamp"),
+				{ status: 400 },
+			);
 		}
 
-		const payload = validationResult.payload!;
+		// Step 3: Parse payload
+		const payload = parseWebhookPayload(body);
+		if (!payload) {
+			telnyxLogger.warn("Webhook payload parsing failed", { correlationId });
+			telnyxMetrics.recordWebhook(false);
+			return NextResponse.json(
+				createWebhookResponse(false, "Invalid webhook payload"),
+				{ status: 400 },
+			);
+		}
+
 		eventType = getEventType(payload);
 		webhookId = payload.data.id;
+
+		// Step 4: Get company context from phone number in payload
+		const supabase = await createServiceSupabaseClient();
+		if (!supabase) {
+			telnyxLogger.error("Failed to create Supabase client", { correlationId });
+			return NextResponse.json(
+				createWebhookResponse(false, "Database unavailable"),
+				{ status: 503 },
+			);
+		}
+
+		const targetPhone = extractTargetPhoneNumber(payload, eventType);
+
+		if (targetPhone) {
+			const phoneContext = await getPhoneNumberContext(supabase, targetPhone);
+			companyId = phoneContext?.companyId;
+		}
+
+		// Step 5: Check for duplicates (database-backed, multi-tenant)
+		// Only check if we have both webhookId and companyId
+		if (webhookId && companyId) {
+			const isDuplicate = await isWebhookDuplicateAsync(companyId, webhookId);
+
+			if (isDuplicate) {
+				telnyxLogger.info("Duplicate webhook skipped (database-backed)", {
+					correlationId,
+					webhookId,
+					companyId,
+				});
+				// Return success to prevent Telnyx from retrying
+				return NextResponse.json(
+					createWebhookResponse(true, "Already processed"),
+					{ status: 200 },
+				);
+			}
+		} else if (webhookId && !companyId) {
+			// Log warning but continue processing - phone might not be in our system
+			telnyxLogger.debug("No company context for webhook dedup", {
+				correlationId,
+				webhookId,
+				targetPhone,
+			});
+		}
 
 		telnyxLogger.info("Processing webhook", {
 			correlationId,
 			eventType,
 			webhookId,
+			companyId,
 		});
 
-		// Route to appropriate handler based on event type
+		// Step 6: Route to appropriate handler based on event type
 		if (isCallEvent(eventType)) {
 			await handleCallEvent(payload, eventType, correlationId);
 		} else if (isMessageEvent(eventType)) {
@@ -124,11 +191,17 @@ export async function POST(request: NextRequest) {
 			});
 		}
 
+		// Step 7: Mark as processed (database-backed, multi-tenant)
+		if (webhookId && companyId) {
+			await markWebhookProcessedAsync(companyId, webhookId);
+		}
+
 		const latencyMs = Date.now() - startTime;
 		telnyxLogger.info("Webhook processed successfully", {
 			correlationId,
 			eventType,
 			webhookId,
+			companyId,
 			latencyMs,
 		});
 
@@ -144,20 +217,19 @@ export async function POST(request: NextRequest) {
 			correlationId,
 			eventType,
 			webhookId,
+			companyId,
 			error: errorMessage,
 			latencyMs,
 		});
 
 		// Add to dead letter queue for retry
-		if (webhookId && eventType) {
+		if (eventType) {
 			try {
-				const body = await request.clone().text().catch(() => "");
 				await addToDLQ({
-					webhookId,
+					companyId,
 					eventType,
 					payload: body ? JSON.parse(body) : {},
 					errorMessage,
-					errorCode: error instanceof Error ? error.name : "UNKNOWN_ERROR",
 					correlationId,
 				});
 
@@ -184,6 +256,38 @@ export async function POST(request: NextRequest) {
 	}
 }
 
+/**
+ * Extract the target phone number from webhook payload
+ * Used to determine company context for multi-tenant deduplication
+ */
+function extractTargetPhoneNumber(
+	payload: WebhookPayload,
+	eventType: string,
+): string | null {
+	const data = payload.data.payload;
+
+	// Call events - use the 'to' field (our number being called/calling)
+	if (eventType.startsWith("call.")) {
+		const to = data.to as string | undefined;
+		return to || null;
+	}
+
+	// Message events - use the first 'to' phone number
+	if (eventType.startsWith("message.")) {
+		// For received messages, 'to' is our number
+		const toArray = data.to as Array<{ phone_number?: string }> | undefined;
+		if (toArray?.[0]?.phone_number) {
+			return toArray[0].phone_number;
+		}
+
+		// Fallback for sent/delivered events that might have different structure
+		const to = data.to_phone_number as string | undefined;
+		return to || null;
+	}
+
+	return null;
+}
+
 // =============================================================================
 // CALL EVENT HANDLERS
 // =============================================================================
@@ -197,6 +301,10 @@ async function handleCallEvent(
 	correlationId: string,
 ) {
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		telnyxLogger.error("Failed to create Supabase client for call event", { correlationId, eventType });
+		throw new Error("Database unavailable");
+	}
 
 	switch (eventType) {
 		case "call.initiated": {
@@ -572,6 +680,10 @@ async function handleMessageEvent(
 	correlationId: string,
 ) {
 	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		telnyxLogger.error("Failed to create Supabase client for message event", { correlationId, eventType });
+		throw new Error("Database unavailable");
+	}
 
 	switch (eventType) {
 		case "message.received": {

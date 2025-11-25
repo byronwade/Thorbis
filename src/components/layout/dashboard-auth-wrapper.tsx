@@ -11,10 +11,10 @@ import { createClient } from "@/lib/supabase/server";
  * show a loading screen - it just performs auth checks in the background.
  *
  * Smart Onboarding Routing:
- * - NEW customers (no onboarding_completed_at): LOCKED to /dashboard/welcome
+ * - NEW customers (no onboarding_completed_at): LOCKED to /welcome
  *   They cannot access any other dashboard page until onboarding is complete.
  * - EXISTING customers (has onboarding_completed_at): Full access to all pages
- *   Including /dashboard/welcome for reference or setting up additional accounts.
+ *   Including /welcome for reference or setting up additional accounts.
  *
  * This component renders nothing - it only performs checks and redirects.
  */
@@ -81,7 +81,7 @@ export async function DashboardAuthWrapper() {
 
 	// Smart routing based on onboarding status
 	if (!hasCompletedOnboarding) {
-		// NEW CUSTOMER: Lock them to /dashboard/welcome until complete
+		// NEW CUSTOMER: Lock them to /welcome until complete
 		const headerList = await headers();
 
 		const possiblePaths = [
@@ -103,15 +103,15 @@ export async function DashboardAuthWrapper() {
 		}
 
 		const isOnWelcomePage = possiblePaths.some((path) =>
-			path?.startsWith("/dashboard/welcome"),
+			path?.startsWith("/welcome"),
 		);
 
 		// If new customer tries to access any other page, redirect to welcome
 		if (!isOnWelcomePage) {
-			redirect("/dashboard/welcome");
+			redirect("/welcome");
 		}
 	}
-	// EXISTING CUSTOMER: Allow access to any page (including /dashboard/welcome)
+	// EXISTING CUSTOMER: Allow access to any page (including /welcome)
 	// No redirect needed - they have full access
 
 	// This component renders nothing - it only performs auth checks and redirects

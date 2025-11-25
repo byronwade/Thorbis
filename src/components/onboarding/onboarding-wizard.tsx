@@ -423,53 +423,38 @@ function OnboardingWizardInner() {
 				/>
 			)}
 
-			<div className="min-h-screen bg-background flex flex-col">
-				{/* Minimal Unified Header */}
-				<header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-					<div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
-						<div className="flex items-center justify-between h-14">
-							{/* Left: Logo + Step */}
-							<div className="flex items-center gap-3 min-w-0">
-								<span className="font-semibold text-lg tracking-tight">Thorbis</span>
-								<span className="text-muted-foreground/40 hidden sm:inline">|</span>
-								<span className="text-sm text-muted-foreground hidden sm:inline truncate">
+			<div className="flex-1 flex flex-col">
+				{/* Progress Header - Only shown after payment collected */}
+				{data.paymentMethodCollected && (
+					<div className="sticky top-14 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+						<div className="w-full max-w-2xl mx-auto px-4 sm:px-6">
+							<div className="flex items-center justify-between h-12">
+								{/* Left: Step name */}
+								<span className="text-sm text-muted-foreground truncate">
 									{currentConfig.title}
 								</span>
-							</div>
 
-							{/* Center: Progress bar (desktop) */}
-							<div className="hidden md:flex items-center gap-3 flex-1 max-w-xs mx-8">
-								<div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-									<div
-										className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
-										style={{ width: `${progress}%` }}
-									/>
-								</div>
-								<span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
-									{Math.round(progress)}%
-								</span>
-							</div>
-
-							{/* Right: Time + Save status */}
-							<div className="flex items-center gap-3">
-								<AutoSaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
-								{!isLastStep && remainingMinutes > 0 && (
-									<span className="text-xs text-muted-foreground hidden sm:inline">
-										~{remainingMinutes} min
+								{/* Center: Progress bar */}
+								<div className="flex items-center gap-3 flex-1 max-w-xs mx-6">
+									<div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+										<div
+											className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
+											style={{ width: `${progress}%` }}
+										/>
+									</div>
+									<span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
+										{Math.round(progress)}%
 									</span>
-								)}
-							</div>
-						</div>
+								</div>
 
-						{/* Progress Bar - Mobile only */}
-						<div className="h-1 bg-muted/50 md:hidden -mx-4 sm:-mx-6">
-							<div
-								className="h-full bg-primary transition-all duration-300 ease-out"
-								style={{ width: `${progress}%` }}
-							/>
+								{/* Right: Save status */}
+								<div className="flex items-center gap-3">
+									<AutoSaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
+								</div>
+							</div>
 						</div>
 					</div>
-				</header>
+				)}
 
 				{/* Main Content */}
 				<main className="flex-1">

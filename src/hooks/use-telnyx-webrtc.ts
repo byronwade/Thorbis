@@ -10,6 +10,7 @@
  * - Real-time call state management
  * - Audio device selection
  * - Connection status monitoring
+ * - Auto-reconnection with exponential backoff
  */
 
 "use client";
@@ -17,6 +18,21 @@
 import type { Call, INotification } from "@telnyx/webrtc";
 import { TelnyxRTC } from "@telnyx/webrtc";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+// =============================================================================
+// AUTO-RECONNECTION CONFIGURATION
+// =============================================================================
+
+const RECONNECT_CONFIG = {
+	// Maximum number of reconnection attempts
+	maxAttempts: 5,
+	// Base delay in milliseconds (doubles with each attempt)
+	baseDelayMs: 1000,
+	// Maximum delay between attempts
+	maxDelayMs: 30000,
+	// Jitter factor (0-1) to add randomness
+	jitterFactor: 0.3,
+};
 
 /**
  * Call state types
@@ -70,7 +86,9 @@ export type UseTelnyxWebRTCReturn = {
 	// Connection state
 	isConnected: boolean;
 	isConnecting: boolean;
+	isReconnecting: boolean;
 	connectionError: string | null;
+	reconnectAttempts: number;
 
 	// Current call
 	currentCall: WebRTCCall | null;
@@ -88,6 +106,7 @@ export type UseTelnyxWebRTCReturn = {
 	// Connection actions
 	connect: () => Promise<void>;
 	disconnect: () => void;
+	reconnect: () => Promise<void>;
 
 	// Audio devices
 	audioDevices: MediaDeviceInfo[];
@@ -105,7 +124,9 @@ export function useTelnyxWebRTC(
 	// Connection state
 	const [isConnected, setIsConnected] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
+	const [isReconnecting, setIsReconnecting] = useState(false);
 	const [connectionError, setConnectionError] = useState<string | null>(null);
+	const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
 	// Call state
 	const [currentCall, setCurrentCall] = useState<WebRTCCall | null>(null);
@@ -117,11 +138,175 @@ export function useTelnyxWebRTC(
 	const clientRef = useRef<TelnyxRTC | null>(null);
 	const activeCallRef = useRef<Call | null>(null);
 	const optionsRef = useRef(options);
+	const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const shouldReconnectRef = useRef(true);
 
 	// Keep options ref up to date
 	useEffect(() => {
 		optionsRef.current = options;
 	}, [options]);
+
+	/**
+	 * Calculate reconnection delay with exponential backoff and jitter
+	 */
+	const calculateReconnectDelay = useCallback((attempt: number): number => {
+		// Exponential backoff: baseDelay * 2^attempt
+		const exponentialDelay =
+			RECONNECT_CONFIG.baseDelayMs * Math.pow(2, attempt);
+
+		// Cap at maxDelay
+		const cappedDelay = Math.min(exponentialDelay, RECONNECT_CONFIG.maxDelayMs);
+
+		// Add jitter to prevent thundering herd
+		const jitter =
+			cappedDelay * RECONNECT_CONFIG.jitterFactor * Math.random();
+
+		return Math.round(cappedDelay + jitter);
+	}, []);
+
+	/**
+	 * Schedule a reconnection attempt
+	 */
+	const scheduleReconnect = useCallback(() => {
+		// Clear any existing timeout
+		if (reconnectTimeoutRef.current) {
+			clearTimeout(reconnectTimeoutRef.current);
+		}
+
+		setReconnectAttempts((prev) => {
+			const nextAttempt = prev + 1;
+
+			if (nextAttempt > RECONNECT_CONFIG.maxAttempts) {
+				console.error(
+					`❌ WebRTC: Max reconnection attempts (${RECONNECT_CONFIG.maxAttempts}) reached`
+				);
+				setIsReconnecting(false);
+				setConnectionError(
+					`Connection lost. Max reconnection attempts (${RECONNECT_CONFIG.maxAttempts}) exceeded.`
+				);
+				return prev;
+			}
+
+			const delay = calculateReconnectDelay(nextAttempt - 1);
+			console.log(
+				`🔄 WebRTC: Scheduling reconnection attempt ${nextAttempt}/${RECONNECT_CONFIG.maxAttempts} in ${delay}ms`
+			);
+
+			setIsReconnecting(true);
+
+			reconnectTimeoutRef.current = setTimeout(async () => {
+				console.log(
+					`🔄 WebRTC: Attempting reconnection ${nextAttempt}/${RECONNECT_CONFIG.maxAttempts}`
+				);
+
+				// Clear the old client before reconnecting
+				if (clientRef.current) {
+					try {
+						clientRef.current.disconnect();
+					} catch {
+						// Ignore disconnect errors
+					}
+					clientRef.current = null;
+				}
+
+				// Attempt to reconnect
+				try {
+					const currentOptions = optionsRef.current;
+					if (currentOptions.username && currentOptions.password) {
+						// Create new client and connect
+						const client = new TelnyxRTC({
+							login: currentOptions.username,
+							password: currentOptions.password,
+							debug: currentOptions.debug,
+						});
+
+						// Re-setup event handlers
+						client.on("telnyx.ready", () => {
+							console.log("🎉 WebRTC: Reconnection successful!");
+							setIsConnected(true);
+							setIsConnecting(false);
+							setIsReconnecting(false);
+							setConnectionError(null);
+							setReconnectAttempts(0);
+						});
+
+						client.on("telnyx.error", (error: any) => {
+							console.error("❌ WebRTC: Reconnection error:", error);
+							scheduleReconnect();
+						});
+
+						client.on("telnyx.socket.error", () => {
+							if (shouldReconnectRef.current) {
+								scheduleReconnect();
+							}
+						});
+
+						client.on("telnyx.socket.close", () => {
+							setIsConnected(false);
+							if (shouldReconnectRef.current) {
+								scheduleReconnect();
+							}
+						});
+
+						clientRef.current = client;
+						await client.connect();
+					}
+				} catch (error) {
+					console.error("❌ WebRTC: Reconnection attempt failed:", error);
+					// Will be retried by the socket close handler
+				}
+			}, delay);
+
+			return nextAttempt;
+		});
+	}, [calculateReconnectDelay]);
+
+	/**
+	 * Manual reconnect function
+	 */
+	const reconnect = useCallback(async () => {
+		console.log("🔄 WebRTC: Manual reconnection requested");
+		setReconnectAttempts(0);
+		shouldReconnectRef.current = true;
+
+		// Clear existing client
+		if (clientRef.current) {
+			try {
+				clientRef.current.disconnect();
+			} catch {
+				// Ignore disconnect errors
+			}
+			clientRef.current = null;
+		}
+
+		// Clear any pending reconnect timeout
+		if (reconnectTimeoutRef.current) {
+			clearTimeout(reconnectTimeoutRef.current);
+			reconnectTimeoutRef.current = null;
+		}
+
+		setIsReconnecting(false);
+
+		// Use the normal connect flow
+		const currentOptions = optionsRef.current;
+		if (currentOptions.username && currentOptions.password) {
+			setIsConnecting(true);
+			setConnectionError(null);
+
+			try {
+				const client = initializeClient();
+				if (client) {
+					await client.connect();
+				}
+			} catch (error) {
+				console.error("❌ WebRTC: Manual reconnection failed:", error);
+				setConnectionError(
+					error instanceof Error ? error.message : "Reconnection failed"
+				);
+				setIsConnecting(false);
+			}
+		}
+	}, []);
 
 	/**
 	 * Initialize WebRTC client
@@ -168,7 +353,9 @@ export function useTelnyxWebRTC(
 			console.log("🎉 WebRTC: telnyx.ready event - Connection successful!");
 			setIsConnected(true);
 			setIsConnecting(false);
+			setIsReconnecting(false);
 			setConnectionError(null);
+			setReconnectAttempts(0); // Reset on successful connection
 		});
 
 		// Handle error event
@@ -184,18 +371,28 @@ export function useTelnyxWebRTC(
 			setIsConnecting(false);
 		});
 
-		// Handle socket error
+		// Handle socket error - trigger reconnection
 		client.on("telnyx.socket.error", (socketError: any) => {
 			console.error("❌ WebRTC: telnyx.socket.error event:", socketError);
 			setConnectionError("Socket connection failed");
 			setIsConnecting(false);
 			setIsConnected(false);
+
+			// Trigger auto-reconnection
+			if (shouldReconnectRef.current) {
+				scheduleReconnect();
+			}
 		});
 
-		// Handle socket close
+		// Handle socket close - trigger reconnection
 		client.on("telnyx.socket.close", (closeEvent: any) => {
 			console.warn("⚠️ WebRTC: telnyx.socket.close event:", closeEvent);
 			setIsConnected(false);
+
+			// Trigger auto-reconnection (unless manually disconnected)
+			if (shouldReconnectRef.current) {
+				scheduleReconnect();
+			}
 		});
 
 		// Handle incoming call
@@ -282,11 +479,23 @@ export function useTelnyxWebRTC(
 	 * Disconnect from Telnyx
 	 */
 	const disconnect = useCallback(() => {
+		// Disable auto-reconnection
+		shouldReconnectRef.current = false;
+
+		// Clear any pending reconnect timeout
+		if (reconnectTimeoutRef.current) {
+			clearTimeout(reconnectTimeoutRef.current);
+			reconnectTimeoutRef.current = null;
+		}
+
 		if (clientRef.current) {
 			clientRef.current.disconnect();
 			clientRef.current = null;
 		}
 		setIsConnected(false);
+		setIsConnecting(false);
+		setIsReconnecting(false);
+		setReconnectAttempts(0);
 		setCurrentCall(null);
 		activeCallRef.current = null;
 	}, []);
@@ -495,10 +704,17 @@ export function useTelnyxWebRTC(
 	]); // ✅ Runs once - uses ref for options
 
 	return {
+		// Connection state
 		isConnected,
 		isConnecting,
+		isReconnecting,
 		connectionError,
+		reconnectAttempts,
+
+		// Current call
 		currentCall,
+
+		// Call actions
 		makeCall,
 		answerCall,
 		endCall,
@@ -507,8 +723,13 @@ export function useTelnyxWebRTC(
 		holdCall,
 		unholdCall,
 		sendDTMF,
+
+		// Connection actions
 		connect,
 		disconnect,
+		reconnect,
+
+		// Audio devices
 		audioDevices,
 		setAudioDevice,
 	};

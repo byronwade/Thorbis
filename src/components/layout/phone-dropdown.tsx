@@ -1,34 +1,49 @@
 "use client";
 
 /**
- * PhoneDropdown - Telnyx Dialer Component
+ * PhoneDropdown - Enterprise Phone Dialer
  *
- * Redesigned phone dialer with:
- * - Clear connection status display
- * - WebRTC browser calling (primary)
- * - Call Control API fallback (when WebRTC unavailable)
- * - Simplified UI with better visual feedback
- * - Customer search with smart filtering
+ * Full-featured dialer with:
+ * - WebRTC primary mode (browser audio)
+ * - Call Control API fallback (opens call window)
+ * - Connection status monitoring
+ * - Automatic reconnection
+ * - Customer search
+ *
+ * References:
+ * - https://developers.telnyx.com/docs/voice/webrtc/js-sdk/quickstart
+ * - https://developers.telnyx.com/docs/voice/webrtc/js-sdk/error-handling
  */
 
+import type { Call as TelnyxCall } from "@telnyx/webrtc";
 import {
+	AlertCircle,
 	Check,
+	ChevronDown,
 	Clock,
+	ExternalLink,
+	Headphones,
 	Loader2,
 	MessageSquare,
 	Mic,
+	MicOff,
+	Pause,
 	Phone,
 	PhoneCall,
 	PhoneIncoming,
+	PhoneMissed,
+	PhoneOff,
 	PhoneOutgoing,
+	Play,
 	RefreshCw,
 	Server,
 	User,
+	Wifi,
 	WifiOff,
 	X,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { makeCall } from "@/actions/telnyx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,6 +74,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
 	Tooltip,
 	TooltipContent,
@@ -66,15 +82,12 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDialerCustomers } from "@/hooks/use-dialer-customers";
-import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
+import { useTelnyxWebRTC, type WebRTCCall, type CallState } from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
 import { useDialerStore } from "@/lib/stores/dialer-store";
 import { useUIStore } from "@/lib/stores/ui-store";
+import { fetchWebRTCCredentialsOnce, resetWebRTCCredentialsCache } from "@/lib/telnyx/web-credentials-client";
 import { cn } from "@/lib/utils";
-import {
-	fetchWebRTCCredentialsOnce,
-	resetWebRTCCredentialsCache,
-} from "@/lib/telnyx/web-credentials-client";
 
 type Customer = {
 	id: string;
@@ -85,11 +98,6 @@ type Customer = {
 	phone: string | null;
 	secondary_phone?: string | null;
 	company_name?: string | null;
-	address?: string | null;
-	address2?: string | null;
-	city?: string | null;
-	state?: string | null;
-	zip_code?: string | null;
 };
 
 type CompanyPhone = {
@@ -104,147 +112,255 @@ type PhoneDropdownProps = {
 	incomingCallsCount?: number;
 };
 
-type ConnectionMode = "webrtc" | "api" | "disconnected";
+type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
+type CallMode = "webrtc" | "api";
 
-const cleanValue = (value?: string | null) => (value ?? "").trim();
-const normalizeValue = (value?: string | null) => cleanValue(value).toLowerCase();
-const digitsOnly = (value?: string | null) => cleanValue(value).replace(/\D/g, "");
+// Constants
+const WEBRTC_CONNECTION_TIMEOUT = 15000; // 15 seconds
+const WEBRTC_RETRY_DELAY = 3000; // 3 seconds
 
-const getCustomerFullName = (customer: Customer) => {
-	const displayName = cleanValue(customer.display_name);
-	if (displayName) return displayName;
+// Helper functions
+const cleanValue = (v?: string | null) => (v ?? "").trim();
 
-	const nameParts = [
-		cleanValue(customer.first_name),
-		cleanValue(customer.last_name),
-	].filter(Boolean);
-	return nameParts.join(" ") || cleanValue(customer.email) || "Unknown Customer";
+const getCustomerName = (c: Customer) => {
+	if (c.display_name?.trim()) return c.display_name.trim();
+	const name = [c.first_name, c.last_name].map(cleanValue).filter(Boolean).join(" ");
+	return name || c.email?.trim() || "Unknown";
 };
 
-const getCustomerAddressString = (customer: Customer) => {
-	const cityState = [cleanValue(customer.city), cleanValue(customer.state)]
-		.filter(Boolean)
-		.join(", ");
-	return [
-		cleanValue(customer.address),
-		cleanValue(customer.address2),
-		cityState,
-		cleanValue(customer.zip_code),
-	]
-		.filter(Boolean)
-		.join(", ");
-};
-
-const formatPhoneDisplay = (phone: string) => {
-	const digits = phone.replace(/\D/g, "");
-	if (digits.length === 11 && digits.startsWith("1")) {
-		return `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+const formatPhone = (phone: string) => {
+	const d = phone.replace(/\D/g, "");
+	if (d.length === 11 && d[0] === "1") {
+		return `+1 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7)}`;
 	}
-	if (digits.length === 10) {
-		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+	if (d.length === 10) {
+		return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
 	}
 	return phone;
 };
 
 /**
- * Connection Status Badge - Shows current calling mode
+ * Connection Status Badge
  */
 function ConnectionStatusBadge({
+	status,
 	mode,
-	isConnecting,
-	error,
 	onRetry,
+	className,
 }: {
-	mode: ConnectionMode;
-	isConnecting: boolean;
-	error?: string | null;
+	status: ConnectionStatus;
+	mode: CallMode;
 	onRetry?: () => void;
+	className?: string;
 }) {
-	if (isConnecting) {
-		return (
-			<div className="flex items-center gap-2 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2 dark:border-yellow-800 dark:bg-yellow-950/30">
-				<Loader2 className="h-4 w-4 animate-spin text-yellow-600 dark:text-yellow-400" />
-				<div className="flex-1">
-					<p className="text-xs font-medium text-yellow-800 dark:text-yellow-200">
-						Connecting...
-					</p>
-					<p className="text-[10px] text-yellow-600 dark:text-yellow-400">
-						Setting up browser audio
-					</p>
-				</div>
-			</div>
-		);
-	}
-
-	if (mode === "webrtc") {
-		return (
-			<div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 dark:border-green-800 dark:bg-green-950/30">
-				<div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
-					<Mic className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-				</div>
-				<div className="flex-1">
-					<p className="text-xs font-medium text-green-800 dark:text-green-200">
-						Browser Audio Ready
-					</p>
-					<p className="text-[10px] text-green-600 dark:text-green-400">
-						Calls use your microphone & speakers
-					</p>
-				</div>
-				<Badge variant="outline" className="border-green-300 text-[10px] text-green-700 dark:border-green-700 dark:text-green-300">
-					WebRTC
-				</Badge>
-			</div>
-		);
-	}
-
 	if (mode === "api") {
 		return (
-			<div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950/30">
-				<div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
-					<Server className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-				</div>
-				<div className="flex-1">
-					<p className="text-xs font-medium text-blue-800 dark:text-blue-200">
-						Server-Side Calling
-					</p>
-					<p className="text-[10px] text-blue-600 dark:text-blue-400">
-						Opens call window to manage calls
-					</p>
-				</div>
-				<Badge variant="outline" className="border-blue-300 text-[10px] text-blue-700 dark:border-blue-700 dark:text-blue-300">
-					API
-				</Badge>
-			</div>
+			<Badge variant="outline" className={cn("gap-1 text-[10px]", className)}>
+				<Server className="h-3 w-3" />
+				API Mode
+			</Badge>
 		);
 	}
 
-	// Disconnected state with error
+	const statusConfig: Record<ConnectionStatus, {
+		icon: typeof WifiOff;
+		label: string;
+		variant: "outline" | "destructive";
+		className: string;
+		animate?: boolean;
+	}> = {
+		disconnected: {
+			icon: WifiOff,
+			label: "Disconnected",
+			variant: "outline",
+			className: "text-muted-foreground",
+		},
+		connecting: {
+			icon: Loader2,
+			label: "Connecting...",
+			variant: "outline",
+			className: "text-warning",
+			animate: true,
+		},
+		connected: {
+			icon: Wifi,
+			label: "WebRTC Ready",
+			variant: "outline",
+			className: "text-success border-success/30",
+		},
+		error: {
+			icon: AlertCircle,
+			label: "Connection Error",
+			variant: "destructive",
+			className: "",
+		},
+	};
+
+	const config = statusConfig[status];
+	const Icon = config.icon;
+
 	return (
-		<div className="space-y-2">
-			<div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 dark:border-red-800 dark:bg-red-950/30">
-				<div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50">
-					<WifiOff className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+		<div className={cn("flex items-center gap-1", className)}>
+			<Badge variant={config.variant} className={cn("gap-1 text-[10px]", config.className)}>
+				<Icon className={cn("h-3 w-3", config.animate === true && "animate-spin")} />
+				{config.label}
+			</Badge>
+			{(status === "error" || status === "disconnected") && onRetry && (
+				<Button
+					variant="ghost"
+					size="icon"
+					className="h-5 w-5"
+					onClick={onRetry}
+				>
+					<RefreshCw className="h-3 w-3" />
+				</Button>
+			)}
+		</div>
+	);
+}
+
+/**
+ * Active Call Card - Shows when a call is in progress
+ */
+function ActiveCallCard({
+	call,
+	onMute,
+	onHold,
+	onEnd,
+	className,
+}: {
+	call: WebRTCCall;
+	onMute: () => void;
+	onHold: () => void;
+	onEnd: () => void;
+	className?: string;
+}) {
+	const [duration, setDuration] = useState(0);
+
+	// Update duration timer
+	useEffect(() => {
+		if (call.state !== "active") {
+			setDuration(0);
+			return;
+		}
+
+		const startTime = call.startTime?.getTime() || Date.now();
+		const interval = setInterval(() => {
+			setDuration(Math.floor((Date.now() - startTime) / 1000));
+		}, 1000);
+
+		return () => clearInterval(interval);
+	}, [call.state, call.startTime]);
+
+	const formatDuration = (seconds: number) => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins}:${secs.toString().padStart(2, "0")}`;
+	};
+
+	const stateConfig: Record<CallState, { label: string; color: string; icon: typeof Phone }> = {
+		idle: { label: "Idle", color: "text-muted-foreground", icon: Phone },
+		connecting: { label: "Connecting...", color: "text-warning", icon: PhoneOutgoing },
+		ringing: { label: "Ringing...", color: "text-primary", icon: PhoneOutgoing },
+		active: { label: "Active", color: "text-success", icon: PhoneCall },
+		held: { label: "On Hold", color: "text-warning", icon: Pause },
+		ended: { label: "Call Ended", color: "text-muted-foreground", icon: PhoneOff },
+	};
+
+	const config = stateConfig[call.state];
+	const StateIcon = config.icon;
+
+	return (
+		<div className={cn("rounded-lg border bg-card p-3", className)}>
+			{/* Call info header */}
+			<div className="mb-3 flex items-center justify-between">
+				<div className="flex items-center gap-2">
+					<div className={cn("rounded-full bg-primary/10 p-2", config.color)}>
+						<StateIcon className="h-4 w-4" />
+					</div>
+					<div>
+						<p className="text-sm font-medium">
+							{call.remoteName || formatPhone(call.remoteNumber)}
+						</p>
+						<p className={cn("text-xs", config.color)}>{config.label}</p>
+					</div>
 				</div>
-				<div className="flex-1">
-					<p className="text-xs font-medium text-red-800 dark:text-red-200">
-						Connection Failed
-					</p>
-					<p className="text-[10px] text-red-600 dark:text-red-400">
-						{error || "Unable to connect"}
-					</p>
-				</div>
-				{onRetry && (
-					<Button
-						size="sm"
-						variant="ghost"
-						className="h-7 gap-1 px-2 text-xs text-red-700 hover:bg-red-100 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-900/50"
-						onClick={onRetry}
-					>
-						<RefreshCw className="h-3 w-3" />
-						Retry
-					</Button>
+				{call.state === "active" && (
+					<Badge variant="outline" className="text-xs tabular-nums">
+						{formatDuration(duration)}
+					</Badge>
 				)}
 			</div>
+
+			{/* Call controls */}
+			{(call.state === "active" || call.state === "held") && (
+				<div className="flex items-center justify-center gap-2">
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant={call.isMuted ? "destructive" : "outline"}
+								size="icon"
+								className="h-9 w-9 rounded-full"
+								onClick={onMute}
+							>
+								{call.isMuted ? (
+									<MicOff className="h-4 w-4" />
+								) : (
+									<Mic className="h-4 w-4" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>{call.isMuted ? "Unmute" : "Mute"}</TooltipContent>
+					</Tooltip>
+
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant={call.isHeld ? "secondary" : "outline"}
+								size="icon"
+								className="h-9 w-9 rounded-full"
+								onClick={onHold}
+							>
+								{call.isHeld ? (
+									<Play className="h-4 w-4" />
+								) : (
+									<Pause className="h-4 w-4" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>{call.isHeld ? "Resume" : "Hold"}</TooltipContent>
+					</Tooltip>
+
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="destructive"
+								size="icon"
+								className="h-9 w-9 rounded-full"
+								onClick={onEnd}
+							>
+								<PhoneOff className="h-4 w-4" />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>End Call</TooltipContent>
+					</Tooltip>
+				</div>
+			)}
+
+			{/* Connecting/Ringing state */}
+			{(call.state === "connecting" || call.state === "ringing") && (
+				<div className="flex items-center justify-center gap-2">
+					<Button
+						variant="destructive"
+						size="sm"
+						className="gap-2"
+						onClick={onEnd}
+					>
+						<PhoneOff className="h-4 w-4" />
+						Cancel
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 }
@@ -258,14 +374,12 @@ export function PhoneDropdown({
 	const [mounted, setMounted] = useState(false);
 	const [isPending, startTransition] = useTransition();
 
-	// Lazy-load customers only when dropdown opens
+	// Dropdown & customer state
 	const [open, setOpen] = useState(false);
 	const { customers, isLoading: customersLoading } = useDialerCustomers(open);
-
-	// Dialer store state
 	const dialerStore = useDialerStore();
 
-	// Dialer state
+	// Form state
 	const [toNumber, setToNumber] = useState("");
 	const [fromNumber, setFromNumber] = useState(companyPhones[0]?.number || "");
 	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -273,349 +387,402 @@ export function PhoneDropdown({
 	const [customerSearchQuery, setCustomerSearchQuery] = useState("");
 
 	// WebRTC state
+	const [callMode, setCallMode] = useState<CallMode>("webrtc");
 	const [webrtcCredentials, setWebrtcCredentials] = useState<{
 		username: string;
 		password: string;
 	} | null>(null);
-	const [isLoadingWebRTC, setIsLoadingWebRTC] = useState(false);
-	const [webrtcAttempted, setWebrtcAttempted] = useState(false);
+	const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("disconnected");
+	const [connectionError, setConnectionError] = useState<string | null>(null);
+	const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const retryCountRef = useRef(0);
+	const maxRetries = 3;
 
-	// Get call state from UI store
-	const callStatus = useUIStore((state) => state.call.status);
-	const caller = useUIStore((state) => state.call.caller);
+	// Audio element for WebRTC
+	const audioRef = useRef<HTMLAudioElement | null>(null);
 
+	// Call state from UI store
+	const callStatus = useUIStore((s) => s.call.status);
+	const caller = useUIStore((s) => s.call.caller);
 	const hasIncomingCall = callStatus === "incoming";
 	const displayCount = incomingCallsCount ?? (hasIncomingCall ? 1 : 0);
 
-	// Initialize WebRTC when dropdown opens
-	useEffect(() => {
-		if (!open || webrtcCredentials || webrtcAttempted) return;
-
-		let cancelled = false;
-		setIsLoadingWebRTC(true);
-
-		fetchWebRTCCredentialsOnce()
-			.then((result) => {
-				if (cancelled) return;
-				setWebrtcAttempted(true);
-				if (result.success && result.credential) {
-					setWebrtcCredentials({
-						username: result.credential.username,
-						password: result.credential.password,
-					});
-				}
-			})
-			.catch(() => {
-				if (!cancelled) {
-					setWebrtcAttempted(true);
-					resetWebRTCCredentialsCache();
-				}
-			})
-			.finally(() => {
-				if (!cancelled) setIsLoadingWebRTC(false);
-			});
-
-		return () => {
-			cancelled = true;
-		};
-	}, [open, webrtcCredentials, webrtcAttempted]);
-
-	// WebRTC hook - only initialize when credentials are available
+	// WebRTC hook
 	const webrtc = useTelnyxWebRTC({
-		username: open && webrtcCredentials?.username ? webrtcCredentials.username : "",
-		password: open && webrtcCredentials?.password ? webrtcCredentials.password : "",
+		username: webrtcCredentials?.username || "",
+		password: webrtcCredentials?.password || "",
 		autoConnect: false,
-		disabled: !open,
-		debug: false,
-		onIncomingCall: () => {},
-		onCallEnded: () => {},
+		debug: process.env.NODE_ENV === "development",
+		onIncomingCall: (call) => {
+			toast.info(`Incoming call from ${call.remoteName || call.remoteNumber}`);
+		},
+		onCallEnded: () => {
+			toast.info("Call ended");
+		},
 	});
 
-	// Connect WebRTC when credentials become available
+	// Mount
 	useEffect(() => {
-		if (open && webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
-			webrtc.connect().catch(() => {
-				// Silent catch - error state is tracked in webrtc.connectionError
-			});
+		setMounted(true);
+		// Create audio element for WebRTC
+		if (typeof window !== "undefined" && !audioRef.current) {
+			const audio = document.createElement("audio");
+			audio.id = "telnyx-remote-audio";
+			audio.autoplay = true;
+			audio.style.display = "none";
+			document.body.appendChild(audio);
+			audioRef.current = audio;
 		}
-	}, [open, webrtcCredentials, webrtc]);
 
-	// Determine connection mode
-	const connectionMode: ConnectionMode = useMemo(() => {
-		if (webrtc.isConnected) return "webrtc";
-		if (webrtcAttempted && !webrtc.isConnecting) return "api"; // Fallback to API mode
-		return "disconnected";
-	}, [webrtc.isConnected, webrtc.isConnecting, webrtcAttempted]);
+		return () => {
+			if (audioRef.current) {
+				audioRef.current.remove();
+				audioRef.current = null;
+			}
+		};
+	}, []);
 
-	const isConnecting = isLoadingWebRTC || webrtc.isConnecting;
-
-	// Update from number when company phones change
+	// Sync from number
 	useEffect(() => {
 		if (!fromNumber && companyPhones.length > 0) {
 			setFromNumber(companyPhones[0].number);
 		}
 	}, [companyPhones, fromNumber]);
 
-	// Client-only rendering
-	useEffect(() => {
-		setMounted(true);
-	}, []);
-
-	// Sync dialer store state
-	useEffect(() => {
-		setOpen(dialerStore.isOpen);
-	}, [dialerStore.isOpen]);
-
-	useEffect(() => {
-		setToNumber(dialerStore.phoneNumber);
-	}, [dialerStore.phoneNumber]);
-
+	// Sync dialer store
+	useEffect(() => setOpen(dialerStore.isOpen), [dialerStore.isOpen]);
+	useEffect(() => setToNumber(dialerStore.phoneNumber), [dialerStore.phoneNumber]);
 	useEffect(() => {
 		if (dialerStore.customerId && customers.length > 0) {
-			const customer = customers.find((c) => c.id === dialerStore.customerId);
-			if (customer && customer.id !== selectedCustomer?.id) {
-				setSelectedCustomer(customer);
-			}
+			const c = customers.find((x) => x.id === dialerStore.customerId);
+			if (c && c.id !== selectedCustomer?.id) setSelectedCustomer(c);
 		}
 	}, [dialerStore.customerId, customers, selectedCustomer?.id]);
 
-	// Handle dropdown open/close
-	const handleOpenChange = useCallback(
-		(newOpen: boolean) => {
-			setOpen(newOpen);
-			if (newOpen) {
-				dialerStore.openDialer();
-			} else {
-				dialerStore.closeDialer();
-				setToNumber("");
-				setSelectedCustomer(null);
-			}
-		},
-		[dialerStore],
-	);
+	// Fetch WebRTC credentials on mount
+	useEffect(() => {
+		if (!mounted) return;
 
-	// Handle customer selection
-	const handleCustomerSelect = useCallback((customer: Customer | null) => {
-		setSelectedCustomer(customer);
-		if (customer) {
-			const preferredNumber = customer.phone || customer.secondary_phone || "";
-			if (preferredNumber) setToNumber(preferredNumber);
+		const fetchCredentials = async () => {
+			try {
+				const result = await fetchWebRTCCredentialsOnce();
+				if (result.success && result.credential) {
+					setWebrtcCredentials({
+						username: result.credential.username,
+						password: result.credential.password,
+					});
+				} else {
+					console.warn("Failed to get WebRTC credentials, using API mode");
+					setCallMode("api");
+				}
+			} catch (error) {
+				console.error("Failed to fetch WebRTC credentials:", error);
+				setCallMode("api");
+			}
+		};
+
+		fetchCredentials();
+	}, [mounted]);
+
+	// Connect WebRTC when credentials are available
+	useEffect(() => {
+		if (!webrtcCredentials || callMode !== "webrtc") return;
+
+		const connectWebRTC = async () => {
+			// Clear any existing timeout
+			if (connectionTimeoutRef.current) {
+				clearTimeout(connectionTimeoutRef.current);
+			}
+
+			setConnectionStatus("connecting");
+			setConnectionError(null);
+
+			// Set connection timeout
+			connectionTimeoutRef.current = setTimeout(() => {
+				if (connectionStatus === "connecting") {
+					setConnectionStatus("error");
+					setConnectionError("Connection timeout - WebRTC may require Level 2 verification");
+
+					// Auto-fallback to API mode after timeout
+					if (retryCountRef.current >= maxRetries) {
+						toast.warning("WebRTC unavailable, switching to API mode");
+						setCallMode("api");
+					}
+				}
+			}, WEBRTC_CONNECTION_TIMEOUT);
+
+			try {
+				await webrtc.connect();
+			} catch (error) {
+				console.error("WebRTC connection error:", error);
+				setConnectionStatus("error");
+				setConnectionError(error instanceof Error ? error.message : "Connection failed");
+			}
+		};
+
+		connectWebRTC();
+
+		return () => {
+			if (connectionTimeoutRef.current) {
+				clearTimeout(connectionTimeoutRef.current);
+			}
+		};
+	}, [webrtcCredentials, callMode]);
+
+	// Sync WebRTC connection state
+	useEffect(() => {
+		if (webrtc.isConnected) {
+			if (connectionTimeoutRef.current) {
+				clearTimeout(connectionTimeoutRef.current);
+			}
+			setConnectionStatus("connected");
+			setConnectionError(null);
+			retryCountRef.current = 0;
+		} else if (webrtc.connectionError) {
+			setConnectionStatus("error");
+			setConnectionError(webrtc.connectionError);
+		} else if (webrtc.isConnecting) {
+			setConnectionStatus("connecting");
 		}
+	}, [webrtc.isConnected, webrtc.isConnecting, webrtc.connectionError]);
+
+	// Handlers
+	const handleOpenChange = useCallback((newOpen: boolean) => {
+		setOpen(newOpen);
+		if (newOpen) {
+			dialerStore.openDialer();
+		} else {
+			dialerStore.closeDialer();
+			setToNumber("");
+			setSelectedCustomer(null);
+			setCustomerSearchQuery("");
+		}
+	}, [dialerStore]);
+
+	const handleCustomerSelect = useCallback((c: Customer | null) => {
+		setSelectedCustomer(c);
+		if (c?.phone) setToNumber(c.phone);
 		setCustomerSearchQuery("");
 		setCustomerSearchOpen(false);
 	}, []);
 
+	const handleRetryConnection = useCallback(() => {
+		retryCountRef.current += 1;
+
+		if (retryCountRef.current > maxRetries) {
+			toast.warning("Max retries reached, switching to API mode");
+			setCallMode("api");
+			return;
+		}
+
+		// Reset credentials cache and refetch
+		resetWebRTCCredentialsCache();
+		setWebrtcCredentials(null);
+		setConnectionStatus("disconnected");
+		setConnectionError(null);
+
+		// Refetch credentials
+		fetchWebRTCCredentialsOnce().then((result) => {
+			if (result.success && result.credential) {
+				setWebrtcCredentials({
+					username: result.credential.username,
+					password: result.credential.password,
+				});
+			}
+		});
+	}, [toast]);
+
+	const handleModeToggle = useCallback((checked: boolean) => {
+		setCallMode(checked ? "webrtc" : "api");
+	}, []);
+
 	// Filter customers
 	const filteredCustomers = useMemo(() => {
-		const rawQuery = customerSearchQuery.trim();
-		if (!rawQuery) return customers;
+		const q = customerSearchQuery.trim().toLowerCase();
+		if (!q) return customers.slice(0, 50);
 
-		const normalizedQuery = rawQuery.toLowerCase();
-		const numericQuery = rawQuery.replace(/\D/g, "");
+		const qDigits = q.replace(/\D/g, "");
+		return customers.filter((c) => {
+			const searchable = [
+				c.first_name, c.last_name, c.display_name,
+				c.email, c.phone, c.secondary_phone, c.company_name,
+			].map((v) => cleanValue(v).toLowerCase());
 
-		return customers.filter((customer) => {
-			const searchableStrings = [
-				customer.first_name,
-				customer.last_name,
-				`${customer.first_name ?? ""} ${customer.last_name ?? ""}`,
-				customer.display_name,
-				customer.email,
-				customer.company_name,
-				customer.phone,
-				customer.secondary_phone,
-				customer.city,
-				customer.state,
-				customer.zip_code,
-				getCustomerAddressString(customer),
-			].map(normalizeValue);
-
-			if (searchableStrings.some((value) => value.includes(normalizedQuery))) {
-				return true;
-			}
-
-			if (numericQuery) {
-				const numericFields = [customer.phone, customer.secondary_phone]
-					.map(digitsOnly)
+			if (searchable.some((s) => s.includes(q))) return true;
+			if (qDigits) {
+				const phones = [c.phone, c.secondary_phone]
+					.map((p) => cleanValue(p).replace(/\D/g, ""))
 					.filter(Boolean);
-				if (numericFields.some((value) => value.includes(numericQuery))) {
-					return true;
-				}
+				if (phones.some((p) => p.includes(qDigits))) return true;
 			}
-
 			return false;
 		});
 	}, [customers, customerSearchQuery]);
 
-	const displayedCustomers = useMemo(() => {
-		const hasSearch = customerSearchQuery.trim().length > 0;
-		return hasSearch ? filteredCustomers : filteredCustomers.slice(0, 50);
-	}, [filteredCustomers, customerSearchQuery]);
+	// Make call via WebRTC
+	const handleWebRTCCall = useCallback(async () => {
+		const to = toNumber.replace(/\D/g, "");
+		if (!to || !webrtc.isConnected) return;
 
-	// Retry WebRTC connection
-	const handleRetryConnection = useCallback(() => {
-		setWebrtcCredentials(null);
-		setWebrtcAttempted(false);
-		resetWebRTCCredentialsCache();
-	}, []);
+		try {
+			await webrtc.makeCall(to, fromNumber);
+			toast.success(
+				selectedCustomer
+					? `Calling ${getCustomerName(selectedCustomer)}`
+					: `Calling ${formatPhone(toNumber)}`
+			);
+		} catch (error) {
+			console.error("WebRTC call error:", error);
+			toast.error("Failed to start call via WebRTC");
 
-	// Handle call initiation
-	const handleStartCall = useCallback(async () => {
-		if (!companyId) {
-			toast.error("No company selected. Please select a company to make calls.");
-			return;
+			// Fallback to API
+			toast.info("Falling back to API mode...");
+			handleAPICall();
 		}
+	}, [toNumber, fromNumber, selectedCustomer, webrtc, toast]);
 
-		if (!(toNumber.trim() && fromNumber) || isPending) return;
+	// Make call via API (fallback)
+	const handleAPICall = useCallback(async () => {
+		if (!companyId || isPending) return;
 
-		const normalizedTo = toNumber.replace(/\D/g, "");
-		if (!normalizedTo) {
+		const to = toNumber.replace(/\D/g, "");
+		if (!to) {
 			toast.error("Please enter a valid phone number");
 			return;
 		}
 
-		// WebRTC mode - browser audio
-		if (connectionMode === "webrtc" && webrtc.isConnected) {
-			try {
-				await navigator.mediaDevices.getUserMedia({ audio: true });
-
-				const call = await webrtc.makeCall(normalizedTo, fromNumber);
-
-				const callingMessage = selectedCustomer
-					? `Calling ${getCustomerFullName(selectedCustomer)}`
-					: `Calling ${formatPhoneDisplay(toNumber)}`;
-				toast.success(callingMessage);
-
-				const params = new URLSearchParams({
-					callId: call.id,
-					companyId,
-					...(selectedCustomer?.id && { customerId: selectedCustomer.id }),
-					to: normalizedTo,
-					from: fromNumber,
-					direction: "outbound",
-					mode: "webrtc",
-				});
-
-				window.open(`/call-window?${params.toString()}`, "_blank", "noopener,noreferrer");
-
-				setOpen(false);
-				setToNumber("");
-				setSelectedCustomer(null);
-			} catch (error) {
-				if (error instanceof Error && error.message.includes("permission")) {
-					toast.error("Microphone access denied. Please allow microphone access to make calls.");
-				} else {
-					toast.error("Failed to initiate call. Please try again.");
-				}
-			}
+		if (!fromNumber) {
+			toast.error("Please select a company phone number");
 			return;
 		}
 
-		// API mode - server-side calling
 		startTransition(async () => {
 			try {
 				const result = await makeCall({
-					to: normalizedTo,
+					to,
 					from: fromNumber,
 					companyId,
 					customerId: selectedCustomer?.id,
 				});
 
 				if (!result.success) {
-					toast.error(result.error || "Failed to initiate call");
+					toast.error(result.error || "Failed to start call");
 					return;
 				}
 
-				const callingMessage = selectedCustomer
-					? `Calling ${getCustomerFullName(selectedCustomer)}`
-					: `Calling ${formatPhoneDisplay(toNumber)}`;
-				toast.success(callingMessage);
+				toast.success(
+					selectedCustomer
+						? `Calling ${getCustomerName(selectedCustomer)}`
+						: `Calling ${formatPhone(toNumber)}`
+				);
 
-				// Open call window to manage the call
+				// Open call window
 				const params = new URLSearchParams({
 					callControlId: result.callControlId || "",
 					companyId,
-					...(selectedCustomer?.id && { customerId: selectedCustomer.id }),
-					to: normalizedTo,
+					to,
 					from: fromNumber,
 					direction: "outbound",
-					mode: "api",
+					...(selectedCustomer?.id && { customerId: selectedCustomer.id }),
 				});
 
-				window.open(`/call-window?${params.toString()}`, "_blank", "noopener,noreferrer");
+				window.open(`/call-window?${params}`, "_blank", "noopener,noreferrer");
 
-				setOpen(false);
-				setToNumber("");
-				setSelectedCustomer(null);
+				// Reset
+				handleOpenChange(false);
 			} catch {
-				toast.error("Failed to initiate call. Please try again.");
+				toast.error("Failed to start call. Please try again.");
 			}
 		});
-	}, [
-		companyId,
-		toNumber,
-		fromNumber,
-		isPending,
-		connectionMode,
-		webrtc,
-		selectedCustomer,
-		toast,
-	]);
+	}, [companyId, toNumber, fromNumber, selectedCustomer, isPending, toast, handleOpenChange]);
 
-	// Check if call button should be enabled
-	const canCall = Boolean(
-		toNumber.trim() &&
-			fromNumber &&
-			companyPhones.length > 0 &&
-			(connectionMode === "webrtc" || connectionMode === "api") &&
-			!isConnecting,
-	);
+	// Start call based on mode
+	const handleStartCall = useCallback(() => {
+		if (callMode === "webrtc" && webrtc.isConnected) {
+			handleWebRTCCall();
+		} else {
+			handleAPICall();
+		}
+	}, [callMode, webrtc.isConnected, handleWebRTCCall, handleAPICall]);
 
-	const hasIncomingCalls = displayCount > 0;
+	// Handle WebRTC call controls
+	const handleMuteToggle = useCallback(async () => {
+		try {
+			if (webrtc.currentCall?.isMuted) {
+				await webrtc.unmuteCall();
+			} else {
+				await webrtc.muteCall();
+			}
+		} catch (error) {
+			console.error("Mute toggle error:", error);
+		}
+	}, [webrtc]);
+
+	const handleHoldToggle = useCallback(async () => {
+		try {
+			if (webrtc.currentCall?.isHeld) {
+				await webrtc.unholdCall();
+			} else {
+				await webrtc.holdCall();
+			}
+		} catch (error) {
+			console.error("Hold toggle error:", error);
+		}
+	}, [webrtc]);
+
+	const handleEndCall = useCallback(async () => {
+		try {
+			await webrtc.endCall();
+		} catch (error) {
+			console.error("End call error:", error);
+		}
+	}, [webrtc]);
+
+	const canCall = Boolean(toNumber.trim() && fromNumber && companyPhones.length > 0);
+	const isWebRTCReady = callMode === "webrtc" && connectionStatus === "connected";
+	const hasActiveCall = webrtc.currentCall && webrtc.currentCall.state !== "idle" && webrtc.currentCall.state !== "ended";
 
 	// SSR placeholder
 	if (!mounted) {
 		return (
-			<div className="relative">
-				<button
-					className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
-					disabled
-					title="Phone"
-					type="button"
-				>
-					<Phone className="size-4" />
-					<span className="sr-only">Phone Menu</span>
-				</button>
-			</div>
+			<button
+				className="flex h-8 w-8 items-center justify-center rounded-md border border-transparent opacity-50"
+				disabled
+				type="button"
+			>
+				<Phone className="h-4 w-4" />
+			</button>
 		);
 	}
 
 	return (
 		<TooltipProvider delayDuration={200}>
-			<DropdownMenu onOpenChange={handleOpenChange} open={open}>
+			<DropdownMenu open={open} onOpenChange={handleOpenChange}>
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<DropdownMenuTrigger asChild>
 							<button
 								className={cn(
-									"hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary",
-									"focus-visible:ring-ring/50 relative flex h-8 w-8 items-center justify-center",
-									"rounded-md border border-transparent transition-all outline-none focus-visible:ring-2",
-									"disabled:pointer-events-none disabled:opacity-50",
-									hasIncomingCalls && "text-primary animate-pulse",
+									"relative flex h-8 w-8 items-center justify-center rounded-md",
+									"border border-transparent transition-all",
+									"hover:border-primary/20 hover:bg-primary/10 hover:text-primary",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+									hasIncomingCall && "animate-pulse text-primary",
+									hasActiveCall && "text-success"
 								)}
-								title={hasIncomingCalls ? "Incoming Call" : "Phone Dialer"}
 								type="button"
 							>
-								{hasIncomingCalls ? (
-									<PhoneIncoming className="size-4" />
+								{hasActiveCall ? (
+									<PhoneCall className="h-4 w-4" />
+								) : hasIncomingCall ? (
+									<PhoneIncoming className="h-4 w-4" />
 								) : (
-									<Phone className="size-4" />
+									<Phone className="h-4 w-4" />
 								)}
-								<span className="sr-only">Phone Dialer</span>
-								{hasIncomingCalls && (
+								{displayCount > 0 && (
 									<Badge
-										className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px] font-semibold"
 										variant="destructive"
+										className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px]"
 									>
 										{displayCount > 9 ? "9+" : displayCount}
 									</Badge>
@@ -624,47 +791,67 @@ export function PhoneDropdown({
 						</DropdownMenuTrigger>
 					</TooltipTrigger>
 					<TooltipContent side="bottom">
-						<p>{hasIncomingCalls ? "Incoming Call" : "Make a Call"}</p>
+						{hasActiveCall ? "Call in Progress" : hasIncomingCall ? "Incoming Call" : "Make a Call"}
 					</TooltipContent>
 				</Tooltip>
 
-				<DropdownMenuContent align="end" className="w-80 rounded-lg p-0">
+				<DropdownMenuContent align="end" className="w-80 p-0">
 					<div className="space-y-3 p-4">
 						{/* Header */}
-						<div className="flex items-center gap-3">
-							<div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-								<PhoneCall className="h-5 w-5 text-primary" />
-							</div>
-							<div>
-								<h3 className="text-sm font-semibold">Make a Call</h3>
-								<p className="text-muted-foreground text-xs">
-									{connectionMode === "webrtc"
-										? "Browser audio calling"
-										: connectionMode === "api"
-											? "Server-side calling"
-											: "Connecting..."}
-								</p>
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-3">
+								<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+									<PhoneCall className="h-5 w-5 text-primary" />
+								</div>
+								<div className="min-w-0 flex-1">
+									<h3 className="text-sm font-semibold">Make a Call</h3>
+									<ConnectionStatusBadge
+										status={connectionStatus}
+										mode={callMode}
+										onRetry={handleRetryConnection}
+									/>
+								</div>
 							</div>
 						</div>
 
-						{/* Connection Status */}
-						<ConnectionStatusBadge
-							mode={connectionMode}
-							isConnecting={isConnecting}
-							error={webrtc.connectionError}
-							onRetry={handleRetryConnection}
-						/>
+						{/* Mode toggle */}
+						<div className="flex items-center justify-between rounded-lg border bg-muted/30 p-2">
+							<div className="flex items-center gap-2">
+								<Server className="h-4 w-4 text-muted-foreground" />
+								<span className="text-xs text-muted-foreground">API Mode</span>
+							</div>
+							<Switch
+								checked={callMode === "webrtc"}
+								onCheckedChange={handleModeToggle}
+								disabled={!webrtcCredentials}
+							/>
+							<div className="flex items-center gap-2">
+								<span className="text-xs text-muted-foreground">Browser Audio</span>
+								<Headphones className="h-4 w-4 text-muted-foreground" />
+							</div>
+						</div>
 
-						{/* Incoming Call Alert */}
-						{hasIncomingCalls && (
+						{/* Active call card */}
+						{hasActiveCall && webrtc.currentCall && (
+							<>
+								<ActiveCallCard
+									call={webrtc.currentCall}
+									onMute={handleMuteToggle}
+									onHold={handleHoldToggle}
+									onEnd={handleEndCall}
+								/>
+								<DropdownMenuSeparator />
+							</>
+						)}
+
+						{/* Incoming call alert */}
+						{hasIncomingCall && (
 							<>
 								<div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
-									<PhoneIncoming className="h-5 w-5 animate-pulse text-destructive" />
-									<div className="flex-1">
-										<p className="text-sm font-semibold text-destructive">
-											Incoming Call
-										</p>
-										<p className="text-xs text-destructive/80">
+									<PhoneIncoming className="h-5 w-5 shrink-0 animate-pulse text-destructive" />
+									<div className="min-w-0 flex-1">
+										<p className="text-sm font-semibold text-destructive">Incoming Call</p>
+										<p className="truncate text-xs text-destructive/80">
 											{caller?.name || caller?.number || "Unknown"}
 										</p>
 									</div>
@@ -673,153 +860,165 @@ export function PhoneDropdown({
 							</>
 						)}
 
-						{/* Customer Search */}
-						<div className="space-y-1.5">
-							<label className="text-muted-foreground text-xs font-medium">
-								Customer (Optional)
-							</label>
-							<Popover open={customerSearchOpen} onOpenChange={setCustomerSearchOpen}>
-								<PopoverTrigger asChild>
-									<Button
-										variant="outline"
-										className="w-full justify-start text-left font-normal"
-										disabled={customersLoading}
-									>
-										<User className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-										<span className="truncate">
-											{selectedCustomer
-												? getCustomerFullName(selectedCustomer)
-												: "Search customers..."}
-										</span>
-										{selectedCustomer && (
-											<X
-												className="ml-auto h-4 w-4 shrink-0 text-muted-foreground hover:text-foreground"
-												onClick={(e) => {
-													e.stopPropagation();
-													handleCustomerSelect(null);
-												}}
-											/>
-										)}
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent align="start" className="w-80 p-0">
-									<Command shouldFilter={false}>
-										<CommandInput
-											placeholder="Search by name, phone, email..."
-											value={customerSearchQuery}
-											onValueChange={setCustomerSearchQuery}
-										/>
-										<CommandList className="max-h-[250px]">
-											<CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
-												No customers found
-											</CommandEmpty>
-											<CommandGroup>
-												{displayedCustomers.map((customer) => (
-													<CommandItem
-														key={customer.id}
-														value={customer.id}
-														onSelect={() => handleCustomerSelect(customer)}
-														className="cursor-pointer px-3 py-2"
-													>
-														<div className="flex flex-1 flex-col gap-0.5">
-															<span className="text-sm font-medium">
-																{getCustomerFullName(customer)}
-															</span>
-															{customer.phone && (
-																<span className="text-xs text-muted-foreground">
-																	{formatPhoneDisplay(customer.phone)}
-																</span>
-															)}
-														</div>
-														{selectedCustomer?.id === customer.id && (
-															<Check className="h-4 w-4 text-primary" />
-														)}
-													</CommandItem>
-												))}
-											</CommandGroup>
-										</CommandList>
-									</Command>
-								</PopoverContent>
-							</Popover>
-						</div>
-
-						{/* To Number */}
-						<div className="space-y-1.5">
-							<label className="text-muted-foreground text-xs font-medium" htmlFor="to-number">
-								To
-							</label>
-							<Input
-								id="to-number"
-								placeholder="+1 (555) 123-4567"
-								value={toNumber}
-								onChange={(e) => setToNumber(e.target.value)}
-								disabled={isPending}
-								className="h-9"
-							/>
-						</div>
-
-						{/* From Number */}
-						<div className="space-y-1.5">
-							<label className="text-muted-foreground text-xs font-medium" htmlFor="from-number">
-								From
-							</label>
-							<Select
-								value={fromNumber}
-								onValueChange={setFromNumber}
-								disabled={companyPhones.length === 0 || isPending}
-							>
-								<SelectTrigger id="from-number" className="h-9">
-									<SelectValue placeholder="Select company line" />
-								</SelectTrigger>
-								<SelectContent>
-									{companyPhones.map((phone) => (
-										<SelectItem key={phone.id} value={phone.number}>
-											{phone.label || formatPhoneDisplay(phone.number)}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-							{companyPhones.length === 0 && (
-								<p className="text-muted-foreground text-xs">
-									No company phone numbers configured
+						{/* Connection error message */}
+						{connectionError && callMode === "webrtc" && (
+							<div className="rounded-lg border border-warning/30 bg-warning/10 p-2">
+								<p className="text-xs text-warning">{connectionError}</p>
+								<p className="mt-1 text-xs text-muted-foreground">
+									Calls will use API mode (opens in new window)
 								</p>
-							)}
-						</div>
+							</div>
+						)}
 
-						{/* Call Button */}
-						<Button
-							className="w-full"
-							disabled={!canCall || isPending}
-							onClick={handleStartCall}
-						>
-							{isPending ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Starting Call...
-								</>
-							) : (
-								<>
-									<PhoneOutgoing className="mr-2 h-4 w-4" />
-									{connectionMode === "webrtc" ? "Call with Browser Audio" : "Start Call"}
-								</>
-							)}
-						</Button>
+						{/* Customer search */}
+						{!hasActiveCall && (
+							<>
+								<div className="space-y-1.5">
+									<label className="text-xs font-medium text-muted-foreground">
+										Customer (optional)
+									</label>
+									<Popover open={customerSearchOpen} onOpenChange={setCustomerSearchOpen}>
+										<PopoverTrigger asChild>
+											<Button
+												variant="outline"
+												className="h-9 w-full justify-start gap-2 px-3 font-normal"
+												disabled={customersLoading}
+											>
+												<User className="h-4 w-4 shrink-0 text-muted-foreground" />
+												<span className="min-w-0 flex-1 truncate text-left">
+													{selectedCustomer ? getCustomerName(selectedCustomer) : "Search..."}
+												</span>
+												{selectedCustomer && (
+													<X
+														className="h-4 w-4 shrink-0 text-muted-foreground hover:text-foreground"
+														onClick={(e) => {
+															e.stopPropagation();
+															handleCustomerSelect(null);
+														}}
+													/>
+												)}
+											</Button>
+										</PopoverTrigger>
+										<PopoverContent align="start" className="w-80 p-0" sideOffset={4}>
+											<Command shouldFilter={false}>
+												<CommandInput
+													placeholder="Name, phone, or email..."
+													value={customerSearchQuery}
+													onValueChange={setCustomerSearchQuery}
+												/>
+												<CommandList className="max-h-[200px]">
+													<CommandEmpty className="py-4 text-center text-sm text-muted-foreground">
+														No customers found
+													</CommandEmpty>
+													<CommandGroup>
+														{filteredCustomers.map((c) => (
+															<CommandItem
+																key={c.id}
+																value={c.id}
+																onSelect={() => handleCustomerSelect(c)}
+																className="flex cursor-pointer items-center gap-2 px-3 py-2"
+															>
+																<div className="min-w-0 flex-1">
+																	<p className="truncate text-sm font-medium">
+																		{getCustomerName(c)}
+																	</p>
+																	{c.phone && (
+																		<p className="truncate text-xs text-muted-foreground">
+																			{formatPhone(c.phone)}
+																		</p>
+																	)}
+																</div>
+																{selectedCustomer?.id === c.id && (
+																	<Check className="h-4 w-4 shrink-0 text-primary" />
+																)}
+															</CommandItem>
+														))}
+													</CommandGroup>
+												</CommandList>
+											</Command>
+										</PopoverContent>
+									</Popover>
+								</div>
 
-						{/* Quick Links */}
+								{/* Phone number */}
+								<div className="space-y-1.5">
+									<label htmlFor="phone-to" className="text-xs font-medium text-muted-foreground">
+										Phone Number
+									</label>
+									<Input
+										id="phone-to"
+										placeholder="(555) 123-4567"
+										value={toNumber}
+										onChange={(e) => setToNumber(e.target.value)}
+										className="h-9"
+									/>
+								</div>
+
+								{/* From number */}
+								<div className="space-y-1.5">
+									<label htmlFor="phone-from" className="text-xs font-medium text-muted-foreground">
+										Your Company Line
+									</label>
+									<Select value={fromNumber} onValueChange={setFromNumber}>
+										<SelectTrigger id="phone-from" className="h-9">
+											<SelectValue placeholder="Select line..." />
+										</SelectTrigger>
+										<SelectContent>
+											{companyPhones.map((p) => (
+												<SelectItem key={p.id} value={p.number}>
+													{p.label || formatPhone(p.number)}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									{companyPhones.length === 0 && (
+										<p className="text-xs text-muted-foreground">
+											No phone numbers configured
+										</p>
+									)}
+								</div>
+
+								{/* Call button */}
+								<Button
+									className="w-full gap-2"
+									disabled={!canCall || isPending}
+									onClick={handleStartCall}
+								>
+									{isPending ? (
+										<>
+											<Loader2 className="h-4 w-4 animate-spin" />
+											Starting...
+										</>
+									) : isWebRTCReady ? (
+										<>
+											<Headphones className="h-4 w-4" />
+											Call (Browser Audio)
+										</>
+									) : (
+										<>
+											<PhoneOutgoing className="h-4 w-4" />
+											Call (Opens Window)
+										</>
+									)}
+								</Button>
+							</>
+						)}
+
+						{/* Quick links */}
 						<DropdownMenuSeparator />
 						<div className="flex gap-2">
 							<Link
 								href="/dashboard/communication?filter=calls"
-								className="flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-								onClick={() => setOpen(false)}
+								onClick={() => handleOpenChange(false)}
+								className="flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 							>
 								<Clock className="h-3.5 w-3.5" />
-								Call History
+								History
 							</Link>
 							<Link
 								href="/dashboard/communication"
-								className="flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-								onClick={() => setOpen(false)}
+								onClick={() => handleOpenChange(false)}
+								className="flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 							>
 								<MessageSquare className="h-3.5 w-3.5" />
 								Messages

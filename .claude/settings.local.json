@@ -186,7 +186,12 @@
       "WebFetch(domain:og-image-generators.vercel.app)",
       "Bash(timeout 90 npx tsc:*)",
       "Bash(npx eslint:*)",
-      "Bash(for file in work/*-table.tsx customers/*-table.tsx inventory/*-table.tsx properties/property-details/*-table.tsx work/job-details/*-table.tsx)"
+      "Bash(for file in work/*-table.tsx customers/*-table.tsx inventory/*-table.tsx properties/property-details/*-table.tsx work/job-details/*-table.tsx)",
+      "Bash(for table in work/jobs-table.tsx work/invoices-table.tsx customers/customers-table.tsx)",
+      "Bash(do echo \"=== $table ===\" grep -E \"key:|hideOnMobile:\" \"$table\")",
+      "Bash(/dev/null)",
+      "Bash(xxd:*)",
+      "Bash(timeout 180 pnpm build:*)"
     ],
     "deny": [],
     "ask": []

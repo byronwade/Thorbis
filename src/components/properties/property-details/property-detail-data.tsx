@@ -61,14 +61,14 @@ export async function PropertyDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// Get active company ID
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// First fetch property to check if it exists

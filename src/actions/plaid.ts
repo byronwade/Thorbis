@@ -233,7 +233,7 @@ async function exchangePlaidToken(
 			await syncTransactions(companyId, accessToken);
 
 			revalidatePath("/dashboard/settings/finance/bank-accounts");
-			revalidatePath("/dashboard/welcome");
+			revalidatePath("/welcome");
 
 			return { accountsLinked: accounts.length };
 		} catch (error: any) {

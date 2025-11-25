@@ -250,7 +250,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							Workspaces
 						</p>
 						<Link
-							href="/dashboard/welcome?new=true"
+							href="/welcome?new=true"
 							className="text-[11px] font-medium text-primary hover:underline flex items-center gap-0.5"
 							onClick={() => setIsOpen(false)}
 						>

@@ -75,7 +75,7 @@ export async function GET(request: Request) {
 				.limit(1)
 				.maybeSingle();
 
-			const redirectPath = hasCompany ? "/dashboard" : "/dashboard/welcome";
+			const redirectPath = hasCompany ? "/dashboard" : "/welcome";
 
 			return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
 		} catch (_error) {

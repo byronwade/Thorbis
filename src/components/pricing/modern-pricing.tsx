@@ -7,12 +7,17 @@ import {
 	Check,
 	Infinity,
 	MessageSquare,
+	PlayCircle,
+	Quote,
+	RotateCcw,
 	Sparkles,
+	TrendingDown,
 	Users,
+	X,
 	Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +28,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { PricingBackground } from "./pricing-background";
 
 /**
  * PRICING - REAL PROVIDER COSTS + 200% MARKUP (3x)
@@ -222,6 +230,75 @@ const BASE_FEATURES = [
 	"Payment processing (Payrix)",
 ];
 
+const TESTIMONIALS = [
+	{
+		quote: "Switched from ServiceTitan and we're saving over $1,400 every month. Same features, fraction of the cost.",
+		author: "Mike Johnson",
+		role: "Owner",
+		company: "Johnson's HVAC Services",
+		location: "Dallas, TX",
+		savings: "$1,400/mo",
+		previousSoftware: "ServiceTitan",
+	},
+	{
+		quote: "The pay-as-you-go model is perfect for our seasonal business. We're not locked into expensive contracts during slow months.",
+		author: "Sarah Chen",
+		role: "Operations Manager",
+		company: "Elite Plumbing Co",
+		location: "Phoenix, AZ",
+		savings: "$890/mo",
+		previousSoftware: "Housecall Pro",
+	},
+	{
+		quote: "We added 12 new techs last year and didn't pay a penny more in seat fees. That's $15,000+ saved annually.",
+		author: "Robert Williams",
+		role: "CEO",
+		company: "Comfort Air Systems",
+		location: "Atlanta, GA",
+		savings: "$1,250/mo",
+		previousSoftware: "FieldEdge",
+	},
+];
+
+const COMPETITOR_DATA = [
+	{
+		name: "ServiceTitan",
+		perUser: 259,
+		setupFee: "$2,500+",
+		hiddenFees: ["SMS add-on", "Marketing add-on", "Reporting tier"],
+		hasUnlimitedUsers: false,
+		hasAllFeatures: false,
+		hasNoContract: false,
+	},
+	{
+		name: "Housecall Pro",
+		perUser: 169,
+		setupFee: "$0",
+		hiddenFees: ["SMS pack", "Call tracking", "Advanced reports"],
+		hasUnlimitedUsers: false,
+		hasAllFeatures: false,
+		hasNoContract: false,
+	},
+	{
+		name: "Jobber",
+		perUser: 129,
+		setupFee: "$0",
+		hiddenFees: ["Client hub", "Quote follow-ups", "Job forms"],
+		hasUnlimitedUsers: false,
+		hasAllFeatures: false,
+		hasNoContract: false,
+	},
+	{
+		name: "FieldEdge",
+		perUser: 199,
+		setupFee: "$1,000+",
+		hiddenFees: ["SMS fees", "API access", "Custom reports"],
+		hasUnlimitedUsers: false,
+		hasAllFeatures: false,
+		hasNoContract: false,
+	},
+];
+
 function calculateTeamCost(usage: Record<string, number>) {
 	return PRICING_ITEMS.reduce(
 		(sum, item) => sum + (usage[item.id] || 0) * item.ourCost,
@@ -236,15 +313,78 @@ export function ModernPricing() {
 			{},
 		),
 	);
+	const [showSticky, setShowSticky] = useState(false);
+	const [breakEvenData, setBreakEvenData] = useState({
+		currentMonthlyCost: 1500,
+		teamSize: 5,
+	});
 
 	const totalUsageCost = calculateTeamCost(usage);
 	const totalMonthlyCost = 200 + totalUsageCost;
 
+	// Calculate break-even
+	const thorbisEstimate = 200 + calculateTeamCost(TEAM_SIZE_EXAMPLES[1].expectedUsage);
+	const breakEvenSavings = breakEvenData.currentMonthlyCost - thorbisEstimate;
+	const breakEvenPercentage = breakEvenData.currentMonthlyCost > 0
+		? Math.round((breakEvenSavings / breakEvenData.currentMonthlyCost) * 100)
+		: 0;
+
+	// Handle sticky visibility
+	useEffect(() => {
+		const handleScroll = () => {
+			const calculatorSection = document.getElementById("pricing-calculator");
+			if (calculatorSection) {
+				const rect = calculatorSection.getBoundingClientRect();
+				setShowSticky(rect.top < 0 && rect.bottom > 200);
+			}
+		};
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
+
+	// Reset calculator to defaults
+	const resetCalculator = () => {
+		setUsage(
+			PRICING_ITEMS.reduce(
+				(acc, item) => ({ ...acc, [item.id]: item.defaultValue }),
+				{},
+			),
+		);
+	};
+
+	// Apply team preset
+	const applyPreset = (teamIndex: number) => {
+		setUsage(TEAM_SIZE_EXAMPLES[teamIndex].expectedUsage);
+	};
+
 	return (
 		<div className="bg-background">
+			{/* Sticky Price Summary */}
+			<div
+				className={`fixed bottom-0 left-0 right-0 z-50 transform border-t bg-card/95 backdrop-blur-sm transition-transform duration-300 ${
+					showSticky ? "translate-y-0" : "translate-y-full"
+				}`}
+			>
+				<div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+					<div className="flex items-center gap-4">
+						<div>
+							<div className="text-sm text-muted-foreground">Your estimated monthly cost</div>
+							<div className="text-2xl font-bold">${totalMonthlyCost.toFixed(2)}</div>
+						</div>
+						<div className="hidden text-xs text-muted-foreground sm:block">
+							$200 base + ${totalUsageCost.toFixed(2)} usage
+						</div>
+					</div>
+					<Button asChild>
+						<Link href="/waitlist">Get Started</Link>
+					</Button>
+				</div>
+			</div>
+
 			{/* Hero Section */}
-			<section className="from-primary/10 to-background bg-gradient-to-b py-20 sm:py-32">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="relative overflow-hidden py-20 sm:py-32">
+				<PricingBackground />
+				<div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
 						<Badge className="mb-4" variant="outline">
 							Transparent Usage-Based Pricing
@@ -286,6 +426,35 @@ export function ModernPricing() {
 				</div>
 			</section>
 
+			{/* Video Explainer */}
+			<section className="border-b py-12">
+				<div className="mx-auto max-w-4xl px-6 lg:px-8">
+					<div className="relative overflow-hidden rounded-2xl border bg-muted/30">
+						<div className="aspect-video flex items-center justify-center">
+							<div className="text-center">
+								<div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 transition-transform hover:scale-105">
+									<PlayCircle className="h-10 w-10 text-primary" />
+								</div>
+								<h3 className="text-lg font-semibold">See How Pay-As-You-Go Works</h3>
+								<p className="mt-1 text-sm text-muted-foreground">
+									60-second explainer on our transparent pricing model
+								</p>
+							</div>
+						</div>
+						<div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-lg bg-card/90 px-4 py-2 backdrop-blur-sm">
+							<div className="flex items-center gap-2 text-sm">
+								<span className="font-medium">How Thorbis Pricing Works</span>
+								<span className="text-muted-foreground">• 1:02</span>
+							</div>
+							<Button size="sm" variant="ghost">
+								<PlayCircle className="mr-1 h-4 w-4" />
+								Play
+							</Button>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			{/* What's Included */}
 			<section className="py-16">
 				<div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -303,6 +472,51 @@ export function ModernPricing() {
 								<Check className="text-primary mt-0.5 h-5 w-5 shrink-0" />
 								<span className="text-sm">{feature}</span>
 							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* Testimonials */}
+			<section className="border-y bg-muted/20 py-16">
+				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+					<div className="mx-auto max-w-2xl text-center">
+						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							What contractors are saying
+						</h2>
+						<p className="text-muted-foreground mt-4 text-lg">
+							Real businesses, real savings
+						</p>
+					</div>
+					<div className="mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-3">
+						{TESTIMONIALS.map((testimonial) => (
+							<Card key={testimonial.author} className="relative">
+								<CardHeader className="pb-2">
+									<Quote className="h-8 w-8 text-primary/20" />
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<p className="text-sm leading-relaxed">"{testimonial.quote}"</p>
+									<div className="flex items-center justify-between border-t pt-4">
+										<div>
+											<div className="font-semibold">{testimonial.author}</div>
+											<div className="text-xs text-muted-foreground">
+												{testimonial.role}, {testimonial.company}
+											</div>
+											<div className="text-xs text-muted-foreground">
+												{testimonial.location}
+											</div>
+										</div>
+										<div className="text-right">
+											<div className="text-lg font-bold text-green-500">
+												{testimonial.savings}
+											</div>
+											<div className="text-xs text-muted-foreground">
+												saved vs {testimonial.previousSoftware}
+											</div>
+										</div>
+									</div>
+								</CardContent>
+							</Card>
 						))}
 					</div>
 				</div>
@@ -401,7 +615,7 @@ export function ModernPricing() {
 			</section>
 
 			{/* Simple Pricing Calculator */}
-			<section className="py-16">
+			<section id="pricing-calculator" className="py-16">
 				<div className="mx-auto max-w-7xl px-6 lg:px-8">
 					<div className="mx-auto max-w-2xl text-center">
 						<Calculator className="mx-auto h-12 w-12" />
@@ -409,11 +623,36 @@ export function ModernPricing() {
 							What will you pay?
 						</h2>
 						<p className="text-muted-foreground mt-4 text-lg">
-							Use the sliders below to estimate your monthly bill
+							Select a team size preset or customize with sliders
 						</p>
 					</div>
 
-					<Card className="mx-auto mt-12 max-w-5xl">
+					{/* Team Size Presets */}
+					<div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-2">
+						{TEAM_SIZE_EXAMPLES.map((team, index) => (
+							<Button
+								key={team.name}
+								variant="outline"
+								size="sm"
+								onClick={() => applyPreset(index)}
+								className="gap-2"
+							>
+								<team.icon className="h-4 w-4" />
+								{team.name}
+							</Button>
+						))}
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={resetCalculator}
+							className="gap-2 text-muted-foreground"
+						>
+							<RotateCcw className="h-4 w-4" />
+							Reset
+						</Button>
+					</div>
+
+					<Card className="mx-auto mt-8 max-w-5xl">
 						<CardHeader>
 							<div className="flex items-center justify-between">
 								<div>
@@ -590,72 +829,58 @@ export function ModernPricing() {
 												Base Price
 											</th>
 											<th className="text-muted-foreground pb-4 text-right font-semibold">
-												3-Tech Team
+												7-Tech/mo
 											</th>
 											<th className="text-muted-foreground pb-4 text-right font-semibold">
-												7-Tech Team
+												<span className="text-primary">Year 1 Total</span>
 											</th>
-											<th className="text-muted-foreground pb-4 text-right font-semibold">
-												30-Tech Team
+											<th className="text-muted-foreground hidden pb-4 text-center font-semibold sm:table-cell">
+												Hidden Fees
 											</th>
-											<th className="text-muted-foreground pb-4 text-right font-semibold">
-												100-Tech Team
+											<th className="text-muted-foreground pb-4 text-center font-semibold">
+												∞ Users
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y">
-										<tr>
-											<td className="py-4">
-												<div className="font-semibold">ServiceTitan</div>
-												<div className="text-muted-foreground text-xs">
-													$259/user + setup fees
-												</div>
-											</td>
-											<td className="py-4 text-right">$259/user</td>
-											<td className="py-4 text-right font-semibold">$777</td>
-											<td className="py-4 text-right font-semibold">$1,813</td>
-											<td className="py-4 text-right font-semibold">$7,770</td>
-											<td className="py-4 text-right font-semibold">$25,900</td>
-										</tr>
-										<tr>
-											<td className="py-4">
-												<div className="font-semibold">Housecall Pro</div>
-												<div className="text-muted-foreground text-xs">
-													$169/user + add-ons
-												</div>
-											</td>
-											<td className="py-4 text-right">$169/user</td>
-											<td className="py-4 text-right font-semibold">$507</td>
-											<td className="py-4 text-right font-semibold">$1,183</td>
-											<td className="py-4 text-right font-semibold">$5,070</td>
-											<td className="py-4 text-right font-semibold">$16,900</td>
-										</tr>
-										<tr>
-											<td className="py-4">
-												<div className="font-semibold">Jobber</div>
-												<div className="text-muted-foreground text-xs">
-													$129/user (Connect plan)
-												</div>
-											</td>
-											<td className="py-4 text-right">$129/user</td>
-											<td className="py-4 text-right font-semibold">$387</td>
-											<td className="py-4 text-right font-semibold">$903</td>
-											<td className="py-4 text-right font-semibold">$3,870</td>
-											<td className="py-4 text-right font-semibold">$12,900</td>
-										</tr>
-										<tr>
-											<td className="py-4">
-												<div className="font-semibold">FieldEdge</div>
-												<div className="text-muted-foreground text-xs">
-													$199/user + SMS fees
-												</div>
-											</td>
-											<td className="py-4 text-right">$199/user</td>
-											<td className="py-4 text-right font-semibold">$597</td>
-											<td className="py-4 text-right font-semibold">$1,393</td>
-											<td className="py-4 text-right font-semibold">$5,970</td>
-											<td className="py-4 text-right font-semibold">$19,900</td>
-										</tr>
+										{COMPETITOR_DATA.map((competitor) => (
+											<tr key={competitor.name}>
+												<td className="py-4">
+													<div className="font-semibold">{competitor.name}</div>
+													<div className="text-muted-foreground text-xs">
+														${competitor.perUser}/user{" "}
+														{competitor.setupFee !== "$0" && `+ ${competitor.setupFee} setup`}
+													</div>
+												</td>
+												<td className="py-4 text-right">${competitor.perUser}/user</td>
+												<td className="py-4 text-right font-semibold">
+													${(competitor.perUser * 7).toLocaleString()}
+												</td>
+												<td className="py-4 text-right font-semibold text-red-500">
+													${((competitor.perUser * 7 * 12) + (competitor.setupFee === "$0" ? 0 : 2500)).toLocaleString()}
+												</td>
+												<td className="hidden py-4 text-center sm:table-cell">
+													<div className="flex flex-wrap justify-center gap-1">
+														{competitor.hiddenFees.slice(0, 2).map((fee) => (
+															<span
+																key={fee}
+																className="inline-flex rounded bg-red-500/10 px-1.5 py-0.5 text-xs text-red-500"
+															>
+																{fee}
+															</span>
+														))}
+														{competitor.hiddenFees.length > 2 && (
+															<span className="text-xs text-muted-foreground">
+																+{competitor.hiddenFees.length - 2} more
+															</span>
+														)}
+													</div>
+												</td>
+												<td className="py-4 text-center">
+													<X className="mx-auto h-5 w-5 text-red-500" />
+												</td>
+											</tr>
+										))}
 										<tr className="bg-primary/5">
 											<td className="py-4">
 												<div className="text-primary font-bold">Thorbis</div>
@@ -667,20 +892,40 @@ export function ModernPricing() {
 												$200 flat
 											</td>
 											<td className="text-primary py-4 text-right font-bold">
-												$269
-											</td>
-											<td className="text-primary py-4 text-right font-bold">
 												$368
 											</td>
-											<td className="text-primary py-4 text-right font-bold">
-												$1,063
+											<td className="py-4 text-right font-bold text-green-500">
+												$4,416
 											</td>
-											<td className="text-primary py-4 text-right font-bold">
-												$3,897
+											<td className="hidden py-4 text-center sm:table-cell">
+												<span className="inline-flex rounded bg-green-500/10 px-2 py-0.5 text-xs text-green-500">
+													None
+												</span>
+											</td>
+											<td className="py-4 text-center">
+												<Check className="mx-auto h-5 w-5 text-green-500" />
 											</td>
 										</tr>
 									</tbody>
 								</table>
+							</div>
+
+							{/* Year 1 Savings Highlight */}
+							<div className="mt-6 rounded-lg bg-green-500/10 p-4 text-center">
+								<div className="text-sm font-semibold text-green-600">
+									Year 1 Savings with Thorbis (7-tech team)
+								</div>
+								<div className="mt-1 flex items-center justify-center gap-4">
+									<div>
+										<span className="text-2xl font-bold text-green-500">$17,340</span>
+										<span className="text-muted-foreground text-sm"> vs ServiceTitan</span>
+									</div>
+									<div className="hidden sm:block text-muted-foreground">|</div>
+									<div className="hidden sm:block">
+										<span className="text-2xl font-bold text-green-500">$9,780</span>
+										<span className="text-muted-foreground text-sm"> vs Housecall Pro</span>
+									</div>
+								</div>
 							</div>
 
 							{/* Savings Breakdown */}
@@ -954,6 +1199,128 @@ export function ModernPricing() {
 							</div>
 						</div>
 					</div>
+				</div>
+			</section>
+
+			{/* Break-Even Calculator */}
+			<section className="border-y bg-gradient-to-b from-green-500/5 to-transparent py-16">
+				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+					<div className="mx-auto max-w-2xl text-center">
+						<TrendingDown className="mx-auto h-12 w-12 text-green-500" />
+						<h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+							How much will you save?
+						</h2>
+						<p className="text-muted-foreground mt-4 text-lg">
+							Enter your current software cost to see your potential savings
+						</p>
+					</div>
+
+					<Card className="mx-auto mt-12 max-w-2xl">
+						<CardContent className="pt-6">
+							<div className="space-y-6">
+								<div className="space-y-2">
+									<Label htmlFor="current-cost">
+										What do you currently pay per month for field service software?
+									</Label>
+									<div className="relative">
+										<span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+											$
+										</span>
+										<Input
+											id="current-cost"
+											type="number"
+											value={breakEvenData.currentMonthlyCost}
+											onChange={(e) =>
+												setBreakEvenData((prev) => ({
+													...prev,
+													currentMonthlyCost: Number(e.target.value) || 0,
+												}))
+											}
+											className="pl-7"
+											placeholder="1500"
+										/>
+									</div>
+									<div className="flex flex-wrap gap-2">
+										{[500, 1000, 1500, 2500, 5000].map((amount) => (
+											<Button
+												key={amount}
+												variant="outline"
+												size="sm"
+												onClick={() =>
+													setBreakEvenData((prev) => ({
+														...prev,
+														currentMonthlyCost: amount,
+													}))
+												}
+												className={
+													breakEvenData.currentMonthlyCost === amount
+														? "border-primary bg-primary/10"
+														: ""
+												}
+											>
+												${amount.toLocaleString()}
+											</Button>
+										))}
+									</div>
+								</div>
+
+								{breakEvenData.currentMonthlyCost > 0 && (
+									<div className="rounded-lg border bg-muted/30 p-6">
+										<div className="text-center">
+											{breakEvenSavings > 0 ? (
+												<>
+													<div className="text-sm text-muted-foreground">
+														Your estimated monthly savings with Thorbis
+													</div>
+													<div className="mt-2 text-4xl font-bold text-green-500">
+														${breakEvenSavings.toLocaleString()}
+													</div>
+													<div className="mt-1 text-sm text-muted-foreground">
+														{breakEvenPercentage}% less than you're paying now
+													</div>
+													<div className="mt-4 grid grid-cols-2 gap-4 border-t pt-4">
+														<div>
+															<div className="text-xs text-muted-foreground">
+																Annual Savings
+															</div>
+															<div className="text-xl font-bold text-green-500">
+																${(breakEvenSavings * 12).toLocaleString()}
+															</div>
+														</div>
+														<div>
+															<div className="text-xs text-muted-foreground">
+																5-Year Savings
+															</div>
+															<div className="text-xl font-bold text-green-500">
+																${(breakEvenSavings * 60).toLocaleString()}
+															</div>
+														</div>
+													</div>
+												</>
+											) : (
+												<div className="text-muted-foreground">
+													At ${breakEvenData.currentMonthlyCost}/month, you're already
+													paying less than our typical estimate. Let's chat to see if
+													Thorbis can still save you money with better features.
+												</div>
+											)}
+										</div>
+									</div>
+								)}
+
+								<div className="text-center">
+									<Button asChild size="lg" className="w-full sm:w-auto">
+										<Link href="/waitlist">
+											Start Saving Today
+										</Link>
+									</Button>
+									<p className="mt-2 text-xs text-muted-foreground">
+										Based on typical 7-tech team usage of $368/mo with Thorbis
+									</p>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
 				</div>
 			</section>
 

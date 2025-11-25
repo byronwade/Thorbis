@@ -122,7 +122,7 @@ export async function CustomerDetailData({
 		return notFound();
 	}
 
-	// Fetch related data (13 parallel queries for complete 360° view)
+	// Fetch related data (14 parallel queries for complete 360° view)
 	const [
 		{ data: properties },
 		{ data: jobs },
@@ -137,6 +137,7 @@ export async function CustomerDetailData({
 		{ data: equipment },
 		{ data: attachments },
 		{ data: paymentMethods },
+		{ data: communications },
 	] = await Promise.all([
 		supabase
 			.from("properties")
@@ -240,6 +241,13 @@ export async function CustomerDetailData({
 			.eq("is_active", true)
 			.order("is_default", { ascending: false })
 			.limit(5),
+		supabase
+			.from("communications")
+			.select("*")
+			.eq("customer_id", customerId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false })
+			.limit(20),
 	]);
 
 	// Filter contracts to only include those related to this customer
@@ -278,6 +286,7 @@ export async function CustomerDetailData({
 		equipment: equipment || [],
 		attachments: attachments || [],
 		paymentMethods: paymentMethods || [],
+		communications: communications || [],
 		enrichmentData: null,
 	};
 

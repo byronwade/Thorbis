@@ -37,13 +37,13 @@ export async function SettingsTeamMemberDetailData({
 
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 	if (!isOnboardingComplete) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 	const activeCompanyId = await getActiveCompanyId();
 	if (!activeCompanyId) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	const { data: teamMember } = await supabase

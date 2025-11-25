@@ -258,6 +258,44 @@ const verifyCompanyAccess = cache(
 );
 
 /**
+ * Get Active Team Member ID
+ *
+ * Returns the team_members.id for the current user in the active company.
+ * Used for personal inbox filtering and other team-member-specific features.
+ *
+ * PERFORMANCE: Wrapped with React.cache() - called by multiple components,
+ * but only executes once per request.
+ *
+ * @returns Team member ID string or null if not found
+ */
+export const getActiveTeamMemberId = cache(async (): Promise<string | null> => {
+	const user = await getCurrentUser();
+	if (!user) {
+		return null;
+	}
+
+	const companyId = await getActiveCompanyId();
+	if (!companyId) {
+		return null;
+	}
+
+	const supabase = await createClient();
+	if (!supabase) {
+		return null;
+	}
+
+	const { data: teamMember } = await supabase
+		.from("team_members")
+		.select("id")
+		.eq("user_id", user.id)
+		.eq("company_id", companyId)
+		.eq("status", "active")
+		.single();
+
+	return teamMember?.id || null;
+});
+
+/**
  * Require Active Company
  *
  * Throws error if no active company is set.

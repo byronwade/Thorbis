@@ -251,7 +251,7 @@ async function createRecurringJobs(
  * Create a new job
  * ✅ ALREADY MIGRATED - Creates core job + all 10 domain records in parallel
  */
-async function createJob(
+export async function createJob(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
@@ -2047,7 +2047,7 @@ export async function assignCustomerToJob(
 
 		revalidatePath(`/dashboard/work/${jobId}`);
 		revalidatePath("/dashboard/work");
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 	});
 }
 
@@ -2128,6 +2128,6 @@ export async function removeCustomerFromJob(
 
 		revalidatePath(`/dashboard/work/${jobId}`);
 		revalidatePath("/dashboard/work");
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 	});
 }

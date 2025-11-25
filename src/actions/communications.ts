@@ -225,3 +225,337 @@ export async function bulkArchiveCommunicationsAction(
 		};
 	}
 }
+
+/**
+ * Save internal notes for a communication
+ * Internal notes are private team notes not visible to customers
+ */
+const saveInternalNotesSchema = z.object({
+	communicationId: z.string().uuid(),
+	notes: z.string(),
+});
+
+export type SaveInternalNotesInput = z.infer<typeof saveInternalNotesSchema>;
+
+export async function saveInternalNotesAction(
+	input: SaveInternalNotesInput
+): Promise<{
+	success: boolean;
+	error?: string;
+}> {
+	try {
+		const payload = saveInternalNotesSchema.parse(input);
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Unable to access database" };
+		}
+
+		// Get authenticated user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Update internal notes
+		const { error } = await supabase
+			.from("communications")
+			.update({
+				internal_notes: payload.notes,
+				internal_notes_updated_at: new Date().toISOString(),
+				internal_notes_updated_by: user.id,
+			})
+			.eq("id", payload.communicationId);
+
+		if (error) {
+			return { success: false, error: error.message };
+		}
+
+		revalidatePath(COMMUNICATIONS_PATH);
+		return { success: true };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Get communications with filters (for client-side refresh)
+ */
+const getCommunicationsSchema = z.object({
+	companyId: z.string().uuid(),
+	teamMemberId: z.string().uuid(),
+	type: z.enum(["email", "sms", "call", "voicemail"]).optional(),
+	customerId: z.string().uuid().optional(),
+	jobId: z.string().uuid().optional(),
+	limit: z.number().min(1).max(200).default(100),
+	offset: z.number().min(0).default(0),
+});
+
+export type GetCommunicationsInput = z.infer<typeof getCommunicationsSchema>;
+
+export async function getCommunicationsAction(input: GetCommunicationsInput) {
+	try {
+		const payload = getCommunicationsSchema.parse(input);
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Unable to access database", data: [] };
+		}
+
+		// Build query
+		let query = supabase
+			.from("communications")
+			.select("*")
+			.eq("company_id", payload.companyId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false })
+			.limit(payload.limit);
+
+		// Apply filters
+		if (payload.type) {
+			query = query.eq("type", payload.type);
+		}
+		if (payload.customerId) {
+			query = query.eq("customer_id", payload.customerId);
+		}
+		if (payload.jobId) {
+			query = query.eq("job_id", payload.jobId);
+		}
+		if (payload.offset > 0) {
+			query = query.range(payload.offset, payload.offset + payload.limit - 1);
+		}
+
+		const { data, error } = await query;
+
+		if (error) {
+			return { success: false, error: error.message, data: [] };
+		}
+
+		return { success: true, data: data || [] };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+			data: [],
+		};
+	}
+}
+
+/**
+ * Auto-link a communication to a customer/job/property
+ * Uses confidence scoring and link method tracking
+ */
+const autoLinkCommunicationSchema = z.object({
+	communicationId: z.string().uuid(),
+	customerId: z.string().uuid().optional(),
+	jobId: z.string().uuid().optional(),
+	propertyId: z.string().uuid().optional(),
+	linkConfidence: z.number().min(0).max(1),
+	linkMethod: z.enum(["manual", "ai", "regex", "phone_match", "email_match"]),
+});
+
+export type AutoLinkCommunicationInput = z.infer<typeof autoLinkCommunicationSchema>;
+
+export async function autoLinkCommunicationAction(
+	input: AutoLinkCommunicationInput
+): Promise<{
+	success: boolean;
+	error?: string;
+}> {
+	try {
+		const payload = autoLinkCommunicationSchema.parse(input);
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Unable to access database" };
+		}
+
+		// Validate at least one link target is provided
+		if (!payload.customerId && !payload.jobId && !payload.propertyId) {
+			return { success: false, error: "At least one link target required" };
+		}
+
+		// Update communication with auto-link data
+		const { error } = await supabase
+			.from("communications")
+			.update({
+				customer_id: payload.customerId || null,
+				job_id: payload.jobId || null,
+				property_id: payload.propertyId || null,
+				auto_linked: true,
+				link_confidence: payload.linkConfidence,
+				link_method: payload.linkMethod,
+			})
+			.eq("id", payload.communicationId);
+
+		if (error) {
+			return { success: false, error: error.message };
+		}
+
+		revalidatePath(COMMUNICATIONS_PATH);
+		return { success: true };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Get auto-link suggestions for a communication
+ * Finds potential customer/job/property matches based on email/phone
+ */
+export interface MatchSuggestion {
+	id: string;
+	type: "customer" | "job" | "property";
+	name: string;
+	subtitle?: string;
+	confidence: number;
+	matchMethod: "email_match" | "phone_match" | "regex" | "ai";
+	matchDetails?: string;
+}
+
+const getAutoLinkSuggestionsSchema = z.object({
+	communicationId: z.string().uuid(),
+	companyId: z.string().uuid(),
+});
+
+export type GetAutoLinkSuggestionsInput = z.infer<typeof getAutoLinkSuggestionsSchema>;
+
+export async function getAutoLinkSuggestionsAction(
+	input: GetAutoLinkSuggestionsInput
+): Promise<{
+	success: boolean;
+	error?: string;
+	suggestions?: MatchSuggestion[];
+}> {
+	try {
+		const payload = getAutoLinkSuggestionsSchema.parse(input);
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Unable to access database" };
+		}
+
+		// Get the communication to extract email/phone
+		const { data: communication, error: commError } = await supabase
+			.from("communications")
+			.select("*")
+			.eq("id", payload.communicationId)
+			.eq("company_id", payload.companyId)
+			.single();
+
+		if (commError || !communication) {
+			return { success: false, error: "Communication not found" };
+		}
+
+		// Extract email and phone from communication
+		const emailToMatch = communication.direction === "inbound"
+			? communication.from_address
+			: communication.to_address;
+
+		// Extract phone number (if it's a call or SMS)
+		const phoneToMatch = communication.type === "call" || communication.type === "sms"
+			? (communication.direction === "inbound" ? communication.from_address : communication.to_address)
+			: null;
+
+		const suggestions: MatchSuggestion[] = [];
+
+		// Search for customer matches by email
+		if (emailToMatch && emailToMatch.includes("@")) {
+			const { data: customersByEmail } = await supabase
+				.from("customers")
+				.select("id, first_name, last_name, email, phone")
+				.eq("company_id", payload.companyId)
+				.ilike("email", `%${emailToMatch}%`)
+				.limit(3);
+
+			if (customersByEmail && customersByEmail.length > 0) {
+				customersByEmail.forEach((customer) => {
+					suggestions.push({
+						id: customer.id,
+						type: "customer",
+						name: `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unnamed Customer",
+						subtitle: customer.email || customer.phone || undefined,
+						confidence: 0.95,
+						matchMethod: "email_match",
+						matchDetails: "Email address match",
+					});
+				});
+			}
+		}
+
+		// Search for customer matches by phone
+		if (phoneToMatch) {
+			// Clean phone number (remove formatting)
+			const cleanPhone = phoneToMatch.replace(/[^\d]/g, "");
+
+			if (cleanPhone.length >= 10) {
+				const { data: customersByPhone } = await supabase
+					.from("customers")
+					.select("id, first_name, last_name, email, phone")
+					.eq("company_id", payload.companyId)
+					.or(`phone.ilike.%${cleanPhone.slice(-10)}%,mobile_phone.ilike.%${cleanPhone.slice(-10)}%`)
+					.limit(3);
+
+				if (customersByPhone && customersByPhone.length > 0) {
+					customersByPhone.forEach((customer) => {
+						// Don't add duplicate if already matched by email
+						if (!suggestions.find((s) => s.id === customer.id)) {
+							suggestions.push({
+								id: customer.id,
+								type: "customer",
+								name: `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unnamed Customer",
+								subtitle: customer.phone || customer.email || undefined,
+								confidence: 0.90,
+								matchMethod: "phone_match",
+								matchDetails: "Phone number match",
+							});
+						}
+					});
+				}
+			}
+		}
+
+		// For matched customers, find active jobs
+		const customerIds = suggestions.filter((s) => s.type === "customer").map((s) => s.id);
+
+		if (customerIds.length > 0) {
+			const { data: jobs } = await supabase
+				.from("jobs")
+				.select("id, title, customer_id, property_id, status, customers(first_name, last_name), properties(address)")
+				.eq("company_id", payload.companyId)
+				.in("customer_id", customerIds)
+				.in("status", ["scheduled", "in_progress", "pending"])
+				.order("scheduled_date", { ascending: false })
+				.limit(5);
+
+			if (jobs && jobs.length > 0) {
+				jobs.forEach((job: any) => {
+					suggestions.push({
+						id: job.id,
+						type: "job",
+						name: job.title || "Untitled Job",
+						subtitle: job.properties?.address || `Job for ${job.customers?.first_name || ""} ${job.customers?.last_name || ""}`.trim(),
+						confidence: 0.85,
+						matchMethod: "email_match",
+						matchDetails: "Via matched customer",
+					});
+				});
+			}
+		}
+
+		return { success: true, suggestions };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}

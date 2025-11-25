@@ -99,7 +99,7 @@ export async function ContractDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// Get active company ID
@@ -107,7 +107,7 @@ export async function ContractDetailData({
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// ✅ Load contract with tags via single RPC call

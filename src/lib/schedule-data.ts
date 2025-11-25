@@ -1,10 +1,11 @@
 import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { addDays, subDays } from "date-fns";
-import type {
-	Job,
-	JobAssignment,
-	Technician,
+import {
+	type Job,
+	type JobAssignment,
+	type Technician,
+	getAppointmentCategory,
 } from "@/components/schedule/schedule-types";
 import type { UnassignedJobsMeta } from "@/lib/schedule/types";
 import type { ScheduleHydrationPayload } from "@/lib/schedule-bootstrap";
@@ -104,6 +105,76 @@ export type TechniciansLookup = {
 
 const UNASSIGNED_TECHNICIAN_ID = "__unassigned";
 
+// Retry utility with exponential backoff for resilient data fetching
+type RetryOptions = {
+	maxRetries?: number;
+	initialDelay?: number;
+	maxDelay?: number;
+	backoffFactor?: number;
+	shouldRetry?: (error: unknown) => boolean;
+};
+
+const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
+	maxRetries: 3,
+	initialDelay: 500,
+	maxDelay: 5000,
+	backoffFactor: 2,
+	shouldRetry: (error) => {
+		// Retry on network errors, timeouts, and server errors (5xx)
+		if (error instanceof Error) {
+			const message = error.message.toLowerCase();
+			return (
+				message.includes("network") ||
+				message.includes("timeout") ||
+				message.includes("connection") ||
+				message.includes("fetch failed") ||
+				message.includes("econnreset") ||
+				message.includes("500") ||
+				message.includes("502") ||
+				message.includes("503") ||
+				message.includes("504")
+			);
+		}
+		return false;
+	},
+};
+
+async function withRetry<T>(
+	fn: () => Promise<T>,
+	context: string,
+	options: RetryOptions = {},
+): Promise<T> {
+	const opts = { ...DEFAULT_RETRY_OPTIONS, ...options };
+	let lastError: unknown;
+	let delay = opts.initialDelay;
+
+	for (let attempt = 0; attempt <= opts.maxRetries; attempt++) {
+		try {
+			return await fn();
+		} catch (error) {
+			lastError = error;
+
+			if (attempt === opts.maxRetries || !opts.shouldRetry(error)) {
+				console.error(
+					`[Schedule] ${context} failed after ${attempt + 1} attempt(s):`,
+					error instanceof Error ? error.message : String(error),
+				);
+				throw error;
+			}
+
+			console.warn(
+				`[Schedule] ${context} attempt ${attempt + 1} failed, retrying in ${delay}ms...`,
+				error instanceof Error ? error.message : String(error),
+			);
+
+			await new Promise((resolve) => setTimeout(resolve, delay));
+			delay = Math.min(delay * opts.backoffFactor, opts.maxDelay);
+		}
+	}
+
+	throw lastError;
+}
+
 const scheduleSelect = `
   *,
   customer:customers(
@@ -117,6 +188,7 @@ const scheduleSelect = `
     id,
     job_number,
     title,
+    job_type,
     company_id,
     job_team_assignments:job_team_assignments!job_team_assignments_job_id_fkey(
       id,
@@ -242,23 +314,27 @@ export async function fetchScheduleData({
 		scheduleQuery.gte("end_time", range.start.toISOString());
 	}
 
-	// Fetch all three queries in parallel (eliminates waterfall)
+	// Fetch all three queries in parallel with retry logic (eliminates waterfall)
 	let scheduleResult;
 	let teamMembers;
 	let unscheduledResult;
 
 	try {
-		[scheduleResult, teamMembers, unscheduledResult] = await Promise.all([
-			scheduleQuery,
-			fetchTeamMembersWithUsers(supabase, companyId),
-			fetchUnscheduledJobs(supabase, companyId, {
-				limit: unscheduledLimit,
-				offset: unscheduledOffset,
-				search: unscheduledSearch,
-			}),
-		]);
+		[scheduleResult, teamMembers, unscheduledResult] = await withRetry(
+			() =>
+				Promise.all([
+					scheduleQuery,
+					fetchTeamMembersWithUsers(supabase, companyId),
+					fetchUnscheduledJobs(supabase, companyId, {
+						limit: unscheduledLimit,
+						offset: unscheduledOffset,
+						search: unscheduledSearch,
+					}),
+				]),
+			"fetchScheduleData parallel queries",
+		);
 	} catch (error) {
-		console.error("Failed to fetch schedule data:", error);
+		console.error("[Schedule] Failed to fetch schedule data:", error);
 		throw new Error(
 			`Schedule data query failed: ${error instanceof Error ? error.message : String(error)}`,
 		);
@@ -289,15 +365,18 @@ export async function fetchScheduleData({
 
 	let propertyMap;
 	try {
-		propertyMap = await fetchPropertiesByIds(
-			supabase,
-			collectPropertyIds(scheduleRows as ScheduleRow[], unscheduledJobRows),
+		propertyMap = await withRetry(
+			() =>
+				fetchPropertiesByIds(
+					supabase,
+					collectPropertyIds(scheduleRows as ScheduleRow[], unscheduledJobRows),
+				),
+			"fetchPropertiesByIds",
 		);
 	} catch (error) {
-		console.error("Failed to fetch properties:", error);
-		throw new Error(
-			`Properties query failed: ${error instanceof Error ? error.message : String(error)}`,
-		);
+		console.error("[Schedule] Failed to fetch properties:", error);
+		// Return empty map as fallback - jobs will still work but without property details
+		propertyMap = new Map<string, ScheduleProperty>();
 	}
 
 	const technicianLookups = mapTeamMembersToTechnicians(teamMembers);
@@ -494,10 +573,25 @@ async function fetchUnscheduledJobs(
 		);
 	}
 
-	const { data, error, count } = await query;
+	let data;
+	let count;
+	let error;
+
+	try {
+		const result = await query;
+		data = result.data;
+		count = result.count;
+		error = result.error;
+	} catch (fetchError) {
+		console.error("[Schedule] Unscheduled jobs fetch failed:", fetchError);
+		// Return empty result instead of throwing - allows schedule to still load with scheduled jobs
+		return { rows: [], totalCount: 0, hasMore: false };
+	}
 
 	if (error) {
-		throw error;
+		console.error("[Schedule] Unscheduled jobs query error:", error);
+		// Return empty result as fallback
+		return { rows: [], totalCount: 0, hasMore: false };
 	}
 
 	const rows = (data ?? []) as JobRowWithRelations[];
@@ -519,20 +613,26 @@ async function fetchPropertiesByIds(
 	const chunkSize = 100;
 	for (let i = 0; i < propertyIds.length; i += chunkSize) {
 		const chunk = propertyIds.slice(i, i + chunkSize);
-		const { data, error } = await supabase
-			.from("properties")
-			.select(
-				"id, name, address, address2, city, state, zip_code, country, lat, lon",
-			)
-			.in("id", chunk);
+		try {
+			const { data, error } = await supabase
+				.from("properties")
+				.select(
+					"id, name, address, address2, city, state, zip_code, country, lat, lon",
+				)
+				.in("id", chunk);
 
-		if (error) {
-			console.error("Properties query error details:", error);
-			const details = JSON.stringify(error, null, 2);
-			throw new Error(`Properties query failed: ${details}`);
+			if (error) {
+				console.error("[Schedule] Properties query error:", error);
+				// Continue with next chunk instead of failing completely
+				continue;
+			}
+
+			(data ?? []).forEach((property) => map.set(property.id, property));
+		} catch (chunkError) {
+			console.error(`[Schedule] Failed to fetch properties chunk ${i / chunkSize + 1}:`, chunkError);
+			// Continue with next chunk - graceful degradation
+			continue;
 		}
-
-		(data ?? []).forEach((property) => map.set(property.id, property));
 	}
 	return map;
 }
@@ -634,6 +734,7 @@ function mapJobRowToUnscheduledJob(
 		isUnassigned: true,
 		title: job.title || job.job_number || "Job",
 		description: job.description || undefined,
+		jobType: (job.job_type as Job["jobType"]) || undefined,
 		customer,
 		location,
 		startTime,
@@ -815,6 +916,9 @@ function mapScheduleToJob(
 		isUnassigned: assignments.length === 0,
 		title: schedule.title || schedule.job?.title || "Appointment",
 		description: schedule.description || undefined,
+		jobType: (schedule.job?.job_type as Job["jobType"]) || undefined,
+		appointmentType: schedule.type || undefined,
+		appointmentCategory: getAppointmentCategory(schedule.type, schedule.all_day ?? false),
 		customer,
 		location,
 		startTime: new Date(schedule.start_time),

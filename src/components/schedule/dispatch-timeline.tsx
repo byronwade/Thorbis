@@ -16,15 +16,49 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
-import { Car, ChevronRight, Clock, MapPin, Plus, Repeat, User } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	AlertTriangle,
+	Briefcase,
+	Calendar,
+	Car,
+	Check,
+	CheckSquare,
+	ChevronRight,
+	Clock,
+	ClipboardCheck,
+	ExternalLink,
+	HardHat,
+	MapPin,
+	Phone,
+	Play,
+	Plus,
+	Repeat,
+	Search,
+	Send,
+	Settings,
+	Square,
+	Star,
+	User,
+	Users,
+	Wrench,
+	X,
+	Zap,
+} from "lucide-react";
+import Link from "next/link";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
+	arriveAppointment,
 	assignJobToTechnician,
+	completeAppointment,
+	dispatchAppointment,
+	unassignAppointment,
 	updateAppointmentTimes,
 } from "@/actions/schedule-assignments";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ScheduleJobContextMenu } from "./schedule-job-context-menu";
 import {
 	Tooltip,
@@ -36,7 +70,7 @@ import { useSchedule, useScheduleRealtime } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
 import { ScheduleCommandMenu } from "./schedule-command-menu";
-import type { Job, Technician } from "./schedule-types";
+import type { AppointmentCategory, Job, JobType, Technician } from "./schedule-types";
 import { TeamAvatarGroup } from "./team-avatar-manager";
 import { UnassignedPanel } from "./unassigned-panel";
 
@@ -70,78 +104,136 @@ const hasClientCoordinates = (event: unknown): event is ClientPointerEvent => {
 	);
 };
 
-// Priority-based color mapping (takes precedence)
-const getPriorityColor = (priority: Job["priority"]) => {
-	switch (priority) {
-		case "urgent":
-			return "border-l-4 border-l-red-500 border-red-400 dark:border-red-700";
-		case "high":
-			return "border-l-4 border-l-orange-500 border-orange-400 dark:border-orange-700";
-		case "medium":
-			return "border-l-4 border-l-yellow-500 border-yellow-400 dark:border-yellow-700";
-		case "low":
-		default:
-			return "border-slate-300 dark:border-slate-600";
-	}
+// Job type visual configuration - distinct colors and icons for each type
+type JobTypeConfig = {
+	borderColor: string;
+	bgColor: string;
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
 };
 
-// Get job type color based on priority first, then title keywords
+const JOB_TYPE_CONFIG: Record<JobType | "default", JobTypeConfig> = {
+	emergency: {
+		borderColor: "border-l-red-500",
+		bgColor: "bg-red-500/10",
+		icon: Zap,
+		label: "Emergency",
+	},
+	repair: {
+		borderColor: "border-l-orange-500",
+		bgColor: "bg-orange-500/10",
+		icon: Wrench,
+		label: "Repair",
+	},
+	installation: {
+		borderColor: "border-l-green-500",
+		bgColor: "bg-green-500/10",
+		icon: HardHat,
+		label: "Installation",
+	},
+	maintenance: {
+		borderColor: "border-l-blue-500",
+		bgColor: "bg-blue-500/10",
+		icon: Settings,
+		label: "Maintenance",
+	},
+	premium_maintenance: {
+		borderColor: "border-l-violet-500",
+		bgColor: "bg-violet-500/10",
+		icon: Star,
+		label: "Premium",
+	},
+	inspection: {
+		borderColor: "border-l-cyan-500",
+		bgColor: "bg-cyan-500/10",
+		icon: Search,
+		label: "Inspection",
+	},
+	service: {
+		borderColor: "border-l-sky-500",
+		bgColor: "bg-sky-500/10",
+		icon: ClipboardCheck,
+		label: "Service",
+	},
+	service_call: {
+		borderColor: "border-l-teal-500",
+		bgColor: "bg-teal-500/10",
+		icon: Phone,
+		label: "Service Call",
+	},
+	estimate: {
+		borderColor: "border-l-amber-500",
+		bgColor: "bg-amber-500/10",
+		icon: ClipboardCheck,
+		label: "Estimate",
+	},
+	callback: {
+		borderColor: "border-l-pink-500",
+		bgColor: "bg-pink-500/10",
+		icon: Phone,
+		label: "Callback",
+	},
+	other: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Other",
+	},
+	default: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Job",
+	},
+};
+
+const getJobTypeConfig = (job: Job): JobTypeConfig => {
+	const config = job.jobType ? JOB_TYPE_CONFIG[job.jobType] : JOB_TYPE_CONFIG.default;
+	return config || JOB_TYPE_CONFIG.default;
+};
+
+// Get border color class for a job
 const getJobTypeColor = (job: Job) => {
-	// Priority takes precedence for urgent/high jobs
-	if (job.priority === "urgent" || job.priority === "high") {
-		return getPriorityColor(job.priority);
-	}
+	const config = getJobTypeConfig(job);
+	return `border-l-2 ${config.borderColor}`;
+};
 
-	const title = job.title.toLowerCase();
+// Appointment category visual configuration - differentiates jobs, meetings, and events
+type AppointmentCategoryConfig = {
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
+	bgColor: string;
+	textColor: string;
+	borderStyle: string; // solid for jobs, dashed for meetings, dotted for events
+};
 
-	// Emergency/Urgent keywords (fallback if priority not set)
-	if (title.includes("emergency") || title.includes("urgent")) {
-		return "border-l-4 border-l-red-500 border-red-400 dark:border-red-700";
-	}
+const APPOINTMENT_CATEGORY_CONFIG: Record<AppointmentCategory, AppointmentCategoryConfig> = {
+	job: {
+		icon: Briefcase,
+		label: "Job",
+		bgColor: "bg-blue-500/10",
+		textColor: "text-blue-600 dark:text-blue-400",
+		borderStyle: "border-solid",
+	},
+	meeting: {
+		icon: Users,
+		label: "Meeting",
+		bgColor: "bg-purple-500/10",
+		textColor: "text-purple-600 dark:text-purple-400",
+		borderStyle: "border-dashed",
+	},
+	event: {
+		icon: Calendar,
+		label: "Event",
+		bgColor: "bg-emerald-500/10",
+		textColor: "text-emerald-600 dark:text-emerald-400",
+		borderStyle: "border-dotted",
+	},
+};
 
-	// Callbacks/Follow-ups - Muted Orange
-	if (
-		title.includes("callback") ||
-		title.includes("follow-up") ||
-		title.includes("followup")
-	) {
-		return "border-orange-400 dark:border-orange-700";
-	}
-
-	// Meetings/Events/Training - Muted Purple
-	if (
-		title.includes("meeting") ||
-		title.includes("event") ||
-		title.includes("training")
-	) {
-		return "border-purple-400 dark:border-purple-700";
-	}
-
-	// Installation/Setup/New - Muted Green
-	if (
-		title.includes("install") ||
-		title.includes("setup") ||
-		title.includes("new")
-	) {
-		return "border-green-400 dark:border-green-700";
-	}
-
-	// Maintenance/Service/Inspection - Muted Blue
-	if (
-		title.includes("maintenance") ||
-		title.includes("service") ||
-		title.includes("inspection")
-	) {
-		return "border-blue-400 dark:border-blue-700";
-	}
-
-	// Use priority color if set, otherwise default
-	if (job.priority && job.priority !== "low") {
-		return getPriorityColor(job.priority);
-	}
-
-	// Default - Neutral Gray
-	return "border-slate-300 dark:border-slate-600";
+const getAppointmentCategoryConfig = (job: Job): AppointmentCategoryConfig => {
+	const category = job.appointmentCategory || "job";
+	return APPOINTMENT_CATEGORY_CONFIG[category];
 };
 
 type JobWithPosition = {
@@ -437,12 +529,102 @@ const JobCard = memo(function JobCard({
 }) {
 	const [isResizing, setIsResizing] = useState(false);
 	const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const { attributes, listeners, setNodeRef, transform, isDragging } =
 		useDraggable({
 			id: job.id,
 			data: { job },
 			disabled: isResizing,
 		});
+
+	// Quick action handlers
+	const handleDispatch = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.id) return;
+			startTransition(async () => {
+				const result = await dispatchAppointment(job.id);
+				if (result.success) {
+					toast.success("Job dispatched");
+				} else {
+					toast.error(result.error || "Failed to dispatch");
+				}
+			});
+		},
+		[job.id],
+	);
+
+	const handleArrive = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.id) return;
+			startTransition(async () => {
+				const result = await arriveAppointment(job.id);
+				if (result.success) {
+					toast.success("Marked as arrived");
+				} else {
+					toast.error(result.error || "Failed to update");
+				}
+			});
+		},
+		[job.id],
+	);
+
+	const handleComplete = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.id) return;
+			startTransition(async () => {
+				const result = await completeAppointment(job.id);
+				if (result.success) {
+					toast.success("Job completed");
+				} else {
+					toast.error(result.error || "Failed to complete");
+				}
+			});
+		},
+		[job.id],
+	);
+
+	// Determine which quick action to show based on status
+	const getQuickAction = () => {
+		if (!job.jobId || job.assignments.length === 0) return null;
+
+		switch (job.status) {
+			case "scheduled":
+				return {
+					icon: Send,
+					label: "Dispatch",
+					onClick: handleDispatch,
+					className: "bg-blue-500 hover:bg-blue-600 text-white",
+				};
+			case "dispatched":
+				return {
+					icon: Car,
+					label: "Arrive",
+					onClick: handleArrive,
+					className: "bg-sky-500 hover:bg-sky-600 text-white",
+				};
+			case "arrived":
+				return {
+					icon: Play,
+					label: "Start",
+					onClick: handleComplete,
+					className: "bg-emerald-500 hover:bg-emerald-600 text-white",
+				};
+			case "in-progress":
+				return {
+					icon: Check,
+					label: "Done",
+					onClick: handleComplete,
+					className: "bg-amber-500 hover:bg-amber-600 text-white",
+				};
+			default:
+				return null;
+		}
+	};
+
+	const quickAction = getQuickAction();
 
 	const topOffset =
 		(top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top;
@@ -524,82 +706,159 @@ const JobCard = memo(function JobCard({
 						/>
 
 						<ScheduleJobContextMenu job={job} onOpenChange={setIsContextMenuOpen}>
-							<div
-								className={cn(
-									"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all hover:shadow-sm active:cursor-grabbing",
-									borderColor,
-									job.isUnassigned && "!border-red-500",
-									isSelected && "ring-primary shadow-md ring-1",
-									isDragging && "shadow-lg",
-									(job.status === "completed" || job.status === "closed") &&
-										"opacity-50",
-								)}
-								onClick={onSelect}
-							>
-								{/* Overlap indicator */}
-								{hasOverlap && (
-									<div className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[7px] font-bold text-white">
-										!
+							{(() => {
+								const categoryConfig = getAppointmentCategoryConfig(job);
+								return (
+									<div
+										className={cn(
+											"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all hover:shadow-sm active:cursor-grabbing",
+											borderColor,
+											categoryConfig.borderStyle,
+											job.isUnassigned && "!border-red-500",
+											isSelected && "ring-primary shadow-md ring-1",
+											isDragging && "shadow-lg",
+											(job.status === "completed" || job.status === "closed") &&
+												"opacity-50",
+										)}
+										onClick={onSelect}
+									>
+										{/* Overlap indicator - subtle dot */}
+										{hasOverlap && (
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<div className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500" />
+												</TooltipTrigger>
+												<TooltipContent side="top" className="text-xs">
+													Overlaps with another job
+												</TooltipContent>
+											</Tooltip>
+										)}
+
+										{/* Recurring indicator - subtle */}
+										{job.recurrence && (
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Repeat className="absolute -top-0.5 left-0.5 size-2.5 text-violet-500" />
+												</TooltipTrigger>
+												<TooltipContent side="top" className="text-xs">
+													Recurring job
+												</TooltipContent>
+											</Tooltip>
+										)}
+
+										{/* Appointment Category Indicator */}
+										{(() => {
+											const CategoryIcon = categoryConfig.icon;
+											return (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div className={cn("flex size-4 shrink-0 items-center justify-center rounded-sm", categoryConfig.bgColor)}>
+															<CategoryIcon className={cn("size-2.5", categoryConfig.textColor)} />
+														</div>
+													</TooltipTrigger>
+													<TooltipContent side="top" className="text-xs">
+														{categoryConfig.label}
+													</TooltipContent>
+												</Tooltip>
+											);
+										})()}
+
+										{/* Job Type Icon */}
+										{(() => {
+											const typeConfig = getJobTypeConfig(job);
+											const TypeIcon = typeConfig.icon;
+											return (
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div className={cn("flex size-5 shrink-0 items-center justify-center rounded", typeConfig.bgColor)}>
+															<TypeIcon className={cn("size-3", typeConfig.borderColor.replace("border-l-", "text-"))} />
+														</div>
+													</TooltipTrigger>
+													<TooltipContent side="top" className="text-xs">
+														{typeConfig.label}
+													</TooltipContent>
+												</Tooltip>
+											);
+										})()}
+
+										{/* Customer Name - Primary */}
+										<span className="text-foreground flex-1 truncate text-xs font-semibold">
+											{job.customer?.name || "Unknown Customer"}
+										</span>
+
+										{/* Team Avatars */}
+										<TeamAvatarGroup
+											assignments={job.assignments}
+											maxVisible={3}
+											onAddMember={() => {
+												// TODO: Implement add team member
+											}}
+											onRemove={(_techId) => {
+												// TODO: Implement remove team member
+											}}
+										/>
+
+										{/* Quick Action Button - appears on hover */}
+										{quickAction && (
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<button
+														type="button"
+														onClick={quickAction.onClick}
+														disabled={isPending}
+														className={cn(
+															"flex size-6 items-center justify-center rounded-md opacity-0 transition-all group-hover:opacity-100",
+															"focus:outline-none focus:ring-2 focus:ring-offset-1",
+															quickAction.className,
+															isPending && "cursor-wait opacity-50",
+														)}
+													>
+														{isPending ? (
+															<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+														) : (
+															<quickAction.icon className="size-3" />
+														)}
+													</button>
+												</TooltipTrigger>
+												<TooltipContent side="top" className="text-xs">
+													{quickAction.label}
+												</TooltipContent>
+											</Tooltip>
+										)}
+
+										{/* View Details Link - appears on hover */}
+										{job.jobId && (
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Link
+														href={`/dashboard/work/${job.jobId}`}
+														onClick={(e) => e.stopPropagation()}
+														className="flex size-6 items-center justify-center rounded-md bg-slate-100 opacity-0 transition-all hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+													>
+														<ExternalLink className="size-3 text-slate-600 dark:text-slate-400" />
+													</Link>
+												</TooltipTrigger>
+												<TooltipContent side="top" className="text-xs">
+													View Details
+												</TooltipContent>
+											</Tooltip>
+										)}
+
+										{/* Status dot */}
+										<div
+											className={cn(
+												"size-1.5 shrink-0 rounded-full",
+												job.status === "scheduled" && "bg-blue-500",
+												job.status === "dispatched" && "bg-sky-500",
+												job.status === "arrived" && "bg-emerald-500",
+												job.status === "in-progress" && "bg-amber-500",
+												(job.status === "closed" || job.status === "completed") && "bg-slate-400",
+												job.status === "cancelled" && "bg-slate-300",
+											)}
+										/>
 									</div>
-								)}
-
-								{/* Recurring job indicator */}
-								{job.recurrence && (
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<div className="absolute -top-1 left-1 flex size-3.5 items-center justify-center rounded-full bg-violet-500">
-												<Repeat className="size-2 text-white" />
-											</div>
-										</TooltipTrigger>
-										<TooltipContent side="top" className="text-xs">
-											<div className="flex flex-col gap-0.5">
-												<span className="font-medium">Recurring Job</span>
-												<span className="text-muted-foreground">
-													{job.recurrence.frequency === "daily"
-														? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} days` : "day"}`
-														: job.recurrence.frequency === "weekly"
-															? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} weeks` : "week"}`
-															: job.recurrence.frequency === "monthly"
-																? `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} months` : "month"}`
-																: `Every ${job.recurrence.interval > 1 ? `${job.recurrence.interval} years` : "year"}`}
-												</span>
-											</div>
-										</TooltipContent>
-									</Tooltip>
-								)}
-
-								{/* Customer Name - Primary */}
-								<span className="text-foreground flex-1 truncate text-xs font-semibold">
-									{job.customer?.name || "Unknown Customer"}
-								</span>
-
-								{/* Team Avatars */}
-								<TeamAvatarGroup
-									assignments={job.assignments}
-									maxVisible={3}
-									onAddMember={() => {
-										// TODO: Implement add team member
-									}}
-									onRemove={(_techId) => {
-										// TODO: Implement remove team member
-									}}
-								/>
-
-								{/* Status dot */}
-								<div
-									className={cn(
-										"size-1.5 shrink-0 rounded-full",
-										job.status === "scheduled" && "bg-blue-500",
-										job.status === "dispatched" && "bg-sky-500",
-										job.status === "arrived" && "bg-emerald-400",
-										job.status === "in-progress" &&
-											"animate-pulse bg-amber-500",
-										job.status === "closed" && "bg-emerald-600",
-										job.status === "completed" && "bg-emerald-500",
-										job.status === "cancelled" && "bg-slate-400",
-									)}
-								/>
-							</div>
+								);
+							})()}
 						</ScheduleJobContextMenu>
 
 						{/* Right Resize Handle */}
@@ -610,30 +869,80 @@ const JobCard = memo(function JobCard({
 						/>
 					</div>
 				</TooltipTrigger>
-				<TooltipContent className="w-72 p-0" side="top" sideOffset={8}>
-					<div className="bg-card overflow-hidden rounded-lg border shadow-lg">
+				<TooltipContent
+					className="w-80 overflow-hidden rounded-lg border border-border bg-popover p-0 shadow-xl [&>svg]:hidden"
+					side="top"
+					sideOffset={8}
+				>
+					<div className="overflow-hidden text-popover-foreground">
 						{/* Header */}
-						<div className="border-b px-4 py-3">
-							<div className="mb-1 flex items-center justify-between gap-2">
+						<div className="border-b border-border px-4 py-3">
+							<div className="mb-2 flex items-center justify-between gap-2">
 								<h4 className="text-foreground text-base font-bold">
 									{job.customer?.name || "Unknown Customer"}
 								</h4>
-								<div className="flex items-center gap-1.5">
-									{job.recurrence && (
+								<Badge className="text-[10px] capitalize" variant="outline">
+									{job.status}
+								</Badge>
+							</div>
+							<p className="text-muted-foreground mb-2 text-sm">{job.title}</p>
+							{/* Type badges row */}
+							<div className="flex flex-wrap items-center gap-1.5">
+								{/* Appointment Category Badge */}
+								{(() => {
+									const catConfig = getAppointmentCategoryConfig(job);
+									const CatIcon = catConfig.icon;
+									return (
 										<Badge
-											className="gap-0.5 bg-violet-100 px-1.5 py-0 text-[10px] text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
+											className={cn(
+												"gap-1 px-2 py-0.5 text-[10px]",
+												catConfig.bgColor,
+												catConfig.textColor,
+											)}
 											variant="outline"
 										>
-											<Repeat className="size-2.5" />
-											Recurring
+											<CatIcon className="size-2.5" />
+											{catConfig.label}
 										</Badge>
-									)}
-									<Badge className="text-[10px] capitalize" variant="outline">
-										{job.status}
+									);
+								})()}
+								{/* Job Type Badge */}
+								{(() => {
+									const typeConfig = getJobTypeConfig(job);
+									const TypeIcon = typeConfig.icon;
+									return (
+										<Badge
+											className={cn(
+												"gap-1 px-2 py-0.5 text-[10px]",
+												typeConfig.bgColor,
+												typeConfig.borderColor.replace("border-l-", "text-"),
+											)}
+											variant="outline"
+										>
+											<TypeIcon className="size-2.5" />
+											{typeConfig.label}
+										</Badge>
+									);
+								})()}
+								{job.recurrence && (
+									<Badge
+										className="gap-0.5 bg-violet-100 px-1.5 py-0.5 text-[10px] text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
+										variant="outline"
+									>
+										<Repeat className="size-2.5" />
+										Recurring
 									</Badge>
-								</div>
+								)}
+								{job.priority === "urgent" && (
+									<Badge
+										className="gap-0.5 px-1.5 py-0.5 text-[10px]"
+										variant="destructive"
+									>
+										<AlertTriangle className="size-2.5" />
+										Urgent
+									</Badge>
+								)}
 							</div>
-							<p className="text-muted-foreground text-sm">{job.title}</p>
 						</div>
 
 						{/* Content */}
@@ -681,7 +990,7 @@ const JobCard = memo(function JobCard({
 
 							{/* Team */}
 							{job.assignments.length > 0 && (
-								<div className="flex flex-wrap gap-1.5 border-t pt-2">
+								<div className="flex flex-wrap gap-1.5 border-t border-border pt-2">
 									{job.assignments.map((assignment, idx) => (
 										<div
 											className="bg-muted flex items-center gap-1 rounded-md px-2 py-1"
@@ -706,7 +1015,7 @@ const JobCard = memo(function JobCard({
 
 						{/* Action */}
 						{job.jobId && (
-							<div className="border-t p-3">
+							<div className="border-t border-border p-3">
 								<a
 									className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors"
 									href={`/dashboard/work/${job.jobId}`}
@@ -737,6 +1046,9 @@ const TechnicianLane = memo(function TechnicianLane({
 	onDoubleClick,
 	totalWidth,
 	timeRangeStart,
+	isSelectionMode,
+	selectedJobIds,
+	onToggleJobSelection,
 }: {
 	technician: Technician;
 	jobs: JobWithPosition[];
@@ -754,6 +1066,9 @@ const TechnicianLane = memo(function TechnicianLane({
 	onDoubleClick: (technicianId: string, startTime: Date) => void;
 	totalWidth: number;
 	timeRangeStart: Date;
+	isSelectionMode: boolean;
+	selectedJobIds: Set<string>;
+	onToggleJobSelection: (jobId: string) => void;
 }) {
 	const { setNodeRef, isOver } = useDroppable({
 		id: technician.id,
@@ -838,14 +1153,22 @@ const TechnicianLane = memo(function TechnicianLane({
 					{jobs.map(({ job, left, width, top, hasOverlap }) => (
 						<JobCard
 							hasOverlap={hasOverlap}
-							isSelected={selectedJobId === job.id}
+							isSelected={
+								isSelectionMode
+									? selectedJobIds.has(job.id)
+									: selectedJobId === job.id
+							}
 							job={job}
 							key={job.id}
 							left={left}
 							onHover={onJobHover}
 							onResize={onResize}
 							onResizeComplete={onResizeComplete}
-							onSelect={() => onSelectJob(job.id)}
+							onSelect={() =>
+								isSelectionMode
+									? onToggleJobSelection(job.id)
+									: onSelectJob(job.id)
+							}
 							top={top}
 							width={width}
 						/>
@@ -862,7 +1185,7 @@ export function DispatchTimeline() {
 	const [hoverTime, setHoverTime] = useState<string | null>(null);
 	const [isJobHovered, setIsJobHovered] = useState(false);
 	const [activeJobId, setActiveJobId] = useState<string | null>(null);
-	const [_dragPreview, setDragPreview] = useState<{
+	const [dragPreview, setDragPreview] = useState<{
 		label: string;
 		technician: string;
 	} | null>(null);
@@ -871,6 +1194,10 @@ export function DispatchTimeline() {
 	const [commandMenuOpen, setCommandMenuOpen] = useState(false);
 	const [commandMenuDate, setCommandMenuDate] = useState<Date | null>(null);
 	const [quickCreateTechId, setQuickCreateTechId] = useState<string | null>(null);
+	// Multi-select mode state
+	const [isSelectionMode, setIsSelectionMode] = useState(false);
+	const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
+	const [isBulkActionPending, startBulkTransition] = useTransition();
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const timelineRef = useRef<HTMLDivElement>(null);
 	const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -946,6 +1273,95 @@ export function DispatchTimeline() {
 		loadMoreUnassignedJobs({ search: unassignedSearch });
 	}, [loadMoreUnassignedJobs, unassignedSearch]);
 
+	// Multi-select handlers
+	const toggleSelectionMode = useCallback(() => {
+		setIsSelectionMode((prev) => !prev);
+		if (isSelectionMode) {
+			// Clear selection when exiting selection mode
+			setSelectedJobIds(new Set());
+		}
+	}, [isSelectionMode]);
+
+	const toggleJobSelection = useCallback((jobId: string) => {
+		setSelectedJobIds((prev) => {
+			const next = new Set(prev);
+			if (next.has(jobId)) {
+				next.delete(jobId);
+			} else {
+				next.add(jobId);
+			}
+			return next;
+		});
+	}, []);
+
+	const selectAllJobs = useCallback(() => {
+		const allJobIds = jobs
+			.filter((job) => !job.isUnassigned)
+			.map((job) => job.id);
+		setSelectedJobIds(new Set(allJobIds));
+	}, [jobs]);
+
+	const clearSelection = useCallback(() => {
+		setSelectedJobIds(new Set());
+	}, []);
+
+	// Bulk action handlers
+	const handleBulkDispatch = useCallback(() => {
+		startBulkTransition(async () => {
+			const jobIds = Array.from(selectedJobIds);
+			let successCount = 0;
+			let errorCount = 0;
+
+			for (const jobId of jobIds) {
+				const result = await dispatchAppointment(jobId);
+				if (result.success) {
+					successCount++;
+				} else {
+					errorCount++;
+				}
+			}
+
+			if (successCount > 0) {
+				toast.success(`Dispatched ${successCount} job${successCount > 1 ? "s" : ""}`);
+			}
+			if (errorCount > 0) {
+				toast.error(`Failed to dispatch ${errorCount} job${errorCount > 1 ? "s" : ""}`);
+			}
+
+			// Clear selection after bulk action
+			setSelectedJobIds(new Set());
+			setIsSelectionMode(false);
+		});
+	}, [selectedJobIds]);
+
+	const handleBulkComplete = useCallback(() => {
+		startBulkTransition(async () => {
+			const jobIds = Array.from(selectedJobIds);
+			let successCount = 0;
+			let errorCount = 0;
+
+			for (const jobId of jobIds) {
+				const result = await completeAppointment(jobId);
+				if (result.success) {
+					successCount++;
+				} else {
+					errorCount++;
+				}
+			}
+
+			if (successCount > 0) {
+				toast.success(`Completed ${successCount} job${successCount > 1 ? "s" : ""}`);
+			}
+			if (errorCount > 0) {
+				toast.error(`Failed to complete ${errorCount} job${errorCount > 1 ? "s" : ""}`);
+			}
+
+			// Clear selection after bulk action
+			setSelectedJobIds(new Set());
+			setIsSelectionMode(false);
+		});
+	}, [selectedJobIds]);
+
 	// Configure drag sensors
 	const mouseSensor = useSensor(MouseSensor, {
 		activationConstraint: {
@@ -981,7 +1397,8 @@ export function DispatchTimeline() {
 
 	const timeRange = useMemo(() => {
 		const start = hourlySlots[0];
-		const end = new Date(hourlySlots.at(-1));
+		const lastSlot = hourlySlots.at(-1);
+		const end = new Date(lastSlot ?? start);
 		end.setHours(23, 59, 59, 999);
 		return { start, end };
 	}, [hourlySlots]);
@@ -1052,6 +1469,57 @@ export function DispatchTimeline() {
 
 		return lanes;
 	}, [technicians, getJobsForTechnician, timeRange]);
+
+	// Calculate total conflicts across all lanes
+	const conflictCount = useMemo(() => {
+		return technicianLanes.reduce((count, lane) => {
+			return count + lane.jobs.filter((j) => j.hasOverlap).length;
+		}, 0);
+	}, [technicianLanes]);
+
+	// Calculate team workload summary
+	const teamWorkloadSummary = useMemo(() => {
+		const WORK_DAY_MINUTES = 8 * 60;
+		let totalJobs = 0;
+		let totalMinutes = 0;
+		let availableTechs = 0;
+		let busyTechs = 0;
+
+		technicianLanes.forEach(({ jobs }) => {
+			totalJobs += jobs.length;
+			const techMinutes = jobs.reduce((acc, { job }) => {
+				const start =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const end =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				return acc + (end.getTime() - start.getTime()) / (1000 * 60);
+			}, 0);
+			totalMinutes += techMinutes;
+			if (techMinutes > 0) {
+				busyTechs++;
+			} else {
+				availableTechs++;
+			}
+		});
+
+		const avgUtilization =
+			technicianLanes.length > 0
+				? Math.round(
+						(totalMinutes / (technicianLanes.length * WORK_DAY_MINUTES)) * 100,
+					)
+				: 0;
+
+		return {
+			totalJobs,
+			totalHours: Math.round(totalMinutes / 60),
+			avgUtilization,
+			availableTechs,
+			busyTechs,
+			totalTechs: technicianLanes.length,
+		};
+	}, [technicianLanes]);
 
 	// Calculate total height needed for sidebar to match all lanes
 	const totalContentHeight = useMemo(() => {
@@ -1369,7 +1837,7 @@ export function DispatchTimeline() {
 		],
 	);
 
-	const _handleDragMove = useCallback(
+	const handleDragMove = useCallback(
 		(event: DragMoveEvent) => {
 			const jobId = event.active.id as string;
 			const jobData = technicianLanes
@@ -1409,7 +1877,7 @@ export function DispatchTimeline() {
 		[technicianLanes, technicians],
 	);
 
-	const _handleDragCancel = useCallback(() => {
+	const handleDragCancel = useCallback(() => {
 		setActiveJobId(null);
 		setDragPreview(null);
 	}, []);
@@ -1709,8 +2177,9 @@ export function DispatchTimeline() {
 
 	return (
 		<DndContext
-			onDragCancel={() => setActiveJobId(null)}
+			onDragCancel={handleDragCancel}
 			onDragEnd={handleDragEnd}
+			onDragMove={handleDragMove}
 			onDragStart={handleDragStart}
 			sensors={sensors}
 		>
@@ -1739,6 +2208,7 @@ export function DispatchTimeline() {
 
 				{/* Timeline */}
 				<div className="flex flex-1 flex-col overflow-hidden">
+
 					{/* Single scroll container */}
 					<div className="flex flex-1 overflow-auto" ref={scrollContainerRef}>
 						{/* Team Sidebar - Sticky */}
@@ -1746,30 +2216,99 @@ export function DispatchTimeline() {
 							className="bg-card sticky left-0 z-35 flex shrink-0 flex-col border-r"
 							style={{ width: SIDEBAR_WIDTH, minHeight: totalContentHeight }}
 						>
-							{/* Team Header - Sticky */}
-							<div className="bg-muted sticky top-0 z-40 flex h-11 shrink-0 items-center justify-between border-b px-4">
-								<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-									Team
-								</span>
-								{/* Real-time connection indicator */}
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<div
-											className={cn(
-												"size-2 rounded-full",
-												isRealtimeConnected
-													? "bg-green-500 animate-pulse"
-													: "bg-slate-400",
-											)}
-										/>
-									</TooltipTrigger>
-									<TooltipContent side="right" className="text-xs">
-										{isRealtimeConnected
-											? "Live updates active"
-											: "Connecting to live updates..."}
-									</TooltipContent>
-								</Tooltip>
-							</div>
+							{/* Team Header with Summary - Sticky */}
+							<div className="bg-muted sticky top-0 z-40 shrink-0 border-b">
+								<div className="flex h-11 items-center justify-between px-4">
+									<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+										Team
+									</span>
+									{/* Real-time connection indicator */}
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div
+												className={cn(
+													"size-2 rounded-full",
+													isRealtimeConnected
+														? "bg-green-500 animate-pulse"
+														: "bg-slate-400",
+												)}
+											/>
+										</TooltipTrigger>
+										<TooltipContent side="right" className="text-xs">
+											{isRealtimeConnected
+												? "Live updates active"
+												: "Connecting to live updates..."}
+										</TooltipContent>
+									</Tooltip>
+								</div>
+
+								{/* Quick Stats Row - simplified */}
+								<div className="flex items-center justify-between border-t px-4 py-2">
+									<span className="text-muted-foreground text-xs">
+										{teamWorkloadSummary.totalJobs} jobs today
+									</span>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Button
+												size="sm"
+												variant="ghost"
+												className={cn(
+													"h-6 w-6 p-0",
+													isSelectionMode && "bg-primary text-primary-foreground",
+												)}
+												onClick={toggleSelectionMode}
+											>
+												{isSelectionMode ? (
+													<CheckSquare className="size-3.5" />
+												) : (
+													<Square className="size-3.5" />
+												)}
+											</Button>
+										</TooltipTrigger>
+										<TooltipContent side="right" className="text-xs">
+											{isSelectionMode ? "Exit selection" : "Select multiple"}
+										</TooltipContent>
+									</Tooltip>
+								</div>
+
+								{/* Bulk Actions (only when selecting) */}
+								{isSelectionMode && selectedJobIds.size > 0 && (
+									<div className="flex items-center gap-2 border-t px-3 py-1.5">
+										<span className="text-muted-foreground text-xs">
+											{selectedJobIds.size} selected
+										</span>
+										<div className="ml-auto flex items-center gap-1">
+											<Button
+												size="sm"
+												variant="ghost"
+												className="h-6 px-2 text-xs"
+												onClick={handleBulkDispatch}
+												disabled={isBulkActionPending}
+											>
+												Dispatch
+											</Button>
+											<Button
+												size="sm"
+												variant="ghost"
+												className="h-6 px-2 text-xs"
+												onClick={handleBulkComplete}
+												disabled={isBulkActionPending}
+											>
+												Complete
+											</Button>
+											<Button
+												size="sm"
+												variant="ghost"
+												className="h-6 w-6 p-0"
+												onClick={clearSelection}
+											>
+												<X className="size-3" />
+											</Button>
+										</div>
+									</div>
+								)}
+
+								</div>
 
 							{/* Team Members */}
 							{technicianLanes.map(({ technician, jobs, height }) => {
@@ -1780,15 +2319,15 @@ export function DispatchTimeline() {
 
 								// Calculate utilization (assuming 8 hour workday: 8am-5pm = 9 hours with lunch)
 								const WORK_DAY_MINUTES = 8 * 60; // 8 hours
-								const totalScheduledMinutes = jobs.reduce((acc, job) => {
+								const totalScheduledMinutes = jobs.reduce((acc, jobWithPos) => {
 									const start =
-										job.startTime instanceof Date
-											? job.startTime
-											: new Date(job.startTime);
+										jobWithPos.job.startTime instanceof Date
+											? jobWithPos.job.startTime
+											: new Date(jobWithPos.job.startTime);
 									const end =
-										job.endTime instanceof Date
-											? job.endTime
-											: new Date(job.endTime);
+										jobWithPos.job.endTime instanceof Date
+											? jobWithPos.job.endTime
+											: new Date(jobWithPos.job.endTime);
 									return acc + (end.getTime() - start.getTime()) / (1000 * 60);
 								}, 0);
 								const utilizationPercent = Math.min(
@@ -1872,46 +2411,50 @@ export function DispatchTimeline() {
 												</div>
 											</div>
 										</TooltipTrigger>
-										<TooltipContent side="right" className="text-xs">
-											<div className="flex flex-col gap-1">
+										<TooltipContent
+											side="right"
+											className="overflow-hidden rounded-lg border border-border bg-popover p-0 shadow-xl [&>svg]:hidden"
+										>
+											<div className="flex flex-col gap-1 p-3 text-xs text-popover-foreground">
 												<div className="flex items-center justify-between gap-4">
 													<span className="font-medium">{technician.name}</span>
-													<span
+													<Badge
+														variant="secondary"
 														className={cn(
-															"rounded px-1.5 py-0.5 text-[10px] font-medium",
+															"px-1.5 py-0.5 text-[10px]",
 															hasJobs
-																? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
-																: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+																? "bg-warning/15 text-warning"
+																: "bg-success/15 text-success",
 														)}
 													>
 														{hasJobs ? "Busy" : "Available"}
-													</span>
+													</Badge>
 												</div>
 												<div className="text-muted-foreground">
 													{technician.role}
 												</div>
-												<div className="border-t pt-1 mt-1">
+												<div className="mt-1 border-t border-border pt-1">
 													<div className="flex justify-between">
-														<span>Jobs Today:</span>
+														<span className="text-muted-foreground">Jobs Today:</span>
 														<span className="font-medium">{jobs.length}</span>
 													</div>
 													<div className="flex justify-between">
-														<span>Time Booked:</span>
+														<span className="text-muted-foreground">Time Booked:</span>
 														<span className="font-medium">
 															{Math.round(totalScheduledMinutes / 60)}h{" "}
 															{Math.round(totalScheduledMinutes % 60)}m
 														</span>
 													</div>
 													<div className="flex justify-between">
-														<span>Utilization:</span>
+														<span className="text-muted-foreground">Utilization:</span>
 														<span
 															className={cn(
 																"font-medium",
 																utilizationPercent < 50
-																	? "text-emerald-600"
+																	? "text-success"
 																	: utilizationPercent < 80
-																		? "text-amber-600"
-																		: "text-red-600",
+																		? "text-warning"
+																		: "text-destructive",
 															)}
 														>
 															{utilizationPercent}%
@@ -2048,6 +2591,9 @@ export function DispatchTimeline() {
 										onDoubleClick={handleLaneDoubleClick}
 										totalWidth={totalWidth}
 										timeRangeStart={timeRange.start}
+										isSelectionMode={isSelectionMode}
+										selectedJobIds={selectedJobIds}
+										onToggleJobSelection={toggleJobSelection}
 									/>
 								))}
 							</div>
@@ -2056,24 +2602,64 @@ export function DispatchTimeline() {
 				</div>
 			</div>
 
-			{/* Drag Overlay - Ghost Preview */}
+			{/* Drag Overlay - Ghost Preview (matches JobCard exactly) */}
 			<DragOverlay dropAnimation={null}>
 				{activeJob ? (
-					<div
-						className="border-primary bg-card rounded-md border-2 p-2 shadow-2xl"
-						style={{ width: "200px", height: `${JOB_HEIGHT}px` }}
-					>
-						<div className="flex items-center justify-between">
-							<div className="min-w-0 flex-1">
-								<p className="text-foreground truncate text-xs font-semibold">
-									{activeJob.customer.name}
-								</p>
+					(() => {
+						const categoryConfig = getAppointmentCategoryConfig(activeJob);
+						const typeConfig = getJobTypeConfig(activeJob);
+						const TypeIcon = typeConfig.icon;
+						const CategoryIcon = categoryConfig.icon;
+						const borderColor = getJobTypeColor(activeJob);
+
+						return (
+							<div
+								className={cn(
+									"bg-card flex items-center gap-2 rounded-md border px-2.5 py-1.5 shadow-2xl ring-2 ring-primary",
+									borderColor,
+									categoryConfig.borderStyle,
+									activeJob.isUnassigned && "!border-red-500",
+								)}
+								style={{ height: `${JOB_HEIGHT}px`, minWidth: "180px", maxWidth: "300px" }}
+							>
+								{/* Appointment Category Indicator */}
+								<div className={cn("flex size-4 shrink-0 items-center justify-center rounded-sm", categoryConfig.bgColor)}>
+									<CategoryIcon className={cn("size-2.5", categoryConfig.textColor)} />
+								</div>
+
+								{/* Job Type Icon */}
+								<div className={cn("flex size-5 shrink-0 items-center justify-center rounded", typeConfig.bgColor)}>
+									<TypeIcon className={cn("size-3", typeConfig.borderColor.replace("border-l-", "text-"))} />
+								</div>
+
+								{/* Customer Name */}
+								<span className="text-foreground flex-1 truncate text-xs font-semibold">
+									{activeJob.customer?.name || "Unknown Customer"}
+								</span>
+
+								{/* Team Avatars */}
+								<TeamAvatarGroup
+									assignments={activeJob.assignments}
+									maxVisible={2}
+									onAddMember={() => {}}
+									onRemove={() => {}}
+								/>
+
+								{/* Status dot */}
+								<div
+									className={cn(
+										"size-1.5 shrink-0 rounded-full",
+										activeJob.status === "scheduled" && "bg-blue-500",
+										activeJob.status === "dispatched" && "bg-sky-500",
+										activeJob.status === "arrived" && "bg-emerald-500",
+										activeJob.status === "in-progress" && "bg-amber-500",
+										(activeJob.status === "closed" || activeJob.status === "completed") && "bg-slate-400",
+										activeJob.status === "cancelled" && "bg-slate-300",
+									)}
+								/>
 							</div>
-							<Badge className="ml-2 text-[9px]" variant="secondary">
-								Moving
-							</Badge>
-						</div>
-					</div>
+						);
+					})()
 				) : null}
 			</DragOverlay>
 

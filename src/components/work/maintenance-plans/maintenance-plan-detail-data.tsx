@@ -48,7 +48,7 @@ export async function MaintenancePlanDetailData({
 	const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
 	if (!isOnboardingComplete) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// Get active company ID
@@ -56,7 +56,7 @@ export async function MaintenancePlanDetailData({
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	}
 
 	// Fetch maintenance plan with all related data

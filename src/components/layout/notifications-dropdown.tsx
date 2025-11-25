@@ -509,7 +509,7 @@ export function NotificationsDropdown({
 												<div className="flex items-center gap-1">
 													<Link
 														className="bg-warning/20 text-warning hover:bg-warning/30 rounded px-2 py-1 text-xs font-medium transition-colors"
-														href="/dashboard/welcome?step=3"
+														href="/welcome?step=3"
 														onClick={() => setIsOpen(false)}
 													>
 														Complete Setup
@@ -557,7 +557,7 @@ export function NotificationsDropdown({
 												<div className="flex items-center gap-1">
 													<Link
 														className="bg-warning/20 text-warning hover:bg-warning/30 rounded px-2 py-1 text-xs font-medium transition-colors"
-														href="/dashboard/welcome?step=5"
+														href="/welcome?step=5"
 														onClick={() => setIsOpen(false)}
 													>
 														Complete Setup

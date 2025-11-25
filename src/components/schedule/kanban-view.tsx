@@ -2,11 +2,27 @@
 
 import { format } from "date-fns";
 import {
-	Calendar as CalendarIcon,
+	Briefcase,
+	Calendar,
+	Car,
+	Check,
+	ClipboardCheck,
 	Clock,
+	ExternalLink,
+	HardHat,
 	MapPin,
+	Phone,
+	Play,
+	Search,
+	Send,
+	Settings,
+	Star,
+	Users,
+	Wrench,
+	Zap,
 } from "lucide-react";
-import { useTransition } from "react";
+import Link from "next/link";
+import { useCallback, useTransition } from "react";
 import { toast } from "sonner";
 import {
 	arriveAppointment,
@@ -21,9 +37,15 @@ import type {
 	KanbanItemBase,
 	KanbanMoveEvent,
 } from "@/components/ui/shadcn-io/kanban";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSchedule } from "@/hooks/use-schedule";
 import { cn } from "@/lib/utils";
-import type { Job } from "./schedule-types";
+import type { AppointmentCategory, Job, JobType } from "./schedule-types";
 import { TeamAvatarGroup } from "./team-avatar-manager";
 
 type ScheduleStatus =
@@ -77,43 +99,135 @@ function resolveStatus(
 	return COLUMN_LABEL.has(normalized) ? normalized : DEFAULT_STATUS;
 }
 
-// Job type color mapping (same as timeline view) - returns left border classes
+// Job type visual configuration - consistent with timeline view
+type JobTypeConfig = {
+	borderColor: string;
+	bgColor: string;
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
+};
+
+const JOB_TYPE_CONFIG: Record<JobType | "default", JobTypeConfig> = {
+	emergency: {
+		borderColor: "border-l-red-500",
+		bgColor: "bg-red-500/10",
+		icon: Zap,
+		label: "Emergency",
+	},
+	repair: {
+		borderColor: "border-l-orange-500",
+		bgColor: "bg-orange-500/10",
+		icon: Wrench,
+		label: "Repair",
+	},
+	installation: {
+		borderColor: "border-l-green-500",
+		bgColor: "bg-green-500/10",
+		icon: HardHat,
+		label: "Installation",
+	},
+	maintenance: {
+		borderColor: "border-l-blue-500",
+		bgColor: "bg-blue-500/10",
+		icon: Settings,
+		label: "Maintenance",
+	},
+	premium_maintenance: {
+		borderColor: "border-l-violet-500",
+		bgColor: "bg-violet-500/10",
+		icon: Star,
+		label: "Premium",
+	},
+	inspection: {
+		borderColor: "border-l-cyan-500",
+		bgColor: "bg-cyan-500/10",
+		icon: Search,
+		label: "Inspection",
+	},
+	service: {
+		borderColor: "border-l-sky-500",
+		bgColor: "bg-sky-500/10",
+		icon: ClipboardCheck,
+		label: "Service",
+	},
+	service_call: {
+		borderColor: "border-l-teal-500",
+		bgColor: "bg-teal-500/10",
+		icon: Phone,
+		label: "Service Call",
+	},
+	estimate: {
+		borderColor: "border-l-amber-500",
+		bgColor: "bg-amber-500/10",
+		icon: ClipboardCheck,
+		label: "Estimate",
+	},
+	callback: {
+		borderColor: "border-l-pink-500",
+		bgColor: "bg-pink-500/10",
+		icon: Phone,
+		label: "Callback",
+	},
+	other: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Other",
+	},
+	default: {
+		borderColor: "border-l-slate-400",
+		bgColor: "bg-slate-400/10",
+		icon: ClipboardCheck,
+		label: "Job",
+	},
+};
+
+const getJobTypeConfig = (job: Job): JobTypeConfig => {
+	const config = job.jobType ? JOB_TYPE_CONFIG[job.jobType] : JOB_TYPE_CONFIG.default;
+	return config || JOB_TYPE_CONFIG.default;
+};
+
 const getJobTypeColor = (job: Job) => {
-	const title = job.title.toLowerCase();
+	const config = getJobTypeConfig(job);
+	return `border-l-4 ${config.borderColor}`;
+};
 
-	if (title.includes("emergency") || title.includes("urgent")) {
-		return "border-l-red-400 dark:border-l-red-700";
-	}
+// Appointment category visual configuration - differentiates jobs, meetings, and events
+type AppointmentCategoryConfig = {
+	icon: React.ComponentType<{ className?: string }>;
+	label: string;
+	bgColor: string;
+	textColor: string;
+	borderStyle: string;
+};
 
-	if (
-		title.includes("callback") ||
-		title.includes("follow-up") ||
-		title.includes("followup")
-	) {
-		return "border-l-orange-400 dark:border-l-orange-700";
-	}
+const APPOINTMENT_CATEGORY_CONFIG: Record<AppointmentCategory, AppointmentCategoryConfig> = {
+	job: {
+		icon: Briefcase,
+		label: "Job",
+		bgColor: "bg-blue-500/10",
+		textColor: "text-blue-600 dark:text-blue-400",
+		borderStyle: "border-solid",
+	},
+	meeting: {
+		icon: Users,
+		label: "Meeting",
+		bgColor: "bg-purple-500/10",
+		textColor: "text-purple-600 dark:text-purple-400",
+		borderStyle: "border-dashed",
+	},
+	event: {
+		icon: Calendar,
+		label: "Event",
+		bgColor: "bg-emerald-500/10",
+		textColor: "text-emerald-600 dark:text-emerald-400",
+		borderStyle: "border-dotted",
+	},
+};
 
-	if (
-		title.includes("meeting") ||
-		title.includes("event") ||
-		title.includes("training")
-	) {
-		return "border-l-purple-400 dark:border-l-purple-700";
-	}
-
-	if (
-		title.includes("install") ||
-		title.includes("setup") ||
-		title.includes("new")
-	) {
-		return "border-l-green-400 dark:border-l-green-700";
-	}
-
-	if (title.includes("service") || title.includes("maintenance")) {
-		return "border-l-blue-400 dark:border-l-blue-700";
-	}
-
-	return "border-l-slate-300 dark:border-l-slate-700";
+const getAppointmentCategoryConfig = (job: Job): AppointmentCategoryConfig => {
+	const category = job.appointmentCategory || "job";
+	return APPOINTMENT_CATEGORY_CONFIG[category];
 };
 
 // Job status color mapping (same as timeline view)
@@ -140,69 +254,246 @@ const getStatusColor = (status: Job["status"]) => {
 
 function JobCard({ item }: { item: ScheduleKanbanItem }) {
 	const { entity: job } = item;
+	const [isPending, startTransition] = useTransition();
 	const startTime =
 		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 	const endTime =
 		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
+	// Quick action handlers
+	const handleDispatch = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.jobId) return;
+			startTransition(async () => {
+				const result = await dispatchAppointment(job.jobId!);
+				if (result.success) {
+					toast.success("Job dispatched");
+				} else {
+					toast.error(result.error || "Failed to dispatch");
+				}
+			});
+		},
+		[job.jobId],
+	);
+
+	const handleArrive = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.jobId) return;
+			startTransition(async () => {
+				const result = await arriveAppointment(job.jobId!);
+				if (result.success) {
+					toast.success("Marked as arrived");
+				} else {
+					toast.error(result.error || "Failed to update");
+				}
+			});
+		},
+		[job.jobId],
+	);
+
+	const handleComplete = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!job.jobId) return;
+			startTransition(async () => {
+				const result = await completeAppointment(job.jobId!);
+				if (result.success) {
+					toast.success("Job completed");
+				} else {
+					toast.error(result.error || "Failed to complete");
+				}
+			});
+		},
+		[job.jobId],
+	);
+
+	// Determine which quick action to show based on status
+	const getQuickAction = () => {
+		if (!job.jobId) return null;
+
+		switch (job.status) {
+			case "scheduled":
+				return {
+					icon: Send,
+					label: "Dispatch",
+					onClick: handleDispatch,
+					className: "bg-blue-500 hover:bg-blue-600 text-white",
+				};
+			case "dispatched":
+				return {
+					icon: Car,
+					label: "Arrive",
+					onClick: handleArrive,
+					className: "bg-sky-500 hover:bg-sky-600 text-white",
+				};
+			case "arrived":
+				return {
+					icon: Play,
+					label: "Start",
+					onClick: handleComplete,
+					className: "bg-emerald-500 hover:bg-emerald-600 text-white",
+				};
+			case "in-progress":
+				return {
+					icon: Check,
+					label: "Done",
+					onClick: handleComplete,
+					className: "bg-amber-500 hover:bg-amber-600 text-white",
+				};
+			default:
+				return null;
+		}
+	};
+
+	const quickAction = getQuickAction();
+
+	const categoryConfig = getAppointmentCategoryConfig(job);
+
 	return (
-		<ScheduleJobContextMenu job={job}>
-			<div
-				className={cn(
-					"relative -m-4 flex flex-col gap-2 rounded-xl border-l-4 p-4",
-					getJobTypeColor(job),
-				)}
-			>
-				{/* Status Dot */}
-				<div className="absolute top-4 right-4">
-					<div
-						className={cn("size-2 rounded-full", getStatusColor(job.status))}
-					/>
-				</div>
+		<TooltipProvider>
+			<ScheduleJobContextMenu job={job}>
+				<div
+					className={cn(
+						"group relative -m-4 flex flex-col gap-2 rounded-xl border-l-4 p-4",
+						getJobTypeColor(job),
+						categoryConfig.borderStyle,
+					)}
+				>
+					{/* Status Dot + Quick Actions */}
+					<div className="absolute top-3 right-3 flex items-center gap-1.5">
+						{/* Quick Action Button - appears on hover */}
+						{quickAction && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<button
+										type="button"
+										onClick={quickAction.onClick}
+										disabled={isPending}
+										className={cn(
+											"flex size-6 items-center justify-center rounded-md opacity-0 transition-all group-hover:opacity-100",
+											"focus:outline-none focus:ring-2 focus:ring-offset-1",
+											quickAction.className,
+											isPending && "cursor-wait opacity-50",
+										)}
+									>
+										{isPending ? (
+											<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+										) : (
+											<quickAction.icon className="size-3" />
+										)}
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="top" className="text-xs">
+									{quickAction.label}
+								</TooltipContent>
+							</Tooltip>
+						)}
 
-				{/* Customer Name */}
-				<div className="pr-4">
-					<h3 className="text-foreground truncate text-sm leading-tight font-semibold">
-						{job.customer?.name || "Unknown Customer"}
-					</h3>
-					<p className="text-muted-foreground truncate text-xs">{job.title}</p>
-				</div>
+						{/* View Details Link - appears on hover */}
+						{job.jobId && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Link
+										href={`/dashboard/work/${job.jobId}`}
+										onClick={(e) => e.stopPropagation()}
+										className="flex size-6 items-center justify-center rounded-md bg-slate-100 opacity-0 transition-all hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+									>
+										<ExternalLink className="size-3 text-slate-600 dark:text-slate-400" />
+									</Link>
+								</TooltipTrigger>
+								<TooltipContent side="top" className="text-xs">
+									View Details
+								</TooltipContent>
+							</Tooltip>
+						)}
 
-				{/* Time & Date */}
-				<div className="flex flex-col gap-1">
-					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-						<Clock className="size-3 shrink-0" />
-						<span className="truncate">
-							{format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
-						</span>
-					</div>
-					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-						<CalendarIcon className="size-3 shrink-0" />
-						<span className="truncate">{format(startTime, "MMM d, yyyy")}</span>
-					</div>
-				</div>
-
-				{/* Location */}
-				{job.location?.address?.street && (
-					<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-						<MapPin className="size-3 shrink-0" />
-						<span className="truncate">{job.location.address.street}</span>
-					</div>
-				)}
-
-				{/* Team Avatars */}
-				{job.assignments.length > 0 && (
-					<div className="border-t pt-2">
-						<TeamAvatarGroup
-							assignments={job.assignments}
-							jobId={job.id}
-							maxVisible={3}
-							size="sm"
+						{/* Status Dot */}
+						<div
+							className={cn("size-2 rounded-full", getStatusColor(job.status))}
 						/>
 					</div>
-				)}
-			</div>
-		</ScheduleJobContextMenu>
+
+					{/* Appointment Category + Job Type Badge + Customer Name */}
+					<div className="flex items-start gap-2 pr-16">
+						{/* Appointment Category Icon */}
+						{(() => {
+							const CategoryIcon = categoryConfig.icon;
+							return (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className={cn("mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm", categoryConfig.bgColor)}>
+											<CategoryIcon className={cn("size-2.5", categoryConfig.textColor)} />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent side="top" className="text-xs">
+										{categoryConfig.label}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})()}
+						{/* Job Type Icon */}
+						{(() => {
+							const typeConfig = getJobTypeConfig(job);
+							const TypeIcon = typeConfig.icon;
+							return (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded", typeConfig.bgColor)}>
+											<TypeIcon className={cn("size-3", typeConfig.borderColor.replace("border-l-", "text-"))} />
+										</div>
+									</TooltipTrigger>
+									<TooltipContent side="top" className="text-xs">
+										{typeConfig.label}
+									</TooltipContent>
+								</Tooltip>
+							);
+						})()}
+						<div className="min-w-0 flex-1">
+							<h3 className="text-foreground truncate text-sm leading-tight font-semibold">
+								{job.customer?.name || "Unknown Customer"}
+							</h3>
+							<p className="text-muted-foreground truncate text-xs">{job.title}</p>
+						</div>
+					</div>
+
+					{/* Time & Date */}
+					<div className="flex flex-col gap-1">
+						<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+							<Clock className="size-3 shrink-0" />
+							<span className="truncate">
+								{format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
+							</span>
+						</div>
+						<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+							<Calendar className="size-3 shrink-0" />
+							<span className="truncate">{format(startTime, "MMM d, yyyy")}</span>
+						</div>
+					</div>
+
+					{/* Location */}
+					{job.location?.address?.street && (
+						<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+							<MapPin className="size-3 shrink-0" />
+							<span className="truncate">{job.location.address.street}</span>
+						</div>
+					)}
+
+					{/* Team Avatars */}
+					{job.assignments.length > 0 && (
+						<div className="border-t pt-2">
+							<TeamAvatarGroup
+								assignments={job.assignments}
+								jobId={job.id}
+								maxVisible={3}
+								size="sm"
+							/>
+						</div>
+					)}
+				</div>
+			</ScheduleJobContextMenu>
+		</TooltipProvider>
 	);
 }
 

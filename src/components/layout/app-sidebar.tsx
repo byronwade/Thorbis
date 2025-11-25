@@ -114,37 +114,59 @@ const navigationSections = {
 	],
 	communication: [
 		{
-			label: "Overview",
+			label: "Company Communications",
 			items: [
 				{
-					title: "Communication Hub",
+					title: "All Communications",
 					url: "/dashboard/communication",
-					icon: BarChart,
+					icon: Building2,
+					badge: "new",
+					description: "Company-wide communications hub",
 				},
 			],
 		},
 		{
-			label: "Channels",
+			label: "My Inbox",
 			items: [
 				{
-					title: "Email",
+					title: "My Email",
 					url: "/dashboard/communication/email?folder=inbox",
 					icon: Mail,
+					description: "Personal email inbox",
 				},
 				{
-					title: "SMS",
+					title: "My SMS",
 					url: "/dashboard/communication/sms",
 					icon: MessageSquare,
+					description: "Personal text messages",
 				},
 				{
-					title: "Calls",
+					title: "My Calls",
 					url: "/dashboard/communication/calls",
 					icon: Phone,
+					description: "Personal call history",
 				},
+			],
+		},
+		{
+			label: "Team Collaboration",
+			items: [
 				{
 					title: "Teams",
 					url: "/dashboard/communication/teams?channel=general",
 					icon: Users,
+					description: "Team channels and discussions",
+				},
+			],
+		},
+		{
+			label: "Analytics",
+			items: [
+				{
+					title: "Statistics",
+					url: "/dashboard/communication/stats",
+					icon: BarChart,
+					description: "Communication metrics and reports",
 				},
 			],
 		},

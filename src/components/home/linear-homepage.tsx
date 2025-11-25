@@ -33,6 +33,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { HeroBackground, AnimatedGradientText } from "./hero-background";
 
 const keyFeatures = [
 	{
@@ -150,66 +151,62 @@ export function LinearHomepage() {
 	return (
 		<div className="relative min-h-screen bg-background">
 			{/* Hero Section */}
-			<section className="relative overflow-hidden border-b border-border/40">
-				{/* Background Effects */}
-				<div className="pointer-events-none absolute inset-0 -z-10">
-					<div className="absolute left-1/2 top-0 h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-primary/8 blur-[140px]" />
-					<div className="absolute left-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
-					<div className="absolute right-1/4 top-2/3 h-[600px] w-[600px] rounded-full bg-blue-500/5 blur-[130px]" />
-				</div>
+			<section className="relative border-b border-border/40">
+				{/* Animated Background Effects */}
+				<HeroBackground />
 
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+				<div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex min-h-[90vh] flex-col items-center justify-center py-20 text-center">
 						{/* Announcement Badge */}
 						<Badge
 							variant="outline"
-							className="mb-8 border-primary/30 bg-primary/5 text-primary"
+							className="hero-text-animate mb-8 border-primary/30 bg-primary/5 text-primary"
 						>
 							<Sparkles className="mr-2 size-3" />
 							Now with AI-Powered Dispatch & Route Optimization
 						</Badge>
 
 						{/* Main Headline */}
-						<h1 className="mb-6 max-w-5xl text-5xl font-bold leading-[1.08] tracking-tight md:text-6xl lg:text-7xl">
+						<h1 className="hero-text-animate animate-delay-100 mb-6 max-w-5xl text-5xl font-bold leading-[1.08] tracking-tight md:text-6xl lg:text-7xl">
 							Thorbis is a purpose-built tool
 							<br />
 							for{" "}
-							<span className="bg-gradient-to-r from-primary via-blue-500 to-primary bg-clip-text text-transparent">
+							<AnimatedGradientText>
 								running service businesses
-							</span>
+							</AnimatedGradientText>
 						</h1>
 
 						{/* Subheadline */}
-						<p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+						<p className="hero-text-animate animate-delay-200 mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
 							The all-in-one platform for HVAC, plumbing, electrical, and field
 							service companies. Schedule jobs, dispatch teams, and get paid—all
 							from one dashboard.
 						</p>
 
 						{/* CTA Buttons */}
-						<div className="flex flex-col items-center gap-4 sm:flex-row">
+						<div className="hero-text-animate animate-delay-300 flex flex-col items-center gap-4 sm:flex-row">
 							<Button
 								asChild
 								size="lg"
-								className="h-12 bg-primary px-8 text-base font-medium text-primary-foreground hover:bg-primary/90"
+								className="group h-12 bg-primary px-8 text-base font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
 							>
 								<Link href="/waitlist">
 									Join Waitlist
-									<ArrowRight className="ml-2 size-4" />
+									<ArrowRight className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
 								</Link>
 							</Button>
 							<Button
 								asChild
 								variant="ghost"
 								size="lg"
-								className="h-12 px-8 text-base font-medium text-muted-foreground hover:text-foreground"
+								className="h-12 px-8 text-base font-medium text-muted-foreground transition-all duration-300 hover:text-foreground"
 							>
 								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
 
 						{/* Trust Indicators */}
-						<div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+						<div className="hero-text-animate animate-delay-400 mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
 							<div className="flex items-center gap-2">
 								<CheckCircle2 className="size-4 text-primary" />
 								<span>14-day free trial</span>
@@ -225,7 +222,7 @@ export function LinearHomepage() {
 						</div>
 
 						{/* Industries Served */}
-						<div className="mt-16">
+						<div className="hero-text-animate animate-delay-500 mt-16">
 							<p className="mb-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
 								Trusted by field service teams
 							</p>
@@ -233,7 +230,7 @@ export function LinearHomepage() {
 								{industries.map((industry) => (
 									<div
 										key={industry.name}
-										className="flex items-center gap-2 text-sm text-muted-foreground"
+										className="flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-300 hover:text-foreground"
 									>
 										<industry.icon className="size-4" />
 										<span>{industry.name}</span>
@@ -244,18 +241,23 @@ export function LinearHomepage() {
 					</div>
 
 					{/* Hero Product Image */}
-					<div className="relative pb-20">
-						<div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/50">
+					<div className="hero-text-animate animate-delay-600 relative pb-20">
+						<div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/50 transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5">
 							<div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-blue-500/5 opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
 							<div className="aspect-[16/10] bg-muted/20">
 								{/* Product screenshot will go here */}
 								<div className="flex size-full items-center justify-center text-muted-foreground">
-									<Calendar className="size-16 opacity-20" />
+									<Calendar className="size-16 opacity-20 transition-transform duration-500 group-hover:scale-110" />
 								</div>
 							</div>
 						</div>
-						{/* Floating UI Element */}
-						<div className="absolute top-8 right-8 hidden rounded-lg border border-border/40 bg-card/95 p-4 backdrop-blur-md md:block">
+						{/* Floating UI Element - Animated */}
+						<div
+							className="absolute top-8 right-8 hidden rounded-lg border border-border/40 bg-card/95 p-4 backdrop-blur-md transition-all duration-500 hover:scale-105 hover:border-primary/30 md:block"
+							style={{
+								animation: "float-medium 8s ease-in-out infinite",
+							}}
+						>
 							<div className="flex items-center gap-3">
 								<div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
 									<CheckCircle2 className="size-5" />
@@ -264,6 +266,25 @@ export function LinearHomepage() {
 									<p className="text-sm font-medium">Job Completed</p>
 									<p className="text-xs text-muted-foreground">
 										HVAC Repair - $450
+									</p>
+								</div>
+							</div>
+						</div>
+						{/* Additional floating element - bottom left */}
+						<div
+							className="absolute bottom-24 left-8 hidden rounded-lg border border-border/40 bg-card/95 p-4 backdrop-blur-md transition-all duration-500 hover:scale-105 hover:border-primary/30 md:block"
+							style={{
+								animation: "float-slow 10s ease-in-out infinite reverse",
+							}}
+						>
+							<div className="flex items-center gap-3">
+								<div className="flex size-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+									<DollarSign className="size-5" />
+								</div>
+								<div>
+									<p className="text-sm font-medium">Payment Received</p>
+									<p className="text-xs text-muted-foreground">
+										Invoice #1247 - Paid
 									</p>
 								</div>
 							</div>

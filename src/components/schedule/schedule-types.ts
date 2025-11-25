@@ -64,6 +64,55 @@ export type JobAssignment = {
 	isActive: boolean;
 };
 
+export type JobType =
+	| "service"
+	| "service_call"
+	| "repair"
+	| "installation"
+	| "maintenance"
+	| "premium_maintenance"
+	| "inspection"
+	| "emergency"
+	| "estimate"
+	| "callback"
+	| "other";
+
+// Appointment category for visual differentiation (meeting vs job vs event)
+export type AppointmentCategory = "job" | "meeting" | "event";
+
+// Maps database appointment types to display categories
+export function getAppointmentCategory(
+	type?: string | null,
+	allDay?: boolean,
+): AppointmentCategory {
+	// All-day appointments are events
+	if (allDay) return "event";
+
+	switch (type?.toLowerCase()) {
+		case "meeting":
+		case "appointment":
+		case "follow_up":
+		case "consultation":
+		case "call":
+			return "meeting";
+		case "event":
+		case "training":
+		case "conference":
+		case "holiday":
+			return "event";
+		case "job":
+		case "service":
+		case "repair":
+		case "installation":
+		case "maintenance":
+		case "inspection":
+		case "estimate":
+		case "callback":
+		default:
+			return "job";
+	}
+}
+
 export type Job = {
 	id: string; // Schedule ID
 	jobId?: string; // Actual job ID (for linking to job details)
@@ -74,6 +123,9 @@ export type Job = {
 	// Job details
 	title: string;
 	description?: string;
+	jobType?: JobType;
+	appointmentType?: string; // Raw type from appointments table (job, appointment, meeting, etc.)
+	appointmentCategory?: AppointmentCategory; // Derived: job | meeting | event
 	customer: Customer;
 	location: Location;
 

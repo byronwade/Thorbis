@@ -474,7 +474,7 @@ const handlePostSignUpEmails = async ({
 
 	const emailResult = await sendWelcomeEmail(email, {
 		name,
-		loginUrl: `${emailConfig.siteUrl}/dashboard/welcome`,
+		loginUrl: `${emailConfig.siteUrl}/welcome`,
 	});
 
 	if (!emailResult.success) {
@@ -736,7 +736,7 @@ const resolveProfileRedirectPath = async ({
 		.limit(1)
 		.maybeSingle();
 
-	return hasCompany ? "/dashboard" : "/dashboard/welcome";
+	return hasCompany ? "/dashboard" : "/welcome";
 };
 // Internal return type (not exported - Next.js 16 "use server" restriction)
 type AuthActionResult = {
@@ -808,7 +808,7 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
 
 		// Revalidate and redirect to onboarding
 		revalidatePath("/", "layout");
-		redirect("/dashboard/welcome");
+		redirect("/welcome");
 	} catch (caughtError) {
 		if (caughtError instanceof z.ZodError) {
 			return {
@@ -870,7 +870,7 @@ export async function completeProfile(
 			userId: user.id,
 		}).catch((redirectError) => {
 			reportAuthIssue("Error checking company status", redirectError);
-			return "/dashboard/welcome";
+			return "/welcome";
 		});
 
 		revalidatePath("/", "layout");

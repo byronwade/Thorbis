@@ -196,7 +196,7 @@ async function submitPayrixMerchantBoarding(data: MerchantBoardingData) {
 			};
 		}
 
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 
 		return {
 			success: true,
@@ -254,7 +254,7 @@ async function checkPayrixMerchantStatus(companyId: string) {
 					})
 					.eq("id", merchantAccount.id);
 
-				revalidatePath("/dashboard/welcome");
+				revalidatePath("/welcome");
 			}
 
 			return statusResponse;

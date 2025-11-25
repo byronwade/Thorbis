@@ -916,7 +916,7 @@ async function saveOnboardingProgress(
 			// Ignore errors setting active company
 		}
 
-		// REMOVED: revalidatePath("/dashboard/welcome");
+		// REMOVED: revalidatePath("/welcome");
 		// Causes infinite POST loop when auto-saving progress
 		revalidatePath("/", "layout");
 
@@ -1040,7 +1040,7 @@ async function saveOnboardingStepProgress(
 			};
 		}
 
-		// REMOVED: revalidatePath("/dashboard/welcome");
+		// REMOVED: revalidatePath("/welcome");
 		// This was causing infinite POST request loop on welcome page
 		// Only revalidate when onboarding is complete, not on every step save
 
@@ -1114,7 +1114,7 @@ async function purchaseOnboardingPhoneNumber(
 		});
 
 		if (result.success) {
-			revalidatePath("/dashboard/welcome");
+			revalidatePath("/welcome");
 		}
 
 		return result;
@@ -1283,7 +1283,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 				}
 			}
 
-			revalidatePath("/dashboard/welcome");
+			revalidatePath("/welcome");
 		}
 
 		return result;
@@ -1427,7 +1427,7 @@ export async function savePaymentSetupProgress(
 			},
 		});
 
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 
 		return { success: true, companyId };
 	} catch (error) {
@@ -1522,7 +1522,7 @@ export async function completeOnboardingWizard(
 
 		// Revalidate all dashboard paths
 		revalidatePath("/dashboard");
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 		revalidatePath("/", "layout");
 
 		return {
@@ -1648,7 +1648,7 @@ async function archiveIncompleteCompany(
 			await clearActiveCompany();
 		}
 
-		revalidatePath("/dashboard/welcome");
+		revalidatePath("/welcome");
 		revalidatePath("/", "layout");
 		revalidatePath("/dashboard/settings/archive");
 
