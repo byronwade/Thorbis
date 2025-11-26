@@ -1,15 +1,17 @@
-(globalThis.TURBOPACK_CHUNK_LISTS || (globalThis.TURBOPACK_CHUNK_LISTS = [])).push({
-    script: typeof document === "object" ? document.currentScript : undefined,
-    chunks: [
-  "static/chunks/4f84d_next_dist_compiled_46513fbc._.js",
-  "static/chunks/4f84d_next_dist_shared_lib_29150b27._.js",
-  "static/chunks/4f84d_next_dist_client_b49d28ad._.js",
-  "static/chunks/4f84d_next_dist_c53652a9._.js",
-  "static/chunks/4f84d_next_app_8d67d382.js",
-  "static/chunks/[next]_entry_page-loader_ts_d683b068._.js",
-  "static/chunks/76102_react-dom_44795136._.js",
-  "static/chunks/node_modules__pnpm_7136f466._.js",
-  "static/chunks/[root-of-the-server]__09edecaf._.js"
-],
-    source: "entry"
+(
+	globalThis.TURBOPACK_CHUNK_LISTS || (globalThis.TURBOPACK_CHUNK_LISTS = [])
+).push({
+	script: typeof document === "object" ? document.currentScript : undefined,
+	chunks: [
+		"static/chunks/4f84d_next_dist_compiled_46513fbc._.js",
+		"static/chunks/4f84d_next_dist_shared_lib_29150b27._.js",
+		"static/chunks/4f84d_next_dist_client_b49d28ad._.js",
+		"static/chunks/4f84d_next_dist_c53652a9._.js",
+		"static/chunks/4f84d_next_app_8d67d382.js",
+		"static/chunks/[next]_entry_page-loader_ts_d683b068._.js",
+		"static/chunks/76102_react-dom_44795136._.js",
+		"static/chunks/node_modules__pnpm_7136f466._.js",
+		"static/chunks/[root-of-the-server]__09edecaf._.js",
+	],
+	source: "entry",
 });

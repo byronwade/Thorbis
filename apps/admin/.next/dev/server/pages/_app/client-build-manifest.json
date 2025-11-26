@@ -1,5 +1,3 @@
 {
-  "/_app": [
-    "static/chunks/pages/_app.js"
-  ]
+	"/_app": ["static/chunks/pages/_app.js"]
 }

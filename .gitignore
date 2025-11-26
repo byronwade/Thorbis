@@ -16,6 +16,11 @@
 # next.js
 /.next/
 /out/
+# Monorepo: ignore .next in all apps
+apps/*/.next/
+apps/*/out/
+# Turborepo
+.turbo/
 
 # production
 /build

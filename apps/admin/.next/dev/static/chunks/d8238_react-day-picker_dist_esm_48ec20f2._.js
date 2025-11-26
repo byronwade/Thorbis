@@ -587,7 +587,7 @@ const dateLib = defaultDateLib;
     ()=>UI
 ]);
 var UI;
-(function(UI) {
+((UI) => {
     /** The root component displaying the months and the navigation bar. */ UI["Root"] = "root";
     /** The Chevron SVG element used by navigation buttons and dropdowns. */ UI["Chevron"] = "chevron";
     /**
@@ -625,7 +625,7 @@ var UI;
     /** The dropdown with the years. */ UI["YearsDropdown"] = "years_dropdown";
 })(UI || (UI = {}));
 var DayFlag;
-(function(DayFlag) {
+((DayFlag) => {
     /** The day is disabled. */ DayFlag["disabled"] = "disabled";
     /** The day is hidden. */ DayFlag["hidden"] = "hidden";
     /** The day is outside the current month. */ DayFlag["outside"] = "outside";
@@ -633,14 +633,14 @@ var DayFlag;
     /** The day is today. */ DayFlag["today"] = "today";
 })(DayFlag || (DayFlag = {}));
 var SelectionState;
-(function(SelectionState) {
+((SelectionState) => {
     /** The day is at the end of a selected range. */ SelectionState["range_end"] = "range_end";
     /** The day is at the middle of a selected range. */ SelectionState["range_middle"] = "range_middle";
     /** The day is at the start of a selected range. */ SelectionState["range_start"] = "range_start";
     /** The day is selected. */ SelectionState["selected"] = "selected";
 })(SelectionState || (SelectionState = {}));
 var Animation;
-(function(Animation) {
+((Animation) => {
     /** The entering weeks when they appear before the exiting month. */ Animation["weeks_before_enter"] = "weeks_before_enter";
     /** The exiting weeks when they disappear before the entering month. */ Animation["weeks_before_exit"] = "weeks_before_exit";
     /** The entering weeks when they appear after the exiting month. */ Animation["weeks_after_enter"] = "weeks_after_enter";
@@ -2854,7 +2854,7 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$2d$day$2d$picker$40$9$2e$11$2e$1_react$40$19$2e$2$2e$0$2f$node_modules$2f$react$2d$day$2d$picker$2f$dist$2f$esm$2f$UI$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/react-day-picker@9.11.1_react@19.2.0/node_modules/react-day-picker/dist/esm/UI.js [app-client] (ecmascript)");
 ;
 var FocusTargetPriority;
-(function(FocusTargetPriority) {
+((FocusTargetPriority) => {
     FocusTargetPriority[FocusTargetPriority["Today"] = 0] = "Today";
     FocusTargetPriority[FocusTargetPriority["Selected"] = 1] = "Selected";
     FocusTargetPriority[FocusTargetPriority["LastFocused"] = 2] = "LastFocused";

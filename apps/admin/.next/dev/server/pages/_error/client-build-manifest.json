@@ -1,5 +1,3 @@
 {
-  "/_error": [
-    "static/chunks/pages/_error.js"
-  ]
+	"/_error": ["static/chunks/pages/_error.js"]
 }
