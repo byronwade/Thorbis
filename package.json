@@ -14,11 +14,9 @@
 		"typecheck": "turbo typecheck",
 		"clean": "turbo clean && rimraf node_modules",
 		"format": "prettier --write .",
-		"format:check": "prettier --check .",
-		"prepare": "husky install"
+		"format:check": "prettier --check ."
 	},
 	"devDependencies": {
-		"husky": "^9.1.7",
 		"knip": "^5.70.2",
 		"prettier": "^3.6.2",
 		"prettier-plugin-tailwindcss": "^0.7.1",
