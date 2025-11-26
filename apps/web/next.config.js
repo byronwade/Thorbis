@@ -1,5 +1,3 @@
-import type { NextConfig } from "next";
-
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
 const SECONDS_PER_DAY = 24 * 60 * 60;
 const DAYS_PER_MONTH = 30;
@@ -12,11 +10,12 @@ const withBundleAnalyzer =
 				enabled: true,
 				openAnalyzer: false,
 			})
-		: (baseConfig: NextConfig) => baseConfig;
+		: (baseConfig) => baseConfig;
 
 // PWA removed - was disabled by default and unused
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
 	// PERFORMANCE: Static generation RE-ENABLED! ✅
 	// Fixed Zustand SSR issues by adding skipHydration: true to all persisted stores
 	// This allows Next.js to generate static pages for massive performance gains
@@ -147,4 +146,4 @@ mergedConfig = withBundleAnalyzer(mergedConfig);
 // });
 
 // Temporary: Export config directly without withBotId to test if it's causing the hang
-export default mergedConfig;
+module.exports = mergedConfig;
