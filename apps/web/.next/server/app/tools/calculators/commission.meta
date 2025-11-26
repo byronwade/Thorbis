@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/calculators/layout,_N_T_/tools/calculators/commission/layout,_N_T_/tools/calculators/commission/page,_N_T_/tools/calculators/commission"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/calculators/commission/__PAGE__",
+    "/tools/calculators/commission",
+    "/tools/calculators",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

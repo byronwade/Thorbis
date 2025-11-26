@@ -1,0 +1,3 @@
+module.exports=[566205,a=>{"use strict";var b=a.i(504348);function c(){return(0,b.jsx)("div",{className:"flex min-h-screen w-full items-center justify-center",children:(0,b.jsxs)("div",{className:"flex flex-col items-center gap-4",children:[(0,b.jsx)("div",{className:"border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"}),(0,b.jsx)("p",{className:"text-muted-foreground text-sm",children:"Loading..."})]})})}a.s(["default",()=>c])}];
+
+//# sourceMappingURL=apps_web_src_app_%28marketing%29_loading_tsx_48c7adb2._.js.map

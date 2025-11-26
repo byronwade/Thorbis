@@ -1,0 +1,3 @@
+{
+  "/(auth)/accept-invitation/page": "app/(auth)/accept-invitation/page.js"
+}

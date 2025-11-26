@@ -1,0 +1,3 @@
+{
+  "/(auth)/complete-profile/page": "app/(auth)/complete-profile/page.js"
+}

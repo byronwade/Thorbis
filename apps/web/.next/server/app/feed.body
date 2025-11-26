@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Thorbis Blog</title>
+    <link>http://localhost:3000/blog</link>
+    <description>Tips, trends, and insights for growing your field service business. Learn about scheduling, invoicing, CRM, and AI-powered automation.</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 26 Nov 2025 03:41:50 GMT</lastBuildDate>
+    <pubDate>Wed, 26 Nov 2025 03:41:50 GMT</pubDate>
+    <ttl>60</ttl>
+    <atom:link href="http://localhost:3000/feed" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>http://localhost:3000/logo.png</url>
+      <title>Thorbis Blog</title>
+      <link>http://localhost:3000/blog</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
+    <copyright>Copyright 2025 Thorbis. All rights reserved.</copyright>
+    <managingEditor>hello@thorbis.com (Thorbis Team)</managingEditor>
+    <webMaster>hello@thorbis.com (Thorbis Team)</webMaster>
+    <category>Technology</category>
+    <category>Business</category>
+    <category>Field Service</category>
+    <generator>Next.js</generator>
+    
+    <item>
+      <title>The Complete Guide to Field Service Management in 2025</title>
+      <link>http://localhost:3000/blog/field-service-management-guide-2025</link>
+      <guid isPermaLink="true">http://localhost:3000/blog/field-service-management-guide-2025</guid>
+      <description>Learn how modern field service businesses are using AI, automation, and mobile technology to grow revenue and reduce costs.</description>
+      <pubDate>Wed, 15 Jan 2025 09:00:00 GMT</pubDate>
+      <author>hello@thorbis.com (Thorbis Team)</author>
+      <category>Guides</category>
+      <category>field service</category>
+      <category>management</category>
+      <category>2025</category>
+    </item>
+
+    <item>
+      <title>HVAC Scheduling Best Practices: Maximize Technician Efficiency</title>
+      <link>http://localhost:3000/blog/hvac-scheduling-best-practices</link>
+      <guid isPermaLink="true">http://localhost:3000/blog/hvac-scheduling-best-practices</guid>
+      <description>Discover proven scheduling strategies that help HVAC contractors complete more jobs per day while reducing drive time.</description>
+      <pubDate>Fri, 10 Jan 2025 09:00:00 GMT</pubDate>
+      <author>hello@thorbis.com (Thorbis Team)</author>
+      <category>HVAC</category>
+      <category>hvac</category>
+      <category>scheduling</category>
+      <category>efficiency</category>
+    </item>
+
+    <item>
+      <title>Invoice Faster, Get Paid Faster: Field Service Billing Tips</title>
+      <link>http://localhost:3000/blog/invoice-faster-get-paid-faster</link>
+      <guid isPermaLink="true">http://localhost:3000/blog/invoice-faster-get-paid-faster</guid>
+      <description>Stop leaving money on the table. Learn how to invoice on-site and reduce your average payment time from weeks to days.</description>
+      <pubDate>Sun, 05 Jan 2025 09:00:00 GMT</pubDate>
+      <author>hello@thorbis.com (Thorbis Team)</author>
+      <category>Business</category>
+      <category>invoicing</category>
+      <category>payments</category>
+      <category>cash flow</category>
+    </item>
+  </channel>
+</rss>

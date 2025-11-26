@@ -1,0 +1,3 @@
+module.exports=[160153,a=>{"use strict";var b=a.i(337241),c=a.i(783281);function d(){let a=(0,b.useParams)(),d=(0,b.useSearchParams)(),e=(0,b.useRouter)(),f=a?.id,g=d.get("folder")||"inbox";return(0,c.useEffect)(()=>{if(f){let a=new URLSearchParams;g&&"inbox"!==g&&a.set("folder",g),a.set("id",f),e.replace(`/dashboard/communication/email?${a.toString()}`,{scroll:!1})}},[f,g,e]),null}a.s(["default",()=>d])}];
+
+//# sourceMappingURL=0da96_web_src_app_%28dashboard%29_dashboard_communication_email_%5Bid%5D_page_tsx_65905586._.js.map

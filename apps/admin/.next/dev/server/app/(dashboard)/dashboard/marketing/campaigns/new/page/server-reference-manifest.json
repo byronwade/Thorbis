@@ -1,0 +1,50 @@
+{
+	"node": {
+		"4052d2bfebb353ea74b1949d573e258603ef44f96f": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": "[project]/apps/admin/.next-internal/server/app/(dashboard)/dashboard/marketing/campaigns/new/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/actions/campaigns.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+					"async": false,
+					"exportedName": "createCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "createCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		},
+		"409672eb9339ca62cc96de65f7dcac5d4a49a0b478": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": "[project]/apps/admin/.next-internal/server/app/(dashboard)/dashboard/marketing/campaigns/new/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/actions/campaigns.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+					"async": false,
+					"exportedName": "sendCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "sendCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		},
+		"60b4d0e31b81b8c3d4635afecade7d99682faac8c4": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": "[project]/apps/admin/.next-internal/server/app/(dashboard)/dashboard/marketing/campaigns/new/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/actions/campaigns.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+					"async": false,
+					"exportedName": "scheduleCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "scheduleCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		}
+	},
+	"edge": {}
+}

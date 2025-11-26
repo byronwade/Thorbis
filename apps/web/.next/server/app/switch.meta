@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/switch/layout,_N_T_/(marketing)/switch/page,_N_T_/switch"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/switch/__PAGE__",
+    "/!KG1hcmtldGluZyk/switch",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

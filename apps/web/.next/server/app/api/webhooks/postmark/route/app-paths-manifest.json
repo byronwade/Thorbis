@@ -1,0 +1,3 @@
+{
+  "/api/webhooks/postmark/route": "app/api/webhooks/postmark/route.js"
+}

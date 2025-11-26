@@ -1,0 +1,3 @@
+{
+  "/api/webhooks/assemblyai/route": "app/api/webhooks/assemblyai/route.js"
+}

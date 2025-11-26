@@ -1,0 +1,140 @@
+{
+  "node": {
+    "001f005176797ef23488068124fb9a744915a477de": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "action-browser"
+      },
+      "exportedName": "getCurrentUserRole",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "action-browser"
+      },
+      "exportedName": "canDeleteTeamMember",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "00c1e90eff34225b6dd95f5f2f2a91828868b9fcfb": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "getKBCategories",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "getKBCategories",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "404ca2dce3a3b5558a45a363300d09bf2965522750": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "submitKBFeedback",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "submitKBFeedback",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "4070bed0ecc25d050b4520c0f696340ebb01e5390b": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "getKBArticles",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "getKBArticles",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "40f0ec73569584e2e98c0966c6b8ceab6dc0c1f682": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "incrementArticleViews",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "incrementArticleViews",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "60301b0c2049c37f7b265049269699f6d4a7a33d92": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "searchKBArticles",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "action-browser"
+      },
+      "exportedName": "searchKBArticles",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "605a67c4b75156644201622753ea0654e68cee60ae": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "getKBRelatedArticles",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "getKBRelatedArticles",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "60e4942793029c05824ec40bb94739dc0c0daa1438": {
+      "workers": {
+        "app/(marketing)/help/page": {
+          "moduleId": 422657,
+          "async": false,
+          "exportedName": "getKBArticle",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/help/page": "rsc"
+      },
+      "exportedName": "getKBArticle",
+      "filename": "apps/web/src/actions/kb.ts"
+    }
+  },
+  "edge": {}
+}

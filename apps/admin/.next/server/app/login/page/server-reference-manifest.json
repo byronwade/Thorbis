@@ -1,0 +1,20 @@
+{
+  "node": {
+    "4008f596c5f8f4d07dbef3af107f19a034d20c8f7a": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": 40873,
+          "async": false,
+          "exportedName": "adminSignIn",
+          "filename": "apps/admin/src/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/login/page": "action-browser"
+      },
+      "exportedName": "adminSignIn",
+      "filename": "apps/admin/src/actions/auth.ts"
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,86 @@
+"use client";
+
+import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+
+/**
+ * Root Error Boundary
+ *
+ * Catches and handles errors in the root layout
+ * Follows Next.js 16 error boundary pattern
+ */
+export default function RootError({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
+	useEffect(() => {
+		// Log error to console for monitoring
+		// In production, errors are also captured by Vercel's error tracking
+		console.error("[Root Error Boundary]", {
+			message: error.message,
+			digest: error.digest,
+			stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+		});
+
+		// Error digest is available in production for tracking
+		if (error.digest) {
+			console.error(`Error Digest: ${error.digest}`);
+		}
+	}, [error]);
+
+	return (
+		<div className="bg-background flex min-h-screen items-center justify-center p-4">
+			<Card className="w-full max-w-md">
+				<CardHeader>
+					<div className="flex items-center gap-2">
+						<AlertCircle className="text-destructive h-5 w-5" />
+						<CardTitle>Application Error</CardTitle>
+					</div>
+					<CardDescription>An unexpected error occurred</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					{process.env.NODE_ENV === "development" && (
+						<div className="bg-muted rounded-lg p-4">
+							<p className="text-muted-foreground font-mono text-sm">
+								{error.message}
+							</p>
+							{error.stack && (
+								<details className="mt-2">
+									<summary className="text-muted-foreground cursor-pointer text-xs">
+										Stack trace
+									</summary>
+									<pre className="mt-2 overflow-auto text-xs">
+										{error.stack}
+									</pre>
+								</details>
+							)}
+						</div>
+					)}
+					<div className="flex gap-2">
+						<Button className="flex-1" onClick={reset} variant="default">
+							Try again
+						</Button>
+						<Button
+							className="flex-1"
+							onClick={() => (window.location.href = "/")}
+							variant="outline"
+						>
+							Go Home
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
+	);
+}

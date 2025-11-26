@@ -1,0 +1,3 @@
+module.exports=[202812,a=>{"use strict";a.i(504348),a.i(434574),a.i(407439),a.i(884600);var b=a.i(11798);a.i(56815);let c={width:b.OG_CONFIG.width,height:b.OG_CONFIG.height};var d=a.i(756867);let e={alt:"API Documentation - Thorbis Developer Portal",contentType:"image/png",revalidate:86400,runtime:"edge",size:c};async function f(a){let{__metadata_id__:b,...c}=await a.params,f=(0,d.fillMetadataSegment)("/(marketing)/api-docs",c,"opengraph-image");return[function(a,b){let c={alt:a.alt,type:a.contentType||"image/png",url:f+"?6c58c8d27f62be4a"},{size:d}=a;return d&&(c.width=d.width,c.height=d.height),c}(e,0)]}a.s(["default",0,f],202812)}];
+
+//# sourceMappingURL=apps_web_src_app_%28marketing%29_api-docs_opengraph-image--metadata_063dab54.js.map

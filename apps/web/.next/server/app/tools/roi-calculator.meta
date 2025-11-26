@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/tools/layout,_N_T_/(marketing)/tools/roi-calculator/layout,_N_T_/(marketing)/tools/roi-calculator/page,_N_T_/tools/roi-calculator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/tools/roi-calculator/__PAGE__",
+    "/!KG1hcmtldGluZyk/tools/roi-calculator",
+    "/!KG1hcmtldGluZyk/tools",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

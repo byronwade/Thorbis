@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/vs/layout,_N_T_/(marketing)/vs/workiz/layout,_N_T_/(marketing)/vs/workiz/page,_N_T_/vs/workiz"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/vs/workiz/__PAGE__",
+    "/!KG1hcmtldGluZyk/vs/workiz",
+    "/!KG1hcmtldGluZyk/vs",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

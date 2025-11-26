@@ -1,0 +1,3 @@
+{
+  "/api/telnyx/send-test-sms/route": "app/api/telnyx/send-test-sms/route.js"
+}

@@ -1,0 +1,3 @@
+module.exports=[328717,a=>{"use strict";var b=a.i(504348),c=a.i(962123);function d({children:a}){return(0,b.jsx)(c.SectionLayout,{config:{structure:{maxWidth:"7xl",padding:"lg",gap:"lg",fixedHeight:!1,variant:"default",background:"default",insetPadding:"none"},header:{show:!0},toolbar:{show:!0,title:"Settings",subtitle:"Workspace controls & advanced configuration"},sidebar:{show:!0,variant:"standard"}},pathname:"/dashboard/settings",children:a})}a.s(["default",()=>d])}];
+
+//# sourceMappingURL=apps_web_src_app_%28dashboard%29_dashboard_settings_layout_tsx_7838b70d._.js.map

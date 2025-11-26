@@ -1,0 +1,3 @@
+{
+  "/api/cron/sync-bank-transactions/route": "app/api/cron/sync-bank-transactions/route.js"
+}

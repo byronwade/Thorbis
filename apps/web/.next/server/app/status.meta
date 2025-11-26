@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/status/layout,_N_T_/(marketing)/status/page,_N_T_/status"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/status/__PAGE__",
+    "/!KG1hcmtldGluZyk/status",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

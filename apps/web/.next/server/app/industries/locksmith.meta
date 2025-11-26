@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/industries/layout,_N_T_/(marketing)/industries/[slug]/layout,_N_T_/(marketing)/industries/[slug]/page,_N_T_/industries/locksmith"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/industries/$d$slug/__PAGE__",
+    "/!KG1hcmtldGluZyk/industries/$d$slug",
+    "/!KG1hcmtldGluZyk/industries",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

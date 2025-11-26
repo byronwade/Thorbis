@@ -1,0 +1,17 @@
+{
+	"extends": "../config/tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"baseUrl": ".",
+		"paths": {
+			"@stratos/database": ["../database/src"],
+			"@stratos/database/*": ["../database/src/*"],
+			"@stratos/auth": ["../auth/src"],
+			"@stratos/auth/*": ["../auth/src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules", "dist"]
+}

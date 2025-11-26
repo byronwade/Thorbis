@@ -1,0 +1,47 @@
+{
+	"compilerOptions": {
+		"target": "ES2017",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "react-jsx",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@web/*": ["../web/src/*"],
+			"@stratos/ui": ["../../packages/ui/src"],
+			"@stratos/ui/*": ["../../packages/ui/src/*"],
+			"@stratos/database": ["../../packages/database/src"],
+			"@stratos/database/*": ["../../packages/database/src/*"],
+			"@stratos/auth": ["../../packages/auth/src"],
+			"@stratos/auth/*": ["../../packages/auth/src/*"],
+			"@stratos/shared": ["../../packages/shared/src"],
+			"@stratos/shared/*": ["../../packages/shared/src/*"]
+		},
+		"strictNullChecks": true
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		"../../packages/ui/src/**/*.ts",
+		"../../packages/ui/src/**/*.tsx",
+		"../../packages/database/src/**/*.ts",
+		"../../packages/auth/src/**/*.ts"
+	],
+	"exclude": ["node_modules", ".next", "dist", "build"]
+}

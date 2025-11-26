@@ -1,0 +1,80 @@
+{
+  "node": {
+    "001f005176797ef23488068124fb9a744915a477de": {
+      "workers": {
+        "app/call/page": {
+          "moduleId": 924237,
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/call/page": "action-browser"
+      },
+      "exportedName": "getCurrentUserRole",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+      "workers": {
+        "app/call/page": {
+          "moduleId": 924237,
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/call/page": "action-browser"
+      },
+      "exportedName": "canDeleteTeamMember",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "600f2001e85494de7547a5213c6143dced69476baf": {
+      "workers": {
+        "app/call/page": {
+          "moduleId": 924237,
+          "async": false,
+          "exportedName": "getCustomerCallData",
+          "filename": "apps/web/src/actions/call-customer-data.ts"
+        }
+      },
+      "layer": {
+        "app/call/page": "action-browser"
+      },
+      "exportedName": "getCustomerCallData",
+      "filename": "apps/web/src/actions/call-customer-data.ts"
+    },
+    "60e51c1544e88202aee90bf80bbe297c22b52e59cc": {
+      "workers": {
+        "app/call/page": {
+          "moduleId": 924237,
+          "async": false,
+          "exportedName": "getCustomerCallDataById",
+          "filename": "apps/web/src/actions/call-customer-data.ts"
+        }
+      },
+      "layer": {
+        "app/call/page": "action-browser"
+      },
+      "exportedName": "getCustomerCallDataById",
+      "filename": "apps/web/src/actions/call-customer-data.ts"
+    },
+    "60d61fe4e8976bdfeff5cf3386134c7b4b7b4f4bd0": {
+      "workers": {
+        "app/call/page": {
+          "moduleId": 924237,
+          "async": false,
+          "exportedName": "getTechnicianSchedules",
+          "filename": "apps/web/src/actions/schedule.ts"
+        }
+      },
+      "layer": {
+        "app/call/page": "action-browser"
+      },
+      "exportedName": "getTechnicianSchedules",
+      "filename": "apps/web/src/actions/schedule.ts"
+    }
+  },
+  "edge": {}
+}

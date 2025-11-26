@@ -1,0 +1,3 @@
+{
+  "/api/cron/cleanup-invalid-tokens/route": "app/api/cron/cleanup-invalid-tokens/route.js"
+}

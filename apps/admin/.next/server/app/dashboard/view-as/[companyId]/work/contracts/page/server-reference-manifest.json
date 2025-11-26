@@ -1,0 +1,20 @@
+{
+  "node": {
+    "606de25abb4916d6566917712865287e7e8ed54596": {
+      "workers": {
+        "app/dashboard/view-as/[companyId]/work/contracts/page": {
+          "moduleId": 56393,
+          "async": false,
+          "exportedName": "endSupportSession",
+          "filename": "apps/admin/src/actions/support-sessions.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/view-as/[companyId]/work/contracts/page": "action-browser"
+      },
+      "exportedName": "endSupportSession",
+      "filename": "apps/admin/src/actions/support-sessions.ts"
+    }
+  },
+  "edge": {}
+}

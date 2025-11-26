@@ -1,0 +1,35 @@
+{
+  "node": {
+    "007ac1f2ec6b09cd36e4a3e4cc595b494ec49ec2d7": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "action-browser"
+      },
+      "exportedName": "getCurrentUserRole",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "40403f075dde1b08a909eead4279652620ac8d96b4": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "action-browser"
+      },
+      "exportedName": "canDeleteTeamMember",
+      "filename": "apps/web/src/actions/roles.ts"
+    }
+  },
+  "edge": {}
+}

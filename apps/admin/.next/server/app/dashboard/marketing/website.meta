@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(dashboard)/layout,_N_T_/(dashboard)/dashboard/layout,_N_T_/(dashboard)/dashboard/marketing/layout,_N_T_/(dashboard)/dashboard/marketing/website/layout,_N_T_/(dashboard)/dashboard/marketing/website/page,_N_T_/dashboard/marketing/website"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KGRhc2hib2FyZCk/dashboard/marketing/website/__PAGE__",
+    "/!KGRhc2hib2FyZCk/dashboard/marketing/website",
+    "/!KGRhc2hib2FyZCk/dashboard/marketing",
+    "/!KGRhc2hib2FyZCk/dashboard",
+    "/!KGRhc2hib2FyZCk",
+    "/_index"
+  ]
+}

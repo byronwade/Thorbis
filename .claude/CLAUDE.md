@@ -4,21 +4,27 @@
 
 This file complements:
 - `README.md` - High-level overview and onboarding
-- `/docs/` - Feature and system documentation
-- `/notes/` - Day-to-day implementation notes
-- `/src/lib/stores/README.md` - Zustand state management guide
+- `docs/` - Feature and system documentation
+- `notes/` - Day-to-day implementation notes
+- `apps/web/src/lib/stores/README.md` - Zustand state management guide
 
 ---
 
 ## 🎯 PROJECT STATS
 
-- **Next.js**: 16.0.1 with React 19
-- **Total Pages**: 360
-- **Total Components**: 1,200
+- **Monorepo**: pnpm workspaces with Turborepo
+- **Apps**: 
+  - `apps/web` - Main application (Next.js 16.0.4)
+  - `apps/admin` - Admin dashboard (Next.js 16.0.1)
+- **Packages**: `@stratos/auth`, `@stratos/database`, `@stratos/ui`, `@stratos/shared`, `@stratos/config`
+- **Next.js**: 16.0+ with React 19
+- **Total Pages**: 360+ (web app)
+- **Total Components**: 1,200+ (web app)
 - **Client Components**: 508 (42%)
 - **Server Components**: 692 (58%)
 - **Build Time**: ~10 seconds
 - **Target**: 85%+ Server Components, < 2s page loads
+- **Deployment**: Vercel (separate projects for web and admin)
 
 ---
 
@@ -66,9 +72,10 @@ const MyInput = React.forwardRef<HTMLInputElement>(...);
 ```
 
 **Security - Use proxy.ts (NOT middleware.ts):**
-- Next.js 16+ uses `proxy.ts` in root directory
+- Next.js 16+ uses `proxy.ts` in app root directory
+- Web app: `apps/web/proxy.ts`
+- Admin app: Uses `apps/admin/src/middleware.ts` (legacy pattern)
 - Fixes CVE where `x-middleware-subrequest` could bypass auth
-- See `/proxy.ts` for implementation
 - **NEVER rely solely on proxy for auth** - always validate in Server Actions/API routes
 
 ### 2. Server Components First (Target: 85%+)
@@ -101,7 +108,7 @@ export function CustomerTable({ data }: Props) {
 **Primary: Server Components + React.cache()**
 
 ```typescript
-// /src/lib/queries/customers.ts
+// apps/web/src/lib/queries/customers.ts
 import { cache } from "react";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -117,7 +124,7 @@ export const getCustomers = cache(async (companyId: string) => {
 // Multiple components can call getCustomers() - only 1 DB query executes!
 ```
 
-**See `/src/lib/queries/` for complete examples.**
+**See `apps/web/src/lib/queries/` for complete examples.**
 
 **❌ NEVER do this:**
 ```typescript
@@ -138,7 +145,7 @@ export function BadComponent() {
 **NEVER use React Context. Always use Zustand for shared state.**
 
 ```typescript
-// /src/lib/stores/filters-store.ts
+// apps/web/src/lib/stores/filters-store.ts
 import { create } from "zustand";
 
 export const useFiltersStore = create((set) => ({
@@ -151,9 +158,10 @@ export const useFiltersStore = create((set) => ({
 const activeFilter = useFiltersStore((state) => state.activeFilter);
 ```
 
-**Current stores:** 51 stores in `/src/lib/stores/`
+**Current stores:** 51+ stores in `apps/web/src/lib/stores/` (web app)
+**Admin stores:** Additional stores in `apps/admin/src/lib/stores/` (admin app)
 
-**See `/src/lib/stores/README.md` for complete guide.**
+**See `apps/web/src/lib/stores/README.md` for complete guide.**
 
 **When to use what:**
 - **Zustand** - Shared state across components
@@ -167,7 +175,10 @@ const activeFilter = useFiltersStore((state) => state.activeFilter);
 
 **Component Discovery Process (REQUIRED):**
 1. Use shadcn MCP: `mcp__shadcn__search_items_in_registries`
-2. Search codebase: `/src/components/layout/` for shared components
+2. Search codebase: 
+   - Web app: `apps/web/src/components/layout/` for shared components
+   - Admin app: `apps/admin/src/components/layout/` for shared components
+   - Shared packages: `packages/ui/src/` for reusable UI components
 3. Review similar pages in the same feature area
 4. Only create new if NO existing solution exists
 
@@ -301,7 +312,7 @@ const { data } = await supabase
 ### Pattern #4: React.cache() for Deduplication
 
 ```typescript
-// /src/lib/queries/contracts.ts
+// apps/web/src/lib/queries/contracts.ts
 import { cache } from "react";
 
 export const getContracts = cache(async (companyId: string) => {
@@ -324,7 +335,7 @@ export const getContracts = cache(async (companyId: string) => {
 - [ ] React.cache() wrapper if used multiple times
 - [ ] Test with 100+ records - verify < 2s load time
 
-**See `/docs/performance/` for detailed patterns.**
+**See `docs/performance/` for detailed patterns.**
 
 ---
 
@@ -346,7 +357,7 @@ export const getContracts = cache(async (companyId: string) => {
 ### Utilities
 
 ```typescript
-// /src/lib/search/full-text-search.ts
+// apps/web/src/lib/search/full-text-search.ts
 import { searchCustomersFullText } from "@/lib/search/full-text-search";
 
 const results = await searchCustomersFullText(supabase, companyId, "john plumber");
@@ -410,29 +421,57 @@ mcp__supabase__list_tables()
 
 ## 📦 PROJECT STRUCTURE
 
+**Monorepo Layout:**
 ```
-src/
-├── actions/              # Server Actions (form handling)
-├── app/                  # Next.js App Router pages
-├── components/
-│   ├── layout/          # Shared infrastructure (AppToolbar, AppSidebar, etc.)
-│   ├── ui/              # shadcn/ui components
-│   └── [feature]/       # Feature-specific components
-├── lib/
-│   ├── queries/         # React.cache() query functions
-│   ├── stores/          # Zustand stores (see README.md)
-│   ├── search/          # Full-text search utilities
-│   ├── supabase/        # Supabase clients
-│   └── utils/           # Utility functions
-├── hooks/               # Custom React hooks
-└── types/               # TypeScript type definitions
+.
+├── apps/
+│   ├── web/                    # Main application
+│   │   ├── src/
+│   │   │   ├── actions/        # Server Actions (form handling)
+│   │   │   ├── app/            # Next.js App Router pages
+│   │   │   ├── components/
+│   │   │   │   ├── layout/     # Shared infrastructure (AppToolbar, AppSidebar, etc.)
+│   │   │   │   ├── ui/         # shadcn/ui components
+│   │   │   │   └── [feature]/  # Feature-specific components
+│   │   │   ├── lib/
+│   │   │   │   ├── queries/    # React.cache() query functions
+│   │   │   │   ├── stores/     # Zustand stores (see README.md)
+│   │   │   │   ├── search/     # Full-text search utilities
+│   │   │   │   ├── supabase/   # Supabase clients
+│   │   │   │   └── utils/      # Utility functions
+│   │   │   ├── hooks/          # Custom React hooks
+│   │   │   └── types/          # TypeScript type definitions
+│   │   ├── proxy.ts            # Auth and routing (Next.js 16+)
+│   │   └── vercel.json         # Vercel deployment config
+│   │
+│   └── admin/                  # Admin dashboard
+│       ├── src/
+│       │   ├── actions/        # Server Actions
+│       │   ├── app/            # Next.js App Router pages
+│       │   ├── components/     # Admin-specific components
+│       │   ├── lib/            # Admin utilities and stores
+│       │   └── middleware.ts  # Legacy middleware (admin only)
+│       └── vercel.json         # Vercel deployment config
+│
+├── packages/                   # Shared packages
+│   ├── auth/                   # Authentication utilities
+│   ├── database/                # Database client and types
+│   ├── ui/                     # Shared UI components
+│   ├── shared/                 # Shared utilities
+│   └── config/                 # Shared configuration
+│
+├── vercel.json                 # Root Vercel config (cron jobs)
+├── turbo.json                  # Turborepo configuration
+└── pnpm-workspace.yaml         # pnpm workspace configuration
 ```
 
 **Key Files:**
-- `/proxy.ts` - Auth and routing (Next.js 16+)
-- `/src/lib/stores/README.md` - Zustand guide
-- `/src/lib/queries/*.ts` - Cached query functions
-- `/docs/AGENTS.md` - Complete linting rules (481 rules)
+- `apps/web/proxy.ts` - Auth and routing for web app (Next.js 16+)
+- `apps/web/src/lib/stores/README.md` - Zustand guide
+- `apps/web/src/lib/queries/*.ts` - Cached query functions
+- `packages/ui/src/` - Shared UI components
+- `packages/database/src/` - Database client and types
+- `docs/AGENTS.md` - Complete linting rules (481 rules)
 
 ---
 
@@ -481,7 +520,7 @@ export function KPICard() {
 ### Server Actions for Forms
 
 ```typescript
-// /src/actions/contracts.ts
+// apps/web/src/actions/contracts.ts
 "use server";
 import { revalidatePath } from "next/cache";
 
@@ -497,7 +536,7 @@ export async function createContract(formData: FormData) {
   return { success: true };
 }
 
-// page.tsx
+// apps/web/src/app/dashboard/work/contracts/page.tsx
 <form action={createContract}>
   <input name="title" />
   <button type="submit">Save</button>
@@ -554,26 +593,42 @@ export default async function ReportsPage() {
 - [ ] JSDoc explains component purpose?
 - [ ] Error handling and loading states?
 - [ ] Follows existing naming conventions?
-- [ ] Linting rules from `/docs/AGENTS.md` applied?
+- [ ] Linting rules from `docs/AGENTS.md` applied?
 
 ---
 
 ## 🛠️ DEVELOPMENT COMMANDS
 
 ```bash
-# Development
-pnpm dev                 # Start dev server (Turbopack)
-pnpm build               # Production build
+# Monorepo Development
+pnpm dev                 # Start all apps in dev mode (Turbopack)
+pnpm dev:web             # Start only web app (port 3000)
+pnpm dev:admin           # Start only admin app (port 3001)
+pnpm build               # Build all apps
+pnpm build:web           # Build only web app
+pnpm build:admin         # Build only admin app
+pnpm lint                # Lint all packages
+pnpm typecheck           # Type check all packages
+
+# App-Specific (from app directory)
+cd apps/web
+pnpm dev                 # Start web app dev server
+pnpm build               # Build web app
 pnpm lint:fix            # Lint and fix
 
 # Performance Analysis
-pnpm analyze:bundle      # Bundle size analysis
+pnpm analyze:bundle      # Bundle size analysis (web app)
 pnpm analyze             # All code analysis
 pnpm analyze:deps        # Check dependencies
 pnpm analyze:circular    # Find circular dependencies
 ```
 
-**Bundle Analysis:** Reports saved to `.next/analyze/client.html` and `.next/analyze/server.html`
+**Bundle Analysis:** Reports saved to `apps/web/.next/analyze/client.html` and `apps/web/.next/analyze/server.html`
+
+**Monorepo Notes:**
+- Use `turbo` commands for parallel execution across packages
+- Workspace packages are linked automatically via pnpm
+- Shared packages in `packages/` are imported as `@stratos/*`
 
 ---
 
@@ -642,11 +697,13 @@ const data = await getData(); // Built-in error handling
 ## 📚 REFERENCE DOCUMENTATION
 
 **Internal Documentation:**
-- `/src/lib/stores/README.md` - Zustand state management guide
-- `/docs/performance/` - Database optimization patterns
-- `/docs/AGENTS.md` - Complete linting rules (481 rules)
-- `/docs/migrations/` - Migration guides
-- `/docs/troubleshooting/` - Common issues
+- `apps/web/src/lib/stores/README.md` - Zustand state management guide
+- `docs/performance/` - Database optimization patterns
+- `docs/AGENTS.md` - Complete linting rules (481 rules)
+- `docs/migrations/` - Migration guides
+- `docs/troubleshooting/` - Common issues
+- `VERCEL_SETUP.md` - Vercel monorepo deployment guide
+- `VERCEL_QUICK_START.md` - Quick Vercel deployment reference
 
 **External Resources:**
 - [Next.js 16 Documentation](https://nextjs.org/docs)
@@ -659,9 +716,19 @@ const data = await getData(); // Built-in error handling
 
 ## 🔄 VERSION HISTORY
 
+### v3.1 - Monorepo Structure (2025-01-XX)
+- **NEW**: Updated all paths to reflect monorepo structure (`apps/web/`, `apps/admin/`)
+- **NEW**: Added monorepo project stats and structure documentation
+- **NEW**: Added Vercel deployment information for both apps
+- **NEW**: Documented shared packages (`@stratos/*`)
+- **NEW**: Updated development commands for monorepo
+- **UPDATED**: All file paths now include app context
+- **UPDATED**: Component discovery paths for both apps
+- **UPDATED**: Project structure diagram shows full monorepo layout
+
 ### v3.0 - Consolidated & Accurate (2025-11-17)
 - **BREAKING**: Removed React Query documentation (not primary pattern)
-- **NEW**: Documented `/src/lib/queries/` + React.cache() pattern
+- **NEW**: Documented `apps/web/src/lib/queries/` + React.cache() pattern
 - **ACCURACY**: Updated stats to reflect current codebase (360 pages, 1,200 components)
 - **CONSOLIDATION**: Reduced from 2,123 lines to ~800 lines
 - **CLEANUP**: Removed duplicate examples, referenced existing docs
@@ -698,4 +765,106 @@ const data = await getData(); // Built-in error handling
 
 ---
 
-**End of Guidelines** | For questions or clarifications, reference `/docs/` or `/src/lib/stores/README.md`
+## 🏗️ MONOREPO WORKFLOW
+
+### Choosing the Right App
+
+**Web App (`apps/web/`):**
+- Main customer-facing application
+- All business logic, dashboards, customer portals
+- Most components and features live here
+- Default app for new features
+
+**Admin App (`apps/admin/`):**
+- Internal admin dashboard
+- Company management, support sessions, analytics
+- View-as functionality for customer support
+- Only create here if feature is admin-specific
+
+**Shared Packages (`packages/`):**
+- `@stratos/ui` - Reusable UI components (used by both apps)
+- `@stratos/auth` - Authentication utilities
+- `@stratos/database` - Database client and types
+- `@stratos/shared` - Shared utilities
+- `@stratos/config` - Shared configuration
+
+### Working with Shared Packages
+
+**When to use shared packages:**
+- UI components used in both apps → `packages/ui/`
+- Database types/queries used in both apps → `packages/database/`
+- Auth utilities used in both apps → `packages/auth/`
+- Shared business logic → `packages/shared/`
+
+**Import pattern:**
+```typescript
+// In apps/web or apps/admin
+import { Button } from "@stratos/ui";
+import { createClient } from "@stratos/auth/server";
+import type { Database } from "@stratos/database/types";
+```
+
+**Development workflow:**
+1. Make changes to package in `packages/[name]/`
+2. Run `pnpm build` to rebuild packages
+3. Changes are automatically available in apps (via workspace linking)
+4. For hot reload, use `pnpm dev` from root (Turborepo handles it)
+
+### File Path Conventions
+
+**Always specify app context in paths:**
+- ✅ `apps/web/src/components/...`
+- ✅ `apps/admin/src/lib/...`
+- ❌ `/src/components/...` (ambiguous)
+
+**When searching codebase:**
+- Search in specific app: `apps/web/src/` or `apps/admin/src/`
+- Search in packages: `packages/[name]/src/`
+- Search across all: Use codebase search tool
+
+---
+
+## 🚀 DEPLOYMENT & MONOREPO
+
+### Vercel Deployment
+
+**Two Separate Projects:**
+- **Web App** (`thorbis`): `apps/web/` - Main application
+- **Admin App** (`thorbis-admin`): `apps/admin/` - Admin dashboard
+
+**Configuration:**
+- Root `vercel.json` - Cron jobs for web app
+- `apps/web/vercel.json` - Web app deployment config
+- `apps/admin/vercel.json` - Admin app deployment config
+
+**Build Commands:**
+- Web: `cd ../.. && turbo build --filter @stratos/web`
+- Admin: `cd ../.. && turbo build --filter @stratos/admin`
+
+**See `VERCEL_SETUP.md` for complete deployment guide.**
+
+### Shared Packages
+
+**Workspace Packages:**
+- `@stratos/auth` - Authentication utilities (`packages/auth/`)
+- `@stratos/database` - Database client (`packages/database/`)
+- `@stratos/ui` - Shared UI components (`packages/ui/`)
+- `@stratos/shared` - Shared utilities (`packages/shared/`)
+- `@stratos/config` - Shared configuration (`packages/config/`)
+
+**Import Pattern:**
+```typescript
+// In apps/web or apps/admin
+import { createClient } from "@stratos/auth/server";
+import { Button } from "@stratos/ui";
+import type { Database } from "@stratos/database/types";
+```
+
+**Package Development:**
+- Packages are automatically linked via pnpm workspaces
+- Changes to packages require rebuild: `pnpm build`
+- Use `workspace:*` in package.json for local development
+
+---
+
+**End of Guidelines** | For questions or clarifications, reference `docs/` or `apps/web/src/lib/stores/README.md`

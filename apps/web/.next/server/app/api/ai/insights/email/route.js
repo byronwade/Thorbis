@@ -1,0 +1,13 @@
+var R=require("../../../../../chunks/[turbopack]_runtime.js")("server/app/api/ai/insights/email/route.js")
+R.c("server/chunks/4b6e4_@opentelemetry_api_build_esm_index_128893a4.js")
+R.c("server/chunks/4b6e4_@opentelemetry_api_build_esm_7dff724d._.js")
+R.c("server/chunks/4bfae_@ai-sdk_provider-utils_dist_index_mjs_d308ade5._.js")
+R.c("server/chunks/3c0ae_next_dist_compiled_@opentelemetry_api_index_edfe78ae.js")
+R.c("server/chunks/84d3e_@ai-sdk_google_dist_index_mjs_98380650._.js")
+R.c("server/chunks/37e87_zod_v4_250853d0._.js")
+R.c("server/chunks/40a99_ai_dist_index_mjs_81e95046._.js")
+R.c("server/chunks/[root-of-the-server]__0a17ae8f._.js")
+R.c("server/chunks/[root-of-the-server]__a1142bba._.js")
+R.c("server/chunks/apps_web__next-internal_server_app_api_ai_insights_email_route_actions_3b7131fc.js")
+R.m(737674)
+module.exports=R.m(737674).exports

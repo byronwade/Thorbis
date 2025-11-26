@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(marketing)/layout,_N_T_/(marketing)/vs/layout,_N_T_/(marketing)/vs/housecall-pro/layout,_N_T_/(marketing)/vs/housecall-pro/page,_N_T_/vs/housecall-pro"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KG1hcmtldGluZyk/vs/housecall-pro/__PAGE__",
+    "/!KG1hcmtldGluZyk/vs/housecall-pro",
+    "/!KG1hcmtldGluZyk/vs",
+    "/!KG1hcmtldGluZyk",
+    "/_index",
+    "/_head"
+  ]
+}

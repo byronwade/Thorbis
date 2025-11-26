@@ -1,0 +1,3 @@
+{
+  "/api/webhooks/financing/route": "app/api/webhooks/financing/route.js"
+}

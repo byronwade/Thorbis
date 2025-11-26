@@ -1,0 +1,54 @@
+{
+  "sorted_middleware": [
+    "/(marketing)/security/opengraph-image-a9xnla/route"
+  ],
+  "middleware": {},
+  "instrumentation": null,
+  "functions": {
+    "/(marketing)/security/opengraph-image-a9xnla/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/(marketing)/security/opengraph-image-a9xnla/route_client-reference-manifest.js",
+        "server/edge/chunks/cc0e2_server_app_(marketing)_security_opengraph-image-a9xnla_route_actions_b8e15246.js",
+        "server/edge/chunks/[root-of-the-server]__fd8aa38c._.js",
+        "server/edge/chunks/3c0ae_next_dist_esm_build_templates_edge-app-route_b1141f0e.js",
+        "server/edge/chunks/node_modules__pnpm_6a12fe1d._.js",
+        "server/edge/chunks/3c0ae_next_dist_compiled_@vercel_og_a3b9e406._.js",
+        "server/edge/chunks/turbopack-apps_web_edge-wrapper_1faf1ae3.js"
+      ],
+      "name": "app/(marketing)/security/opengraph-image-a9xnla/route",
+      "page": "/(marketing)/security/opengraph-image-a9xnla/route",
+      "matchers": [
+        {
+          "regexp": "^/security/opengraph-image-a9xnla(?:/)?$",
+          "originalSource": "/security/opengraph-image-a9xnla"
+        }
+      ],
+      "wasm": [
+        {
+          "name": "wasm_fdb56e4cc5936d29",
+          "filePath": "server/edge/chunks/3c0ae_next_dist_compiled_@vercel_og_resvg_23ace1ce.wasm"
+        },
+        {
+          "name": "wasm_1ccdc983b1fd9f87",
+          "filePath": "server/edge/chunks/3c0ae_next_dist_compiled_@vercel_og_yoga_23ace1ce.wasm"
+        }
+      ],
+      "assets": [
+        {
+          "name": "server/edge/assets/noto-sans-v27-latin-regular.bdfa676c.ttf",
+          "filePath": "server/edge/assets/noto-sans-v27-latin-regular.bdfa676c.ttf"
+        }
+      ],
+      "env": {
+        "__NEXT_BUILD_ID": "h61Rn_0mgcIqyJYuU7Q57",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "heDy9OQkhQsR1IF+/BA0VG+RSKvWEeVBxBFMGqlPkyI=",
+        "__NEXT_PREVIEW_MODE_ID": "2e52eb0526b6047ce0f68e499f487818",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "2999469d9c53ba6a7dfcd225a63be526aac27f3027bc21de1debaeb323a87d35",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "1cc753bd265da9484e7a02c3a9d47d442ae1fb0d9c5dccb609e99fada1663b89"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "/api/demographics/census/route": "app/api/demographics/census/route.js"
+}

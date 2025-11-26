@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/calculators/layout,_N_T_/tools/calculators/hourly-rate/layout,_N_T_/tools/calculators/hourly-rate/page,_N_T_/tools/calculators/hourly-rate"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/calculators/hourly-rate/__PAGE__",
+    "/tools/calculators/hourly-rate",
+    "/tools/calculators",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

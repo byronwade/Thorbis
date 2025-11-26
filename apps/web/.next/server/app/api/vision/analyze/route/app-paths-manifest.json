@@ -1,0 +1,3 @@
+{
+  "/api/vision/analyze/route": "app/api/vision/analyze/route.js"
+}

@@ -3,46 +3,17 @@
 		"target": "ES2017",
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
-		"skipLibCheck": true, // Skip type checking of declaration files - speeds up builds significantly
+		"skipLibCheck": true,
 		"strict": true,
 		"noEmit": true,
 		"esModuleInterop": true,
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
-		"isolatedModules": true, // Enables faster builds by ensuring each file can be transpiled independently
+		"isolatedModules": true,
 		"jsx": "react-jsx",
-		"incremental": true, // Re-enabled for faster rebuilds - stores .tsbuildinfo
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"strictNullChecks": true,
-		// Build performance optimizations
-		"assumeChangesOnlyAffectDirectDependencies": false // DISABLED: May cause hangs
+		"incremental": true,
+		"strictNullChecks": true
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		".next/dev/types/**/*.ts",
-		"**/*.mts",
-		".next\\dev/types/**/*.ts",
-		".next\\dev/types/**/*.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"src/components/schedule/_deprecated",
-		"src/components/scheduler/**",
-		"scripts",
-		".next",
-		"dist",
-		"build",
-		"supabase/functions"
-	]
+	"exclude": ["node_modules", "apps", "packages"]
 }

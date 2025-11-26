@@ -1,0 +1,3 @@
+{
+  "/api/check-onboarding-status/route": "app/api/check-onboarding-status/route.js"
+}

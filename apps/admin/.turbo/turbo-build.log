@@ -1,0 +1,84 @@
+
+> @stratos/admin@0.1.0 build /Users/byronwade/Stratos/apps/admin
+> next build
+
+   ▲ Next.js 16.0.1 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 40s
+   Running TypeScript ...
+   Collecting page data ...
+   Generating static pages (0/31) ...
+   Generating static pages (7/31) 
+   Generating static pages (15/31) 
+   Generating static pages (23/31) 
+Failed to fetch campaign stats: {
+  code: '42703',
+  details: null,
+  hint: null,
+  message: 'column email_campaigns.sent_count does not exist'
+}
+Failed to fetch campaign stats: {
+  code: '42703',
+  details: null,
+  hint: null,
+  message: 'column email_campaigns.sent_count does not exist'
+}
+ ✓ Generating static pages (31/31) in 12.7s
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/webhooks/resend
+├ ○ /dashboard
+├ ○ /dashboard/ai
+├ ○ /dashboard/ai/automation
+├ ○ /dashboard/analytics
+├ ○ /dashboard/communication
+├ ○ /dashboard/communication/calls
+├ ○ /dashboard/communication/email
+├ ○ /dashboard/communication/sms
+├ ○ /dashboard/communication/stats
+├ ○ /dashboard/communication/tickets
+├ ○ /dashboard/finance
+├ ○ /dashboard/marketing
+├ ○ /dashboard/marketing/campaigns
+├ ƒ /dashboard/marketing/campaigns/[id]
+├ ƒ /dashboard/marketing/campaigns/[id]/analytics
+├ ○ /dashboard/marketing/campaigns/new
+├ ○ /dashboard/marketing/website
+├ ○ /dashboard/schedule
+├ ○ /dashboard/schedule/team
+├ ○ /dashboard/schedule/time-off
+├ ○ /dashboard/settings
+├ ƒ /dashboard/view-as/[companyId]
+├ ƒ /dashboard/view-as/[companyId]/work/appointments
+├ ƒ /dashboard/view-as/[companyId]/work/contracts
+├ ƒ /dashboard/view-as/[companyId]/work/equipment
+├ ƒ /dashboard/view-as/[companyId]/work/estimates
+├ ƒ /dashboard/view-as/[companyId]/work/invoices
+├ ƒ /dashboard/view-as/[companyId]/work/jobs
+├ ƒ /dashboard/view-as/[companyId]/work/materials
+├ ƒ /dashboard/view-as/[companyId]/work/payments
+├ ƒ /dashboard/view-as/[companyId]/work/team
+├ ƒ /dashboard/view-as/pending/[sessionId]
+├ ○ /dashboard/work
+├ ○ /dashboard/work/companies
+├ ○ /dashboard/work/help-center
+├ ○ /dashboard/work/onboarding
+├ ○ /dashboard/work/subscriptions
+├ ○ /dashboard/work/support
+├ ○ /dashboard/work/users
+└ ○ /login
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

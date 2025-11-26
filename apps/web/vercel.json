@@ -1,0 +1,37 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"buildCommand": "cd ../.. && turbo build --filter @stratos/web",
+	"outputDirectory": ".next",
+	"installCommand": "pnpm install",
+	"framework": "nextjs",
+	"regions": ["iad1"],
+	"env": {
+		"SKIP_ENV_VALIDATION": "true"
+	},
+	"crons": [
+		{
+			"path": "/api/cron/sync-bank-transactions",
+			"schedule": "0 2 * * *"
+		},
+		{
+			"path": "/api/cron/verify-telnyx-webhooks",
+			"schedule": "0 9 * * *"
+		},
+		{
+			"path": "/api/cron/sync-gmail-inboxes",
+			"schedule": "0 * * * *"
+		},
+		{
+			"path": "/api/cron/cleanup-invalid-tokens",
+			"schedule": "0 3 * * *"
+		},
+		{
+			"path": "/api/cron/sync-api-usage",
+			"schedule": "0 * * * *"
+		},
+		{
+			"path": "/api/cron/check-api-health",
+			"schedule": "*/5 * * * *"
+		}
+	]
+}

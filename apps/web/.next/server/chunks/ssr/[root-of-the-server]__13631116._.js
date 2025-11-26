@@ -1,0 +1,31 @@
+module.exports=[193695,(a,b,c)=>{b.exports=a.x("next/dist/shared/lib/no-fallback-error.external.js",()=>require("next/dist/shared/lib/no-fallback-error.external.js"))},997868,a=>{a.n(a.i(884849))},592581,a=>{a.n(a.i(596565))},134005,a=>{a.n(a.i(977930))},565165,a=>{a.n(a.i(728209))},147941,a=>{a.n(a.i(484103))},304434,a=>{a.n(a.i(632684))},407521,a=>{a.n(a.i(693094))},797797,a=>{a.n(a.i(977207))},290022,a=>{a.n(a.i(362735))},729157,a=>{a.n(a.i(470009))},712363,a=>{a.n(a.i(279732))},208120,a=>{a.n(a.i(52860))},863056,a=>{a.n(a.i(77721))},468729,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call WorkDataView() from the server but WorkDataView is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/work-data-view.tsx <module evaluation>","WorkDataView");a.s(["WorkDataView",0,b])},750692,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call WorkDataView() from the server but WorkDataView is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/work-data-view.tsx","WorkDataView");a.s(["WorkDataView",0,b])},310669,a=>{"use strict";a.i(468729);var b=a.i(750692);a.n(b)},978159,a=>{a.n(a.i(8506))},44903,a=>{a.n(a.i(613616))},563018,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call MaterialsKanban() from the server but MaterialsKanban is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/materials-kanban.tsx <module evaluation>","MaterialsKanban");a.s(["MaterialsKanban",0,b])},559681,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call MaterialsKanban() from the server but MaterialsKanban is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/materials-kanban.tsx","MaterialsKanban");a.s(["MaterialsKanban",0,b])},159516,a=>{"use strict";a.i(563018);var b=a.i(559681);a.n(b)},571688,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call MaterialsTable() from the server but MaterialsTable is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/materials-table.tsx <module evaluation>","MaterialsTable");a.s(["MaterialsTable",0,b])},731151,a=>{"use strict";let b=(0,a.i(742210).registerClientReference)(function(){throw Error("Attempted to call MaterialsTable() from the server but MaterialsTable is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/apps/web/src/components/work/materials-table.tsx","MaterialsTable");a.s(["MaterialsTable",0,b])},669025,a=>{"use strict";a.i(571688);var b=a.i(731151);a.n(b)},140357,a=>{"use strict";var b=a.i(504348),c=a.i(429969);a.i(692167);var d=a.i(852596),e=a.i(159516),f=a.i(669025),g=a.i(310669);a.i(467361);var h=a.i(445074),i=a.i(933427);let j=50,k=`
+  id,
+  price_book_item_id,
+  quantity_on_hand,
+  quantity_reserved,
+  quantity_available,
+  minimum_quantity,
+  cost_per_unit,
+  total_cost_value,
+  updated_at,
+  status,
+  warehouse_location,
+  primary_location,
+  is_low_stock,
+  low_stock_alert_sent,
+  notes,
+  deleted_at,
+  price_book_item:price_book_items!inventory_price_book_item_id_price_book_items_id_fk (
+    id,
+    company_id,
+    name,
+    description,
+    sku,
+    category,
+    subcategory,
+    unit,
+    is_active
+  )
+`,l=(0,c.cache)(async(a,b=j,c)=>{let d=c??await (0,h.getActiveCompanyId)();if(!d)return{materials:[],totalCount:0};let e=await (0,i.createServiceSupabaseClient)();if(!e)throw Error("Supabase client not configured");let f=(Math.max(a,1)-1)*b,{data:g,error:l,count:m}=await e.from("inventory").select(k,{count:"exact"}).eq("company_id",d).is("deleted_at",null).order("updated_at",{ascending:!1}).range(f,f+b-1);if(l)throw Error(`Failed to fetch materials: ${l.message}`);return{materials:g??[],totalCount:m??0}});async function m({searchParams:a}){let c=await (0,h.getActiveCompanyId)();if(!c)return(0,d.notFound)();let i=Number(a?.page)||1,{materials:k,totalCount:m}=await l(i,j,c),n=k.reduce((a,b)=>{let c=Array.isArray(b.price_book_item)?b.price_book_item[0]??null:b.price_book_item;if(!c)return a;let d=Number(b.quantity_available??b.quantity_on_hand??0),e=Number(b.cost_per_unit??0),f=Number(b.total_cost_value??0)||e*Number(b.quantity_on_hand??d??0),g=!1!==c.is_active?null:b.deleted_at??b.updated_at??null,h=[c.category,c.subcategory].filter(Boolean).join(" • "),i={id:b.id,itemCode:c.sku||c.name||"Uncoded Item",description:c.description||c.name||"Unnamed Material",category:h||"Uncategorized",quantity:d,unit:c.unit||"each",unitCost:e,totalValue:f,status:b.status||"in-stock",archived_at:g,deleted_at:b.deleted_at??null};return a.push(i),a},[]);return(0,b.jsx)(g.WorkDataView,{kanban:(0,b.jsx)(e.MaterialsKanban,{materials:n}),section:"materials",table:(0,b.jsx)(f.MaterialsTable,{currentPage:i,itemsPerPage:j,materials:n,totalCount:m})})}a.i(250202);var n=a.i(709027);function o(){return(0,b.jsx)(n.DataTableListSkeleton,{showSearchBar:!0})}async function p({searchParams:a}){let d=await a;return(0,b.jsx)("div",{className:"flex h-full flex-col",children:(0,b.jsx)("div",{className:"flex-1 overflow-hidden",children:(0,b.jsx)(c.Suspense,{fallback:(0,b.jsx)(o,{}),children:(0,b.jsx)(m,{searchParams:d})})})})}a.s(["default",()=>p],140357)}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__13631116._.js.map

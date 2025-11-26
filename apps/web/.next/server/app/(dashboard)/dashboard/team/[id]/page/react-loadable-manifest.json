@@ -1,0 +1,22 @@
+{
+  "809423": {
+    "id": 809423,
+    "files": [
+      "static/chunks/19c4c82242a4ed8a.js",
+      "static/chunks/bf51543fbb7cddef.js",
+      "static/chunks/8c6ba01d2650c332.js",
+      "static/chunks/5d8b007b9e3ed0e3.js",
+      "static/chunks/e80c0f18ce207a50.js",
+      "static/chunks/6d598156d4a664d8.js",
+      "static/chunks/155bd80b7b15c07c.js",
+      "static/chunks/b0e87a8d2101ef01.js",
+      "static/chunks/be4f061917bb779e.js"
+    ]
+  },
+  "388024": {
+    "id": 388024,
+    "files": [
+      "static/chunks/6680116ea3e49da7.js"
+    ]
+  }
+}

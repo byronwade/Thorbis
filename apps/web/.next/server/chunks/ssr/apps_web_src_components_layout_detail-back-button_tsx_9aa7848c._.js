@@ -1,0 +1,3 @@
+module.exports=[675624,a=>{"use strict";var b=a.i(861467),c=a.i(805034),d=a.i(337241);a.i(445255);var e=a.i(18170);function f({href:a,label:f}){let g=(0,d.useRouter)();return(0,b.jsxs)(e.Button,{className:"h-8 gap-1.5",onClick:()=>g.push(a),size:"sm",variant:"outline",children:[(0,b.jsx)(c.ArrowLeft,{className:"size-4"}),f]})}a.s(["DetailBackButton",()=>f])}];
+
+//# sourceMappingURL=apps_web_src_components_layout_detail-back-button_tsx_9aa7848c._.js.map

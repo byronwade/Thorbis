@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tools/layout,_N_T_/tools/calculators/layout,_N_T_/tools/calculators/profit-loss/layout,_N_T_/tools/calculators/profit-loss/page,_N_T_/tools/calculators/profit-loss"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/tools/calculators/profit-loss/__PAGE__",
+    "/tools/calculators/profit-loss",
+    "/tools/calculators",
+    "/tools",
+    "/_index",
+    "/_head"
+  ]
+}

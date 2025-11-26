@@ -1,13 +1,71 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"ignore": ["**/job-page-content-unified.tsx", "**/job-page-editor.tsx"],
-	"ignoreDependencies": [],
-	"ignoreBinaries": [],
-	"ignoreWorkspaces": [],
-	"eslint": false,
-	"ignoreExportsUsedInFile": true,
-	"rules": {
-		"exports": "off",
-		"types": "off"
+	"entry": [
+		"apps/web/src/app/**/*.{ts,tsx}",
+		"apps/admin/src/app/**/*.{ts,tsx}",
+		"packages/*/src/**/*.{ts,tsx}"
+	],
+	"project": [
+		"apps/web/**/*.{ts,tsx}",
+		"apps/admin/**/*.{ts,tsx}",
+		"packages/*/**/*.{ts,tsx}"
+	],
+	"ignore": [
+		"**/.next/**",
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/build/**",
+		"**/*.config.{js,ts}",
+		"**/tailwind.config.*",
+		"**/postcss.config.*",
+		"**/next.config.*",
+		"**/tsconfig*.json"
+	],
+	"ignoreDependencies": [
+		"@types/*",
+		"eslint",
+		"eslint-*",
+		"@typescript-eslint/*",
+		"prettier",
+		"typescript",
+		"tailwindcss",
+		"postcss",
+		"autoprefixer"
+	],
+	"ignoreBinaries": ["eslint"],
+	"workspaces": {
+		".": {
+			"entry": ["package.json"]
+		},
+		"apps/web": {
+			"entry": [
+				"apps/web/src/app/**/*.{ts,tsx}",
+				"apps/web/src/app/**/route.{ts,tsx}",
+				"apps/web/src/app/**/page.{ts,tsx}",
+				"apps/web/src/app/**/layout.{ts,tsx}",
+				"apps/web/src/app/**/loading.{ts,tsx}",
+				"apps/web/src/app/**/error.{ts,tsx}",
+				"apps/web/src/app/**/not-found.{ts,tsx}",
+				"apps/web/src/app/**/template.{ts,tsx}",
+				"apps/web/src/app/**/default.{ts,tsx}",
+				"apps/web/src/middleware.ts",
+				"apps/web/next.config.ts"
+			]
+		},
+		"apps/admin": {
+			"entry": [
+				"apps/admin/src/app/**/*.{ts,tsx}",
+				"apps/admin/src/app/**/route.{ts,tsx}",
+				"apps/admin/src/app/**/page.{ts,tsx}",
+				"apps/admin/src/app/**/layout.{ts,tsx}",
+				"apps/admin/src/app/**/loading.{ts,tsx}",
+				"apps/admin/src/app/**/error.{ts,tsx}",
+				"apps/admin/src/app/**/not-found.{ts,tsx}",
+				"apps/admin/src/app/**/template.{ts,tsx}",
+				"apps/admin/src/app/**/default.{ts,tsx}",
+				"apps/admin/src/middleware.ts",
+				"apps/admin/next.config.ts"
+			]
+		}
 	}
 }

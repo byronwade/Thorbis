@@ -1,0 +1,3 @@
+{
+  "/api/cron/populate-analytics/route": "app/api/cron/populate-analytics/route.js"
+}

@@ -1,0 +1,3 @@
+module.exports=[917126,a=>{"use strict";var b=a.i(504348),c=a.i(995146),d=a.i(835929),e=a.i(424340),f=a.i(402239);let g=({message:a})=>(0,b.jsx)(d.Html,{children:(0,b.jsx)(c.Container,{style:h,children:(0,b.jsx)(e.Section,{style:i,children:a.split("\n").map((a,c)=>(0,b.jsx)(f.Text,{style:j,children:a||" "},c))})})});g.PreviewText="New message";let h={margin:"0 auto",padding:"20px 0 48px",maxWidth:"580px"},i={padding:"0"},j={fontFamily:"Arial, sans-serif",fontSize:"14px",lineHeight:"24px",color:"#333",margin:"0",padding:"0"};a.s(["PlainTextEmail",0,g])}];
+
+//# sourceMappingURL=apps_web_src_emails_plain-text-email_tsx_5acac822._.js.map

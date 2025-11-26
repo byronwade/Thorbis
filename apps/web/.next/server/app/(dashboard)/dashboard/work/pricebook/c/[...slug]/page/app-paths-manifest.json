@@ -1,0 +1,3 @@
+{
+  "/(dashboard)/dashboard/work/pricebook/c/[...slug]/page": "app/(dashboard)/dashboard/work/pricebook/c/[...slug]/page.js"
+}

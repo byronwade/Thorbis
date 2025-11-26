@@ -1,0 +1,3 @@
+{
+  "/api/webhooks/resend/route": "app/api/webhooks/resend/route.js"
+}

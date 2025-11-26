@@ -1,0 +1,3 @@
+{
+  "/api/payments/adyen-onboarding-status/route": "app/api/payments/adyen-onboarding-status/route.js"
+}

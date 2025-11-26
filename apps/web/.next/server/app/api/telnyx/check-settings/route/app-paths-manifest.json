@@ -1,0 +1,3 @@
+{
+  "/api/telnyx/check-settings/route": "app/api/telnyx/check-settings/route.js"
+}

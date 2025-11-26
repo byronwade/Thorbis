@@ -1,0 +1,3 @@
+{
+  "/api/cron/resend-domain-sync/route": "app/api/cron/resend-domain-sync/route.js"
+}

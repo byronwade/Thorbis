@@ -1,0 +1,3 @@
+module.exports=[171090,a=>{"use strict";var b=a.i(861467),c=a.i(145679),d=a.i(127634);a.i(445255);var e=a.i(18170);function f(){return(0,b.jsx)("div",{className:"flex items-center gap-2",children:(0,b.jsx)(e.Button,{variant:"ghost",size:"sm",asChild:!0,children:(0,b.jsxs)(c.default,{href:"/dashboard/settings/ai",children:[(0,b.jsx)(d.Settings,{className:"size-4"}),(0,b.jsx)("span",{className:"hidden md:inline-block",children:"AI Settings"})]})})})}a.s(["AiToolbarActions",()=>f])},745266,a=>{a.v(b=>Promise.all(["server/chunks/ssr/f56e1_lucide-react_dist_esm_icons_43d5a393._.js","server/chunks/ssr/f56e1_lucide-react_dist_esm_lucide-react_af99bf1a.js"].map(b=>a.l(b))).then(()=>b(409557)))}];
+
+//# sourceMappingURL=_944ba0dd._.js.map

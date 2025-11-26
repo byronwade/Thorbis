@@ -1,0 +1,3 @@
+{
+  "/api/gmail/callback/route": "app/api/gmail/callback/route.js"
+}

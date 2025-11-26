@@ -1,0 +1,3 @@
+module.exports=[81111,(e,t,r)=>{t.exports=e.x("node:stream",()=>require("node:stream"))},575202,e=>e.a(async(t,r)=>{try{let t=await e.y("prettier/plugins/html");e.n(t),r()}catch(e){r(e)}},!0),535167,e=>e.a(async(t,r)=>{try{let t=await e.y("prettier/standalone");e.n(t),r()}catch(e){r(e)}},!0),660198,(e,t,r)=>{"use strict";t.exports=e.r(664598).vendored["react-rsc"].ReactJsxRuntime},61867,e=>{e.v(t=>Promise.all(["server/chunks/[root-of-the-server]__1990d4c1._.js","server/chunks/3c0ae_next_dist_compiled_bf02ca1a._.js"].map(t=>e.l(t))).then(()=>t(769333)))}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__dc89971d._.js.map

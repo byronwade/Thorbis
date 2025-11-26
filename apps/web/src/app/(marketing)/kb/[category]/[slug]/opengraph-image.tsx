@@ -1,0 +1,48 @@
+import { ImageResponse } from "next/og";
+import { getLogoDataUrl, KBTemplate, loadOGFonts, OG_CONFIG } from "@/lib/og";
+
+export const runtime = "edge";
+export const revalidate = 86400; // 24 hours
+
+export const size = {
+	width: OG_CONFIG.width,
+	height: OG_CONFIG.height,
+};
+export const contentType = "image/png";
+export const alt = "Thorbis Help Center";
+
+export default async function Image({
+	params,
+}: {
+	params: Promise<{ category: string; slug: string }>;
+}) {
+	const { category, slug } = await params;
+	const [fonts, logoDataUrl] = await Promise.all([
+		loadOGFonts(),
+		getLogoDataUrl(),
+	]);
+
+	// Format slug to title
+	const title = slug
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+
+	// Format category
+	const categoryName = category
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+
+	return new ImageResponse(
+		<KBTemplate
+			title={title}
+			category={categoryName}
+			logoDataUrl={logoDataUrl}
+		/>,
+		{
+			...size,
+			fonts,
+		},
+	);
+}

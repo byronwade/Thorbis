@@ -1,0 +1,50 @@
+{
+  "node": {
+    "001f005176797ef23488068124fb9a744915a477de": {
+      "workers": {
+        "app/portal/setup/page": {
+          "moduleId": 541838,
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/portal/setup/page": "action-browser"
+      },
+      "exportedName": "getCurrentUserRole",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+      "workers": {
+        "app/portal/setup/page": {
+          "moduleId": 541838,
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/portal/setup/page": "action-browser"
+      },
+      "exportedName": "canDeleteTeamMember",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "60e0f0e58eb6000903654ebd7125c6d7794a716cb9": {
+      "workers": {
+        "app/portal/setup/page": {
+          "moduleId": 541838,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_0",
+          "filename": "apps/web/src/app/portal/setup/page.tsx"
+        }
+      },
+      "layer": {
+        "app/portal/setup/page": "rsc"
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_0",
+      "filename": "apps/web/src/app/portal/setup/page.tsx"
+    }
+  },
+  "edge": {}
+}

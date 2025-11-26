@@ -1,0 +1,10 @@
+{
+	"name": "@stratos/config",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		"./tailwind": "./tailwind.config.ts",
+		"./tsconfig/base": "./tsconfig.base.json",
+		"./tsconfig/nextjs": "./tsconfig.nextjs.json"
+	}
+}

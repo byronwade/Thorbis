@@ -1,0 +1,3 @@
+{
+  "/api/telnyx/webhooks/route": "app/api/telnyx/webhooks/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/api/telnyx/validate-company/route": "app/api/telnyx/validate-company/route.js"
+}

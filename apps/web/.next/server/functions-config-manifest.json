@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "functions": {
+    "/api-docs/opengraph-image-1q5tw2": {},
+    "/blog/opengraph-image-ey669m": {},
+    "/blog/[slug]/opengraph-image-yqks0s": {},
+    "/about/opengraph-image-1v42b1": {},
+    "/careers/opengraph-image-1195xz": {},
+    "/case-studies/opengraph-image-9lmvsw": {},
+    "/community/opengraph-image-1ap182": {},
+    "/contact/opengraph-image-1a8v0t": {},
+    "/contracts/sign/[id]/success/opengraph-image-yqbd0j": {},
+    "/contracts/sign/[id]/opengraph-image-14ya5d": {},
+    "/cookies/opengraph-image-1a9dp3": {},
+    "/features/ai-assistant/opengraph-image-eoqtlh": {},
+    "/features/crm/opengraph-image-ocga6e": {},
+    "/features/customer-portal/opengraph-image-789us5": {},
+    "/demo/opengraph-image-ey7jsr": {},
+    "/features/marketing/opengraph-image-rxnxhi": {},
+    "/features/opengraph-image-959drp": {},
+    "/features/mobile-app/opengraph-image-2v1hii": {},
+    "/features/invoicing/opengraph-image-1llbb9": {},
+    "/features/quickbooks/opengraph-image-y3wy5b": {},
+    "/features/scheduling/opengraph-image-1uuysn": {},
+    "/gdpr/opengraph-image-ey9u83": {},
+    "/free-tools/opengraph-image-1b4r2o": {},
+    "/implementation/opengraph-image-1fpeen": {},
+    "/industries/[slug]/opengraph-image-sbl75u": {},
+    "/industries/opengraph-image-tm01wg": {},
+    "/integrations/[slug]/opengraph-image-152ifn": {},
+    "/kb/[category]/[slug]/opengraph-image-173bwz": {},
+    "/help/opengraph-image-eyamov": {},
+    "/kb/opengraph-image-1pnh5e": {},
+    "/kb/[category]/opengraph-image-pvv4rs": {},
+    "/press/opengraph-image-1vezo7": {},
+    "/reviews/opengraph-image-55b9ln": {},
+    "/integrations/opengraph-image-8rrvkd": {},
+    "/kb/search/opengraph-image-1e8ohx": {},
+    "/security/opengraph-image-a9xnla": {},
+    "/roi/opengraph-image-19nkli": {},
+    "/solutions/opengraph-image-1eeop1": {},
+    "/status/opengraph-image-orfoqi": {},
+    "/opengraph-image-pwu6ef": {},
+    "/switch/opengraph-image-otq3ag": {},
+    "/accessibility/opengraph-image-igw60u": {},
+    "/templates/opengraph-image-denkit": {},
+    "/terms/opengraph-image-1vhjmq": {},
+    "/vs/[slug]/opengraph-image-d9o1sx": {},
+    "/pricing/opengraph-image-15m7k7": {},
+    "/vs/housecall-pro/opengraph-image-mwzj3g": {},
+    "/vs/fieldedge/opengraph-image-17howo": {},
+    "/vs/opengraph-image-1pnh5p": {},
+    "/vs/jobber/opengraph-image-mw4c76": {},
+    "/vs/workiz/opengraph-image-vbddck": {},
+    "/site-map/opengraph-image-zbs4hi": {},
+    "/vs/servicem8/opengraph-image-1nhs1p": {},
+    "/webinars/opengraph-image-1micza": {},
+    "/vs/servicetitan/opengraph-image-v2obj": {},
+    "/waitlist/opengraph-image-1cuodf": {},
+    "/opengraph-image": {},
+    "/twitter-image": {},
+    "/features/[slug]/opengraph-image-po8to7": {},
+    "/api/ai/completion": {
+      "maxDuration": 30
+    },
+    "/api/ai/chat": {
+      "maxDuration": 60
+    },
+    "/api/ai/execute-approved": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights/email": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights/customer": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights/job": {
+      "maxDuration": 30
+    },
+    "/api/ai/workflows/code-review": {
+      "maxDuration": 60
+    },
+    "/api/ai/workflows/content": {
+      "maxDuration": 60
+    },
+    "/api/chat": {
+      "maxDuration": 30
+    },
+    "/api/cron/calculate-company-summary": {
+      "maxDuration": 300
+    },
+    "/api/cron/calculate-job-costing": {
+      "maxDuration": 300
+    },
+    "/api/cron/calculate-seasonal-factors": {
+      "maxDuration": 300
+    },
+    "/api/cron/check-api-health": {
+      "maxDuration": 60
+    },
+    "/api/cron/populate-analytics": {
+      "maxDuration": 300
+    },
+    "/api/cron/sync-api-usage": {
+      "maxDuration": 120
+    },
+    "/api/documents/upload": {
+      "maxDuration": 300
+    },
+    "/api/cron/calculate-marketing-csr": {
+      "maxDuration": 300
+    },
+    "/api/cron/calculate-dispatch-pricebook": {
+      "maxDuration": 300
+    },
+    "/api/import/execute": {
+      "maxDuration": 300
+    },
+    "/twitter-image-pwu6ef": {},
+    "/privacy/opengraph-image-15mm02": {},
+    "/partners/opengraph-image-lzqvxh": {}
+  }
+}

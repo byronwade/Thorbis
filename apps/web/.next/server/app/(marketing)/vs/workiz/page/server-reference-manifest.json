@@ -1,0 +1,35 @@
+{
+  "node": {
+    "001f005176797ef23488068124fb9a744915a477de": {
+      "workers": {
+        "app/(marketing)/vs/workiz/page": {
+          "moduleId": 753361,
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/vs/workiz/page": "action-browser"
+      },
+      "exportedName": "getCurrentUserRole",
+      "filename": "apps/web/src/actions/roles.ts"
+    },
+    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+      "workers": {
+        "app/(marketing)/vs/workiz/page": {
+          "moduleId": 753361,
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/vs/workiz/page": "action-browser"
+      },
+      "exportedName": "canDeleteTeamMember",
+      "filename": "apps/web/src/actions/roles.ts"
+    }
+  },
+  "edge": {}
+}

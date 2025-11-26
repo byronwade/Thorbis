@@ -1,0 +1,3 @@
+{
+  "/api/webhooks/twilio/route": "app/api/webhooks/twilio/route.js"
+}

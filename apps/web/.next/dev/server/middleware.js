@@ -1,0 +1,10 @@
+var R=require("./chunks/[turbopack]_runtime.js")("server/middleware.js")
+R.c("server/chunks/3c0ae_next_f38417a2._.js")
+R.c("server/chunks/4b6e4_@opentelemetry_api_build_esm_3d8bac24._.js")
+R.c("server/chunks/526ad_@supabase_realtime-js_dist_module_0c1a74a4._.js")
+R.c("server/chunks/04148_@supabase_storage-js_dist_module_b74e1ed7._.js")
+R.c("server/chunks/9baf2_@supabase_auth-js_dist_module_b8f54a89._.js")
+R.c("server/chunks/node_modules__pnpm_0d600a44._.js")
+R.c("server/chunks/[root-of-the-server]__904e8778._.js")
+R.m("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/esm/build/templates/middleware.js { INNER_MIDDLEWARE_MODULE => \"[project]/apps/web/proxy.ts [middleware] (ecmascript)\" } [middleware] (ecmascript)")
+module.exports=R.m("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/esm/build/templates/middleware.js { INNER_MIDDLEWARE_MODULE => \"[project]/apps/web/proxy.ts [middleware] (ecmascript)\" } [middleware] (ecmascript)").exports
