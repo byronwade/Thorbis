@@ -21,6 +21,7 @@ apps/*/.next/
 apps/*/out/
 # Turborepo
 .turbo/
+apps/*/.turbo/
 
 # production
 /build
