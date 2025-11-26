@@ -785,9 +785,7 @@ class GoogleContactsService {
 	/**
 	 * Create groups for field service organization
 	 */
-	async setupFieldServiceGroups(
-		accessToken: string,
-	): Promise<{
+	async setupFieldServiceGroups(accessToken: string): Promise<{
 		customers?: ContactGroup;
 		vendors?: ContactGroup;
 		technicians?: ContactGroup;

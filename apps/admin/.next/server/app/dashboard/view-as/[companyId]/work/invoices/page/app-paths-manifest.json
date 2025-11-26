@@ -1,3 +1,3 @@
 {
-  "/dashboard/view-as/[companyId]/work/invoices/page": "app/dashboard/view-as/[companyId]/work/invoices/page.js"
+	"/dashboard/view-as/[companyId]/work/invoices/page": "app/dashboard/view-as/[companyId]/work/invoices/page.js"
 }

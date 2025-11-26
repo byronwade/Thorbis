@@ -1,155 +1,155 @@
 {
-  "node": {
-    "606de25abb4916d6566917712865287e7e8ed54596": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "endSupportSession",
-          "filename": "apps/admin/src/actions/support-sessions.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "endSupportSession",
-      "filename": "apps/admin/src/actions/support-sessions.ts"
-    },
-    "0078b6630ab025760060e5225cccd016357bd38634": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "createServiceSupabaseClient",
-          "filename": "packages/database/src/service-client.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "rsc"
-      },
-      "exportedName": "createServiceSupabaseClient",
-      "filename": "packages/database/src/service-client.ts"
-    },
-    "4073741f8d5165cde33f9bd8765661c8e98e179f73": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "createJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "createJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "60410a3c6506dcb88ddc84bf127ad32c1023e58f72": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "updateJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "updateJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "60f3e92f077be66f8533cad226db39d2b31488ca27": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "updateJobStatus",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "updateJobStatus",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "402eac9110449153e2510cefbb222449819a8af5f8": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "startJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "startJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "401bc60867923283e1071b204b0b3c12895d309710": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "completeJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "completeJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "40eb8a6cb5135ee9d78e3504e39e000fe8aef5aa9f": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "archiveJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "archiveJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "707950a933db270d03854314e88de0950735103335": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "assignCustomerToJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "assignCustomerToJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    },
-    "406e69aefe045dda5450a830ee7fa5c6d80582db35": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "removeCustomerFromJob",
-          "filename": "apps/web/src/actions/jobs.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
-      },
-      "exportedName": "removeCustomerFromJob",
-      "filename": "apps/web/src/actions/jobs.ts"
-    }
-  },
-  "edge": {}
+	"node": {
+		"606de25abb4916d6566917712865287e7e8ed54596": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "endSupportSession",
+					"filename": "apps/admin/src/actions/support-sessions.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "endSupportSession",
+			"filename": "apps/admin/src/actions/support-sessions.ts"
+		},
+		"0078b6630ab025760060e5225cccd016357bd38634": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "createServiceSupabaseClient",
+					"filename": "packages/database/src/service-client.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "rsc"
+			},
+			"exportedName": "createServiceSupabaseClient",
+			"filename": "packages/database/src/service-client.ts"
+		},
+		"4073741f8d5165cde33f9bd8765661c8e98e179f73": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "createJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "createJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"60410a3c6506dcb88ddc84bf127ad32c1023e58f72": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "updateJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "updateJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"60f3e92f077be66f8533cad226db39d2b31488ca27": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "updateJobStatus",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "updateJobStatus",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"402eac9110449153e2510cefbb222449819a8af5f8": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "startJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "startJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"401bc60867923283e1071b204b0b3c12895d309710": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "completeJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "completeJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"40eb8a6cb5135ee9d78e3504e39e000fe8aef5aa9f": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "archiveJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "archiveJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"707950a933db270d03854314e88de0950735103335": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "assignCustomerToJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "assignCustomerToJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		},
+		"406e69aefe045dda5450a830ee7fa5c6d80582db35": {
+			"workers": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": {
+					"moduleId": 23194,
+					"async": false,
+					"exportedName": "removeCustomerFromJob",
+					"filename": "apps/web/src/actions/jobs.ts"
+				}
+			},
+			"layer": {
+				"app/dashboard/view-as/[companyId]/work/jobs/page": "action-browser"
+			},
+			"exportedName": "removeCustomerFromJob",
+			"filename": "apps/web/src/actions/jobs.ts"
+		}
+	},
+	"edge": {}
 }

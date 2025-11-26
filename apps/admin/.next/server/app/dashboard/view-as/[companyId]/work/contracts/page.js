@@ -1,24 +1,32 @@
-var R=require("../../../../../../chunks/ssr/[turbopack]_runtime.js")("server/app/dashboard/view-as/[companyId]/work/contracts/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__488d2c76._.js")
-R.c("server/chunks/ssr/_6e839eab._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_47d78d63._.js")
-R.c("server/chunks/ssr/packages_ui_src_e3aa80b5._.js")
-R.c("server/chunks/ssr/_5db8f78a._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__7eb94d26._.js")
-R.c("server/chunks/ssr/node_modules__pnpm_c7b2f67f._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_esm_44838f11._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__2bb484d9._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_client_components_builtin_global-error_f5984b79.js")
-R.c("server/chunks/ssr/apps_admin_src_65eb914f._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_client_components_185d3755._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_client_components_builtin_forbidden_189aa2ee.js")
-R.c("server/chunks/ssr/4f84d_next_dist_client_components_builtin_unauthorized_1671d793.js")
-R.c("server/chunks/ssr/apps_admin_src_lib_auth_session_ts_777a7544._.js")
-R.c("server/chunks/ssr/_4e1a5ed7._.js")
-R.c("server/chunks/ssr/4f84d_next_dist_1a190da3._.js")
-R.c("server/chunks/ssr/node_modules__pnpm_b0d7d408._.js")
-R.c("server/chunks/ssr/4f84d_next_bca26d93._.js")
-R.c("server/chunks/ssr/_09663473._.js")
-R.c("server/chunks/ssr/4f84d_next_d872918e._.js")
-R.m(8472)
-module.exports=R.m(8472).exports
+var R = require("../../../../../../chunks/ssr/[turbopack]_runtime.js")(
+	"server/app/dashboard/view-as/[companyId]/work/contracts/page.js",
+);
+R.c("server/chunks/ssr/[root-of-the-server]__488d2c76._.js");
+R.c("server/chunks/ssr/_6e839eab._.js");
+R.c("server/chunks/ssr/4f84d_next_dist_47d78d63._.js");
+R.c("server/chunks/ssr/packages_ui_src_e3aa80b5._.js");
+R.c("server/chunks/ssr/_5db8f78a._.js");
+R.c("server/chunks/ssr/[root-of-the-server]__7eb94d26._.js");
+R.c("server/chunks/ssr/node_modules__pnpm_c7b2f67f._.js");
+R.c("server/chunks/ssr/4f84d_next_dist_esm_44838f11._.js");
+R.c("server/chunks/ssr/[root-of-the-server]__2bb484d9._.js");
+R.c(
+	"server/chunks/ssr/4f84d_next_dist_client_components_builtin_global-error_f5984b79.js",
+);
+R.c("server/chunks/ssr/apps_admin_src_65eb914f._.js");
+R.c("server/chunks/ssr/4f84d_next_dist_client_components_185d3755._.js");
+R.c(
+	"server/chunks/ssr/4f84d_next_dist_client_components_builtin_forbidden_189aa2ee.js",
+);
+R.c(
+	"server/chunks/ssr/4f84d_next_dist_client_components_builtin_unauthorized_1671d793.js",
+);
+R.c("server/chunks/ssr/apps_admin_src_lib_auth_session_ts_777a7544._.js");
+R.c("server/chunks/ssr/_4e1a5ed7._.js");
+R.c("server/chunks/ssr/4f84d_next_dist_1a190da3._.js");
+R.c("server/chunks/ssr/node_modules__pnpm_b0d7d408._.js");
+R.c("server/chunks/ssr/4f84d_next_bca26d93._.js");
+R.c("server/chunks/ssr/_09663473._.js");
+R.c("server/chunks/ssr/4f84d_next_d872918e._.js");
+R.m(8472);
+module.exports = R.m(8472).exports;

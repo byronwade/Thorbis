@@ -1,3 +1,1514 @@
-module.exports=[24471,a=>{"use strict";var b=a.i(45139),c=a.i(78279),d=a.i(47473),e=a.i(5034),f=a.i(76568);a.i(56120);var g=a.i(18170),h=a.i(3431);let i=(0,h.default)("arrow-right",[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"m12 5 7 7-7 7",key:"xquz4c"}]]);var j=a.i(38446),k=a.i(19895),l=a.i(98803),m=a.i(89815),n=a.i(39044),o=a.i(1482),p=a.i(54729),q=a.i(87969),r=a.i(24126),s=a.i(22054),t=a.i(82012),u=a.i(75892),v=a.i(81938),w=a.i(27228);let x={name:"",subject:"",previewText:"",audienceType:"waitlist",audienceFilter:{excludeUnsubscribed:!0,excludeBounced:!0,excludeComplained:!0},fromName:"Thorbis",fromEmail:"noreply@thorbis.com",tags:[]},y=(0,w.create)((a,b)=>({campaigns:[],setCampaigns:b=>a({campaigns:b}),addCampaign:b=>a(a=>({campaigns:[b,...a.campaigns]})),updateCampaign:(b,c)=>a(a=>({campaigns:a.campaigns.map(a=>a.id===b?{...a,...c}:a)})),removeCampaign:b=>a(a=>({campaigns:a.campaigns.filter(a=>a.id!==b),selectedCampaignId:a.selectedCampaignId===b?null:a.selectedCampaignId})),isLoading:!1,setIsLoading:b=>a({isLoading:b}),error:null,setError:b=>a({error:b}),selectedCampaignId:null,setSelectedCampaignId:b=>a({selectedCampaignId:b}),filters:{},setFilters:b=>a(a=>({filters:{...a.filters,...b}})),resetFilters:()=>a({filters:{}}),sortField:"createdAt",sortDirection:"desc",setSort:(b,c)=>a(a=>({sortField:b,sortDirection:c??(a.sortField===b&&"asc"===a.sortDirection?"desc":"asc")})),builder:{isOpen:!1,currentStep:"details",draft:{...x},isDirty:!1,validationErrors:{}},openBuilder:c=>{let{campaigns:d}=b(),e=c?d.find(a=>a.id===c):null;e?a({builder:{isOpen:!0,currentStep:"details",editingCampaignId:c,isDirty:!1,validationErrors:{},draft:{name:e.name,subject:e.subject,previewText:e.previewText||"",templateId:e.templateId,templateData:e.templateData,htmlContent:e.htmlContent,plainTextContent:e.plainTextContent,audienceType:e.audienceType,audienceFilter:e.audienceFilter||x.audienceFilter,fromName:e.fromName,fromEmail:e.fromEmail,replyTo:e.replyTo,tags:e.tags,notes:e.notes,scheduledFor:e.scheduledFor}}}):a({builder:{isOpen:!0,currentStep:"details",draft:{...x},isDirty:!1,validationErrors:{}}})},closeBuilder:()=>a({builder:{isOpen:!1,currentStep:"details",draft:{...x},isDirty:!1,validationErrors:{}}}),setBuilderStep:b=>a(a=>({builder:{...a.builder,currentStep:b}})),updateDraft:b=>a(a=>({builder:{...a.builder,draft:{...a.builder.draft,...b},isDirty:!0}})),setValidationErrors:b=>a(a=>({builder:{...a.builder,validationErrors:b}})),clearValidationError:b=>a(a=>{let{[b]:c,...d}=a.builder.validationErrors;return{builder:{...a.builder,validationErrors:d}}}),resetBuilder:()=>a({builder:{isOpen:!1,currentStep:"details",draft:{...x},isDirty:!1,validationErrors:{}}}),audiencePreview:{isLoading:!1,estimatedCount:0,sampleRecipients:[]},setAudiencePreview:b=>a(a=>({audiencePreview:{...a.audiencePreview,...b}})),resetAudiencePreview:()=>a({audiencePreview:{isLoading:!1,estimatedCount:0,sampleRecipients:[]}}),sendingProgress:null,setSendingProgress:b=>a({sendingProgress:b}),updateSendingProgress:b=>a(a=>({sendingProgress:a.sendingProgress?{...a.sendingProgress,...b}:null})),waitlistStats:null,setWaitlistStats:b=>a({waitlistStats:b}),activeTab:"campaigns",setActiveTab:b=>a({activeTab:b}),previewCampaignId:null,setPreviewCampaignId:b=>a({previewCampaignId:b}),deletingCampaignId:null,setDeletingCampaignId:b=>a({deletingCampaignId:b})}));var z=a.i(63758);let A=(0,h.default)("funnel",[["path",{d:"M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z",key:"sc7q7i"}]]);var B=a.i(41903);let C=[{id:"waitlist",label:"Waitlist Subscribers",description:"Send to everyone who signed up for the waitlist",icon:r.Clock,iconColor:"text-emerald-600",bgColor:"bg-emerald-500/10"},{id:"all_users",label:"All Platform Users",description:"Send to all registered users across all companies",icon:o.Users,iconColor:"text-blue-600",bgColor:"bg-blue-500/10"},{id:"all_companies",label:"All Companies",description:"Send to company owners/admins only",icon:z.Building2,iconColor:"text-purple-600",bgColor:"bg-purple-500/10"},{id:"segment",label:"Custom Segment",description:"Filter users or companies by specific criteria",icon:A,iconColor:"text-amber-600",bgColor:"bg-amber-500/10"},{id:"custom",label:"Custom Email List",description:"Enter specific email addresses manually",icon:m.Mail,iconColor:"text-gray-600",bgColor:"bg-gray-500/10"}];function D({value:a,filter:c,onChange:e,error:f}){let[g,h]=(0,d.useState)(c||{excludeUnsubscribed:!0,excludeBounced:!0,excludeComplained:!0}),[i,k]=(0,d.useState)(c?.customEmails?.join("\n")||""),{audiencePreview:n,setAudiencePreview:p}=y();(0,d.useEffect)(()=>{p({isLoading:!0});let b=setTimeout(()=>{p({isLoading:!1,estimatedCount:{waitlist:2156,all_users:8432,all_companies:342,segment:0,custom:i.split("\n").filter(a=>a.trim()).length}[a]||0,sampleRecipients:[{email:"john@example.com",name:"John Doe",type:a},{email:"jane@example.com",name:"Jane Smith",type:a},{email:"mike@example.com",name:"Mike Johnson",type:a}],lastUpdated:new Date().toISOString()})},500);return()=>clearTimeout(b)},[a,i,p]);let q=b=>{let c={...g,...b};h(c),e(a,c)};return(0,b.jsxs)("div",{className:"space-y-6",children:[(0,b.jsx)("div",{className:"grid gap-3",children:C.map(c=>{let d=a===c.id,f=c.icon;return(0,b.jsxs)("button",{type:"button",className:(0,v.cn)("flex items-start gap-4 rounded-lg border p-4 text-left transition-colors",d?"border-primary bg-primary/5 ring-1 ring-primary":"hover:border-primary/50 hover:bg-muted/50"),onClick:()=>{e(c.id,g)},children:[(0,b.jsx)("div",{className:(0,v.cn)("rounded-lg p-2",c.bgColor),children:(0,b.jsx)(f,{className:(0,v.cn)("size-5",c.iconColor)})}),(0,b.jsxs)("div",{className:"flex-1 min-w-0",children:[(0,b.jsxs)("div",{className:"flex items-center gap-2",children:[(0,b.jsx)("p",{className:"font-medium",children:c.label}),d&&(0,b.jsx)("div",{className:"rounded-full bg-primary p-0.5",children:(0,b.jsx)(j.Check,{className:"size-3 text-primary-foreground"})})]}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:c.description})]})]},c.id)})}),f&&(0,b.jsx)("p",{className:"text-sm text-destructive",children:f}),"segment"===a&&(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsx)("h4",{className:"font-medium",children:"Segment Filters"}),(0,b.jsxs)("div",{className:"space-y-4",children:[(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{className:"text-sm",children:"User Roles"}),(0,b.jsx)("div",{className:"flex flex-wrap gap-2",children:["owner","admin","manager","technician"].map(a=>(0,b.jsxs)("label",{className:"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",children:[(0,b.jsx)(B.Checkbox,{checked:g.userRoles?.includes(a)||!1,onCheckedChange:b=>{let c=g.userRoles||[],d=b?[...c,a]:c.filter(b=>b!==a);q({userRoles:d.length>0?d:void 0})}}),(0,b.jsx)("span",{className:"capitalize",children:a})]},a))})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{className:"text-sm",children:"Company Plans"}),(0,b.jsx)("div",{className:"flex flex-wrap gap-2",children:["starter","professional","enterprise"].map(a=>(0,b.jsxs)("label",{className:"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",children:[(0,b.jsx)(B.Checkbox,{checked:g.companyPlans?.includes(a)||!1,onCheckedChange:b=>{let c=g.companyPlans||[],d=b?[...c,a]:c.filter(b=>b!==a);q({companyPlans:d.length>0?d:void 0})}}),(0,b.jsx)("span",{className:"capitalize",children:a})]},a))})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{className:"text-sm",children:"Company Status"}),(0,b.jsx)("div",{className:"flex flex-wrap gap-2",children:["active","trial","suspended"].map(a=>(0,b.jsxs)("label",{className:"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",children:[(0,b.jsx)(B.Checkbox,{checked:g.companyStatuses?.includes(a)||!1,onCheckedChange:b=>{let c=g.companyStatuses||[],d=b?[...c,a]:c.filter(b=>b!==a);q({companyStatuses:d.length>0?d:void 0})}}),(0,b.jsx)("span",{className:"capitalize",children:a})]},a))})]})]})]}),"custom"===a&&(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsx)("h4",{className:"font-medium",children:"Custom Email List"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Enter email addresses, one per line"}),(0,b.jsx)("textarea",{className:"w-full min-h-[150px] rounded-md border bg-background px-3 py-2 text-sm font-mono",placeholder:"john@example.com\njane@example.com\nmike@example.com",value:i,onChange:a=>{var b;k(b=a.target.value),q({customEmails:b.split("\n").map(a=>a.trim()).filter(a=>a&&a.includes("@"))})}})]}),(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsx)("h4",{className:"font-medium",children:"Exclusions"}),(0,b.jsxs)("div",{className:"space-y-3",children:[(0,b.jsxs)("label",{className:"flex items-center gap-2 cursor-pointer",children:[(0,b.jsx)(B.Checkbox,{checked:!1!==g.excludeUnsubscribed,onCheckedChange:a=>q({excludeUnsubscribed:!0===a})}),(0,b.jsx)("span",{className:"text-sm",children:"Exclude unsubscribed contacts"})]}),(0,b.jsxs)("label",{className:"flex items-center gap-2 cursor-pointer",children:[(0,b.jsx)(B.Checkbox,{checked:!1!==g.excludeBounced,onCheckedChange:a=>q({excludeBounced:!0===a})}),(0,b.jsx)("span",{className:"text-sm",children:"Exclude bounced emails"})]}),(0,b.jsxs)("label",{className:"flex items-center gap-2 cursor-pointer",children:[(0,b.jsx)(B.Checkbox,{checked:!1!==g.excludeComplained,onCheckedChange:a=>q({excludeComplained:!0===a})}),(0,b.jsx)("span",{className:"text-sm",children:"Exclude spam complaints"})]})]})]}),(0,b.jsxs)("div",{className:"rounded-lg border bg-muted/30 p-4",children:[(0,b.jsxs)("div",{className:"flex items-center justify-between",children:[(0,b.jsxs)("div",{className:"flex items-center gap-2",children:[(0,b.jsx)(o.Users,{className:"size-4 text-muted-foreground"}),(0,b.jsx)("span",{className:"text-sm font-medium",children:"Estimated Recipients"})]}),n.isLoading?(0,b.jsx)(l.Loader2,{className:"size-4 animate-spin text-muted-foreground"}):(0,b.jsx)("span",{className:"text-lg font-bold",children:n.estimatedCount.toLocaleString()})]}),!n.isLoading&&n.sampleRecipients.length>0&&(0,b.jsxs)("div",{className:"mt-3 pt-3 border-t",children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground mb-2",children:"Sample recipients:"}),(0,b.jsx)("div",{className:"space-y-1",children:n.sampleRecipients.slice(0,3).map((a,c)=>(0,b.jsxs)("div",{className:"flex items-center gap-2 text-sm",children:[(0,b.jsx)(m.Mail,{className:"size-3 text-muted-foreground"}),(0,b.jsx)("span",{children:a.email}),a.name&&(0,b.jsxs)("span",{className:"text-muted-foreground",children:["(",a.name,")"]})]},c))})]})]})]})}let E=[{id:"details",label:"Details",icon:k.FileText},{id:"content",label:"Content",icon:m.Mail},{id:"audience",label:"Audience",icon:o.Users},{id:"review",label:"Review",icon:p.Eye}];function F({onSave:a,onSend:c,onSchedule:f,onCancel:h,isSubmitting:k=!1}){let{builder:m,setBuilderStep:o,updateDraft:p,setValidationErrors:r,clearValidationError:s}=y(),[t,u]=(0,d.useState)(""),[w,x]=(0,d.useState)("09:00"),{currentStep:z,draft:A,validationErrors:B,editingCampaignId:C}=m,D=E.findIndex(a=>a.id===z),F=(0,d.useCallback)(a=>{let b={};switch(a){case"details":A.name.trim()||(b.name="Campaign name is required"),A.subject.trim()||(b.subject="Subject line is required");break;case"content":A.htmlContent?.trim()||A.templateId||(b.content="Email content or template is required");break;case"audience":A.audienceType||(b.audienceType="Audience type is required")}return!(Object.keys(b).length>0)||(r(b),!1)},[A,r]),K=(0,d.useCallback)(()=>{if(!F(z))return;let a=D+1;a<E.length&&o(E[a].id)},[z,D,F,o]),L=(0,d.useCallback)(()=>{let a=D-1;a>=0&&o(E[a].id)},[D,o]),M=(0,d.useCallback)(a=>{E.findIndex(b=>b.id===a)<=D&&o(a)},[D,o]),N=(0,d.useCallback)(async()=>{a&&await a(A)},[A,a]),O=(0,d.useCallback)(async()=>{F("details")&&F("content")&&F("audience")&&c&&await c(A)},[A,c,F]),P=(0,d.useCallback)(async()=>{if(!F("details")||!F("content")||!F("audience"))return;if(!t)return void r({schedule:"Please select a date"});let a=`${t}T${w}:00.000Z`;f&&await f(A,a)},[A,f,t,w,F,r]);return(0,b.jsxs)("div",{className:"flex h-full flex-col",children:[(0,b.jsx)("div",{className:"border-b px-6 py-4",children:(0,b.jsx)("div",{className:"flex items-center justify-between",children:E.map((a,c)=>{let d=a.id===z,e=c<D,f=c<=D,g=a.icon;return(0,b.jsxs)("div",{className:"flex items-center",children:[(0,b.jsxs)("button",{type:"button",className:(0,v.cn)("flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",d&&"bg-primary text-primary-foreground",e&&!d&&"bg-emerald-100 text-emerald-700",!d&&!e&&"text-muted-foreground",f&&!d&&"hover:bg-muted cursor-pointer"),onClick:()=>M(a.id),disabled:!f,children:[e&&!d?(0,b.jsx)(j.Check,{className:"size-4"}):(0,b.jsx)(g,{className:"size-4"}),(0,b.jsx)("span",{className:"hidden sm:inline",children:a.label}),(0,b.jsx)("span",{className:"sm:hidden",children:c+1})]}),c<E.length-1&&(0,b.jsx)("div",{className:(0,v.cn)("mx-2 h-px w-8 sm:w-12",c<D?"bg-emerald-500":"bg-border")})]},a.id)})})}),(0,b.jsxs)("div",{className:"flex-1 overflow-auto p-6",children:["details"===z&&(0,b.jsx)(G,{draft:A,errors:B,onChange:p,onClearError:s}),"content"===z&&(0,b.jsx)(H,{draft:A,errors:B,onChange:p,onClearError:s}),"audience"===z&&(0,b.jsx)(I,{draft:A,errors:B,onChange:p,onClearError:s}),"review"===z&&(0,b.jsx)(J,{draft:A,scheduleDate:t,scheduleTime:w,onScheduleDateChange:u,onScheduleTimeChange:x,errors:B})]}),(0,b.jsxs)("div",{className:"flex items-center justify-between border-t px-6 py-4",children:[(0,b.jsxs)("div",{className:"flex gap-2",children:[D>0&&(0,b.jsxs)(g.Button,{variant:"outline",onClick:L,disabled:k,children:[(0,b.jsx)(e.ArrowLeft,{className:"mr-2 size-4"}),"Back"]}),h&&(0,b.jsx)(g.Button,{variant:"ghost",onClick:h,disabled:k,children:"Cancel"})]}),(0,b.jsxs)("div",{className:"flex gap-2",children:[a&&(0,b.jsxs)(g.Button,{variant:"outline",onClick:N,disabled:k,children:[k?(0,b.jsx)(l.Loader2,{className:"mr-2 size-4 animate-spin"}):null,"Save Draft"]}),"review"!==z?(0,b.jsxs)(g.Button,{onClick:K,disabled:k,children:["Next",(0,b.jsx)(i,{className:"ml-2 size-4"})]}):(0,b.jsxs)("div",{className:"flex gap-2",children:[f&&t&&(0,b.jsxs)(g.Button,{variant:"secondary",onClick:P,disabled:k,children:[k?(0,b.jsx)(l.Loader2,{className:"mr-2 size-4 animate-spin"}):(0,b.jsx)(q.Calendar,{className:"mr-2 size-4"}),"Schedule"]}),c&&(0,b.jsxs)(g.Button,{onClick:O,disabled:k,children:[k?(0,b.jsx)(l.Loader2,{className:"mr-2 size-4 animate-spin"}):(0,b.jsx)(n.Send,{className:"mr-2 size-4"}),"Send Now"]})]})]})]})]})}function G({draft:a,errors:c,onChange:d,onClearError:e}){return(0,b.jsxs)("div",{className:"mx-auto max-w-2xl space-y-6",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h2",{className:"text-lg font-semibold",children:"Campaign Details"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Set up the basic information for your campaign"})]}),(0,b.jsxs)("div",{className:"space-y-4",children:[(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"name",children:"Campaign Name *"}),(0,b.jsx)(s.Input,{id:"name",placeholder:"e.g., Holiday Promotion 2024",value:a.name,onChange:a=>{d({name:a.target.value}),e("name")},className:c.name?"border-destructive":""}),c.name&&(0,b.jsx)("p",{className:"text-sm text-destructive",children:c.name}),(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Internal name for organization (not shown to recipients)"})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"subject",children:"Subject Line *"}),(0,b.jsx)(s.Input,{id:"subject",placeholder:"e.g., Special Holiday Offer Inside!",value:a.subject,onChange:a=>{d({subject:a.target.value}),e("subject")},className:c.subject?"border-destructive":""}),c.subject&&(0,b.jsx)("p",{className:"text-sm text-destructive",children:c.subject}),(0,b.jsxs)("p",{className:"text-xs text-muted-foreground",children:[a.subject.length,"/60 characters recommended"]})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"previewText",children:"Preview Text"}),(0,b.jsx)(s.Input,{id:"previewText",placeholder:"e.g., Get 20% off your next purchase...",value:a.previewText,onChange:a=>d({previewText:a.target.value})}),(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Text shown after the subject in the inbox preview"})]}),(0,b.jsxs)("div",{className:"grid gap-4 sm:grid-cols-2",children:[(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"fromName",children:"From Name"}),(0,b.jsx)(s.Input,{id:"fromName",placeholder:"Thorbis",value:a.fromName,onChange:a=>d({fromName:a.target.value})})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"fromEmail",children:"From Email"}),(0,b.jsx)(s.Input,{id:"fromEmail",type:"email",placeholder:"hello@thorbis.com",value:a.fromEmail,onChange:a=>d({fromEmail:a.target.value})})]})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"replyTo",children:"Reply-To Email"}),(0,b.jsx)(s.Input,{id:"replyTo",type:"email",placeholder:"support@thorbis.com (optional)",value:a.replyTo||"",onChange:a=>d({replyTo:a.target.value||void 0})})]})]})]})}function H({draft:a,errors:c,onChange:d,onClearError:e}){return(0,b.jsxs)("div",{className:"mx-auto max-w-3xl space-y-6",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h2",{className:"text-lg font-semibold",children:"Email Content"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Create your email content using HTML or select a template"})]}),(0,b.jsxs)("div",{className:"space-y-4",children:[(0,b.jsx)("div",{className:"rounded-lg border bg-muted/50 p-4",children:(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Template library coming soon. For now, enter HTML content directly."})}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"htmlContent",children:"HTML Content *"}),(0,b.jsx)(u.Textarea,{id:"htmlContent",placeholder:"<html><body><h1>Hello!</h1><p>Your email content here...</p></body></html>",value:a.htmlContent||"",onChange:a=>{d({htmlContent:a.target.value}),e("content")},className:(0,v.cn)("min-h-[300px] font-mono text-sm",c.content&&"border-destructive")}),c.content&&(0,b.jsx)("p",{className:"text-sm text-destructive",children:c.content})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"plainTextContent",children:"Plain Text Version (optional)"}),(0,b.jsx)(u.Textarea,{id:"plainTextContent",placeholder:"Hello! Your email content here...",value:a.plainTextContent||"",onChange:a=>d({plainTextContent:a.target.value}),className:"min-h-[150px]"}),(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Fallback for email clients that don't support HTML"})]})]})]})}function I({draft:a,errors:c,onChange:d,onClearError:e}){return(0,b.jsxs)("div",{className:"mx-auto max-w-2xl space-y-6",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h2",{className:"text-lg font-semibold",children:"Select Audience"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Choose who will receive this campaign"})]}),(0,b.jsx)(D,{value:a.audienceType,filter:a.audienceFilter,onChange:(a,b)=>{d({audienceType:a,audienceFilter:b}),e("audienceType")},error:c.audienceType})]})}function J({draft:a,scheduleDate:c,scheduleTime:d,onScheduleDateChange:e,onScheduleTimeChange:f,errors:g}){return(0,b.jsxs)("div",{className:"mx-auto max-w-2xl space-y-6",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h2",{className:"text-lg font-semibold",children:"Review & Send"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Review your campaign before sending"})]}),(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsx)("h3",{className:"font-medium",children:"Campaign Summary"}),(0,b.jsxs)("div",{className:"grid gap-4 sm:grid-cols-2",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Campaign Name"}),(0,b.jsx)("p",{className:"font-medium",children:a.name||"—"})]}),(0,b.jsxs)("div",{children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"From"}),(0,b.jsxs)("p",{className:"font-medium",children:[a.fromName," <",a.fromEmail,">"]})]}),(0,b.jsxs)("div",{className:"sm:col-span-2",children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Subject Line"}),(0,b.jsx)("p",{className:"font-medium",children:a.subject||"—"})]}),a.previewText&&(0,b.jsxs)("div",{className:"sm:col-span-2",children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Preview Text"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:a.previewText})]}),(0,b.jsxs)("div",{children:[(0,b.jsx)("p",{className:"text-xs text-muted-foreground",children:"Audience"}),(0,b.jsx)("p",{className:"font-medium",children:{all_users:"All Users",all_companies:"All Companies",waitlist:"Waitlist Subscribers",segment:"Custom Segment",custom:"Custom List"}[a.audienceType]})]})]})]}),(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsxs)("div",{className:"flex items-center gap-2",children:[(0,b.jsx)(r.Clock,{className:"size-4 text-muted-foreground"}),(0,b.jsx)("h3",{className:"font-medium",children:"Schedule (Optional)"})]}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Schedule this campaign for later, or send it immediately"}),(0,b.jsxs)("div",{className:"grid gap-4 sm:grid-cols-2",children:[(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"scheduleDate",children:"Date"}),(0,b.jsx)(s.Input,{id:"scheduleDate",type:"date",value:c,onChange:a=>e(a.target.value),min:new Date().toISOString().split("T")[0]})]}),(0,b.jsxs)("div",{className:"space-y-2",children:[(0,b.jsx)(t.Label,{htmlFor:"scheduleTime",children:"Time (UTC)"}),(0,b.jsx)(s.Input,{id:"scheduleTime",type:"time",value:d,onChange:a=>f(a.target.value)})]})]}),g.schedule&&(0,b.jsx)("p",{className:"text-sm text-destructive",children:g.schedule})]}),(0,b.jsxs)("div",{className:"rounded-lg border p-4 space-y-4",children:[(0,b.jsx)("h3",{className:"font-medium",children:"Email Preview"}),a.htmlContent?(0,b.jsx)("div",{className:"rounded border bg-white p-4",children:(0,b.jsx)("div",{className:"prose prose-sm max-w-none",dangerouslySetInnerHTML:{__html:a.htmlContent}})}):(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"No content to preview"})]})]})}var K=a.i(51813),L=(0,K.createServerReference)("400403bb450c59f3dc1281ec17ff5b405bf16f0803",K.callServer,void 0,K.findSourceMapURL,"createCampaign"),M=(0,K.createServerReference)("406d12cccc4bf8889af742b3bed928745802a14be8",K.callServer,void 0,K.findSourceMapURL,"sendCampaign"),N=(0,K.createServerReference)("60ebdc09048a2877f279f11960034ee53b27f6c669",K.callServer,void 0,K.findSourceMapURL,"scheduleCampaign");function O(){let a=(0,c.useRouter)(),[h,i]=(0,d.useState)(!1),[j,k]=(0,d.useState)(null),{openBuilder:l,closeBuilder:m}=y();(0,d.useEffect)(()=>(l(),()=>m()),[l,m]);let n=(0,d.useCallback)(async b=>{i(!0),k(null);try{let c=await L(b);if(!c.success)return void k(c.error||"Failed to create campaign");c.data&&a.push(`/dashboard/marketing/campaigns/${c.data.id}`)}catch(a){console.error("Failed to save campaign:",a),k("An unexpected error occurred")}finally{i(!1)}},[a]),o=(0,d.useCallback)(async b=>{i(!0),k(null);try{let c=await L(b);if(!c.success||!c.data)return void k(c.error||"Failed to create campaign");let d=await M(c.data.id);if(!d.success){k(d.error||"Failed to send campaign"),a.push(`/dashboard/marketing/campaigns/${c.data.id}`);return}a.push(`/dashboard/marketing/campaigns/${c.data.id}`)}catch(a){console.error("Failed to send campaign:",a),k("An unexpected error occurred")}finally{i(!1)}},[a]),p=(0,d.useCallback)(async(b,c)=>{i(!0),k(null);try{let d=await L(b);if(!d.success||!d.data)return void k(d.error||"Failed to create campaign");let e=await N(d.data.id,c);if(!e.success){k(e.error||"Failed to schedule campaign"),a.push(`/dashboard/marketing/campaigns/${d.data.id}`);return}a.push(`/dashboard/marketing/campaigns/${d.data.id}`)}catch(a){console.error("Failed to schedule campaign:",a),k("An unexpected error occurred")}finally{i(!1)}},[a]),q=(0,d.useCallback)(()=>{a.push("/dashboard/marketing/campaigns")},[a]);return(0,b.jsxs)("div",{className:"flex h-full flex-col",children:[(0,b.jsxs)("div",{className:"flex items-center gap-4 border-b px-6 py-4",children:[(0,b.jsx)(g.Button,{variant:"ghost",size:"icon",asChild:!0,children:(0,b.jsx)(f.default,{href:"/dashboard/marketing/campaigns",children:(0,b.jsx)(e.ArrowLeft,{className:"size-4"})})}),(0,b.jsxs)("div",{children:[(0,b.jsx)("h1",{className:"text-lg font-semibold",children:"Create Campaign"}),(0,b.jsx)("p",{className:"text-sm text-muted-foreground",children:"Build a new email marketing campaign"})]})]}),j&&(0,b.jsx)("div",{className:"mx-6 mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4",children:(0,b.jsx)("p",{className:"text-sm text-destructive",children:j})}),(0,b.jsx)("div",{className:"flex-1 overflow-hidden",children:(0,b.jsx)(F,{onSave:n,onSend:o,onSchedule:p,onCancel:q,isSubmitting:h})})]})}a.s(["default",()=>O],24471)}];
+module.exports = [
+	24471,
+	(a) => {
+		"use strict";
+		var b = a.i(45139),
+			c = a.i(78279),
+			d = a.i(47473),
+			e = a.i(5034),
+			f = a.i(76568);
+		a.i(56120);
+		var g = a.i(18170),
+			h = a.i(3431);
+		const i = (0, h.default)("arrow-right", [
+			["path", { d: "M5 12h14", key: "1ays0h" }],
+			["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }],
+		]);
+		var j = a.i(38446),
+			k = a.i(19895),
+			l = a.i(98803),
+			m = a.i(89815),
+			n = a.i(39044),
+			o = a.i(1482),
+			p = a.i(54729),
+			q = a.i(87969),
+			r = a.i(24126),
+			s = a.i(22054),
+			t = a.i(82012),
+			u = a.i(75892),
+			v = a.i(81938),
+			w = a.i(27228);
+		const x = {
+				name: "",
+				subject: "",
+				previewText: "",
+				audienceType: "waitlist",
+				audienceFilter: {
+					excludeUnsubscribed: !0,
+					excludeBounced: !0,
+					excludeComplained: !0,
+				},
+				fromName: "Thorbis",
+				fromEmail: "noreply@thorbis.com",
+				tags: [],
+			},
+			y = (0, w.create)((a, b) => ({
+				campaigns: [],
+				setCampaigns: (b) => a({ campaigns: b }),
+				addCampaign: (b) => a((a) => ({ campaigns: [b, ...a.campaigns] })),
+				updateCampaign: (b, c) =>
+					a((a) => ({
+						campaigns: a.campaigns.map((a) =>
+							a.id === b ? { ...a, ...c } : a,
+						),
+					})),
+				removeCampaign: (b) =>
+					a((a) => ({
+						campaigns: a.campaigns.filter((a) => a.id !== b),
+						selectedCampaignId:
+							a.selectedCampaignId === b ? null : a.selectedCampaignId,
+					})),
+				isLoading: !1,
+				setIsLoading: (b) => a({ isLoading: b }),
+				error: null,
+				setError: (b) => a({ error: b }),
+				selectedCampaignId: null,
+				setSelectedCampaignId: (b) => a({ selectedCampaignId: b }),
+				filters: {},
+				setFilters: (b) => a((a) => ({ filters: { ...a.filters, ...b } })),
+				resetFilters: () => a({ filters: {} }),
+				sortField: "createdAt",
+				sortDirection: "desc",
+				setSort: (b, c) =>
+					a((a) => ({
+						sortField: b,
+						sortDirection:
+							c ??
+							(a.sortField === b && "asc" === a.sortDirection ? "desc" : "asc"),
+					})),
+				builder: {
+					isOpen: !1,
+					currentStep: "details",
+					draft: { ...x },
+					isDirty: !1,
+					validationErrors: {},
+				},
+				openBuilder: (c) => {
+					const { campaigns: d } = b(),
+						e = c ? d.find((a) => a.id === c) : null;
+					e
+						? a({
+								builder: {
+									isOpen: !0,
+									currentStep: "details",
+									editingCampaignId: c,
+									isDirty: !1,
+									validationErrors: {},
+									draft: {
+										name: e.name,
+										subject: e.subject,
+										previewText: e.previewText || "",
+										templateId: e.templateId,
+										templateData: e.templateData,
+										htmlContent: e.htmlContent,
+										plainTextContent: e.plainTextContent,
+										audienceType: e.audienceType,
+										audienceFilter: e.audienceFilter || x.audienceFilter,
+										fromName: e.fromName,
+										fromEmail: e.fromEmail,
+										replyTo: e.replyTo,
+										tags: e.tags,
+										notes: e.notes,
+										scheduledFor: e.scheduledFor,
+									},
+								},
+							})
+						: a({
+								builder: {
+									isOpen: !0,
+									currentStep: "details",
+									draft: { ...x },
+									isDirty: !1,
+									validationErrors: {},
+								},
+							});
+				},
+				closeBuilder: () =>
+					a({
+						builder: {
+							isOpen: !1,
+							currentStep: "details",
+							draft: { ...x },
+							isDirty: !1,
+							validationErrors: {},
+						},
+					}),
+				setBuilderStep: (b) =>
+					a((a) => ({ builder: { ...a.builder, currentStep: b } })),
+				updateDraft: (b) =>
+					a((a) => ({
+						builder: {
+							...a.builder,
+							draft: { ...a.builder.draft, ...b },
+							isDirty: !0,
+						},
+					})),
+				setValidationErrors: (b) =>
+					a((a) => ({ builder: { ...a.builder, validationErrors: b } })),
+				clearValidationError: (b) =>
+					a((a) => {
+						const { [b]: c, ...d } = a.builder.validationErrors;
+						return { builder: { ...a.builder, validationErrors: d } };
+					}),
+				resetBuilder: () =>
+					a({
+						builder: {
+							isOpen: !1,
+							currentStep: "details",
+							draft: { ...x },
+							isDirty: !1,
+							validationErrors: {},
+						},
+					}),
+				audiencePreview: {
+					isLoading: !1,
+					estimatedCount: 0,
+					sampleRecipients: [],
+				},
+				setAudiencePreview: (b) =>
+					a((a) => ({ audiencePreview: { ...a.audiencePreview, ...b } })),
+				resetAudiencePreview: () =>
+					a({
+						audiencePreview: {
+							isLoading: !1,
+							estimatedCount: 0,
+							sampleRecipients: [],
+						},
+					}),
+				sendingProgress: null,
+				setSendingProgress: (b) => a({ sendingProgress: b }),
+				updateSendingProgress: (b) =>
+					a((a) => ({
+						sendingProgress: a.sendingProgress
+							? { ...a.sendingProgress, ...b }
+							: null,
+					})),
+				waitlistStats: null,
+				setWaitlistStats: (b) => a({ waitlistStats: b }),
+				activeTab: "campaigns",
+				setActiveTab: (b) => a({ activeTab: b }),
+				previewCampaignId: null,
+				setPreviewCampaignId: (b) => a({ previewCampaignId: b }),
+				deletingCampaignId: null,
+				setDeletingCampaignId: (b) => a({ deletingCampaignId: b }),
+			}));
+		var z = a.i(63758);
+		const A = (0, h.default)("funnel", [
+			[
+				"path",
+				{
+					d: "M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z",
+					key: "sc7q7i",
+				},
+			],
+		]);
+		var B = a.i(41903);
+		const C = [
+			{
+				id: "waitlist",
+				label: "Waitlist Subscribers",
+				description: "Send to everyone who signed up for the waitlist",
+				icon: r.Clock,
+				iconColor: "text-emerald-600",
+				bgColor: "bg-emerald-500/10",
+			},
+			{
+				id: "all_users",
+				label: "All Platform Users",
+				description: "Send to all registered users across all companies",
+				icon: o.Users,
+				iconColor: "text-blue-600",
+				bgColor: "bg-blue-500/10",
+			},
+			{
+				id: "all_companies",
+				label: "All Companies",
+				description: "Send to company owners/admins only",
+				icon: z.Building2,
+				iconColor: "text-purple-600",
+				bgColor: "bg-purple-500/10",
+			},
+			{
+				id: "segment",
+				label: "Custom Segment",
+				description: "Filter users or companies by specific criteria",
+				icon: A,
+				iconColor: "text-amber-600",
+				bgColor: "bg-amber-500/10",
+			},
+			{
+				id: "custom",
+				label: "Custom Email List",
+				description: "Enter specific email addresses manually",
+				icon: m.Mail,
+				iconColor: "text-gray-600",
+				bgColor: "bg-gray-500/10",
+			},
+		];
+		function D({ value: a, filter: c, onChange: e, error: f }) {
+			const [g, h] = (0, d.useState)(
+					c || {
+						excludeUnsubscribed: !0,
+						excludeBounced: !0,
+						excludeComplained: !0,
+					},
+				),
+				[i, k] = (0, d.useState)(c?.customEmails?.join("\n") || ""),
+				{ audiencePreview: n, setAudiencePreview: p } = y();
+			(0, d.useEffect)(() => {
+				p({ isLoading: !0 });
+				const b = setTimeout(() => {
+					p({
+						isLoading: !1,
+						estimatedCount:
+							{
+								waitlist: 2156,
+								all_users: 8432,
+								all_companies: 342,
+								segment: 0,
+								custom: i.split("\n").filter((a) => a.trim()).length,
+							}[a] || 0,
+						sampleRecipients: [
+							{ email: "john@example.com", name: "John Doe", type: a },
+							{ email: "jane@example.com", name: "Jane Smith", type: a },
+							{ email: "mike@example.com", name: "Mike Johnson", type: a },
+						],
+						lastUpdated: new Date().toISOString(),
+					});
+				}, 500);
+				return () => clearTimeout(b);
+			}, [a, i, p]);
+			const q = (b) => {
+				const c = { ...g, ...b };
+				h(c), e(a, c);
+			};
+			return (0, b.jsxs)("div", {
+				className: "space-y-6",
+				children: [
+					(0, b.jsx)("div", {
+						className: "grid gap-3",
+						children: C.map((c) => {
+							const d = a === c.id,
+								f = c.icon;
+							return (0, b.jsxs)(
+								"button",
+								{
+									type: "button",
+									className: (0, v.cn)(
+										"flex items-start gap-4 rounded-lg border p-4 text-left transition-colors",
+										d
+											? "border-primary bg-primary/5 ring-1 ring-primary"
+											: "hover:border-primary/50 hover:bg-muted/50",
+									),
+									onClick: () => {
+										e(c.id, g);
+									},
+									children: [
+										(0, b.jsx)("div", {
+											className: (0, v.cn)("rounded-lg p-2", c.bgColor),
+											children: (0, b.jsx)(f, {
+												className: (0, v.cn)("size-5", c.iconColor),
+											}),
+										}),
+										(0, b.jsxs)("div", {
+											className: "flex-1 min-w-0",
+											children: [
+												(0, b.jsxs)("div", {
+													className: "flex items-center gap-2",
+													children: [
+														(0, b.jsx)("p", {
+															className: "font-medium",
+															children: c.label,
+														}),
+														d &&
+															(0, b.jsx)("div", {
+																className: "rounded-full bg-primary p-0.5",
+																children: (0, b.jsx)(j.Check, {
+																	className: "size-3 text-primary-foreground",
+																}),
+															}),
+													],
+												}),
+												(0, b.jsx)("p", {
+													className: "text-sm text-muted-foreground",
+													children: c.description,
+												}),
+											],
+										}),
+									],
+								},
+								c.id,
+							);
+						}),
+					}),
+					f &&
+						(0, b.jsx)("p", {
+							className: "text-sm text-destructive",
+							children: f,
+						}),
+					"segment" === a &&
+						(0, b.jsxs)("div", {
+							className: "rounded-lg border p-4 space-y-4",
+							children: [
+								(0, b.jsx)("h4", {
+									className: "font-medium",
+									children: "Segment Filters",
+								}),
+								(0, b.jsxs)("div", {
+									className: "space-y-4",
+									children: [
+										(0, b.jsxs)("div", {
+											className: "space-y-2",
+											children: [
+												(0, b.jsx)(t.Label, {
+													className: "text-sm",
+													children: "User Roles",
+												}),
+												(0, b.jsx)("div", {
+													className: "flex flex-wrap gap-2",
+													children: [
+														"owner",
+														"admin",
+														"manager",
+														"technician",
+													].map((a) =>
+														(0, b.jsxs)(
+															"label",
+															{
+																className:
+																	"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",
+																children: [
+																	(0, b.jsx)(B.Checkbox, {
+																		checked: g.userRoles?.includes(a) || !1,
+																		onCheckedChange: (b) => {
+																			const c = g.userRoles || [],
+																				d = b
+																					? [...c, a]
+																					: c.filter((b) => b !== a);
+																			q({
+																				userRoles: d.length > 0 ? d : void 0,
+																			});
+																		},
+																	}),
+																	(0, b.jsx)("span", {
+																		className: "capitalize",
+																		children: a,
+																	}),
+																],
+															},
+															a,
+														),
+													),
+												}),
+											],
+										}),
+										(0, b.jsxs)("div", {
+											className: "space-y-2",
+											children: [
+												(0, b.jsx)(t.Label, {
+													className: "text-sm",
+													children: "Company Plans",
+												}),
+												(0, b.jsx)("div", {
+													className: "flex flex-wrap gap-2",
+													children: [
+														"starter",
+														"professional",
+														"enterprise",
+													].map((a) =>
+														(0, b.jsxs)(
+															"label",
+															{
+																className:
+																	"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",
+																children: [
+																	(0, b.jsx)(B.Checkbox, {
+																		checked: g.companyPlans?.includes(a) || !1,
+																		onCheckedChange: (b) => {
+																			const c = g.companyPlans || [],
+																				d = b
+																					? [...c, a]
+																					: c.filter((b) => b !== a);
+																			q({
+																				companyPlans: d.length > 0 ? d : void 0,
+																			});
+																		},
+																	}),
+																	(0, b.jsx)("span", {
+																		className: "capitalize",
+																		children: a,
+																	}),
+																],
+															},
+															a,
+														),
+													),
+												}),
+											],
+										}),
+										(0, b.jsxs)("div", {
+											className: "space-y-2",
+											children: [
+												(0, b.jsx)(t.Label, {
+													className: "text-sm",
+													children: "Company Status",
+												}),
+												(0, b.jsx)("div", {
+													className: "flex flex-wrap gap-2",
+													children: ["active", "trial", "suspended"].map((a) =>
+														(0, b.jsxs)(
+															"label",
+															{
+																className:
+																	"flex items-center gap-2 rounded border px-3 py-1.5 text-sm cursor-pointer hover:bg-muted",
+																children: [
+																	(0, b.jsx)(B.Checkbox, {
+																		checked:
+																			g.companyStatuses?.includes(a) || !1,
+																		onCheckedChange: (b) => {
+																			const c = g.companyStatuses || [],
+																				d = b
+																					? [...c, a]
+																					: c.filter((b) => b !== a);
+																			q({
+																				companyStatuses:
+																					d.length > 0 ? d : void 0,
+																			});
+																		},
+																	}),
+																	(0, b.jsx)("span", {
+																		className: "capitalize",
+																		children: a,
+																	}),
+																],
+															},
+															a,
+														),
+													),
+												}),
+											],
+										}),
+									],
+								}),
+							],
+						}),
+					"custom" === a &&
+						(0, b.jsxs)("div", {
+							className: "rounded-lg border p-4 space-y-4",
+							children: [
+								(0, b.jsx)("h4", {
+									className: "font-medium",
+									children: "Custom Email List",
+								}),
+								(0, b.jsx)("p", {
+									className: "text-sm text-muted-foreground",
+									children: "Enter email addresses, one per line",
+								}),
+								(0, b.jsx)("textarea", {
+									className:
+										"w-full min-h-[150px] rounded-md border bg-background px-3 py-2 text-sm font-mono",
+									placeholder:
+										"john@example.com\njane@example.com\nmike@example.com",
+									value: i,
+									onChange: (a) => {
+										var b;
+										k((b = a.target.value)),
+											q({
+												customEmails: b
+													.split("\n")
+													.map((a) => a.trim())
+													.filter((a) => a && a.includes("@")),
+											});
+									},
+								}),
+							],
+						}),
+					(0, b.jsxs)("div", {
+						className: "rounded-lg border p-4 space-y-4",
+						children: [
+							(0, b.jsx)("h4", {
+								className: "font-medium",
+								children: "Exclusions",
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-3",
+								children: [
+									(0, b.jsxs)("label", {
+										className: "flex items-center gap-2 cursor-pointer",
+										children: [
+											(0, b.jsx)(B.Checkbox, {
+												checked: !1 !== g.excludeUnsubscribed,
+												onCheckedChange: (a) =>
+													q({ excludeUnsubscribed: !0 === a }),
+											}),
+											(0, b.jsx)("span", {
+												className: "text-sm",
+												children: "Exclude unsubscribed contacts",
+											}),
+										],
+									}),
+									(0, b.jsxs)("label", {
+										className: "flex items-center gap-2 cursor-pointer",
+										children: [
+											(0, b.jsx)(B.Checkbox, {
+												checked: !1 !== g.excludeBounced,
+												onCheckedChange: (a) => q({ excludeBounced: !0 === a }),
+											}),
+											(0, b.jsx)("span", {
+												className: "text-sm",
+												children: "Exclude bounced emails",
+											}),
+										],
+									}),
+									(0, b.jsxs)("label", {
+										className: "flex items-center gap-2 cursor-pointer",
+										children: [
+											(0, b.jsx)(B.Checkbox, {
+												checked: !1 !== g.excludeComplained,
+												onCheckedChange: (a) =>
+													q({ excludeComplained: !0 === a }),
+											}),
+											(0, b.jsx)("span", {
+												className: "text-sm",
+												children: "Exclude spam complaints",
+											}),
+										],
+									}),
+								],
+							}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "rounded-lg border bg-muted/30 p-4",
+						children: [
+							(0, b.jsxs)("div", {
+								className: "flex items-center justify-between",
+								children: [
+									(0, b.jsxs)("div", {
+										className: "flex items-center gap-2",
+										children: [
+											(0, b.jsx)(o.Users, {
+												className: "size-4 text-muted-foreground",
+											}),
+											(0, b.jsx)("span", {
+												className: "text-sm font-medium",
+												children: "Estimated Recipients",
+											}),
+										],
+									}),
+									n.isLoading
+										? (0, b.jsx)(l.Loader2, {
+												className: "size-4 animate-spin text-muted-foreground",
+											})
+										: (0, b.jsx)("span", {
+												className: "text-lg font-bold",
+												children: n.estimatedCount.toLocaleString(),
+											}),
+								],
+							}),
+							!n.isLoading &&
+								n.sampleRecipients.length > 0 &&
+								(0, b.jsxs)("div", {
+									className: "mt-3 pt-3 border-t",
+									children: [
+										(0, b.jsx)("p", {
+											className: "text-xs text-muted-foreground mb-2",
+											children: "Sample recipients:",
+										}),
+										(0, b.jsx)("div", {
+											className: "space-y-1",
+											children: n.sampleRecipients
+												.slice(0, 3)
+												.map((a, c) =>
+													(0, b.jsxs)(
+														"div",
+														{
+															className: "flex items-center gap-2 text-sm",
+															children: [
+																(0, b.jsx)(m.Mail, {
+																	className: "size-3 text-muted-foreground",
+																}),
+																(0, b.jsx)("span", { children: a.email }),
+																a.name &&
+																	(0, b.jsxs)("span", {
+																		className: "text-muted-foreground",
+																		children: ["(", a.name, ")"],
+																	}),
+															],
+														},
+														c,
+													),
+												),
+										}),
+									],
+								}),
+						],
+					}),
+				],
+			});
+		}
+		const E = [
+			{ id: "details", label: "Details", icon: k.FileText },
+			{ id: "content", label: "Content", icon: m.Mail },
+			{ id: "audience", label: "Audience", icon: o.Users },
+			{ id: "review", label: "Review", icon: p.Eye },
+		];
+		function F({
+			onSave: a,
+			onSend: c,
+			onSchedule: f,
+			onCancel: h,
+			isSubmitting: k = !1,
+		}) {
+			const {
+					builder: m,
+					setBuilderStep: o,
+					updateDraft: p,
+					setValidationErrors: r,
+					clearValidationError: s,
+				} = y(),
+				[t, u] = (0, d.useState)(""),
+				[w, x] = (0, d.useState)("09:00"),
+				{
+					currentStep: z,
+					draft: A,
+					validationErrors: B,
+					editingCampaignId: C,
+				} = m,
+				D = E.findIndex((a) => a.id === z),
+				F = (0, d.useCallback)(
+					(a) => {
+						const b = {};
+						switch (a) {
+							case "details":
+								A.name.trim() || (b.name = "Campaign name is required"),
+									A.subject.trim() || (b.subject = "Subject line is required");
+								break;
+							case "content":
+								A.htmlContent?.trim() ||
+									A.templateId ||
+									(b.content = "Email content or template is required");
+								break;
+							case "audience":
+								A.audienceType ||
+									(b.audienceType = "Audience type is required");
+						}
+						return !(Object.keys(b).length > 0) || (r(b), !1);
+					},
+					[A, r],
+				),
+				K = (0, d.useCallback)(() => {
+					if (!F(z)) return;
+					const a = D + 1;
+					a < E.length && o(E[a].id);
+				}, [z, D, F, o]),
+				L = (0, d.useCallback)(() => {
+					const a = D - 1;
+					a >= 0 && o(E[a].id);
+				}, [D, o]),
+				M = (0, d.useCallback)(
+					(a) => {
+						E.findIndex((b) => b.id === a) <= D && o(a);
+					},
+					[D, o],
+				),
+				N = (0, d.useCallback)(async () => {
+					a && (await a(A));
+				}, [A, a]),
+				O = (0, d.useCallback)(async () => {
+					F("details") && F("content") && F("audience") && c && (await c(A));
+				}, [A, c, F]),
+				P = (0, d.useCallback)(async () => {
+					if (!F("details") || !F("content") || !F("audience")) return;
+					if (!t) return void r({ schedule: "Please select a date" });
+					const a = `${t}T${w}:00.000Z`;
+					f && (await f(A, a));
+				}, [A, f, t, w, F, r]);
+			return (0, b.jsxs)("div", {
+				className: "flex h-full flex-col",
+				children: [
+					(0, b.jsx)("div", {
+						className: "border-b px-6 py-4",
+						children: (0, b.jsx)("div", {
+							className: "flex items-center justify-between",
+							children: E.map((a, c) => {
+								const d = a.id === z,
+									e = c < D,
+									f = c <= D,
+									g = a.icon;
+								return (0, b.jsxs)(
+									"div",
+									{
+										className: "flex items-center",
+										children: [
+											(0, b.jsxs)("button", {
+												type: "button",
+												className: (0, v.cn)(
+													"flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+													d && "bg-primary text-primary-foreground",
+													e && !d && "bg-emerald-100 text-emerald-700",
+													!d && !e && "text-muted-foreground",
+													f && !d && "hover:bg-muted cursor-pointer",
+												),
+												onClick: () => M(a.id),
+												disabled: !f,
+												children: [
+													e && !d
+														? (0, b.jsx)(j.Check, { className: "size-4" })
+														: (0, b.jsx)(g, { className: "size-4" }),
+													(0, b.jsx)("span", {
+														className: "hidden sm:inline",
+														children: a.label,
+													}),
+													(0, b.jsx)("span", {
+														className: "sm:hidden",
+														children: c + 1,
+													}),
+												],
+											}),
+											c < E.length - 1 &&
+												(0, b.jsx)("div", {
+													className: (0, v.cn)(
+														"mx-2 h-px w-8 sm:w-12",
+														c < D ? "bg-emerald-500" : "bg-border",
+													),
+												}),
+										],
+									},
+									a.id,
+								);
+							}),
+						}),
+					}),
+					(0, b.jsxs)("div", {
+						className: "flex-1 overflow-auto p-6",
+						children: [
+							"details" === z &&
+								(0, b.jsx)(G, {
+									draft: A,
+									errors: B,
+									onChange: p,
+									onClearError: s,
+								}),
+							"content" === z &&
+								(0, b.jsx)(H, {
+									draft: A,
+									errors: B,
+									onChange: p,
+									onClearError: s,
+								}),
+							"audience" === z &&
+								(0, b.jsx)(I, {
+									draft: A,
+									errors: B,
+									onChange: p,
+									onClearError: s,
+								}),
+							"review" === z &&
+								(0, b.jsx)(J, {
+									draft: A,
+									scheduleDate: t,
+									scheduleTime: w,
+									onScheduleDateChange: u,
+									onScheduleTimeChange: x,
+									errors: B,
+								}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "flex items-center justify-between border-t px-6 py-4",
+						children: [
+							(0, b.jsxs)("div", {
+								className: "flex gap-2",
+								children: [
+									D > 0 &&
+										(0, b.jsxs)(g.Button, {
+											variant: "outline",
+											onClick: L,
+											disabled: k,
+											children: [
+												(0, b.jsx)(e.ArrowLeft, { className: "mr-2 size-4" }),
+												"Back",
+											],
+										}),
+									h &&
+										(0, b.jsx)(g.Button, {
+											variant: "ghost",
+											onClick: h,
+											disabled: k,
+											children: "Cancel",
+										}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "flex gap-2",
+								children: [
+									a &&
+										(0, b.jsxs)(g.Button, {
+											variant: "outline",
+											onClick: N,
+											disabled: k,
+											children: [
+												k
+													? (0, b.jsx)(l.Loader2, {
+															className: "mr-2 size-4 animate-spin",
+														})
+													: null,
+												"Save Draft",
+											],
+										}),
+									"review" !== z
+										? (0, b.jsxs)(g.Button, {
+												onClick: K,
+												disabled: k,
+												children: [
+													"Next",
+													(0, b.jsx)(i, { className: "ml-2 size-4" }),
+												],
+											})
+										: (0, b.jsxs)("div", {
+												className: "flex gap-2",
+												children: [
+													f &&
+														t &&
+														(0, b.jsxs)(g.Button, {
+															variant: "secondary",
+															onClick: P,
+															disabled: k,
+															children: [
+																k
+																	? (0, b.jsx)(l.Loader2, {
+																			className: "mr-2 size-4 animate-spin",
+																		})
+																	: (0, b.jsx)(q.Calendar, {
+																			className: "mr-2 size-4",
+																		}),
+																"Schedule",
+															],
+														}),
+													c &&
+														(0, b.jsxs)(g.Button, {
+															onClick: O,
+															disabled: k,
+															children: [
+																k
+																	? (0, b.jsx)(l.Loader2, {
+																			className: "mr-2 size-4 animate-spin",
+																		})
+																	: (0, b.jsx)(n.Send, {
+																			className: "mr-2 size-4",
+																		}),
+																"Send Now",
+															],
+														}),
+												],
+											}),
+								],
+							}),
+						],
+					}),
+				],
+			});
+		}
+		function G({ draft: a, errors: c, onChange: d, onClearError: e }) {
+			return (0, b.jsxs)("div", {
+				className: "mx-auto max-w-2xl space-y-6",
+				children: [
+					(0, b.jsxs)("div", {
+						children: [
+							(0, b.jsx)("h2", {
+								className: "text-lg font-semibold",
+								children: "Campaign Details",
+							}),
+							(0, b.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children: "Set up the basic information for your campaign",
+							}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "space-y-4",
+						children: [
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "name",
+										children: "Campaign Name *",
+									}),
+									(0, b.jsx)(s.Input, {
+										id: "name",
+										placeholder: "e.g., Holiday Promotion 2024",
+										value: a.name,
+										onChange: (a) => {
+											d({ name: a.target.value }), e("name");
+										},
+										className: c.name ? "border-destructive" : "",
+									}),
+									c.name &&
+										(0, b.jsx)("p", {
+											className: "text-sm text-destructive",
+											children: c.name,
+										}),
+									(0, b.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children:
+											"Internal name for organization (not shown to recipients)",
+									}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "subject",
+										children: "Subject Line *",
+									}),
+									(0, b.jsx)(s.Input, {
+										id: "subject",
+										placeholder: "e.g., Special Holiday Offer Inside!",
+										value: a.subject,
+										onChange: (a) => {
+											d({ subject: a.target.value }), e("subject");
+										},
+										className: c.subject ? "border-destructive" : "",
+									}),
+									c.subject &&
+										(0, b.jsx)("p", {
+											className: "text-sm text-destructive",
+											children: c.subject,
+										}),
+									(0, b.jsxs)("p", {
+										className: "text-xs text-muted-foreground",
+										children: [a.subject.length, "/60 characters recommended"],
+									}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "previewText",
+										children: "Preview Text",
+									}),
+									(0, b.jsx)(s.Input, {
+										id: "previewText",
+										placeholder: "e.g., Get 20% off your next purchase...",
+										value: a.previewText,
+										onChange: (a) => d({ previewText: a.target.value }),
+									}),
+									(0, b.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children:
+											"Text shown after the subject in the inbox preview",
+									}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "grid gap-4 sm:grid-cols-2",
+								children: [
+									(0, b.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											(0, b.jsx)(t.Label, {
+												htmlFor: "fromName",
+												children: "From Name",
+											}),
+											(0, b.jsx)(s.Input, {
+												id: "fromName",
+												placeholder: "Thorbis",
+												value: a.fromName,
+												onChange: (a) => d({ fromName: a.target.value }),
+											}),
+										],
+									}),
+									(0, b.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											(0, b.jsx)(t.Label, {
+												htmlFor: "fromEmail",
+												children: "From Email",
+											}),
+											(0, b.jsx)(s.Input, {
+												id: "fromEmail",
+												type: "email",
+												placeholder: "hello@thorbis.com",
+												value: a.fromEmail,
+												onChange: (a) => d({ fromEmail: a.target.value }),
+											}),
+										],
+									}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "replyTo",
+										children: "Reply-To Email",
+									}),
+									(0, b.jsx)(s.Input, {
+										id: "replyTo",
+										type: "email",
+										placeholder: "support@thorbis.com (optional)",
+										value: a.replyTo || "",
+										onChange: (a) => d({ replyTo: a.target.value || void 0 }),
+									}),
+								],
+							}),
+						],
+					}),
+				],
+			});
+		}
+		function H({ draft: a, errors: c, onChange: d, onClearError: e }) {
+			return (0, b.jsxs)("div", {
+				className: "mx-auto max-w-3xl space-y-6",
+				children: [
+					(0, b.jsxs)("div", {
+						children: [
+							(0, b.jsx)("h2", {
+								className: "text-lg font-semibold",
+								children: "Email Content",
+							}),
+							(0, b.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children:
+									"Create your email content using HTML or select a template",
+							}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "space-y-4",
+						children: [
+							(0, b.jsx)("div", {
+								className: "rounded-lg border bg-muted/50 p-4",
+								children: (0, b.jsx)("p", {
+									className: "text-sm text-muted-foreground",
+									children:
+										"Template library coming soon. For now, enter HTML content directly.",
+								}),
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "htmlContent",
+										children: "HTML Content *",
+									}),
+									(0, b.jsx)(u.Textarea, {
+										id: "htmlContent",
+										placeholder:
+											"<html><body><h1>Hello!</h1><p>Your email content here...</p></body></html>",
+										value: a.htmlContent || "",
+										onChange: (a) => {
+											d({ htmlContent: a.target.value }), e("content");
+										},
+										className: (0, v.cn)(
+											"min-h-[300px] font-mono text-sm",
+											c.content && "border-destructive",
+										),
+									}),
+									c.content &&
+										(0, b.jsx)("p", {
+											className: "text-sm text-destructive",
+											children: c.content,
+										}),
+								],
+							}),
+							(0, b.jsxs)("div", {
+								className: "space-y-2",
+								children: [
+									(0, b.jsx)(t.Label, {
+										htmlFor: "plainTextContent",
+										children: "Plain Text Version (optional)",
+									}),
+									(0, b.jsx)(u.Textarea, {
+										id: "plainTextContent",
+										placeholder: "Hello! Your email content here...",
+										value: a.plainTextContent || "",
+										onChange: (a) => d({ plainTextContent: a.target.value }),
+										className: "min-h-[150px]",
+									}),
+									(0, b.jsx)("p", {
+										className: "text-xs text-muted-foreground",
+										children:
+											"Fallback for email clients that don't support HTML",
+									}),
+								],
+							}),
+						],
+					}),
+				],
+			});
+		}
+		function I({ draft: a, errors: c, onChange: d, onClearError: e }) {
+			return (0, b.jsxs)("div", {
+				className: "mx-auto max-w-2xl space-y-6",
+				children: [
+					(0, b.jsxs)("div", {
+						children: [
+							(0, b.jsx)("h2", {
+								className: "text-lg font-semibold",
+								children: "Select Audience",
+							}),
+							(0, b.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children: "Choose who will receive this campaign",
+							}),
+						],
+					}),
+					(0, b.jsx)(D, {
+						value: a.audienceType,
+						filter: a.audienceFilter,
+						onChange: (a, b) => {
+							d({ audienceType: a, audienceFilter: b }), e("audienceType");
+						},
+						error: c.audienceType,
+					}),
+				],
+			});
+		}
+		function J({
+			draft: a,
+			scheduleDate: c,
+			scheduleTime: d,
+			onScheduleDateChange: e,
+			onScheduleTimeChange: f,
+			errors: g,
+		}) {
+			return (0, b.jsxs)("div", {
+				className: "mx-auto max-w-2xl space-y-6",
+				children: [
+					(0, b.jsxs)("div", {
+						children: [
+							(0, b.jsx)("h2", {
+								className: "text-lg font-semibold",
+								children: "Review & Send",
+							}),
+							(0, b.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children: "Review your campaign before sending",
+							}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "rounded-lg border p-4 space-y-4",
+						children: [
+							(0, b.jsx)("h3", {
+								className: "font-medium",
+								children: "Campaign Summary",
+							}),
+							(0, b.jsxs)("div", {
+								className: "grid gap-4 sm:grid-cols-2",
+								children: [
+									(0, b.jsxs)("div", {
+										children: [
+											(0, b.jsx)("p", {
+												className: "text-xs text-muted-foreground",
+												children: "Campaign Name",
+											}),
+											(0, b.jsx)("p", {
+												className: "font-medium",
+												children: a.name || "—",
+											}),
+										],
+									}),
+									(0, b.jsxs)("div", {
+										children: [
+											(0, b.jsx)("p", {
+												className: "text-xs text-muted-foreground",
+												children: "From",
+											}),
+											(0, b.jsxs)("p", {
+												className: "font-medium",
+												children: [a.fromName, " <", a.fromEmail, ">"],
+											}),
+										],
+									}),
+									(0, b.jsxs)("div", {
+										className: "sm:col-span-2",
+										children: [
+											(0, b.jsx)("p", {
+												className: "text-xs text-muted-foreground",
+												children: "Subject Line",
+											}),
+											(0, b.jsx)("p", {
+												className: "font-medium",
+												children: a.subject || "—",
+											}),
+										],
+									}),
+									a.previewText &&
+										(0, b.jsxs)("div", {
+											className: "sm:col-span-2",
+											children: [
+												(0, b.jsx)("p", {
+													className: "text-xs text-muted-foreground",
+													children: "Preview Text",
+												}),
+												(0, b.jsx)("p", {
+													className: "text-sm text-muted-foreground",
+													children: a.previewText,
+												}),
+											],
+										}),
+									(0, b.jsxs)("div", {
+										children: [
+											(0, b.jsx)("p", {
+												className: "text-xs text-muted-foreground",
+												children: "Audience",
+											}),
+											(0, b.jsx)("p", {
+												className: "font-medium",
+												children: {
+													all_users: "All Users",
+													all_companies: "All Companies",
+													waitlist: "Waitlist Subscribers",
+													segment: "Custom Segment",
+													custom: "Custom List",
+												}[a.audienceType],
+											}),
+										],
+									}),
+								],
+							}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "rounded-lg border p-4 space-y-4",
+						children: [
+							(0, b.jsxs)("div", {
+								className: "flex items-center gap-2",
+								children: [
+									(0, b.jsx)(r.Clock, {
+										className: "size-4 text-muted-foreground",
+									}),
+									(0, b.jsx)("h3", {
+										className: "font-medium",
+										children: "Schedule (Optional)",
+									}),
+								],
+							}),
+							(0, b.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children:
+									"Schedule this campaign for later, or send it immediately",
+							}),
+							(0, b.jsxs)("div", {
+								className: "grid gap-4 sm:grid-cols-2",
+								children: [
+									(0, b.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											(0, b.jsx)(t.Label, {
+												htmlFor: "scheduleDate",
+												children: "Date",
+											}),
+											(0, b.jsx)(s.Input, {
+												id: "scheduleDate",
+												type: "date",
+												value: c,
+												onChange: (a) => e(a.target.value),
+												min: new Date().toISOString().split("T")[0],
+											}),
+										],
+									}),
+									(0, b.jsxs)("div", {
+										className: "space-y-2",
+										children: [
+											(0, b.jsx)(t.Label, {
+												htmlFor: "scheduleTime",
+												children: "Time (UTC)",
+											}),
+											(0, b.jsx)(s.Input, {
+												id: "scheduleTime",
+												type: "time",
+												value: d,
+												onChange: (a) => f(a.target.value),
+											}),
+										],
+									}),
+								],
+							}),
+							g.schedule &&
+								(0, b.jsx)("p", {
+									className: "text-sm text-destructive",
+									children: g.schedule,
+								}),
+						],
+					}),
+					(0, b.jsxs)("div", {
+						className: "rounded-lg border p-4 space-y-4",
+						children: [
+							(0, b.jsx)("h3", {
+								className: "font-medium",
+								children: "Email Preview",
+							}),
+							a.htmlContent
+								? (0, b.jsx)("div", {
+										className: "rounded border bg-white p-4",
+										children: (0, b.jsx)("div", {
+											className: "prose prose-sm max-w-none",
+											dangerouslySetInnerHTML: { __html: a.htmlContent },
+										}),
+									})
+								: (0, b.jsx)("p", {
+										className: "text-sm text-muted-foreground",
+										children: "No content to preview",
+									}),
+						],
+					}),
+				],
+			});
+		}
+		var K = a.i(51813),
+			L = (0, K.createServerReference)(
+				"400403bb450c59f3dc1281ec17ff5b405bf16f0803",
+				K.callServer,
+				void 0,
+				K.findSourceMapURL,
+				"createCampaign",
+			),
+			M = (0, K.createServerReference)(
+				"406d12cccc4bf8889af742b3bed928745802a14be8",
+				K.callServer,
+				void 0,
+				K.findSourceMapURL,
+				"sendCampaign",
+			),
+			N = (0, K.createServerReference)(
+				"60ebdc09048a2877f279f11960034ee53b27f6c669",
+				K.callServer,
+				void 0,
+				K.findSourceMapURL,
+				"scheduleCampaign",
+			);
+		function O() {
+			const a = (0, c.useRouter)(),
+				[h, i] = (0, d.useState)(!1),
+				[j, k] = (0, d.useState)(null),
+				{ openBuilder: l, closeBuilder: m } = y();
+			(0, d.useEffect)(() => (l(), () => m()), [l, m]);
+			const n = (0, d.useCallback)(
+					async (b) => {
+						i(!0), k(null);
+						try {
+							const c = await L(b);
+							if (!c.success)
+								return void k(c.error || "Failed to create campaign");
+							c.data && a.push(`/dashboard/marketing/campaigns/${c.data.id}`);
+						} catch (a) {
+							console.error("Failed to save campaign:", a),
+								k("An unexpected error occurred");
+						} finally {
+							i(!1);
+						}
+					},
+					[a],
+				),
+				o = (0, d.useCallback)(
+					async (b) => {
+						i(!0), k(null);
+						try {
+							const c = await L(b);
+							if (!c.success || !c.data)
+								return void k(c.error || "Failed to create campaign");
+							const d = await M(c.data.id);
+							if (!d.success) {
+								k(d.error || "Failed to send campaign"),
+									a.push(`/dashboard/marketing/campaigns/${c.data.id}`);
+								return;
+							}
+							a.push(`/dashboard/marketing/campaigns/${c.data.id}`);
+						} catch (a) {
+							console.error("Failed to send campaign:", a),
+								k("An unexpected error occurred");
+						} finally {
+							i(!1);
+						}
+					},
+					[a],
+				),
+				p = (0, d.useCallback)(
+					async (b, c) => {
+						i(!0), k(null);
+						try {
+							const d = await L(b);
+							if (!d.success || !d.data)
+								return void k(d.error || "Failed to create campaign");
+							const e = await N(d.data.id, c);
+							if (!e.success) {
+								k(e.error || "Failed to schedule campaign"),
+									a.push(`/dashboard/marketing/campaigns/${d.data.id}`);
+								return;
+							}
+							a.push(`/dashboard/marketing/campaigns/${d.data.id}`);
+						} catch (a) {
+							console.error("Failed to schedule campaign:", a),
+								k("An unexpected error occurred");
+						} finally {
+							i(!1);
+						}
+					},
+					[a],
+				),
+				q = (0, d.useCallback)(() => {
+					a.push("/dashboard/marketing/campaigns");
+				}, [a]);
+			return (0, b.jsxs)("div", {
+				className: "flex h-full flex-col",
+				children: [
+					(0, b.jsxs)("div", {
+						className: "flex items-center gap-4 border-b px-6 py-4",
+						children: [
+							(0, b.jsx)(g.Button, {
+								variant: "ghost",
+								size: "icon",
+								asChild: !0,
+								children: (0, b.jsx)(f.default, {
+									href: "/dashboard/marketing/campaigns",
+									children: (0, b.jsx)(e.ArrowLeft, { className: "size-4" }),
+								}),
+							}),
+							(0, b.jsxs)("div", {
+								children: [
+									(0, b.jsx)("h1", {
+										className: "text-lg font-semibold",
+										children: "Create Campaign",
+									}),
+									(0, b.jsx)("p", {
+										className: "text-sm text-muted-foreground",
+										children: "Build a new email marketing campaign",
+									}),
+								],
+							}),
+						],
+					}),
+					j &&
+						(0, b.jsx)("div", {
+							className:
+								"mx-6 mt-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4",
+							children: (0, b.jsx)("p", {
+								className: "text-sm text-destructive",
+								children: j,
+							}),
+						}),
+					(0, b.jsx)("div", {
+						className: "flex-1 overflow-hidden",
+						children: (0, b.jsx)(F, {
+							onSave: n,
+							onSend: o,
+							onSchedule: p,
+							onCancel: q,
+							isSubmitting: h,
+						}),
+					}),
+				],
+			});
+		}
+		a.s(["default", () => O], 24471);
+	},
+];
 
 //# sourceMappingURL=0da96_admin_src_app_%28dashboard%29_dashboard_marketing_campaigns_new_page_tsx_95a8f049._.js.map

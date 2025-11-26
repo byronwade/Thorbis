@@ -1,50 +1,50 @@
 {
-  "node": {
-    "400403bb450c59f3dc1281ec17ff5b405bf16f0803": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
-          "moduleId": 98692,
-          "async": false,
-          "exportedName": "createCampaign",
-          "filename": "apps/admin/src/actions/campaigns.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
-      },
-      "exportedName": "createCampaign",
-      "filename": "apps/admin/src/actions/campaigns.ts"
-    },
-    "406d12cccc4bf8889af742b3bed928745802a14be8": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
-          "moduleId": 98692,
-          "async": false,
-          "exportedName": "sendCampaign",
-          "filename": "apps/admin/src/actions/campaigns.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
-      },
-      "exportedName": "sendCampaign",
-      "filename": "apps/admin/src/actions/campaigns.ts"
-    },
-    "60ebdc09048a2877f279f11960034ee53b27f6c669": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
-          "moduleId": 98692,
-          "async": false,
-          "exportedName": "scheduleCampaign",
-          "filename": "apps/admin/src/actions/campaigns.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
-      },
-      "exportedName": "scheduleCampaign",
-      "filename": "apps/admin/src/actions/campaigns.ts"
-    }
-  },
-  "edge": {}
+	"node": {
+		"400403bb450c59f3dc1281ec17ff5b405bf16f0803": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": 98692,
+					"async": false,
+					"exportedName": "createCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "createCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		},
+		"406d12cccc4bf8889af742b3bed928745802a14be8": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": 98692,
+					"async": false,
+					"exportedName": "sendCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "sendCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		},
+		"60ebdc09048a2877f279f11960034ee53b27f6c669": {
+			"workers": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": {
+					"moduleId": 98692,
+					"async": false,
+					"exportedName": "scheduleCampaign",
+					"filename": "apps/admin/src/actions/campaigns.ts"
+				}
+			},
+			"layer": {
+				"app/(dashboard)/dashboard/marketing/campaigns/new/page": "action-browser"
+			},
+			"exportedName": "scheduleCampaign",
+			"filename": "apps/admin/src/actions/campaigns.ts"
+		}
+	},
+	"edge": {}
 }
