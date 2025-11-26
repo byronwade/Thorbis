@@ -104,11 +104,14 @@
 		"workflow": "4.0.1-beta.13",
 		"xlsx": "^0.18.5",
 		"zod": "^4.1.12",
-		"zustand": "^5.0.8"
+		"zustand": "^5.0.8",
+		"@tailwindcss/postcss": "^4.1.17",
+		"postcss": "^8.4.49",
+		"tailwindcss": "^4.1.16",
+		"prettier": "^3.6.2"
 	},
 	"devDependencies": {
 		"@next/bundle-analyzer": "16.0.1",
-		"@tailwindcss/postcss": "^4.1.17",
 		"@types/canvas-confetti": "^1.9.0",
 		"@types/google.maps": "^3.58.1",
 		"@types/node": "^20.19.24",
@@ -116,9 +119,7 @@
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
 		"eslint": "^9.39.1",
-		"postcss": "^8.4.49",
 		"rimraf": "^6.1.0",
-		"tailwindcss": "^4.1.16",
 		"typescript": "^5.9.3"
 	}
 }
