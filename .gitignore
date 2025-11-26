@@ -2,6 +2,10 @@
 
 # dependencies
 /node_modules
+# Monorepo: ignore node_modules in all apps and packages
+apps/*/node_modules/
+packages/*/node_modules/
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -21,7 +25,6 @@ apps/*/.next/
 apps/*/out/
 # Turborepo
 .turbo/
-apps/*/.turbo/
 
 # production
 /build
