@@ -10478,6 +10478,10 @@
     padding-right: calc(var(--spacing) * 11);
   }
 
+  .pr-12 {
+    padding-right: calc(var(--spacing) * 12);
+  }
+
   .pr-16 {
     padding-right: calc(var(--spacing) * 16);
   }
@@ -15043,6 +15047,10 @@
     }
   }
 
+  .focus\:bg-accent:focus {
+    background-color: hsl(var(--accent));
+  }
+
   .focus\:bg-primary:focus {
     background-color: hsl(var(--primary));
   }
@@ -15053,6 +15061,10 @@
 
   .focus\:py-2:focus {
     padding-block: calc(var(--spacing) * 2);
+  }
+
+  .focus\:text-accent-foreground:focus {
+    color: hsl(var(--accent-foreground));
   }
 
   .focus\:text-destructive:focus {

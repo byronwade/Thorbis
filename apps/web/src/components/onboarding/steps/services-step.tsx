@@ -24,7 +24,8 @@ import {
 	Trash2,
 	Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { AIInputField } from "@/components/ai/ai-field-wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -466,12 +467,21 @@ export function ServicesStep() {
 							className="flex items-center gap-3 rounded-lg bg-muted/40 p-3"
 						>
 							<div className="flex-1 grid gap-2 sm:grid-cols-3">
-								<Input
+								<AIInputField
 									placeholder="Service name"
 									value={service.name}
-									onChange={(e) =>
-										updateService(service.id, { name: e.target.value })
+									onChange={(value) =>
+										updateService(service.id, { name: value })
 									}
+									fieldType="price-book-name"
+									context={{
+										category: industryLabel,
+										existingItems: data.services
+											.filter((s) => s.id !== service.id && s.name)
+											.map((s) => s.name),
+									}}
+									enableAI
+									buttonPosition="end"
 									className="h-9"
 								/>
 								<div className="relative">

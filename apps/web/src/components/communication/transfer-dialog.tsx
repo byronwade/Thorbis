@@ -14,6 +14,8 @@
 import {
 	ArrowRight,
 	Loader2,
+	Mail,
+	MessageSquare,
 	Phone,
 	Search,
 	User,
@@ -213,12 +215,46 @@ export function TransferDialog({
 
 	const getTypeIcon = () => {
 		switch (communication.type) {
+			case "email":
+				return <Mail className="h-4 w-4" />;
+			case "sms":
+				return <MessageSquare className="h-4 w-4" />;
 			case "call":
 				return <Phone className="h-4 w-4" />;
 			case "voicemail":
 				return <Voicemail className="h-4 w-4" />;
 			default:
-				return null;
+				return <Mail className="h-4 w-4" />;
+		}
+	};
+
+	const getTypeLabel = () => {
+		switch (communication.type) {
+			case "email":
+				return "Email";
+			case "sms":
+				return "SMS Message";
+			case "call":
+				return "Phone Call";
+			case "voicemail":
+				return "Voicemail";
+			default:
+				return "Communication";
+		}
+	};
+
+	const getTypeColor = () => {
+		switch (communication.type) {
+			case "email":
+				return "bg-blue-500/10";
+			case "sms":
+				return "bg-green-500/10";
+			case "call":
+				return "bg-purple-500/10";
+			case "voicemail":
+				return "bg-orange-500/10";
+			default:
+				return "bg-muted";
 		}
 	};
 
@@ -259,21 +295,22 @@ export function TransferDialog({
 						<div
 							className={cn(
 								"flex h-10 w-10 items-center justify-center rounded-full",
-								communication.type === "call"
-									? "bg-purple-500/10"
-									: "bg-orange-500/10"
+								getTypeColor()
 							)}
 						>
 							{getTypeIcon()}
 						</div>
 						<div className="flex-1 min-w-0">
 							<p className="text-sm font-medium truncate">
-								{communication.fromAddress || communication.toAddress || "Unknown"}
+								{communication.subject || communication.fromAddress || communication.toAddress || "Unknown"}
 							</p>
 							<p className="text-xs text-muted-foreground">
-								{communication.type === "call" ? "Phone Call" : "Voicemail"}
+								{getTypeLabel()}
 								{communication.callDuration && (
 									<> &middot; {Math.floor(communication.callDuration / 60)}:{(communication.callDuration % 60).toString().padStart(2, "0")}</>
+								)}
+								{communication.type === "email" && communication.fromAddress && (
+									<> &middot; From: {communication.fromAddress}</>
 								)}
 							</p>
 						</div>

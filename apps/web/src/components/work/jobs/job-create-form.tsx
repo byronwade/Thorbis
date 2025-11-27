@@ -20,6 +20,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { createJob } from "@/actions/jobs";
+import {
+	AIInputField,
+	AITextareaField,
+} from "@/components/ai/ai-field-wrapper";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -141,6 +145,17 @@ export function JobCreateForm({
 		);
 		return parts.join(", ") || "Unknown address";
 	};
+
+	// Build AI context for suggestions
+	const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
+	const selectedProperty = properties.find((p) => p.id === selectedPropertyId);
+	const aiContext = useMemo(() => ({
+		customerName: selectedCustomer ? getCustomerName(selectedCustomer) : undefined,
+		propertyAddress: selectedProperty
+			? getPropertyAddress(selectedProperty)
+			: undefined,
+		jobType: jobType || undefined,
+	}), [selectedCustomer, selectedProperty, jobType]);
 
 	// Handle form submission
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -295,28 +310,30 @@ export function JobCreateForm({
 								Job Details
 							</h3>
 
-							<div className="space-y-2">
-								<Label htmlFor="title">
-									Title <span className="text-destructive">*</span>
-								</Label>
-								<Input
-									id="title"
-									placeholder="e.g., HVAC Maintenance, Plumbing Repair"
-									value={title}
-									onChange={(e) => setTitle(e.target.value)}
-								/>
-							</div>
+							<AIInputField
+								id="title"
+								fieldType="job-title"
+								context={aiContext}
+								label="Title *"
+								placeholder="e.g., HVAC Maintenance, Plumbing Repair"
+								value={title}
+								onChange={setTitle}
+								enableAI
+								buttonPosition="end"
+							/>
 
-							<div className="space-y-2">
-								<Label htmlFor="description">Description</Label>
-								<Textarea
-									id="description"
-									placeholder="Describe the work to be done..."
-									value={description}
-									onChange={(e) => setDescription(e.target.value)}
-									rows={3}
-								/>
-							</div>
+							<AITextareaField
+								id="description"
+								fieldType="job-description"
+								context={aiContext}
+								label="Description"
+								placeholder="Describe the work to be done..."
+								value={description}
+								onChange={setDescription}
+								rows={3}
+								enableAI
+								buttonPosition="label"
+							/>
 
 							<div className="grid gap-4 sm:grid-cols-2">
 								<div className="space-y-2">

@@ -43,6 +43,7 @@ import {
 	StickyNote,
 	Trash2,
 	User,
+	UserPlus,
 	Voicemail,
 	X,
 } from "lucide-react";
@@ -1504,7 +1505,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 													<StickyNote className="h-4 w-4 mr-2" />
 													Notes
 												</DropdownMenuItem>
-												<DropdownMenuSeparator className="md:hidden" />
+												<DropdownMenuItem
+													onClick={() => setTransferDialogOpen(true)}
+												>
+													<UserPlus className="h-4 w-4 mr-2" />
+													Assign to Team Member
+												</DropdownMenuItem>
+												<DropdownMenuSeparator />
 												<DropdownMenuItem
 													onClick={() => handleDelete(selectedCommunication.id)}
 													className="text-destructive focus:text-destructive"
@@ -2007,8 +2014,8 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 				)}
 			</div>
 
-			{/* Transfer Dialog */}
-			{selectedCommunication && (selectedCommunication.type === "call" || selectedCommunication.type === "voicemail") && (
+			{/* Transfer Dialog - Available for all communication types */}
+			{selectedCommunication && (
 				<TransferDialog
 					open={transferDialogOpen}
 					onOpenChange={setTransferDialogOpen}
