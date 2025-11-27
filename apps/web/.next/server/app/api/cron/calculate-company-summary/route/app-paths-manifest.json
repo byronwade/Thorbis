@@ -1,3 +1,0 @@
-{
-  "/api/cron/calculate-company-summary/route": "app/api/cron/calculate-company-summary/route.js"
-}

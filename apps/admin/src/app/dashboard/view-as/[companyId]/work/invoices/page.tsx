@@ -4,6 +4,8 @@
  * Shows the customer's invoices in view-as mode.
  */
 
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { getViewAsInvoices } from "@/lib/queries/view-as-queries";
 import { Badge } from "@/components/ui/badge";

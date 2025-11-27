@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../../apps/web/src/components/ui/skeleton.tsx"],"sourcesContent":["// Re-export from @stratos/ui package\nexport * from \"@stratos/ui\";\n"],"names":[],"mappings":"ujBACA,EAAA,CAAA,CAAA"}

@@ -6,66 +6,55 @@ import {
 	TrendingUp,
 	Wrench,
 } from "lucide-react";
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { createClient } from "@/lib/supabase/server";
 
 type PriceBookItemDetailDataProps = {
 	itemId: string;
 };
 
-// Mock data - will be replaced with database query
-const mockItem = {
-	id: "1",
-	itemType: "service" as const,
-	name: "HVAC System Inspection",
-	sku: "SVC-001",
-	description:
-		"Complete inspection of HVAC system including air handlers, condensers, ductwork, and thermostats. Includes filter replacement and system efficiency testing.",
-	category: "HVAC",
-	subcategory: "Inspection",
-	cost: 7500, // $75.00 in cents
-	price: 12_500, // $125.00 in cents
-	markupPercent: 67,
-	unit: "each",
-	minimumQuantity: 1,
-	isActive: true,
-	isTaxable: true,
-	supplierName: null,
-	supplierSku: null,
-	imageUrl: null,
-	tags: ["inspection", "maintenance", "hvac", "seasonal"],
-	notes:
-		"Recommended for seasonal maintenance. Typically takes 1-2 hours depending on system complexity.",
-	createdAt: "2025-01-05T09:00:00Z",
-	updatedAt: "2025-01-15T14:30:00Z",
+type PriceBookItemFromDB = {
+	id: string;
+	item_type: string;
+	name: string;
+	sku: string | null;
+	description: string | null;
+	category: string | null;
+	subcategory: string | null;
+	cost: number | null;
+	price: number;
+	markup_percent: number | null;
+	unit: string;
+	minimum_quantity: number | null;
+	is_active: boolean;
+	is_taxable: boolean;
+	supplier_id: string | null;
+	supplier_sku: string | null;
+	image_url: string | null;
+	tags: string[] | null;
+	notes: string | null;
+	created_at: string;
+	updated_at: string;
 };
 
-// Mock price history
-const mockPriceHistory = [
-	{
-		id: "1",
-		oldCost: 7000,
-		newCost: 7500,
-		oldPrice: 12_000,
-		newPrice: 12_500,
-		changeType: "manual",
-		changeReason: "Annual price adjustment",
-		changedBy: "John Doe",
-		effectiveDate: "2025-01-15T14:30:00Z",
-	},
-	{
-		id: "2",
-		oldCost: 6500,
-		newCost: 7000,
-		oldPrice: 11_000,
-		newPrice: 12_000,
-		changeType: "bulk_update",
-		changeReason: "Q4 2024 price increase",
-		changedBy: "System",
-		effectiveDate: "2024-10-01T00:00:00Z",
-	},
-];
+type PriceHistoryFromDB = {
+	id: string;
+	old_cost: number | null;
+	new_cost: number | null;
+	old_price: number | null;
+	new_price: number | null;
+	change_type: string;
+	change_reason: string | null;
+	changed_by: string | null;
+	effective_date: string;
+	user?: {
+		first_name: string | null;
+		last_name: string | null;
+	} | null;
+};
 
 const categoryIcons = {
 	HVAC: Wrench,
@@ -131,30 +120,88 @@ function formatDateTime(dateString: string) {
  *
  * Fetches price book item data with 2 queries:
  * 1. Price book item details
- * 2. Price history
+ * 2. Price history with user names
  *
  * Streams in after shell renders (50-150ms).
- *
- * TODO: Replace mock data with real database queries
  */
 export async function PriceBookItemDetailData({
 	itemId,
 }: PriceBookItemDetailDataProps) {
-	// TODO: Fetch from database
-	// const supabase = await createClient();
-	// const { data: item, error: itemError } = await supabase
-	//   .from("price_book_items")
-	//   .select("*")
-	//   .eq("id", itemId)
-	//   .single();
-	// const { data: history, error: historyError } = await supabase
-	//   .from("price_history")
-	//   .select("*")
-	//   .eq("item_id", itemId);
-	// if (itemError || !item) notFound();
+	const supabase = await createClient();
 
-	const item = mockItem;
-	const history = mockPriceHistory;
+	// Fetch price book item
+	const { data: rawItem, error: itemError } = await supabase
+		.from("price_book_items")
+		.select("*")
+		.eq("id", itemId)
+		.single();
+
+	if (itemError || !rawItem) {
+		notFound();
+	}
+
+	// Fetch price history with user info
+	const { data: rawHistory } = await supabase
+		.from("price_history")
+		.select(`
+			id,
+			old_cost,
+			new_cost,
+			old_price,
+			new_price,
+			change_type,
+			change_reason,
+			changed_by,
+			effective_date,
+			user:users!price_history_changed_by_fkey(first_name, last_name)
+		`)
+		.eq("item_id", itemId)
+		.order("effective_date", { ascending: false })
+		.limit(10);
+
+	// Transform database item to component format
+	const dbItem = rawItem as PriceBookItemFromDB;
+	const item = {
+		id: dbItem.id,
+		itemType: dbItem.item_type as "service" | "material" | "package",
+		name: dbItem.name,
+		sku: dbItem.sku || "N/A",
+		description: dbItem.description,
+		category: dbItem.category || "General",
+		subcategory: dbItem.subcategory,
+		cost: dbItem.cost || 0,
+		price: dbItem.price,
+		markupPercent: dbItem.markup_percent || 0,
+		unit: dbItem.unit,
+		minimumQuantity: dbItem.minimum_quantity || 1,
+		isActive: dbItem.is_active,
+		isTaxable: dbItem.is_taxable,
+		supplierName: null as string | null, // Would need to join with suppliers table
+		supplierSku: dbItem.supplier_sku,
+		imageUrl: dbItem.image_url,
+		tags: (dbItem.tags as string[]) || [],
+		notes: dbItem.notes,
+		createdAt: dbItem.created_at,
+		updatedAt: dbItem.updated_at,
+	};
+
+	// Transform price history
+	const history = (rawHistory || []).map((h: PriceHistoryFromDB) => {
+		const userName = h.user
+			? `${h.user.first_name || ""} ${h.user.last_name || ""}`.trim() || "Unknown"
+			: "System";
+		return {
+			id: h.id,
+			oldCost: h.old_cost || 0,
+			newCost: h.new_cost || 0,
+			oldPrice: h.old_price || 0,
+			newPrice: h.new_price || 0,
+			changeType: h.change_type,
+			changeReason: h.change_reason,
+			changedBy: userName,
+			effectiveDate: h.effective_date,
+		};
+	});
 	const IconComponent =
 		categoryIcons[item.category as keyof typeof categoryIcons] || Package;
 
@@ -273,6 +320,17 @@ export async function PriceBookItemDetailData({
 							</div>
 						</CardHeader>
 						<CardContent>
+							{history.length === 0 ? (
+								<div className="flex flex-col items-center justify-center py-8 text-center">
+									<History className="text-muted-foreground/50 mb-3 size-10" />
+									<p className="text-muted-foreground text-sm">
+										No price changes recorded yet
+									</p>
+									<p className="text-muted-foreground/70 mt-1 text-xs">
+										Price history will appear here when prices are updated
+									</p>
+								</div>
+							) : (
 							<div className="space-y-4">
 								{history.map((change) => (
 									<div
@@ -333,6 +391,7 @@ export async function PriceBookItemDetailData({
 									</div>
 								))}
 							</div>
+							)}
 						</CardContent>
 					</Card>
 

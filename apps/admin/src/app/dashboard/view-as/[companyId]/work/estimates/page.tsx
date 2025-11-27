@@ -2,6 +2,8 @@
  * Admin View-As: Estimates Page
  */
 
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { getViewAsEstimates } from "@/lib/queries/view-as-queries";
 import { GenericWorkTable, formatters } from "@/components/view-as/generic-work-table";

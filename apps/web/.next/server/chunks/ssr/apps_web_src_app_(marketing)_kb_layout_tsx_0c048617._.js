@@ -1,3 +1,0 @@
-module.exports=[974737,a=>{"use strict";var b=a.i(504348),c=a.i(440792),d=a.i(653044);function e({children:a}){return(0,b.jsxs)("div",{className:"bg-background flex min-h-screen flex-col",children:[(0,b.jsx)(d.MarketingHeader,{}),(0,b.jsx)("main",{className:"flex-1",children:a}),(0,b.jsx)(c.Footer,{})]})}a.s(["default",()=>e])}];
-
-//# sourceMappingURL=apps_web_src_app_%28marketing%29_kb_layout_tsx_0c048617._.js.map

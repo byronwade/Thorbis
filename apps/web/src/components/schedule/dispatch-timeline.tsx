@@ -730,21 +730,19 @@ const JobCardContent = memo(
 								<HoverCardTrigger asChild>
 									<div
 										className={cn(
-											"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1 active:cursor-grabbing",
-											// Performance: Only transition shadow/ring, not all properties. Disable during drag.
-											!isDragging &&
-												"transition-[box-shadow,ring] duration-150 ease-out hover:shadow-sm",
+											// Base styling - polished card with subtle gradient
+											"relative flex h-full cursor-grab items-center gap-2 rounded-lg border px-2.5 py-1 active:cursor-grabbing",
+											"bg-gradient-to-br from-card via-card to-card/95",
+											"shadow-sm shadow-black/5 dark:shadow-black/20",
+											// Snappy transitions - only shadow/ring for performance
+											!isDragging && "transition-all duration-100 ease-out hover:shadow-md hover:shadow-black/10 dark:hover:shadow-black/30",
 											borderColor,
 											categoryConfig.borderStyle,
-											job.isUnassigned && "!border-red-500",
+											job.isUnassigned && "!border-red-500 !border-l-4",
 											isSelected && "ring-primary shadow-md ring-1",
-											isDragging &&
-												"shadow-2xl ring-2 ring-primary/50 scale-[1.02] opacity-90",
-											(job.status === "completed" ||
-												job.status === "closed") &&
-												"opacity-50",
-											// Side-by-side overlap: add subtle shadow on left for visual separation
-											hasOverlap && "shadow-sm",
+											isDragging && "shadow-xl ring-2 ring-primary/50",
+											(job.status === "completed" || job.status === "closed") && "opacity-60",
+											hasOverlap && "shadow-md",
 										)}
 										onClick={onSelect}
 										onMouseEnter={handleMouseEnter}
@@ -1603,7 +1601,9 @@ const TechnicianLane = memo(
 		return (
 			<div
 				className={cn(
-					"relative border-b transition-[background-color,box-shadow] duration-150",
+					"group/lane relative border-b border-border/50 transition-colors duration-75",
+					// Subtle hover highlight
+					"hover:bg-muted/[0.02] dark:hover:bg-muted/[0.04]",
 					isDragActive && "bg-muted/20",
 					isOver && "bg-primary/10 ring-primary shadow-inner ring-2 ring-inset",
 					isDraggingToCreate && "cursor-crosshair select-none",
@@ -3116,7 +3116,7 @@ export function DispatchTimeline() {
 								ref={timelineRef}
 								style={{ minWidth: totalWidth }}
 							>
-								{/* Hour Column Backgrounds with 15-min snap guides */}
+								{/* Hour Column Backgrounds with refined grid */}
 								<div className="absolute inset-0 flex">
 									{hourlySlots.map((slot, index) => {
 										const hour = slot.getHours();
@@ -3124,34 +3124,34 @@ export function DispatchTimeline() {
 										const isMidnight = hour === 0;
 										const isCurrentDay =
 											slot.toDateString() === dateObj.toDateString();
+										const isEvenHour = hour % 2 === 0;
 										return (
 											<div
 												className={cn(
-													"relative shrink-0 border-r",
+													"relative shrink-0 border-r border-border/30",
+													// Refined alternating backgrounds
 													isBusinessHours
-														? index % 2 === 0
+														? isEvenHour
 															? "bg-background"
-															: "bg-muted/5"
-														: "bg-muted/20",
-													isMidnight && "border-l-2 border-l-primary/30",
-													isCurrentDay && "bg-primary/5",
+															: "bg-muted/[0.03] dark:bg-muted/[0.05]"
+														: "bg-muted/10 dark:bg-muted/15",
+													isMidnight && "border-l-2 border-l-primary/40",
+													isCurrentDay && "bg-primary/[0.03]",
 												)}
 												key={index}
-												style={{
-													width: HOUR_WIDTH,
-													backgroundImage: isBusinessHours
-														? undefined
-														: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(var(--muted) / 0.3) 8px, hsl(var(--muted) / 0.3) 16px)",
-												}}
+												style={{ width: HOUR_WIDTH }}
 											>
-												{/* 30-minute grid line (always visible) */}
-												<div className="absolute top-0 left-1/2 h-full w-px bg-border/40 dark:bg-border/30" />
-												{/* 15-minute snap guides (visible during drag) */}
+												{/* 30-minute marker - subtle but always visible */}
+												<div className="absolute top-0 left-1/2 h-full w-px bg-border/20 dark:bg-border/15" />
+												{/* 15-minute markers - very subtle */}
+												<div className="absolute top-0 left-1/4 h-full w-px bg-border/10 dark:bg-border/5" />
+												<div className="absolute top-0 left-3/4 h-full w-px bg-border/10 dark:bg-border/5" />
+												{/* Enhanced guides during drag */}
 												{activeJobId && (
 													<>
-														<div className="bg-primary/30 absolute top-0 left-1/4 h-full w-px" />
-														<div className="bg-primary/50 absolute top-0 left-1/2 h-full w-px" />
-														<div className="bg-primary/30 absolute top-0 left-3/4 h-full w-px" />
+														<div className="bg-primary/20 absolute top-0 left-1/4 h-full w-px" />
+														<div className="bg-primary/40 absolute top-0 left-1/2 h-full w-px" />
+														<div className="bg-primary/20 absolute top-0 left-3/4 h-full w-px" />
 													</>
 												)}
 											</div>

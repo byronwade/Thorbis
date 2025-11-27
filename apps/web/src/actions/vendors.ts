@@ -18,11 +18,10 @@ const VENDOR_NUMBER_REGEX = /VND-\d{4}-(\d+)/;
 
 import {
 	type ActionResult,
-	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
 import {
 	type VendorUpdate,
 	vendorInsertSchema,
@@ -63,42 +62,16 @@ async function generateVendorNumber(
  */
 async function createVendor(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Generate vendor number if not provided
 		const vendorNumber =
 			formData.get("vendor_number")?.toString() ||
-			(await generateVendorNumber(supabase, teamMember.company_id));
+			(await generateVendorNumber(supabase, companyId));
 
 		// Validate input
 		const data = vendorInsertSchema.parse({
-			company_id: teamMember.company_id,
+			company_id: companyId,
 			name: formData.get("name"),
 			display_name: formData.get("display_name") || formData.get("name"),
 			vendor_number: vendorNumber,
@@ -135,7 +108,7 @@ async function createVendor(formData: FormData): Promise<ActionResult<string>> {
 		const { data: existingVendor } = await supabase
 			.from("vendors")
 			.select("id")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.eq("vendor_number", data.vendor_number)
 			.is("deleted_at", null)
 			.single();
@@ -203,33 +176,7 @@ export async function updateVendor(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify vendor exists and belongs to company
 		const { data: existingVendor } = await supabase
@@ -241,7 +188,7 @@ export async function updateVendor(
 
 		assertExists(existingVendor, "Vendor");
 
-		if (existingVendor.company_id !== teamMember.company_id) {
+		if (existingVendor.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("vendor"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -340,7 +287,7 @@ export async function updateVendor(
 			const { data: duplicate } = await supabase
 				.from("vendors")
 				.select("id")
-				.eq("company_id", teamMember.company_id)
+				.eq("company_id", companyId)
 				.eq("vendor_number", validated.vendor_number)
 				.neq("id", vendorId)
 				.is("deleted_at", null)
@@ -377,33 +324,7 @@ export async function updateVendor(
  */
 async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify vendor exists and belongs to company
 		const { data: vendor } = await supabase
@@ -415,7 +336,7 @@ async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
 
 		assertExists(vendor, "Vendor");
 
-		if (vendor.company_id !== teamMember.company_id) {
+		if (vendor.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("vendor"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -428,7 +349,7 @@ async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
 			.from("vendors")
 			.update({
 				deleted_at: new Date().toISOString(),
-				deleted_by: user.id,
+				deleted_by: userId,
 			})
 			.eq("id", vendorId);
 
@@ -448,39 +369,13 @@ async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
  */
 async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const { data: vendor, error } = await supabase
 			.from("vendors")
 			.select("*")
 			.eq("id", vendorId)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.is("deleted_at", null)
 			.single();
 
@@ -506,38 +401,12 @@ async function listVendors(options?: {
 	search?: string;
 }): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		let query = supabase
 			.from("vendors")
 			.select("*")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.is("deleted_at", null)
 			.order("name", { ascending: true });
 
@@ -575,52 +444,13 @@ export async function searchVendors(
 	query: string,
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Use the same approach as searchCustomers
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const activeCompanyId = await getActiveCompanyId();
-
-		if (!activeCompanyId) {
-			throw new ActionError(
-				"No active company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
-
-		// Verify user has access to the active company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("company_id", activeCompanyId)
-			.eq("status", "active")
-			.maybeSingle();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You don't have access to this company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		// Validate user and company membership
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const { data: vendors, error } = await supabase
 			.from("vendors")
 			.select("id, name, display_name, vendor_number, email, phone, status")
-			.eq("company_id", activeCompanyId)
+			.eq("company_id", companyId)
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or(
@@ -647,33 +477,7 @@ export async function linkPurchaseOrderToVendor(
 	vendorId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify purchase order exists and belongs to company
 		const { data: po } = await supabase
@@ -685,7 +489,7 @@ export async function linkPurchaseOrderToVendor(
 
 		assertExists(po, "Purchase Order");
 
-		if (po.company_id !== teamMember.company_id) {
+		if (po.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -703,7 +507,7 @@ export async function linkPurchaseOrderToVendor(
 
 		assertExists(vendor, "Vendor");
 
-		if (vendor.company_id !== teamMember.company_id) {
+		if (vendor.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("vendor"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -738,16 +542,18 @@ export async function archiveVendor(
 	vendorId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
-		const supabase = await createClient();
-		if (!supabase) {
-			return { success: false, error: "Database connection not available" };
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			return { success: false, error: "Unauthorized" };
+		// Verify vendor belongs to user's company before archiving
+		const { data: vendor } = await supabase
+			.from("vendors")
+			.select("id, company_id")
+			.eq("id", vendorId)
+			.is("deleted_at", null)
+			.single();
+
+		if (!vendor || vendor.company_id !== companyId) {
+			return { success: false, error: "Vendor not found" };
 		}
 
 		const { error } = await supabase
@@ -763,7 +569,10 @@ export async function archiveVendor(
 
 		revalidatePath("/dashboard/work/vendors");
 		return { success: true };
-	} catch (_error) {
+	} catch (err) {
+		if (err instanceof ActionError) {
+			return { success: false, error: err.message };
+		}
 		return { success: false, error: "Failed to archive vendor" };
 	}
 }

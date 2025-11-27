@@ -19,31 +19,54 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Lightweight client cache to avoid spamming server actions on every rerender/navigation
+// Company-aware cache to prevent showing stale chats when switching companies
 const CHAT_CACHE_TTL = 30_000;
-let cachedChats: ChatSession[] | null = null;
-let cachedChatsAt = 0;
-let inflightChatRequest: Promise<ChatSession[]> | null = null;
+type CacheEntry = {
+	chats: ChatSession[];
+	timestamp: number;
+	companyId: string | null;
+};
+let cacheEntry: CacheEntry | null = null;
+let inflightChatRequest: Promise<{ chats: ChatSession[]; companyId: string | null }> | null = null;
 
 async function loadChatCache(limit: number, force = false): Promise<ChatSession[]> {
 	const now = Date.now();
 
-	// Return cached data when still fresh
-	if (!force && cachedChats && now - cachedChatsAt < CHAT_CACHE_TTL) {
-		return cachedChats.slice(0, limit);
+	// Fetch current company from server to check cache validity
+	const currentCompanyResult = await getChats({ limit: 0 }); // Fetch with limit 0 just to get company context
+	const currentCompanyId = currentCompanyResult.success && currentCompanyResult.data
+		? currentCompanyResult.data.companyId
+		: null;
+
+	// Return cached data when:
+	// 1. Not forcing refresh
+	// 2. Cache exists and is fresh (within TTL)
+	// 3. Company ID matches (cache is for the same company)
+	if (
+		!force &&
+		cacheEntry &&
+		now - cacheEntry.timestamp < CHAT_CACHE_TTL &&
+		cacheEntry.companyId === currentCompanyId
+	) {
+		return cacheEntry.chats.slice(0, limit);
 	}
 
 	// Deduplicate concurrent requests between button + history
 	if (inflightChatRequest) {
-		return inflightChatRequest.then((data) => data.slice(0, limit));
+		return inflightChatRequest.then((result) => result.chats.slice(0, limit));
 	}
 
 	inflightChatRequest = (async () => {
 		try {
 			const result = await getChats({ limit });
 			if (result.success && result.data) {
-				cachedChats = result.data;
-				cachedChatsAt = Date.now();
-				return result.data;
+				const { chats, companyId } = result.data;
+				cacheEntry = {
+					chats,
+					timestamp: Date.now(),
+					companyId,
+				};
+				return { chats, companyId };
 			}
 		} catch (error) {
 			console.error("[NavChatHistory] Failed to load chats", error);
@@ -51,18 +74,23 @@ async function loadChatCache(limit: number, force = false): Promise<ChatSession[
 			inflightChatRequest = null;
 		}
 
-		// On failure, return empty list and clear cache timestamp to retry later
-		cachedChats = null;
-		cachedChatsAt = 0;
-		return [];
+		// On failure, return empty list and clear cache to retry later
+		cacheEntry = null;
+		return { chats: [], companyId: null };
 	})();
 
-	return inflightChatRequest;
+	const result = await inflightChatRequest;
+	return result.chats;
 }
 
 function updateChatCache(nextChats: ChatSession[]) {
-	cachedChats = nextChats;
-	cachedChatsAt = Date.now();
+	if (cacheEntry) {
+		cacheEntry = {
+			...cacheEntry,
+			chats: nextChats,
+			timestamp: Date.now(),
+		};
+	}
 }
 
 // New Chat button + Search bar - rendered above AI nav items

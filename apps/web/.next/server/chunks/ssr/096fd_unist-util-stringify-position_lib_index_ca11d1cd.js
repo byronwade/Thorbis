@@ -1,3 +1,0 @@
-module.exports=[38800,a=>{"use strict";function b(a){return a&&"object"==typeof a?"position"in a||"type"in a?d(a.position):"start"in a||"end"in a?d(a):"line"in a||"column"in a?c(a):"":""}function c(a){return e(a&&a.line)+":"+e(a&&a.column)}function d(a){return c(a&&a.start)+"-"+c(a&&a.end)}function e(a){return a&&"number"==typeof a?a:1}a.s(["stringifyPosition",()=>b])}];
-
-//# sourceMappingURL=096fd_unist-util-stringify-position_lib_index_ca11d1cd.js.map

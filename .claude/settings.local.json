@@ -298,7 +298,9 @@
       "Bash(timeout 240 pnpm build:web:*)",
       "Bash(timeout 300 pnpm build:web:*)",
       "Bash(timeout 30 pnpm exec tsc:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(psql:*)",
+      "Bash(pnpm --filter @stratos/web exec tsc:*)"
     ],
     "deny": [],
     "ask": []

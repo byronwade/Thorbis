@@ -55,39 +55,47 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
 
-// Mock labor rates - will be replaced with database query
-const mockLaborRates = [
+/**
+ * Labor rate type from database
+ */
+export type LaborRate = {
+	id: string;
+	name: string;
+	rateType: string;
+	baseRate: number; // in cents
+	overtimeMultiplier: number;
+	description?: string | null;
+};
+
+// Default labor rates for when none are provided
+const defaultLaborRates: LaborRate[] = [
 	{
-		id: "1",
+		id: "default-master",
 		name: "Master Technician",
-		rateType: "hourly" as const,
+		rateType: "hourly",
 		baseRate: 7500, // $75.00/hr in cents
 		overtimeMultiplier: 1.5,
-		skillLevel: "master",
 	},
 	{
-		id: "2",
+		id: "default-journey",
 		name: "Journey Technician",
-		rateType: "hourly" as const,
+		rateType: "hourly",
 		baseRate: 5500, // $55.00/hr in cents
 		overtimeMultiplier: 1.5,
-		skillLevel: "journey",
 	},
 	{
-		id: "3",
+		id: "default-apprentice",
 		name: "Apprentice",
-		rateType: "hourly" as const,
+		rateType: "hourly",
 		baseRate: 3500, // $35.00/hr in cents
 		overtimeMultiplier: 1.5,
-		skillLevel: "apprentice",
 	},
 	{
-		id: "4",
+		id: "default-helper",
 		name: "Helper",
-		rateType: "hourly" as const,
+		rateType: "hourly",
 		baseRate: 2500, // $25.00/hr in cents
 		overtimeMultiplier: 1.5,
-		skillLevel: "helper",
 	},
 ];
 
@@ -105,21 +113,29 @@ type LaborCalculation = {
 };
 
 type LaborCalculatorModalProps = {
+	/** Optional trigger element */
 	trigger?: React.ReactNode;
+	/** Callback when labor is added */
 	onAddLabor?: (
 		calculation: LaborCalculation & { description: string },
 	) => void;
+	/** Labor rates from database - if not provided, defaults are used */
+	laborRates?: LaborRate[];
 };
 
 export function LaborCalculatorModal({
 	trigger,
 	onAddLabor,
+	laborRates,
 }: LaborCalculatorModalProps) {
+	// Use provided labor rates or fall back to defaults
+	const rates = laborRates && laborRates.length > 0 ? laborRates : defaultLaborRates;
+
 	// Prevent hydration mismatch by only rendering Dialog after mount
 	const [mounted, setMounted] = useState(false);
 	const [open, setOpen] = useState(false);
 	const [selectedRateId, setSelectedRateId] = useState<string>(
-		mockLaborRates[0]?.id || "",
+		rates[0]?.id || "",
 	);
 	const [hours, setHours] = useState("0");
 	const [minutes, setMinutes] = useState("0");
@@ -135,7 +151,7 @@ export function LaborCalculatorModal({
 	const [markupPercent, setMarkupPercent] = useState("50"); // Suggested markup
 	const [description, setDescription] = useState("");
 
-	const selectedRate = mockLaborRates.find(
+	const selectedRate = rates.find(
 		(rate) => rate.id === selectedRateId,
 	);
 
@@ -275,7 +291,7 @@ export function LaborCalculatorModal({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
-									{mockLaborRates.map((rate) => (
+									{rates.map((rate) => (
 										<SelectItem key={rate.id} value={rate.id}>
 											{rate.name} - {formatCurrency(rate.baseRate)}/hr
 										</SelectItem>

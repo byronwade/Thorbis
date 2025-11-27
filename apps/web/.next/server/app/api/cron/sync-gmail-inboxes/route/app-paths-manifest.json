@@ -1,3 +1,0 @@
-{
-  "/api/cron/sync-gmail-inboxes/route": "app/api/cron/sync-gmail-inboxes/route.js"
-}

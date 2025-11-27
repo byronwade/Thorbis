@@ -1,3 +1,0 @@
-module.exports=[92837,a=>{"use strict";a.s([],584166),a.i(584166);var b=a.i(169021),c=(0,b.createServerReference)("60ed864a63c4617ffd59ef3ff3a64e8a78ce641dce",b.callServer,void 0,b.findSourceMapURL,"bulkSendInvoices"),d=(0,b.createServerReference)("603d5ac1c5d29d55a876939426bda609ef21abdc94",b.callServer,void 0,b.findSourceMapURL,"bulkSendEstimates");a.s(["bulkSendEstimates",()=>d,"bulkSendInvoices",()=>c],92837)}];
-
-//# sourceMappingURL=apps_web_src_actions_bulk-communications_ts_d33994da._.js.map

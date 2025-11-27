@@ -4,6 +4,8 @@
  * Shows the customer's payments in view-as mode.
  */
 
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { getViewAsPayments } from "@/lib/queries/view-as-queries";
 import { Badge } from "@/components/ui/badge";

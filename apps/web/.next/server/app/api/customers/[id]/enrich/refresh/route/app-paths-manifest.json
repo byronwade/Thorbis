@@ -1,3 +1,0 @@
-{
-  "/api/customers/[id]/enrich/refresh/route": "app/api/customers/[id]/enrich/refresh/route.js"
-}

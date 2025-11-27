@@ -21,14 +21,6 @@ import { createClient } from "@supabase/supabase-js";
  * - Generate reports across all customers
  */
 
-if (!process.env.WEB_SUPABASE_URL) {
-	throw new Error("Missing WEB_SUPABASE_URL environment variable");
-}
-
-if (!process.env.WEB_SUPABASE_SERVICE_ROLE_KEY) {
-	throw new Error("Missing WEB_SUPABASE_SERVICE_ROLE_KEY environment variable");
-}
-
 /**
  * Create a Supabase client for the web database with service role access.
  *
@@ -79,7 +71,18 @@ if (!process.env.WEB_SUPABASE_SERVICE_ROLE_KEY) {
  * }
  */
 export const createWebClient = () => {
-	return createClient(process.env.WEB_SUPABASE_URL!, process.env.WEB_SUPABASE_SERVICE_ROLE_KEY!, {
+	const supabaseUrl = process.env.WEB_SUPABASE_URL;
+	const serviceRoleKey = process.env.WEB_SUPABASE_SERVICE_ROLE_KEY;
+
+	if (!supabaseUrl) {
+		throw new Error("Missing WEB_SUPABASE_URL environment variable");
+	}
+
+	if (!serviceRoleKey) {
+		throw new Error("Missing WEB_SUPABASE_SERVICE_ROLE_KEY environment variable");
+	}
+
+	return createClient(supabaseUrl, serviceRoleKey, {
 		auth: {
 			autoRefreshToken: false,
 			persistSession: false,

@@ -1,3 +1,0 @@
-module.exports=[495233,a=>{"use strict";a.s([],267010),a.i(267010);var b=a.i(169021),c=(0,b.createServerReference)("409c2f1ba2d1c2351ad8f1e5d0eed4ff7b88e02605",b.callServer,void 0,b.findSourceMapURL,"sendTeamMemberInvitations"),d=(0,b.createServerReference)("401e0b0c10668208d6e2e8f7944a319735b9e73ed0",b.callServer,void 0,b.findSourceMapURL,"sendSingleTeamInvitation");a.s(["sendSingleTeamInvitation",()=>d,"sendTeamMemberInvitations",()=>c],495233)}];
-
-//# sourceMappingURL=apps_web_src_actions_team-invitations_ts_d06c1bc4._.js.map

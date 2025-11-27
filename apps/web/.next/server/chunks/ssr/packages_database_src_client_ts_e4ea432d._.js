@@ -1,3 +1,0 @@
-module.exports=[132440,a=>{"use strict";a.i(866508);var b=a.i(622735);function c(){return(0,b.createBrowserClient)("https://togejqdwggezkxahomeh.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvZ2VqcWR3Z2dlemt4YWhvbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MjAyOTUsImV4cCI6MjA3NzI5NjI5NX0.a74QOxiIcxeALZsTsNXNDiOls1MZDsFfyGFq992eBBM")}a.s(["createClient",()=>c])}];
-
-//# sourceMappingURL=packages_database_src_client_ts_e4ea432d._.js.map

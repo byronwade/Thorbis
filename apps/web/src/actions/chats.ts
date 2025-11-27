@@ -78,18 +78,27 @@ async function getUserContext() {
 }
 
 /**
+ * Response type for getChats that includes company context
+ */
+export interface GetChatsResponse {
+	chats: ChatSession[];
+	companyId: string;
+}
+
+/**
  * Get User's Chat Sessions
  *
  * Returns all chat sessions for the authenticated user in their active company.
+ * Also returns the companyId so clients can cache chats per-company.
  *
  * @param params.search - Optional search query to filter chats by title
  * @param params.limit - Maximum number of chats to return (default: 50)
- * @returns ActionResult with array of ChatSession
+ * @returns ActionResult with chats and companyId
  */
 export async function getChats(params?: {
 	search?: string;
 	limit?: number;
-}): Promise<ActionResult<ChatSession[]>> {
+}): Promise<ActionResult<GetChatsResponse>> {
 	return withErrorHandling(async () => {
 		const { user, companyId } = await getUserContext();
 		const memory = createSupabaseMemoryProvider(companyId);
@@ -100,7 +109,10 @@ export async function getChats(params?: {
 			limit: params?.limit ?? 50,
 		});
 
-		return chats;
+		return {
+			chats,
+			companyId,
+		};
 	});
 }
 

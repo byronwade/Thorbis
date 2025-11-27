@@ -5,6 +5,8 @@
  * Uses the real web component with company context override.
  */
 
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { getImpersonatedCompanyId } from "@/lib/admin-context";
 import { redirect } from "next/navigation";

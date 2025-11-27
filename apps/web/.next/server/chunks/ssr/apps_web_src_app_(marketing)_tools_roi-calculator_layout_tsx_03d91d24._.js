@@ -1,3 +1,0 @@
-module.exports=[254441,a=>{"use strict";let b={...(0,a.i(134690).generateMetadata)({title:"Field Service ROI Calculator",section:"Tools",description:"Calculate your potential ROI from Thorbis field service software. Free interactive tool for HVAC, plumbing, and electrical contractors. See projected savings and revenue gains.",path:"/tools/roi-calculator",keywords:["field service ROI calculator","HVAC software ROI","plumbing software savings","field service management ROI","service business calculator","technician efficiency calculator","ServiceTitan ROI comparison"]})};function c({children:a}){return a}a.s(["default",()=>c,"metadata",0,b])}];
-
-//# sourceMappingURL=apps_web_src_app_%28marketing%29_tools_roi-calculator_layout_tsx_03d91d24._.js.map

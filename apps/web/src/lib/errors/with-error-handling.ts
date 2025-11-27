@@ -5,7 +5,10 @@
  * for all Server Actions in the application.
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { cache } from "react";
 import { ZodError } from "zod";
+import { createClient } from "@/lib/supabase/server";
 import { ActionError, ERROR_CODES } from "./action-error";
 
 // Re-export for convenience
@@ -224,3 +227,91 @@ function assertPermission(
 		);
 	}
 }
+
+/**
+ * Company Membership Result
+ *
+ * Returned by requireCompanyMembership when successful
+ */
+export type CompanyMembershipResult = {
+	userId: string;
+	companyId: string;
+	supabase: SupabaseClient;
+};
+
+/**
+ * Require Company Membership
+ *
+ * Centralized utility to validate user authentication AND company membership.
+ * Replaces the duplicated pattern found in 40+ server actions.
+ *
+ * PERFORMANCE: Wrapped with React.cache() - called by multiple actions,
+ * but only executes once per request.
+ *
+ * @returns Object with userId, companyId, and supabase client
+ * @throws ActionError if user is not authenticated or not part of a company
+ *
+ * @example
+ * export async function createVendor(formData: FormData) {
+ *   return withErrorHandling(async () => {
+ *     const { userId, companyId, supabase } = await requireCompanyMembership();
+ *
+ *     // Now you have validated:
+ *     // - User is authenticated
+ *     // - User belongs to a company
+ *     // - Supabase client is ready
+ *
+ *     const { data, error } = await supabase
+ *       .from("vendors")
+ *       .insert({ company_id: companyId, ... });
+ *   });
+ * }
+ */
+export const requireCompanyMembership = cache(
+	async (): Promise<CompanyMembershipResult> => {
+		// Get Supabase client
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+				500,
+			);
+		}
+
+		// Get authenticated user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user?.id) {
+			throw new ActionError(
+				"You must be logged in to perform this action",
+				ERROR_CODES.AUTH_UNAUTHORIZED,
+				401,
+			);
+		}
+
+		// Check company membership
+		const { data: membership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.single();
+
+		if (!membership?.company_id) {
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		return {
+			userId: user.id,
+			companyId: membership.company_id,
+			supabase,
+		};
+	},
+);

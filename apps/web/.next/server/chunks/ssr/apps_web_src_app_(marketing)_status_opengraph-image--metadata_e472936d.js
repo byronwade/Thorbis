@@ -1,3 +1,0 @@
-module.exports=[761774,a=>{"use strict";a.i(504348),a.i(434574),a.i(407439),a.i(56815),a.i(884600);var b=a.i(11798);let c={width:b.OG_CONFIG.width,height:b.OG_CONFIG.height};var d=a.i(756867);let e={alt:"System Status - Thorbis",contentType:"image/png",revalidate:86400,runtime:"edge",size:c};async function f(a){let{__metadata_id__:b,...c}=await a.params,f=(0,d.fillMetadataSegment)("/(marketing)/status",c,"opengraph-image");return[function(a,b){let c={alt:a.alt,type:a.contentType||"image/png",url:f+"?ed6c54a1c59ee8b2"},{size:d}=a;return d&&(c.width=d.width,c.height=d.height),c}(e,0)]}a.s(["default",0,f],761774)}];
-
-//# sourceMappingURL=apps_web_src_app_%28marketing%29_status_opengraph-image--metadata_e472936d.js.map

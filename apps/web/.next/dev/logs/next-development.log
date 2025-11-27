@@ -1,1 +1,456 @@
-[00:00:01.577] Server  LOG      ✓ Ready in 1324ms
+[00:00:01.283] Server  LOG      ✓ Ready in 1040ms
+[00:00:01.288] Browser ERROR   Error fetching support sessions: {}
+[00:00:01.288] Browser ERROR   Failed to fetch unread count: {}
+[00:00:01.288] Browser ERROR   Failed to fetch unread count: {}
+[00:00:01.288] Browser ERROR   Error fetching support sessions: {}
+[00:00:01.289] Browser ERROR   Failed to fetch unread count: {}
+[00:00:01.658] Browser ERROR   Error fetching support sessions: {}
+[00:00:01.658] Browser ERROR   Failed to fetch unread count: {}
+[00:00:01.658] Browser ERROR   Failed to fetch unread count: {}
+[00:00:01.678] Browser ERROR   Error fetching support sessions: {}
+[00:00:04.310] Server  LOG      ○ Compiling /dashboard ...
+[00:00:11.329] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:00:13.539] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:00:14.126] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:14.126] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:00:14.126] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263256646}
+[00:00:14.126] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:14.322] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263256787}
+[00:00:15.194] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.195] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard","route":"/dashboard"}
+[00:00:15.195] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263257700}
+[00:00:15.195] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.386] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:15.394] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard","route":"/dashboard"}
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263257224}
+[00:00:15.701] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","ed":{"path":"/dashboard","referrer":"http://localhost:3000/dashboard","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263257250}
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263257257}
+[00:00:15.701] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263258043}
+[00:00:15.701] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263258048}
+[00:00:15.713] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:15.815] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:15.816] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:16.062] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:16.729] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:00:17.045] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.214] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.243] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.366] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.409] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.839] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:01:15.994] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:15.216] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:15.274] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:15.415] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:15.462] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:15.848] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:16.001] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:02:36.677] Browser LOG     %c[Vercel Speed Insights]%c [vitals] color: rgb(120, 120, 120) color: inherit {"metrics":[{"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263256647-5956272441707","route":"/dashboard/schedule","type":"FCP","value":11272},{"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263256647-4567359634882","route":"/dashboard/schedule","type":"TTFB","value":10709},{"attribution":{"eventTarget":"div>div.text-muted-foreground.text-sm"},"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263256647-2194094090362","route":"/dashboard/schedule","type":"LCP","value":11832},{"attribution":{"eventTarget":"div.hidden.h-14.w-full.items-center.gap-3.px-6.md:flex>div.flex.min-w-0.flex-1.items-center.gap-3"},"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263256647-9232816650253","route":"/dashboard/schedule","type":"CLS","value":0.0052}],"scriptVersion":"0.1.3","sdkName":"@vercel/speed-insights/next","sdkVersion":"1.2.0","speed":"4g"}
+[00:03:16.037] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:03:16.166] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:03:16.206] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:03:16.301] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:03:16.354] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:03:16.426] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:15.248] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:15.435] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:15.887] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:15.945] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:16.050] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:16.129] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:45.837] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:04:45.851] Server  LOG      ✓ Compiled in 464ms
+[00:04:46.923] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:04:47.067] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:04:47.342] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:04:47.757] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:04:47.884] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:04:48.139] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:04:48.349] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:02.778] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:03.985] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:04.796] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:05.446] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:05.601] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263547591}
+[00:05:05.677] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263547923}
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263547940}
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263547156}
+[00:05:05.677] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:05.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263547277}
+[00:05:05.762] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:06.378] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:06.555] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:12.134] Server  LOG      ✓ Compiled in 5ms
+[00:05:12.661] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:13.789] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:14.657] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263556808}
+[00:05:14.752] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263556952}
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:14.752] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263556797}
+[00:05:14.752] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:15.276] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:15.341] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:15.492] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:15.550] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:15.664] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:15.746] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263557774}
+[00:05:15.747] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263557794}
+[00:05:16.451] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:18.358] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:18.584] Server  LOG      ✓ Compiled in 0ms
+[00:05:19.503] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:19.589] Server  LOG      ✓ Compiled in 0ms
+[00:05:19.722] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:21.012] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:21.110] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:21.110] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:21.110] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263562843}
+[00:05:21.110] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:21.110] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263562922}
+[00:05:21.113] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:21.113] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:21.113] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263562846}
+[00:05:21.113] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:22.572] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:22.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263564735}
+[00:05:22.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263564755}
+[00:05:22.793] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:23.054] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:23.680] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:23.857] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:27.733] Server  LOG      ✓ Compiled in 3ms
+[00:05:28.317] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:29.297] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:30.093] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:30.528] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:30.676] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:30.676] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:30.676] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263572393}
+[00:05:30.676] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:30.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263572959}
+[00:05:30.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263572977}
+[00:05:30.677] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:30.677] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:30.677] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263572354}
+[00:05:30.677] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:30.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263572457}
+[00:05:30.746] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:30.992] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:31.465] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:31.609] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:39.765] Server  LOG      ✓ Compiled in 4ms
+[00:05:40.357] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:41.642] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:42.659] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:42.755] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:42.755] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:42.755] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263584916}
+[00:05:42.755] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:42.755] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263585026}
+[00:05:42.756] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:42.756] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:42.756] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263584951}
+[00:05:42.756] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:43.174] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:43.506] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:43.685] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263585589}
+[00:05:43.686] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263585609}
+[00:05:45.147] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:45.224] Server  LOG      ✓ Compiled in 2.2s
+[00:05:45.798] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:05:46.825] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:46.888] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:05:48.027] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:48.388] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:48.745] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:48.745] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:05:48.745] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263590416}
+[00:05:48.745] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:48.745] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263590508}
+[00:05:48.746] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:48.746] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:05:48.746] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263590472}
+[00:05:48.746] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:05:48.746] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263590989}
+[00:05:48.746] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263591017}
+[00:05:48.928] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:49.102] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:49.616] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:05:49.808] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:04.691] Server  LOG      ✓ Compiled in 807ms
+[00:06:04.853] Server  LOG      ✓ Compiled in 1ms
+[00:06:05.554] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:06.763] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:07.709] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263609927}
+[00:06:07.795] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263609910}
+[00:06:07.795] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:07.795] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263610005}
+[00:06:08.207] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:08.473] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:08.670] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:08.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263610595}
+[00:06:08.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263610621}
+[00:06:09.281] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:09.551] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:14.577] Server  LOG      ✓ Compiled in 15ms
+[00:06:15.118] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:16.290] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:16.947] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:17.145] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:17.518] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263619678}
+[00:06:17.683] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263619751}
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:06:17.683] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263619694}
+[00:06:17.683] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:18.110] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:18.360] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:19.263] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263620547}
+[00:06:19.263] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263620577}
+[00:06:19.484] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:20.397] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:20.598] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:27.242] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:28.073] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:29.686] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:29.686] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:06:29.686] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263631860}
+[00:06:29.686] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:29.905] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:30.757] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263633085}
+[00:06:30.758] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263633128}
+[00:06:30.758] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:30.758] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:06:30.758] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263631831}
+[00:06:30.758] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:30.758] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263632220}
+[00:06:31.519] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:31.771] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:31.967] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:32.565] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:32.740] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:34.578] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:34.658] Server  LOG      ✓ Compiled in 1054ms
+[00:06:37.296] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:38.875] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:38.994] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:38.994] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:06:38.994] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263640835}
+[00:06:38.994] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:38.994] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263640918}
+[00:06:39.004] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:39.004] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:06:39.004] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263640885}
+[00:06:39.004] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:39.651] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:39.679] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263641914}
+[00:06:39.679] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263641940}
+[00:06:39.980] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:40.603] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:40.782] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:44.845] Browser LOG     %c[Vercel Speed Insights]%c [vitals] color: rgb(120, 120, 120) color: inherit {"metrics":[{"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263640836-2111467682276","route":"/dashboard/schedule","type":"TTFB","value":1892}],"scriptVersion":"0.1.3","sdkName":"@vercel/speed-insights/next","sdkVersion":"1.2.0","speed":"4g"}
+[00:06:45.177] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:45.405] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:48.824] Server  LOG      ✓ Compiled in 1563ms
+[00:06:49.803] Server  LOG      ✓ Compiled in 0ms
+[00:06:50.755] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:51.895] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:06:52.400] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:52.858] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:53.578] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:53.744] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:53.744] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:06:53.744] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit event {"data":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"name":"page.viewed"}
+[00:06:53.744] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263655932}
+[00:06:53.744] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263655932}
+[00:06:53.744] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:53.749] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:53.750] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:06:53.750] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263655947}
+[00:06:53.750] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:06:55.516] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:55.775] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:06:55.878] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263657748}
+[00:06:55.878] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263657768}
+[00:06:56.032] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:56.116] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:56.422] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:57.210] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:06:57.394] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:15.011] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:07:15.120] Server  LOG      ✓ Compiled in 1420ms
+[00:07:15.438] Server  LOG      ✓ Compiled in 18ms
+[00:07:16.275] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:07:19.165] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:07:20.024] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:20.943] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:24.648] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:24.648] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:07:24.648] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263687177}
+[00:07:24.648] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:24.882] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263687308}
+[00:07:25.709] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:25.973] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:07:26.156] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:26.354] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:26.558] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:26.677] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:26.677] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:07:26.677] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263687671}
+[00:07:26.677] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:26.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263688335}
+[00:07:26.677] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263688355}
+[00:07:27.147] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:27.334] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:32.898] Server  LOG      ✓ Compiled in 1663ms
+[00:07:33.257] Server  LOG      ✓ Compiled in 0ms
+[00:07:34.154] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:07:37.139] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:07:38.251] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:07:38.408] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:38.408] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:07:38.408] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263700609}
+[00:07:38.408] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:38.408] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263700693}
+[00:07:39.547] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:40.364] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:07:40.519] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:40.700] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:40.700] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:07:40.700] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263701522}
+[00:07:40.700] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:07:40.700] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263702158}
+[00:07:40.700] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263702193}
+[00:07:40.708] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:40.917] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:41.564] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:41.791] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:47.891] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:07:48.126] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:02.790] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:08:02.955] Server  LOG      ✓ Compiled in 4.2s
+[00:08:04.404] Server  LOG     [Gmail Rate Limiter] Cleanup scheduled
+[00:08:06.649] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:08:08.378] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:08:08.378] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:08:08.378] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263730912}
+[00:08:08.378] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:08:08.923] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","ed":{"path":"/dashboard/schedule","referrer":"http://localhost:3000/dashboard/schedule","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263731064}
+[00:08:09.683] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:08:09.683] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:08:09.683] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263731952}
+[00:08:09.683] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:08:09.704] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:09.940] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:10.476] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:10.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263732448}
+[00:08:10.676] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764263732472}
+[00:08:10.684] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:11.353] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:11.564] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:15.271] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:15.532] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:16.677] Browser LOG     %c[Vercel Speed Insights]%c [vitals] color: rgb(120, 120, 120) color: inherit {"metrics":[{"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263730913-6538946908629","route":"/dashboard/schedule","type":"FCP","value":3416},{"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263730913-5911617054536","route":"/dashboard/schedule","type":"TTFB","value":1890},{"attribution":{"eventTarget":"div>div.text-muted-foreground.text-sm"},"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263730913-6883363051530","route":"/dashboard/schedule","type":"LCP","value":4224},{"attribution":{"eventTarget":"div.hidden.h-14.w-full.items-center.gap-3.px-6.md:flex>div.flex.min-w-0.flex-1.items-center.gap-3"},"href":"http://localhost:3000/dashboard/schedule","id":"v3-1764263730913-8746521815361","route":"/dashboard/schedule","type":"CLS","value":0.005}],"scriptVersion":"0.1.3","sdkName":"@vercel/speed-insights/next","sdkVersion":"1.2.0","speed":"4g"}
+[00:08:48.022] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:08:48.185] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:09.947] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:10.192] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:10.959] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:11.158] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:15.326] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:15.627] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:48.056] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:09:48.238] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:09.899] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:10.053] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:10.896] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:11.068] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:15.269] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:15.450] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:47.886] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:10:48.057] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:09.946] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:10.134] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:10.881] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:11.049] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:15.226] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:15.394] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:49.573] Browser LOG     %c[Vercel Speed Insights]%c [vitals] color: rgb(120, 120, 120) color: inherit {"metrics":[{"href":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","id":"v3-1764263731953-1811255818928","route":"/dashboard/ai/[chatId]","type":"TTFB","value":3058}],"scriptVersion":"0.1.3","sdkName":"@vercel/speed-insights/next","sdkVersion":"1.2.0","speed":"4g"}
+[00:11:57.170] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:11:57.367] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:09.647] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:09.826] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:10.875] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:11.039] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:15.226] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:15.405] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:21.756] Server  LOG      ✓ Compiled in 857ms
+[00:12:57.356] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:12:57.536] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:09.647] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:09.823] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:11.428] Server  LOG      ✓ Compiled in 621ms
+[00:13:11.737] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:11.825] Server  LOG      ✓ Compiled in 0ms
+[00:13:12.108] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:15.321] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:15.515] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:57.126] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:13:57.306] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:00.572] Server  LOG      ✓ Compiled in 355ms
+[00:14:09.630] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:09.882] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:10.938] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:11.122] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:15.559] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:16.131] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:16.697] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:16.942] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:17.676] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:17.676] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/schedule","route":"/dashboard/schedule"}
+[00:14:17.676] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/schedule color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/schedule","o":"http://localhost:3000/dashboard/schedule","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764264099953}
+[00:14:17.676] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:20.446] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:20.677] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:21.441] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:21.441] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard","route":"/dashboard"}
+[00:14:21.441] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764264103974}
+[00:14:21.441] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:23.323] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - No active company found. Please select a company.
+[00:14:23.842] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:23.842] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","route":"/dashboard/ai/[chatId]"}
+[00:14:23.842] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833 color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764264106338}
+[00:14:23.842] Browser LOG     %c[Vercel Speed Insights]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:24.207] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764264106709}
+[00:14:24.207] Browser LOG     %c[Vercel Web Analytics]%c [event] page.viewed color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard/ai/[chatId]","ed":{"path":"/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","referrer":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","title":"Modern Business Management Platform | Thorbis"},"en":"page.viewed","o":"http://localhost:3000/dashboard/ai/8d022a50-72a8-4596-8d26-7ee044562833","sdkn":"@vercel/analytics/next","sdkv":"1.5.0","sv":"0.1.3","ts":1764264106735}
+[00:14:24.323] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:24.657] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:25.223] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company
+[00:14:25.422] Server  DEBUG   [Auth] Expected auth error: AUTH_FORBIDDEN - You must be part of a company

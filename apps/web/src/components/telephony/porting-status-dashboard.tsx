@@ -77,108 +77,19 @@ type PortingRequest = {
 	stages: TimelineStage[];
 };
 
-// Mock data - will be replaced with real data from server actions
-const mockPortingRequests: PortingRequest[] = [
-	{
-		id: "port_1",
-		phoneNumber: "+18314306011",
-		currentCarrier: "Verizon",
-		accountNumber: "12345678",
-		status: "in_progress",
-		createdAt: "2025-01-29T10:00:00Z",
-		estimatedCompletionDate: "2025-02-07T17:00:00Z",
-		focDate: "2025-02-05T09:00:00Z",
-		currentStage: 2,
-		stages: [
-			{
-				id: "submitted",
-				label: "Request Submitted",
-				description:
-					"Your porting request has been received and is being processed",
-				status: "completed",
-				completedAt: "2025-01-29T10:00:00Z",
-			},
-			{
-				id: "validation",
-				label: "Validation Complete",
-				description: "Account details verified with your current carrier",
-				status: "completed",
-				completedAt: "2025-01-30T14:30:00Z",
-			},
-			{
-				id: "foc",
-				label: "FOC Received",
-				description: "Firm Order Commitment confirmed by carrier",
-				status: "current",
-				estimatedDate: "2025-02-05T09:00:00Z",
-			},
-			{
-				id: "porting",
-				label: "Porting in Progress",
-				description: "Number is being transferred to Twilio",
-				status: "pending",
-				estimatedDate: "2025-02-05T09:00:00Z",
-			},
-			{
-				id: "complete",
-				label: "Port Complete",
-				description: "Your number is now active on Twilio",
-				status: "pending",
-				estimatedDate: "2025-02-07T17:00:00Z",
-			},
-		],
-	},
-	{
-		id: "port_2",
-		phoneNumber: "+16505550123",
-		currentCarrier: "AT&T",
-		accountNumber: "87654321",
-		status: "validation_failed",
-		createdAt: "2025-01-28T15:30:00Z",
-		estimatedCompletionDate: "2025-02-06T17:00:00Z",
-		failureReason:
-			"Account number mismatch. Please verify your account number with AT&T.",
-		currentStage: 1,
-		stages: [
-			{
-				id: "submitted",
-				label: "Request Submitted",
-				description: "Your porting request has been received",
-				status: "completed",
-				completedAt: "2025-01-28T15:30:00Z",
-			},
-			{
-				id: "validation",
-				label: "Validation Failed",
-				description: "Unable to verify account details",
-				status: "failed",
-				completedAt: "2025-01-29T11:00:00Z",
-			},
-			{
-				id: "foc",
-				label: "FOC Pending",
-				description: "Awaiting carrier confirmation",
-				status: "pending",
-			},
-			{
-				id: "porting",
-				label: "Porting in Progress",
-				description: "Number transfer in progress",
-				status: "pending",
-			},
-			{
-				id: "complete",
-				label: "Port Complete",
-				description: "Number active on Twilio",
-				status: "pending",
-			},
-		],
-	},
-];
+// Export type for use by parent components
+export type { PortingRequest, PortingStatus, TimelineStage };
 
-export function PortingStatusDashboard() {
-	const [requests, _setRequests] = useState(mockPortingRequests);
+type PortingStatusDashboardProps = {
+	/** Porting requests from database */
+	requests?: PortingRequest[];
+};
+
+export function PortingStatusDashboard({
+	requests: initialRequests = [],
+}: PortingStatusDashboardProps) {
 	const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
+	const requests = initialRequests;
 
 	return (
 		<div className="space-y-6 p-6">

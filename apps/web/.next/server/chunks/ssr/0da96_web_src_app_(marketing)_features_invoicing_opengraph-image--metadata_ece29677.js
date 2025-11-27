@@ -1,3 +1,0 @@
-module.exports=[98811,a=>{"use strict";a.i(504348),a.i(434574),a.i(407439),a.i(56815),a.i(884600);var b=a.i(11798);let c={width:b.OG_CONFIG.width,height:b.OG_CONFIG.height};var d=a.i(756867);let e={alt:"One-Click Invoicing - Get Paid 2x Faster | Thorbis",contentType:"image/png",revalidate:86400,runtime:"edge",size:c};async function f(a){let{__metadata_id__:b,...c}=await a.params,f=(0,d.fillMetadataSegment)("/(marketing)/features/invoicing",c,"opengraph-image");return[function(a,b){let c={alt:a.alt,type:a.contentType||"image/png",url:f+"?9859cfb7cbd9c032"},{size:d}=a;return d&&(c.width=d.width,c.height=d.height),c}(e,0)]}a.s(["default",0,f],98811)}];
-
-//# sourceMappingURL=0da96_web_src_app_%28marketing%29_features_invoicing_opengraph-image--metadata_ece29677.js.map

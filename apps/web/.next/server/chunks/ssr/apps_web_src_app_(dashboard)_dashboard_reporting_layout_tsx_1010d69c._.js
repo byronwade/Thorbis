@@ -1,3 +1,0 @@
-module.exports=[290113,a=>{"use strict";var b=a.i(504348),c=a.i(962123);function d({children:a}){return(0,b.jsx)(c.SectionLayout,{config:{structure:{maxWidth:"full",padding:"none",gap:"none",fixedHeight:!1,variant:"default",background:"default",insetPadding:"default"},header:{show:!0},toolbar:{show:!1,title:null,actions:null},sidebar:{show:!0,variant:"standard"}},pathname:"/dashboard/reporting",children:a})}a.s(["default",()=>d])}];
-
-//# sourceMappingURL=apps_web_src_app_%28dashboard%29_dashboard_reporting_layout_tsx_1010d69c._.js.map
