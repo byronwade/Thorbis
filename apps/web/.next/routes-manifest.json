@@ -646,6 +646,18 @@
       "namedRegex": "^/api/ai/insights/job(?:/)?$"
     },
     {
+      "page": "/api/ai/price-recommendation",
+      "regex": "^/api/ai/price\\-recommendation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/ai/price\\-recommendation(?:/)?$"
+    },
+    {
+      "page": "/api/ai/suggestions",
+      "regex": "^/api/ai/suggestions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/ai/suggestions(?:/)?$"
+    },
+    {
       "page": "/api/ai/workflows/code-review",
       "regex": "^/api/ai/workflows/code\\-review(?:/)?$",
       "routeKeys": {},

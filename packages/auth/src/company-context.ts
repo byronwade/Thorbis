@@ -72,9 +72,8 @@ export const getActiveCompanyId = cache(async (): Promise<string | null> => {
 		}
 	}
 
-	// Fall back to first available company
-	const companies = await getUserCompanies();
-	return companies[0]?.id || null;
+	// No fallback: return null so callers can decide how to handle missing company
+	return null;
 });
 
 /**

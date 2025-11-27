@@ -41,11 +41,11 @@
 		"typescript": "^5.9.3",
 		"@tailwindcss/postcss": "^4.1.17",
 		"postcss": "^8.4.49",
-		"tailwindcss": "^4.1.16"
-	},
-	"devDependencies": {
+		"tailwindcss": "^4.1.16",
 		"@types/node": "^20.19.24",
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2"
+	},
+	"devDependencies": {
 	}
 }

@@ -452,6 +452,7 @@ export function AiChatInterface({
 			id: activeChatId, // Stable per chat - either from props or generated
 			initialMessages: dbMessages, // Load from DB if existing chat
 			transport,
+			maxRetries: 0, // avoid duplicate POSTs on rate limits in dev
 			experimental_throttle: 24, // Keep streaming smooth without over-rendering
 			onFinish: handleChatFinish,
 			onError: (err) => {
@@ -528,6 +529,12 @@ export function AiChatInterface({
 			message: { text: string; files: any[] },
 			event: React.FormEvent<HTMLFormElement>,
 		) => {
+			// Prevent double-send while a request is in-flight
+			if (status === "submitted" || status === "streaming") {
+				console.log("[AI Chat] Ignoring submit while request in-flight");
+				return;
+			}
+
 			if (!message.text?.trim()) {
 				console.log("[AI Chat] Empty message, ignoring");
 				return;

@@ -114,7 +114,10 @@
 		"xlsx": "^0.18.5",
 		"zod": "^4.1.12",
 		"zustand": "^5.0.8",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
+		"@types/node": "^20.19.24"
 	},
 	"devDependencies": {
 		"@next/bundle-analyzer": "16.0.1",
@@ -122,10 +125,7 @@
 		"@testing-library/react": "^16.3.0",
 		"@types/canvas-confetti": "^1.9.0",
 		"@types/google.maps": "^3.58.1",
-		"@types/node": "^20.19.24",
 		"@types/papaparse": "^5.5.0",
-		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.2",
 		"@types/uuid": "^11.0.0",
 		"@vitest/coverage-v8": "^4.0.14",
 		"eslint": "^9.39.1",

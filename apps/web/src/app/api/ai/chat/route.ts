@@ -920,7 +920,8 @@ export async function POST(req: Request) {
 		const temperature = settings?.model_temperature || 0.7;
 
 		// Use Groq exclusively (free with tools)
-		const modelId = requestedModel || settings?.preferred_model || "llama-3.3-70b-versatile";
+		const defaultModel = process.env.AI_DEFAULT_MODEL || "llama-3.1-8b-instant";
+		const modelId = requestedModel || settings?.preferred_model || defaultModel;
 		const provider: AIProvider = "groq";
 
 		console.log("[AI Chat API] Using model:", modelId, "provider:", provider);
@@ -955,6 +956,11 @@ export async function POST(req: Request) {
 			}));
 		}
 
+		// Drop tool role messages entirely (Groq requires tool_calls with arguments, which we don't persist in history)
+		modelMessages = modelMessages.filter(
+			(m: any) => m.role !== "tool" && m.role !== "function"
+		);
+
 		console.log("[AI Chat API] Processed messages:", {
 			originalFormat: isUIMessageFormat ? "UIMessage (parts)" : "ModelMessage (content)",
 			convertedCount: modelMessages.length,
@@ -979,10 +985,16 @@ export async function POST(req: Request) {
 		streamConfig.maxToolRoundtrips = 2; // cap tool loops to improve response time
 	}
 
-	// Stream the response
+	// Stream the response with retry-on-rate-limit (fallback to smaller model)
 	const aiStartTime = Date.now();
-	const result = streamText({
-		...streamConfig,
+	const runStream = async (modelOverride?: string) => {
+		if (modelOverride) {
+			console.warn("[AI Chat API] Falling back to model:", modelOverride);
+			streamConfig.model = createAIProvider({ provider, model: modelOverride });
+		}
+
+		return streamText({
+			...streamConfig,
 			// === AI SDK 6 BEST PRACTICE: Handle streaming errors ===
 			onError: (event) => {
 				console.error("[AI Chat API] Stream error:", {
@@ -995,7 +1007,7 @@ export async function POST(req: Request) {
 				// Track failed API call
 				trackExternalApiCall({
 					apiName: "groq",
-					endpoint: `chat.${modelId}`,
+					endpoint: `chat.${modelOverride || modelId}`,
 					companyId,
 					success: false,
 					responseTimeMs: Date.now() - aiStartTime,
@@ -1034,7 +1046,7 @@ export async function POST(req: Request) {
 				// Track the API call (fire-and-forget)
 				trackExternalApiCall({
 					apiName: "groq",
-					endpoint: `chat.${modelId}`,
+					endpoint: `chat.${modelOverride || modelId}`,
 					companyId,
 					success: true,
 					responseTimeMs,
@@ -1125,9 +1137,24 @@ export async function POST(req: Request) {
 				}
 			},
 		});
+	};
 
-		// AI SDK v5: Use toUIMessageStreamResponse for full-featured streaming with tools
-		return result.toUIMessageStreamResponse();
+	let result;
+	try {
+		result = await runStream();
+	} catch (error: any) {
+		const message = error?.message || "";
+		const isRateLimit = message.includes("rate limit") || message.includes("Rate limit");
+
+		if (isRateLimit && modelId !== "llama-3.1-8b-instant") {
+			result = await runStream("llama-3.1-8b-instant");
+		} else {
+			throw error;
+		}
+	}
+
+	// AI SDK v5: Use toUIMessageStreamResponse for full-featured streaming with tools
+	return result.toUIMessageStreamResponse();
 	} catch (error) {
 		console.error("[AI Chat API] Error:", error);
 

@@ -453,6 +453,8 @@
   "/api/ai/insights/email/route": "/api/ai/insights/email",
   "/api/ai/insights/job/route": "/api/ai/insights/job",
   "/api/ai/insights/route": "/api/ai/insights",
+  "/api/ai/price-recommendation/route": "/api/ai/price-recommendation",
+  "/api/ai/suggestions/route": "/api/ai/suggestions",
   "/api/ai/workflows/code-review/route": "/api/ai/workflows/code-review",
   "/api/ai/workflows/content/route": "/api/ai/workflows/content",
   "/api/analytics/data/route": "/api/analytics/data",

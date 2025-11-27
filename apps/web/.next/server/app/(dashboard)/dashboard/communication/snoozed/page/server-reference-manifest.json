@@ -1170,6 +1170,21 @@
       "exportedName": "deleteChat",
       "filename": "apps/web/src/actions/chats.ts"
     },
+    "40a5f656ca991b4cd8950e2bd9a09ff43b03711060": {
+      "workers": {
+        "app/(dashboard)/dashboard/communication/snoozed/page": {
+          "moduleId": 541769,
+          "async": true,
+          "exportedName": "toggleStarCommunicationAction",
+          "filename": "apps/web/src/actions/communications.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/communication/snoozed/page": "action-browser"
+      },
+      "exportedName": "toggleStarCommunicationAction",
+      "filename": "apps/web/src/actions/communications.ts"
+    },
     "40524c1583031c2739d079f1ff5659db08d99c857c": {
       "workers": {
         "app/(dashboard)/dashboard/communication/snoozed/page": {

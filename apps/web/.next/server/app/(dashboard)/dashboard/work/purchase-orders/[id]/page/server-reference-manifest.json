@@ -1185,6 +1185,21 @@
       "exportedName": "archivePurchaseOrder",
       "filename": "apps/web/src/actions/purchase-orders.ts"
     },
+    "701c658f2818338276f4ed8429372c3b1412fab901": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/purchase-orders/[id]/page": {
+          "moduleId": 208550,
+          "async": true,
+          "exportedName": "updatePurchaseOrderStatus",
+          "filename": "apps/web/src/actions/purchase-orders.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/purchase-orders/[id]/page": "action-browser"
+      },
+      "exportedName": "updatePurchaseOrderStatus",
+      "filename": "apps/web/src/actions/purchase-orders.ts"
+    },
     "7c13474a9092a93eb9a51197c6e34b5eb46593056c": {
       "workers": {
         "app/(dashboard)/dashboard/work/purchase-orders/[id]/page": {

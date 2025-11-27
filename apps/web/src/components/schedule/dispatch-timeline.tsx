@@ -250,14 +250,14 @@ const APPOINTMENT_CATEGORY_CONFIG: Record<
 		label: "Meeting",
 		bgColor: "bg-purple-500/10",
 		textColor: "text-purple-600 dark:text-purple-400",
-		borderStyle: "border-dashed",
+		borderStyle: "border-solid",
 	},
 	event: {
 		icon: Calendar,
 		label: "Event",
 		bgColor: "bg-emerald-500/10",
 		textColor: "text-emerald-600 dark:text-emerald-400",
-		borderStyle: "border-dotted",
+		borderStyle: "border-solid",
 	},
 };
 

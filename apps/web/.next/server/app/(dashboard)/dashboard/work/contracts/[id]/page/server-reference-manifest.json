@@ -1185,6 +1185,21 @@
       "exportedName": "archiveContract",
       "filename": "apps/web/src/actions/contracts.ts"
     },
+    "603801a810b8f75e44242c274e7a0f2aa0a59ee456": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/contracts/[id]/page": {
+          "moduleId": 779419,
+          "async": true,
+          "exportedName": "updateContractStatus",
+          "filename": "apps/web/src/actions/contracts.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/contracts/[id]/page": "action-browser"
+      },
+      "exportedName": "updateContractStatus",
+      "filename": "apps/web/src/actions/contracts.ts"
+    },
     "703caf7d1f56b6a441ac4d76b0f547903739d056bd": {
       "workers": {
         "app/(dashboard)/dashboard/work/contracts/[id]/page": {

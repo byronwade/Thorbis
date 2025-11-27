@@ -1,83 +1,88 @@
 {
   "version": 1,
   "functions": {
-    "/about/opengraph-image-1v42b1": {},
     "/accessibility/opengraph-image-igw60u": {},
-    "/careers/opengraph-image-1195xz": {},
-    "/case-studies/opengraph-image-9lmvsw": {},
+    "/about/opengraph-image-1v42b1": {},
     "/blog/opengraph-image-ey669m": {},
-    "/community/opengraph-image-1ap182": {},
-    "/contracts/sign/[id]/success/opengraph-image-yqbd0j": {},
-    "/contact/opengraph-image-1a8v0t": {},
-    "/cookies/opengraph-image-1a9dp3": {},
-    "/demo/opengraph-image-ey7jsr": {},
-    "/blog/[slug]/opengraph-image-yqks0s": {},
-    "/features/customer-portal/opengraph-image-789us5": {},
     "/api-docs/opengraph-image-1q5tw2": {},
-    "/features/[slug]/opengraph-image-po8to7": {},
-    "/features/invoicing/opengraph-image-1llbb9": {},
-    "/features/mobile-app/opengraph-image-2v1hii": {},
-    "/features/scheduling/opengraph-image-1uuysn": {},
+    "/blog/[slug]/opengraph-image-yqks0s": {},
+    "/careers/opengraph-image-1195xz": {},
+    "/community/opengraph-image-1ap182": {},
+    "/contact/opengraph-image-1a8v0t": {},
+    "/case-studies/opengraph-image-9lmvsw": {},
+    "/contracts/sign/[id]/opengraph-image-14ya5d": {},
+    "/contracts/sign/[id]/success/opengraph-image-yqbd0j": {},
+    "/demo/opengraph-image-ey7jsr": {},
+    "/features/ai-assistant/opengraph-image-eoqtlh": {},
+    "/cookies/opengraph-image-1a9dp3": {},
+    "/features/crm/opengraph-image-ocga6e": {},
     "/features/marketing/opengraph-image-rxnxhi": {},
-    "/features/opengraph-image-959drp": {},
-    "/free-tools/opengraph-image-1b4r2o": {},
+    "/features/mobile-app/opengraph-image-2v1hii": {},
     "/features/quickbooks/opengraph-image-y3wy5b": {},
-    "/implementation/opengraph-image-1fpeen": {},
-    "/industries/[slug]/opengraph-image-sbl75u": {},
+    "/features/opengraph-image-959drp": {},
+    "/features/scheduling/opengraph-image-1uuysn": {},
     "/gdpr/opengraph-image-ey9u83": {},
+    "/help/opengraph-image-eyamov": {},
+    "/free-tools/opengraph-image-1b4r2o": {},
+    "/features/invoicing/opengraph-image-1llbb9": {},
+    "/industries/opengraph-image-tm01wg": {},
+    "/features/customer-portal/opengraph-image-789us5": {},
     "/integrations/opengraph-image-8rrvkd": {},
     "/integrations/[slug]/opengraph-image-152ifn": {},
     "/kb/[category]/[slug]/opengraph-image-173bwz": {},
-    "/kb/[category]/opengraph-image-pvv4rs": {},
-    "/contracts/sign/[id]/opengraph-image-14ya5d": {},
-    "/pricing/opengraph-image-15m7k7": {},
-    "/partners/opengraph-image-lzqvxh": {},
-    "/press/opengraph-image-1vezo7": {},
-    "/privacy/opengraph-image-15mm02": {},
-    "/features/crm/opengraph-image-ocga6e": {},
-    "/roi/opengraph-image-19nkli": {},
-    "/solutions/opengraph-image-1eeop1": {},
-    "/site-map/opengraph-image-zbs4hi": {},
-    "/reviews/opengraph-image-55b9ln": {},
     "/kb/opengraph-image-1pnh5e": {},
-    "/switch/opengraph-image-otq3ag": {},
-    "/status/opengraph-image-orfoqi": {},
-    "/twitter-image-pwu6ef": {},
-    "/terms/opengraph-image-1vhjmq": {},
-    "/vs/fieldedge/opengraph-image-17howo": {},
-    "/vs/[slug]/opengraph-image-d9o1sx": {},
+    "/implementation/opengraph-image-1fpeen": {},
+    "/partners/opengraph-image-lzqvxh": {},
     "/kb/search/opengraph-image-1e8ohx": {},
-    "/vs/housecall-pro/opengraph-image-mwzj3g": {},
-    "/vs/servicem8/opengraph-image-1nhs1p": {},
-    "/opengraph-image-pwu6ef": {},
-    "/vs/servicetitan/opengraph-image-v2obj": {},
-    "/vs/jobber/opengraph-image-mw4c76": {},
-    "/security/opengraph-image-a9xnla": {},
-    "/vs/workiz/opengraph-image-vbddck": {},
-    "/webinars/opengraph-image-1micza": {},
-    "/twitter-image": {},
+    "/kb/[category]/opengraph-image-pvv4rs": {},
+    "/privacy/opengraph-image-15mm02": {},
+    "/industries/[slug]/opengraph-image-sbl75u": {},
+    "/reviews/opengraph-image-55b9ln": {},
+    "/solutions/opengraph-image-1eeop1": {},
+    "/roi/opengraph-image-19nkli": {},
+    "/site-map/opengraph-image-zbs4hi": {},
+    "/switch/opengraph-image-otq3ag": {},
     "/templates/opengraph-image-denkit": {},
-    "/industries/opengraph-image-tm01wg": {},
-    "/help/opengraph-image-eyamov": {},
+    "/terms/opengraph-image-1vhjmq": {},
+    "/status/opengraph-image-orfoqi": {},
+    "/opengraph-image-pwu6ef": {},
+    "/twitter-image-pwu6ef": {},
+    "/vs/[slug]/opengraph-image-d9o1sx": {},
+    "/vs/housecall-pro/opengraph-image-mwzj3g": {},
+    "/vs/jobber/opengraph-image-mw4c76": {},
+    "/press/opengraph-image-1vezo7": {},
+    "/vs/fieldedge/opengraph-image-17howo": {},
     "/vs/opengraph-image-1pnh5p": {},
+    "/vs/servicetitan/opengraph-image-v2obj": {},
+    "/security/opengraph-image-a9xnla": {},
+    "/webinars/opengraph-image-1micza": {},
+    "/vs/workiz/opengraph-image-vbddck": {},
+    "/vs/servicem8/opengraph-image-1nhs1p": {},
+    "/twitter-image": {},
     "/opengraph-image": {},
+    "/waitlist/opengraph-image-1cuodf": {},
+    "/features/[slug]/opengraph-image-po8to7": {},
+    "/pricing/opengraph-image-15m7k7": {},
+    "/api/ai/chat": {
+      "maxDuration": 60
+    },
     "/api/ai/completion": {
-      "maxDuration": 30
-    },
-    "/api/ai/insights/email": {
-      "maxDuration": 30
-    },
-    "/api/ai/insights/customer": {
-      "maxDuration": 30
-    },
-    "/api/ai/insights": {
       "maxDuration": 30
     },
     "/api/ai/execute-approved": {
       "maxDuration": 30
     },
-    "/api/ai/chat": {
-      "maxDuration": 60
+    "/api/ai/insights/customer": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights/email": {
+      "maxDuration": 30
+    },
+    "/api/ai/insights": {
+      "maxDuration": 30
+    },
+    "/api/ai/suggestions": {
+      "maxDuration": 30
     },
     "/api/ai/workflows/code-review": {
       "maxDuration": 60
@@ -85,37 +90,40 @@
     "/api/ai/workflows/content": {
       "maxDuration": 60
     },
+    "/api/ai/insights/job": {
+      "maxDuration": 30
+    },
     "/api/analytics/features": {
       "maxDuration": 30
     },
     "/api/chat": {
       "maxDuration": 30
     },
-    "/api/cron/aggregate-analytics": {
+    "/api/analytics/data": {
+      "maxDuration": 60
+    },
+    "/api/cron/calculate-seasonal-factors": {
       "maxDuration": 300
     },
     "/api/cron/calculate-job-costing": {
       "maxDuration": 300
     },
-    "/api/ai/insights/job": {
+    "/api/cron/aggregate-analytics": {
+      "maxDuration": 300
+    },
+    "/api/cron/calculate-dispatch-pricebook": {
+      "maxDuration": 300
+    },
+    "/api/ai/price-recommendation": {
       "maxDuration": 30
     },
-    "/api/cron/calculate-seasonal-factors": {
+    "/api/cron/populate-analytics": {
       "maxDuration": 300
-    },
-    "/api/cron/calculate-marketing-csr": {
-      "maxDuration": 300
-    },
-    "/api/cron/check-api-health": {
-      "maxDuration": 60
     },
     "/api/cron/sync-api-usage": {
       "maxDuration": 120
     },
-    "/api/cron/calculate-company-summary": {
-      "maxDuration": 300
-    },
-    "/api/analytics/data": {
+    "/api/cron/check-api-health": {
       "maxDuration": 60
     },
     "/api/documents/upload": {
@@ -124,13 +132,11 @@
     "/api/import/execute": {
       "maxDuration": 300
     },
-    "/api/cron/calculate-dispatch-pricebook": {
+    "/api/cron/calculate-marketing-csr": {
       "maxDuration": 300
     },
-    "/api/cron/populate-analytics": {
+    "/api/cron/calculate-company-summary": {
       "maxDuration": 300
-    },
-    "/features/ai-assistant/opengraph-image-eoqtlh": {},
-    "/waitlist/opengraph-image-1cuodf": {}
+    }
   }
 }

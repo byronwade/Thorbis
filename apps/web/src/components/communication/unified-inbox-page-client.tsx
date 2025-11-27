@@ -58,8 +58,8 @@ import {
 	markEmailAsReadAction,
 	retryFailedEmailAction,
 	toggleSpamEmailAction,
-	toggleStarEmailAction,
 } from "@/actions/email-actions";
+import { toggleStarCommunicationAction } from "@/actions/communications";
 import type {
 	CompanySms,
 	SmsTemplateContext,
@@ -656,7 +656,7 @@ export function UnifiedInboxPageClient({
 
 	const handleStar = useCallback(async (communicationId: string) => {
 		try {
-			const result = await toggleStarEmailAction(communicationId);
+			const result = await toggleStarCommunicationAction(communicationId);
 			if (result.success) {
 				toast.success("Updated");
 				setStarredIds((prev) => {
@@ -1564,6 +1564,18 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																<Badge variant="outline" className="gap-1">
 																	<User className="h-2.5 w-2.5" />
 																	Customer
+																</Badge>
+															)}
+															{selectedCommunication.assignedTo && (
+																<Badge
+																	variant="outline"
+																	className="gap-1 cursor-pointer hover:bg-accent"
+																	onClick={() => setTransferDialogOpen(true)}
+																>
+																	<UserPlus className="h-2.5 w-2.5" />
+																	{selectedCommunication.assignedTeamMember
+																		? `${selectedCommunication.assignedTeamMember.firstName} ${selectedCommunication.assignedTeamMember.lastName}`.trim()
+																		: "Assigned"}
 																</Badge>
 															)}
 														</div>

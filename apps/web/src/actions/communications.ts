@@ -689,3 +689,77 @@ export async function transferCommunicationAction(
 		};
 	}
 }
+
+/**
+ * Toggle star status for any communication type (email, SMS, call, voicemail)
+ */
+export async function toggleStarCommunicationAction(communicationId: string): Promise<{
+	success: boolean;
+	isStarred?: boolean;
+	error?: string;
+}> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		// Get user's company for security
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		const { data: profile } = await supabase
+			.from("profiles")
+			.select("company_id")
+			.eq("id", user.id)
+			.single();
+
+		if (!profile?.company_id) {
+			return { success: false, error: "No company found" };
+		}
+
+		// Get current tags (don't filter by type - works for all communication types)
+		const { data: communication, error: fetchError } = await supabase
+			.from("communications")
+			.select("tags")
+			.eq("id", communicationId)
+			.eq("company_id", profile.company_id)
+			.single();
+
+		if (fetchError) {
+			return { success: false, error: fetchError.message };
+		}
+
+		const currentTags = (communication?.tags as string[]) || [];
+		const isCurrentlyStarred = currentTags.includes("starred");
+
+		// Toggle the starred tag
+		const newTags = isCurrentlyStarred
+			? currentTags.filter((tag) => tag !== "starred")
+			: [...currentTags, "starred"];
+
+		// Update the communication
+		const { error: updateError } = await supabase
+			.from("communications")
+			.update({ tags: newTags.length > 0 ? newTags : null })
+			.eq("id", communicationId)
+			.eq("company_id", profile.company_id);
+
+		if (updateError) {
+			return { success: false, error: updateError.message };
+		}
+
+		revalidatePath(COMMUNICATIONS_PATH);
+		return { success: true, isStarred: !isCurrentlyStarred };
+	} catch (error) {
+		console.error("Error toggling star on communication:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}

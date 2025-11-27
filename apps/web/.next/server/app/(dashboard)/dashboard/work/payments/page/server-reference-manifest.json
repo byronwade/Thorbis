@@ -1214,6 +1214,21 @@
       },
       "exportedName": "unlinkPaymentFromJob",
       "filename": "apps/web/src/actions/payments.ts"
+    },
+    "4007c86f11fa0600a3bfdba5f40ca617a54f69297f": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/payments/page": {
+          "moduleId": 568000,
+          "async": true,
+          "exportedName": "restorePayment",
+          "filename": "apps/web/src/actions/payments.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/payments/page": "action-browser"
+      },
+      "exportedName": "restorePayment",
+      "filename": "apps/web/src/actions/payments.ts"
     }
   },
   "edge": {}

@@ -2898,9 +2898,7 @@ const configEnv = ("TURBOPACK compile-time value", {
         ("TURBOPACK compile-time value", 384)
     ]),
     "qualities": ("TURBOPACK compile-time value", [
-        ("TURBOPACK compile-time value", 75),
-        ("TURBOPACK compile-time value", 70),
-        ("TURBOPACK compile-time value", 70)
+        ("TURBOPACK compile-time value", 75)
     ]),
     "path": ("TURBOPACK compile-time value", "/_next/image"),
     "loader": ("TURBOPACK compile-time value", "default"),
@@ -3266,9 +3264,7 @@ function getImageProps(imgProps) {
                 ("TURBOPACK compile-time value", 384)
             ]),
             "qualities": ("TURBOPACK compile-time value", [
-                ("TURBOPACK compile-time value", 75),
-                ("TURBOPACK compile-time value", 70),
-                ("TURBOPACK compile-time value", 70)
+                ("TURBOPACK compile-time value", 75)
             ]),
             "path": ("TURBOPACK compile-time value", "/_next/image"),
             "loader": ("TURBOPACK compile-time value", "default"),

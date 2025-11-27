@@ -453,6 +453,8 @@
   "/api/ai/insights/email/route": "app/api/ai/insights/email/route.js",
   "/api/ai/insights/job/route": "app/api/ai/insights/job/route.js",
   "/api/ai/insights/route": "app/api/ai/insights/route.js",
+  "/api/ai/price-recommendation/route": "app/api/ai/price-recommendation/route.js",
+  "/api/ai/suggestions/route": "app/api/ai/suggestions/route.js",
   "/api/ai/workflows/code-review/route": "app/api/ai/workflows/code-review/route.js",
   "/api/ai/workflows/content/route": "app/api/ai/workflows/content/route.js",
   "/api/analytics/data/route": "app/api/analytics/data/route.js",

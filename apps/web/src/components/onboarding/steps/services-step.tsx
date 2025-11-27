@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AIInputField } from "@/components/ai/ai-field-wrapper";
+import { AIPriceRecommendButton } from "@/components/ai/ai-price-recommend-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -484,15 +485,31 @@ export function ServicesStep() {
 									buttonPosition="end"
 									className="h-9"
 								/>
-								<div className="relative">
-									<DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-									<Input
-										placeholder="0.00"
-										value={service.price}
-										onChange={(e) =>
-											updateService(service.id, { price: e.target.value })
+								<div className="flex gap-1">
+									<div className="relative flex-1">
+										<DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+										<Input
+											placeholder="0.00"
+											value={service.price}
+											onChange={(e) =>
+												updateService(service.id, { price: e.target.value })
+											}
+											className="pl-8 h-9"
+										/>
+									</div>
+									<AIPriceRecommendButton
+										context={{
+											serviceName: service.name,
+											industry: industryLabel,
+											duration: service.duration,
+											existingPrices: data.services
+												.filter((s) => s.id !== service.id && s.price)
+												.map((s) => ({ name: s.name, price: s.price })),
+										}}
+										onAccept={(price) =>
+											updateService(service.id, { price: price.toString() })
 										}
-										className="pl-8 h-9"
+										size="sm"
 									/>
 								</div>
 								<Select
