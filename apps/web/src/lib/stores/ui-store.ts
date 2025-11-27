@@ -51,9 +51,9 @@ type CallState = {
 	callSessionId: string | null;
 	direction: "inbound" | "outbound";
 
-	// Telnyx state
-	telnyxCallState: "idle" | "connecting" | "ringing" | "active" | "ended";
-	telnyxError: string | null;
+	// Twilio state
+	twilioCallState: "idle" | "connecting" | "ringing" | "active" | "ended";
+	twilioError: string | null;
 
 	// Enhanced features
 	isScreenSharing: boolean;
@@ -127,9 +127,9 @@ type UIActions = {
 	// Customer data actions
 	setCustomerData: (data: unknown) => void;
 	clearCustomerData: () => void;
-	// Telnyx state actions
-	setTelnyxCallState: (state: CallState["telnyxCallState"]) => void;
-	setTelnyxError: (error: string | null) => void;
+	// Twilio state actions
+	setTwilioCallState: (state: CallState["twilioCallState"]) => void;
+	setTwilioError: (error: string | null) => void;
 	setCallMetadata: (metadata: {
 		callControlId: string;
 		callSessionId: string;
@@ -165,8 +165,8 @@ const initialState: UIState = {
 		callControlId: null,
 		callSessionId: null,
 		direction: "inbound",
-		telnyxCallState: "idle",
-		telnyxError: null,
+		twilioCallState: "idle",
+		twilioError: null,
 		isScreenSharing: false,
 		connectionQuality: "excellent",
 		hasVirtualBackground: false,
@@ -641,23 +641,23 @@ export const useUIStore = create<UIStore>()(
 						"clearCustomerData",
 					),
 
-				// Telnyx state actions
-				setTelnyxCallState: (telnyxState) =>
+				// Twilio state actions
+				setTwilioCallState: (twilioState) =>
 					set(
 						(state) => {
-							state.call.telnyxCallState = telnyxState;
+							state.call.twilioCallState = twilioState;
 						},
 						false,
-						"setTelnyxCallState",
+						"setTwilioCallState",
 					),
 
-				setTelnyxError: (error) =>
+				setTwilioError: (error) =>
 					set(
 						(state) => {
-							state.call.telnyxError = error;
+							state.call.twilioError = error;
 						},
 						false,
-						"setTelnyxError",
+						"setTwilioError",
 					),
 
 				setCallMetadata: (metadata) =>

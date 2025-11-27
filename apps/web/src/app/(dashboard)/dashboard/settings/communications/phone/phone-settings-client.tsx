@@ -13,8 +13,8 @@ import Link from "next/link";
 import { useCallback } from "react";
 import { getPhoneSettings, updatePhoneSettings } from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
-import { CallFlowDesigner } from "@/components/telnyx/call-flow-designer";
-import { VoicemailSettings } from "@/components/telnyx/voicemail-settings";
+import { CallFlowDesigner } from "@/components/telephony/call-flow-designer";
+import { VoicemailSettings } from "@/components/telephony/voicemail-settings";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -494,7 +494,7 @@ export default function PhoneSettingsClient({
 								<CardTitle>Company Voicemail Experience</CardTitle>
 								<CardDescription>
 									Configure greetings, notifications, and mailbox rules for
-									every Telnyx number.
+									every Twilio number.
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-0">

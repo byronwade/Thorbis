@@ -336,7 +336,7 @@ export function AICallsContent() {
 						<div>
 							<p className="text-sm font-medium">AI Calling Coming Soon</p>
 							<p className="text-xs text-muted-foreground">
-								Full AI phone integration with Telnyx is under development. Demo
+								Full AI phone integration with Twilio is under development. Demo
 								data shown above.
 							</p>
 						</div>

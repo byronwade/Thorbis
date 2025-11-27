@@ -11,14 +11,14 @@
 
 "use server";
 
-import type { ReactElement } from "react";
 import { createClient } from "@/lib/supabase/server";
+import type { ReactElement } from "react";
 import VerificationCompleteEmail from "../../../emails/templates/onboarding/verification-complete";
 import VerificationSubmittedEmail from "../../../emails/templates/onboarding/verification-submitted";
 import { sendEmail } from "./email-sender";
 import type { EmailSendResult } from "./email-types";
 import { EmailTemplate } from "./email-types";
-import { emailConfig } from "./resend-client";
+import { sendgridConfig as emailConfig } from "./sendgrid-client";
 
 /**
  * Send "Verification Submitted" email

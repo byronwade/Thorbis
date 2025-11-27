@@ -36,10 +36,7 @@ function DialogOverlay({
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
 	return (
 		<DialogPrimitive.Overlay
-			className={cn(
-				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=open]:animate-in fixed inset-0 z-50 bg-black/50 backdrop-blur-sm dark:bg-black/80 dark:backdrop-blur-[4px]",
-				className,
-			)}
+			className={cn("dialog-overlay", className)}
 			data-slot="dialog-overlay"
 			{...props}
 		/>
@@ -58,20 +55,17 @@ function DialogContent({
 		<DialogPortal data-slot="dialog-portal">
 			<DialogOverlay />
 			<DialogPrimitive.Content
-				className={cn(
-					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=open]:animate-in fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border-hairline border-border-subtle bg-white p-6 text-gray-900 shadow-overlay-xl dark:bg-[#070707] dark:text-zinc-100 dark:ring-1 dark:ring-white/10 transition-smooth sm:max-w-2xl animate-spring-in",
-					className,
-				)}
+				className={cn("dialog-content", className)}
 				data-slot="dialog-content"
 				{...props}
 			>
 				{children}
 				{showCloseButton && (
 					<DialogPrimitive.Close
-						className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs text-gray-500 opacity-70 transition-opacity hover:text-gray-900 hover:opacity-100 dark:text-zinc-400 dark:hover:text-zinc-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+						className="dialog-close-button"
 						data-slot="dialog-close"
 					>
-						<XIcon />
+						<XIcon className="size-4" />
 						<span className="sr-only">Close</span>
 					</DialogPrimitive.Close>
 				)}

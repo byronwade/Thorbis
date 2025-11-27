@@ -1,15 +1,15 @@
 "use server";
 
-import { z } from "zod";
 import {
-	archiveAllEmails,
-	type CompanyEmail,
-	getCompanyEmails,
-	getEmailById,
-	getEmailStats,
-	getEmailThreads,
-	markEmailAsRead,
+    archiveAllEmails,
+    type CompanyEmail,
+    getCompanyEmails,
+    getEmailById,
+    getEmailStats,
+    getEmailThreads,
+    markEmailAsRead,
 } from "@/lib/email/email-service";
+import { z } from "zod";
 
 const getEmailsSchema = z
 	.object({
@@ -493,8 +493,9 @@ export async function fetchEmailContentAction(
 }
 
 /**
- * Sync inbound email routes from database to Resend
- * Creates routes in Resend that don't have a resend_route_id
+ * Sync inbound email routes - DEPRECATED
+ * This function was used for Resend inbound routes, which have been removed.
+ * Inbound email is now handled via SendGrid Inbound Parse or similar.
  */
 export async function syncInboundRoutesToResendAction(): Promise<{
 	success: boolean;
@@ -503,142 +504,13 @@ export async function syncInboundRoutesToResendAction(): Promise<{
 }> {
 	"use server";
 
-	try {
-		const { createClient } = await import("@/lib/supabase/server");
-		const { createInboundRoute } = await import("@/lib/email/resend-domains");
-		const { createServiceSupabaseClient } = await import(
-			"@/lib/supabase/service-client"
-		);
-
-		const supabase = await createClient();
-		if (!supabase) {
-			return {
-				success: false,
-				synced: 0,
-				errors: ["Database connection failed"],
-			};
-		}
-
-		const serviceSupabase = await createServiceSupabaseClient();
-		if (!serviceSupabase) {
-			return {
-				success: false,
-				synced: 0,
-				errors: ["Service database connection failed"],
-			};
-		}
-
-		// Get all routes that don't have a resend_route_id
-		// Note: This table may not be in the type definitions, so we use type assertion
-		const { data: routes, error } = await (serviceSupabase
-			.from("communication_email_inbound_routes" as any)
-			.select("id, company_id, route_address, name, enabled")
-			.is("resend_route_id", null)
-			.eq("enabled", true) as any);
-
-		if (error) {
-			console.error("Failed to fetch routes:", error);
-			return { success: false, synced: 0, errors: [error.message] };
-		}
-
-		if (!routes || routes.length === 0) {
-			return { success: true, synced: 0, errors: [] };
-		}
-
-		// Construct webhook URL
-		let webhookUrl = process.env.NEXT_PUBLIC_SITE_URL;
-		if (!webhookUrl && process.env.VERCEL_URL) {
-			webhookUrl = `https://${process.env.VERCEL_URL}`;
-		}
-		if (!webhookUrl) {
-			return {
-				success: false,
-				synced: 0,
-				errors: [
-					"Webhook URL not configured. Set NEXT_PUBLIC_SITE_URL or VERCEL_URL",
-				],
-			};
-		}
-		webhookUrl = `${webhookUrl}/api/webhooks/resend`;
-
-		const errors: string[] = [];
-		let synced = 0;
-
-		for (const route of (routes || []) as Array<{
-			id: string;
-			company_id: string;
-			route_address: string;
-			name: string | null;
-			enabled: boolean;
-		}>) {
-			try {
-				// Handle catch-all routes (e.g., @biezru.resend.app)
-				// Resend doesn't support true catch-all, so we'll create a route for the domain
-				// For now, we'll skip catch-all routes and handle them differently
-				if (route.route_address.startsWith("@")) {
-					errors.push(
-						`Catch-all routes (${route.route_address}) need to be configured manually in Resend dashboard`,
-					);
-					continue;
-				}
-
-				// Create route in Resend
-				const result = await createInboundRoute({
-					name: route.name || `Route for ${route.route_address}`,
-					recipients: [route.route_address],
-					url: webhookUrl,
-				});
-
-				if (!result.success) {
-					console.error(
-						`❌ Failed to create Resend route for ${route.route_address}:`,
-						result.error,
-					);
-					errors.push(`${route.route_address}: ${result.error}`);
-					continue;
-				}
-
-				// Update database with resend_route_id
-				const { error: updateError } = await (serviceSupabase
-					.from("communication_email_inbound_routes" as any)
-					.update({
-						resend_route_id: result.data.id,
-						signing_secret: result.data.secret || null,
-						last_synced_at: new Date().toISOString(),
-					})
-					.eq("id", route.id) as any);
-
-				if (updateError) {
-					console.error(
-						`❌ Failed to update route ${route.route_address}:`,
-						updateError,
-					);
-					errors.push(`${route.route_address}: Database update failed`);
-					continue;
-				}
-
-				synced++;
-			} catch (error) {
-				console.error(`❌ Error syncing route ${route.route_address}:`, error);
-				errors.push(
-					`${route.route_address}: ${error instanceof Error ? error.message : "Unknown error"}`,
-				);
-			}
-		}
-
-		return {
-			success: errors.length === 0,
-			synced,
-			errors,
-		};
-	} catch (error) {
-		console.error("Error syncing inbound routes:", error);
-		return {
-			success: false,
-			synced: 0,
-			errors: [error instanceof Error ? error.message : "Unknown error"],
-		};
-	}
+	// This function is deprecated - Resend has been removed
+	console.warn("[DEPRECATED] syncInboundRoutesToResendAction called - Resend has been removed");
+	return {
+		success: false,
+		synced: 0,
+		errors: ["Inbound email routes via Resend are no longer supported. Configure SendGrid Inbound Parse instead."],
+	};
 }
 
 /**

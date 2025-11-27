@@ -4,7 +4,7 @@
  * Porting Status Tracker
  *
  * Comprehensive tracking for phone number porting (2-4 week process)
- * - Polls Telnyx API every 30 seconds for status updates
+ * - Polls Twilio API every 30 seconds for status updates
  * - Shows timeline with current stage
  * - Educational content (dos and don'ts)
  * - Estimated completion date
@@ -120,7 +120,7 @@ export function PortingStatusTracker({
 	const [isPolling, setIsPolling] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Poll Telnyx API every 30 seconds
+	// Poll Twilio API every 30 seconds
 	useEffect(() => {
 		if (!isPolling) return;
 
@@ -264,7 +264,7 @@ export function PortingStatusTracker({
 						<div>
 							<p className="text-sm font-medium">Porting Service</p>
 							<p className="text-sm text-muted-foreground">
-								Telnyx coordinates the port with {carrier}
+								Twilio coordinates the port with {carrier}
 							</p>
 						</div>
 					</div>
@@ -339,9 +339,9 @@ export function PortingStatusTracker({
 						<div>
 							<p className="font-medium text-foreground">Third-Party Service</p>
 							<p className="text-muted-foreground mt-1">
-								We use Telnyx, a professional porting service, to coordinate
+								We use Twilio, a professional porting service, to coordinate
 								with {carrier}. The timeline is controlled by {carrier} and
-								federal regulations - not by us or Telnyx.
+								federal regulations - not by us or Twilio.
 							</p>
 						</div>
 					</div>
@@ -509,7 +509,7 @@ export function PortingStatusTracker({
 							Check for outstanding balances or contract obligations (1-2 days)
 						</li>
 						<li>
-							Schedule the port date (FOC) with Telnyx (1-2 days notice
+							Schedule the port date (FOC) with Twilio (1-2 days notice
 							required)
 						</li>
 						<li>
@@ -527,11 +527,11 @@ export function PortingStatusTracker({
 			{/* What Happens Next */}
 			<div className="space-y-3">
 				<h4 className="text-sm font-semibold">
-					The porting process (controlled by {carrier} and Telnyx)
+					The porting process (controlled by {carrier} and Twilio)
 				</h4>
 				<p className="text-xs text-muted-foreground">
-					Note: Telnyx is our third-party porting service provider. Neither we
-					nor Telnyx control the timeline - {carrier} does.
+					Note: Twilio is our third-party porting service provider. Neither we
+					nor Twilio control the timeline - {carrier} does.
 				</p>
 				<div className="space-y-3 text-sm text-muted-foreground">
 					<div className="flex items-start gap-3">
@@ -540,7 +540,7 @@ export function PortingStatusTracker({
 						</div>
 						<p>
 							<strong className="text-foreground">Submission (Day 1):</strong>{" "}
-							Telnyx has submitted your porting request to {carrier} via the
+							Twilio has submitted your porting request to {carrier} via the
 							industry-standard LSR (Local Service Request) system. {carrier}{" "}
 							has 24-48 hours to acknowledge it.
 						</p>
@@ -566,7 +566,7 @@ export function PortingStatusTracker({
 							<strong className="text-foreground">
 								Scheduling (FOC Date):
 							</strong>{" "}
-							Once {carrier} approves, Telnyx will coordinate with them to
+							Once {carrier} approves, Twilio will coordinate with them to
 							schedule the "Firm Order Commitment" (FOC) date. You'll receive 24
 							hours notice before the switch.
 						</p>
@@ -577,7 +577,7 @@ export function PortingStatusTracker({
 						</div>
 						<p>
 							<strong className="text-foreground">Completion:</strong> On the
-							FOC date, {carrier} will release your number and Telnyx will
+							FOC date, {carrier} will release your number and Twilio will
 							activate it on our platform. This happens automatically and
 							usually takes a few minutes. You'll receive a confirmation email
 							from us.
@@ -589,7 +589,7 @@ export function PortingStatusTracker({
 						<strong className="text-foreground">Important:</strong> We monitor
 						the port status daily and will email you immediately if {carrier}{" "}
 						requests additional information or if there are any issues. The
-						entire process is automated between Telnyx and {carrier} - we cannot
+						entire process is automated between Twilio and {carrier} - we cannot
 						manually intervene to speed it up.
 					</p>
 				</div>

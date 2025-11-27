@@ -6,7 +6,7 @@ This module provides AI capabilities using the Vercel AI SDK with gateway integr
 
 - 🌐 **Vercel AI Gateway** - Enterprise routing, caching, and rate limiting
 - 🔄 **Multi-Step Workflows** - Orchestrate complex AI agent pipelines
-- 🎯 **Multiple Providers** - OpenAI, Anthropic, Google (auto-switching)
+- 🎯 **Groq Provider** - Free tier with LLaMA 3.3 70B (tool calling support)
 - 📊 **Structured Output** - Type-safe responses with Zod schemas
 - 🔧 **Tool Calling** - Function calling for AI agents
 - ⚡ **Streaming** - Real-time response streaming
@@ -20,18 +20,15 @@ This module provides AI capabilities using the Vercel AI SDK with gateway integr
 Add to `.env.local`:
 
 ```bash
-# AI Provider API Keys
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-GOOGLE_GENERATIVE_AI_API_KEY=...
+# Groq AI Provider API Key (FREE - get from https://console.groq.com)
+GROQ_API_KEY=gsk_...
 
 # Vercel AI Gateway (optional but recommended)
 AI_GATEWAY_URL=https://gateway.ai.vercel.com
 AI_GATEWAY_TOKEN=your-gateway-token
 
 # Default Configuration
-AI_PROVIDER=openai              # openai | anthropic | google
-AI_MODEL=gpt-4o                 # Model to use by default
+AI_MODEL=llama-3.3-70b-versatile  # Model to use by default
 ```
 
 ### 2. Get Vercel AI Gateway Token
@@ -361,19 +358,20 @@ const result = await generateText({
 });
 ```
 
-## Provider Switching
+## Provider Configuration
 
 ```typescript
-// Use specific provider
-const openai = createAIProvider({ provider: "openai", model: "gpt-4o" });
-const claude = createAIProvider({ provider: "anthropic", model: "claude-3-5-sonnet-20241022" });
-const gemini = createAIProvider({ provider: "google", model: "gemini-2.0-flash-exp" });
+// Groq is the default (and only) provider - FREE tier
+const model = createAIProvider(); // Uses llama-3.3-70b-versatile by default
+
+// Use a specific Groq model
+const fastModel = createAIProvider({ model: "llama-3.1-8b-instant" });
+const versatileModel = createAIProvider({ model: "llama-3.3-70b-versatile" });
 
 // Available models
 import { AVAILABLE_MODELS } from "@/lib/ai";
-console.log(AVAILABLE_MODELS.openai);
-console.log(AVAILABLE_MODELS.anthropic);
-console.log(AVAILABLE_MODELS.google);
+console.log(AVAILABLE_MODELS.groq);
+// ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it"]
 ```
 
 ## Monitoring & Debugging
@@ -422,8 +420,9 @@ Metrics include:
 
 ## Cost Optimization
 
+- **Groq Free Tier** - All Groq models are FREE with generous rate limits
 - **Gateway Caching** - Reuse responses for identical prompts
-- **Smaller Models** - Use `gpt-4o-mini` or `claude-3-5-haiku` when appropriate
+- **Smaller Models** - Use `llama-3.1-8b-instant` for faster responses
 - **Structured Output** - Reduce tokens with focused schemas
 - **Prompt Engineering** - Be concise but specific
 - **Stop Sequences** - Terminate early when needed
@@ -432,6 +431,5 @@ Metrics include:
 
 - [Vercel AI SDK Docs](https://sdk.vercel.ai/docs)
 - [Vercel AI Gateway](https://vercel.com/docs/ai-gateway)
-- [OpenAI Models](https://platform.openai.com/docs/models)
-- [Anthropic Models](https://docs.anthropic.com/claude/docs/models-overview)
-- [Google AI Models](https://ai.google.dev/models)
+- [Groq Console](https://console.groq.com) - Get your FREE API key
+- [Groq Models](https://console.groq.com/docs/models)

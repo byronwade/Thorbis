@@ -354,7 +354,7 @@ export function AITextsContent() {
 						<div>
 							<p className="text-sm font-medium">AI Texting Coming Soon</p>
 							<p className="text-xs text-muted-foreground">
-								Full AI SMS automation with Telnyx is under development. Demo
+								Full AI SMS automation with Twilio is under development. Demo
 								data shown above.
 							</p>
 						</div>

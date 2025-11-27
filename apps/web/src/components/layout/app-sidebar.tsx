@@ -17,6 +17,7 @@ import { CommunicationSwitcher } from "@/components/communication/communication-
 import { EmailSidebar } from "@/components/communication/email-sidebar";
 import { TeamsSidebar } from "@/components/communication/teams-sidebar";
 import { TextSidebar } from "@/components/communication/text-sidebar";
+import { UnifiedCommunicationSidebar } from "@/components/communication/unified-communication-sidebar";
 import {
 	AiNewChatButton,
 	NavChatHistory,
@@ -2319,13 +2320,27 @@ export function AppSidebar({
 	const useCustomSidebar = navItems === "custom";
 
 	// Check for communication-specific sidebars
-	// Main communication page (reports/statistics)
-	const isCommunicationReportsPage = pathname === "/dashboard/communication";
+	// Main communication page (unified hub with email + SMS + calls combined)
+	const isUnifiedCommunicationPage =
+		pathname === "/dashboard/communication" ||
+		pathname === "/dashboard/communication/inbox" ||
+		pathname === "/dashboard/communication/sent" ||
+		pathname === "/dashboard/communication/archive" ||
+		pathname === "/dashboard/communication/trash" ||
+		pathname === "/dashboard/communication/snoozed" ||
+		pathname === "/dashboard/communication/spam" ||
+		pathname === "/dashboard/communication/drafts";
+	// Stats page uses reports sidebar
+	const isCommunicationReportsPage =
+		pathname === "/dashboard/communication/stats";
 	// Email page is at /dashboard/communication/email (with query params for folder filtering)
 	const isEmailPage = pathname?.startsWith("/dashboard/communication/email");
 	const isSmsPage = pathname?.startsWith("/dashboard/communication/sms");
 	const isTeamsPage = pathname?.startsWith("/dashboard/communication/teams");
 
+	if (isUnifiedCommunicationPage) {
+		return <UnifiedCommunicationSidebar {...props} />;
+	}
 	if (isCommunicationReportsPage) {
 		return <CommunicationReportsSidebar {...props} />;
 	}

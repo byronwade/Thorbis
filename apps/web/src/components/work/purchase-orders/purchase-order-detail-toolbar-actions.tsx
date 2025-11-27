@@ -4,18 +4,23 @@
  * Purchase Order Detail Toolbar Actions - Client Component
  *
  * Provides PO-specific toolbar actions:
+ * - Status update dropdown (inline)
  * - Send to vendor
  * - Download PDF
  * - Duplicate PO
  * - Archive PO
  *
- * Design: Clean, compact, outline buttons with consistent grouping
+ * Design: Clean, compact, outline variant buttons
  */
 
 import { Archive, Copy, Download, Mail } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { archivePurchaseOrder } from "@/actions/purchase-orders";
+import {
+	archivePurchaseOrder,
+	updatePurchaseOrderStatus,
+} from "@/actions/purchase-orders";
+import { StatusUpdateDropdown } from "@/components/work/shared/quick-actions/status-update-dropdown";
 import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +40,45 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
-export function PurchaseOrderDetailToolbarActions() {
+type PurchaseOrderDetailToolbarActionsProps = {
+	/** Purchase Order data for status and actions */
+	purchaseOrder?: {
+		id: string;
+		status?: string;
+	};
+};
+
+export function PurchaseOrderDetailToolbarActions({
+	purchaseOrder,
+}: PurchaseOrderDetailToolbarActionsProps) {
 	const pathname = usePathname();
 	const router = useRouter();
 	const { toast } = useToast();
-	const poId = pathname?.split("/").pop();
+	const poId = purchaseOrder?.id || pathname?.split("/").pop() || "";
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
+
+	/**
+	 * Handle purchase order status update via server action
+	 */
+	const handleStatusChange = async (
+		entityId: string,
+		newStatus: string
+	): Promise<{ success: boolean; error?: string }> => {
+		try {
+			const result = await updatePurchaseOrderStatus(entityId, newStatus);
+			return {
+				success: result.success,
+				error: result.error,
+			};
+		} catch (error) {
+			console.error("Purchase order status update error:", error);
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "Failed to update status",
+			};
+		}
+	};
 
 	const handleArchive = async () => {
 		if (!poId) {
@@ -70,6 +107,17 @@ export function PurchaseOrderDetailToolbarActions() {
 	return (
 		<>
 			<div className="flex items-center gap-1.5">
+				{/* Status Update Dropdown - First Position */}
+				{purchaseOrder?.status && poId && (
+					<StatusUpdateDropdown
+						currentStatus={purchaseOrder.status}
+						entityId={poId}
+						entityType="purchase-order"
+						onStatusChange={handleStatusChange}
+						size="sm"
+					/>
+				)}
+
 				{/* Quick Actions */}
 				<TooltipProvider>
 					<Tooltip>

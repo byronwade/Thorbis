@@ -92,10 +92,10 @@ function ScoreIndicator({
 }) {
 	const color =
 		score >= 80
-			? "text-green-500"
+			? "text-green-500 dark:text-green-400"
 			: score >= 60
-				? "text-amber-500"
-				: "text-red-500";
+				? "text-amber-500 dark:text-amber-400"
+				: "text-red-500 dark:text-red-400";
 
 	const bgColor =
 		score >= 80
@@ -181,11 +181,11 @@ function RecommendationCard({
 									className={cn(
 										"text-xs",
 										technician.status === "available" &&
-											"border-green-500 text-green-600",
+											"border-green-500 dark:border-green-400 text-green-600 dark:text-green-400",
 										technician.status === "on-job" &&
-											"border-blue-500 text-blue-600",
+											"border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400",
 										technician.status === "on-break" &&
-											"border-amber-500 text-amber-600",
+											"border-amber-500 dark:border-amber-400 text-amber-600 dark:text-amber-400",
 									)}
 								>
 									{technician.status}

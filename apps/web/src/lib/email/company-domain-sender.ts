@@ -25,10 +25,8 @@
  * - Stored in company_email_domains.reply_to_email
  */
 
-import { Resend } from "resend";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendSendGridEmail } from "./sendgrid-client";
 
 type CompanyDomain = {
 	id: string;
@@ -99,7 +97,7 @@ async function getCompanyVerifiedDomain(
  * Reply-to ALWAYS uses the platform subdomain (mail.thorbis.com)
  * This ensures replies are isolated per company, never using custom domains
  */
-async function getCompanyPlatformReplyTo(
+export async function getCompanyPlatformReplyTo(
 	companyId: string,
 ): Promise<string | null> {
 	const supabase = await createServiceSupabaseClient();
@@ -153,7 +151,7 @@ function getSendingAddress(
 }
 
 /**
- * Send email using company's verified domain
+ * Send email using company's verified domain via SendGrid
  * This is the PRIMARY function for ALL email sending in the platform
  */
 export async function sendCompanyEmail({
@@ -208,25 +206,35 @@ export async function sendCompanyEmail({
 		trackedHtml = addEmailTracking(html, communicationId);
 	}
 
-	// 5. Send email via Resend
+	// 5. Send email via SendGrid
+	const startTime = Date.now();
 	try {
-		const { data, error } = await resend.emails.send({
-			from: fromAddress,
+		const result = await sendSendGridEmail({
+			companyId,
 			to,
 			subject,
 			html: trackedHtml,
 			text,
+			from: fromAddress,
 			replyTo: replyToAddress,
-			attachments,
+			attachments: attachments?.map(att => ({
+				filename: att.filename,
+				content: att.content,
+			})),
+			tags: communicationId ? { communication_id: communicationId } : undefined,
 		});
 
-		if (error) {
-			throw new Error(`Failed to send email: ${error.message}`);
+		if (!result.success) {
+			console.error(`[CompanyDomainSender] SendGrid error: ${result.error}`);
+			throw new Error(`Failed to send email: ${result.error}`);
 		}
 
-		return { success: true, messageId: data?.id };
+		const latencyMs = Date.now() - startTime;
+		console.log(`[CompanyDomainSender] Email sent successfully in ${latencyMs}ms, messageId: ${result.messageId}`);
+
+		return { success: true, messageId: result.messageId };
 	} catch (error) {
-		console.error("Email send error:", error);
+		console.error("[CompanyDomainSender] Email send error:", error);
 		throw error;
 	}
 }

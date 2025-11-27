@@ -27,12 +27,14 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { UnifiedInboxPageClient } from "@/components/communication/unified-inbox-page-client";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { getCompanyCommunications } from "@/lib/queries/communications";
+import { getCompanyCommunicationCounts, getCompanyCommunications } from "@/lib/queries/communications";
 import { createClient } from "@/lib/supabase/server";
 
 type SearchParams = Promise<{
 	id?: string;
 	type?: "email" | "sms" | "call" | "voicemail";
+	folder?: "inbox" | "sent" | "starred" | "archive" | "trash";
+	category?: "support" | "sales" | "billing" | "general";
 }>;
 
 // Loading skeleton for Suspense boundary
@@ -57,6 +59,9 @@ async function UnifiedInboxData({
 }) {
 	const params = await searchParams;
 	const selectedId = params?.id || null;
+	const activeType = params?.type || null;
+	const activeFolder = params?.folder || null;
+	const activeCategory = params?.category || null;
 
 	// Get authenticated user and company
 	const supabase = await createClient();
@@ -77,23 +82,45 @@ async function UnifiedInboxData({
 		redirect("/dashboard");
 	}
 
-	// Get team member ID (assuming user.id maps to team_members)
-	// TODO: Update this to use actual team member lookup
-	const teamMemberId = user.id;
+	// Get team member ID by looking up the team_members table
+	const { data: teamMember } = await supabase
+		.from("team_members")
+		.select("id")
+		.eq("user_id", user.id)
+		.eq("company_id", companyId)
+		.single();
+
+	const teamMemberId = teamMember?.id || user.id;
+
+	// Build filters based on search params
+	const filters: Parameters<typeof getCompanyCommunications>[1] = {
+		limit: 100,
+		type: activeType ?? undefined,
+	};
+
+	// Add direction filter for sent folder
+	if (activeFolder === "sent") {
+		filters.direction = "outbound";
+	}
 
 	// Fetch ALL company communications (no permission filtering)
 	// This shows company-wide view for admins/managers
-	const communications = await getCompanyCommunications(companyId, {
-		limit: 100,
-		type: params?.type,
-	});
+	// Also fetch counts for accurate filter badge display
+	const [communications, counts] = await Promise.all([
+		getCompanyCommunications(companyId, filters),
+		getCompanyCommunicationCounts(companyId),
+	]);
 
 	return (
 		<UnifiedInboxPageClient
 			initialCommunications={communications}
+			initialCounts={counts}
 			companyId={companyId}
 			teamMemberId={teamMemberId}
 			selectedId={selectedId}
+			activeType={activeType}
+			activeFolder={activeFolder}
+			activeCategory={activeCategory}
 		/>
 	);
 }

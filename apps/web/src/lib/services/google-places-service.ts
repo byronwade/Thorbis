@@ -16,6 +16,7 @@
  */
 
 import { z } from "zod";
+import { googlePlacesTracker } from "@/lib/analytics/external-api-tracker";
 
 const USER_AGENT = "Stratos-FMS/1.0 (support@stratos.app)";
 
@@ -318,6 +319,7 @@ class GooglePlacesService {
 			types?: string[];
 			locationBias?: { lat: number; lon: number; radius?: number };
 			components?: string;
+			companyId?: string; // For usage tracking
 		} = {},
 	): Promise<AutocompletePrediction[]> {
 		if (!this.apiKey || !input || input.trim().length < 2) {
@@ -330,6 +332,7 @@ class GooglePlacesService {
 			return cached.data;
 		}
 
+		const startTime = Date.now();
 		try {
 			const params = new URLSearchParams({
 				input: input.trim(),
@@ -358,12 +361,26 @@ class GooglePlacesService {
 			const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
 
 			if (!res.ok) {
+				if (options.companyId) {
+					googlePlacesTracker.track("autocomplete", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: `HTTP ${res.status}`,
+					}).catch(() => {});
+				}
 				return [];
 			}
 
 			const data = await res.json();
 
 			if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
+				if (options.companyId) {
+					googlePlacesTracker.track("autocomplete", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: data.status,
+					}).catch(() => {});
+				}
 				return [];
 			}
 
@@ -384,8 +401,25 @@ class GooglePlacesService {
 				data: predictions,
 				timestamp: Date.now(),
 			});
+
+			// Track successful API call
+			if (options.companyId) {
+				googlePlacesTracker.track("autocomplete", options.companyId, {
+					success: true,
+					responseTimeMs: Date.now() - startTime,
+					estimatedCostCents: 0.3, // ~$0.003 per autocomplete request
+				}).catch(() => {});
+			}
+
 			return predictions;
-		} catch (_error) {
+		} catch (error) {
+			if (options.companyId) {
+				googlePlacesTracker.track("autocomplete", options.companyId, {
+					success: false,
+					responseTimeMs: Date.now() - startTime,
+					errorMessage: error instanceof Error ? error.message : "Unknown error",
+				}).catch(() => {});
+			}
 			return [];
 		}
 	}
@@ -393,11 +427,12 @@ class GooglePlacesService {
 	/**
 	 * Get full place details by place ID
 	 */
-	async getPlaceDetails(placeId: string): Promise<PlaceDetails | null> {
+	async getPlaceDetails(placeId: string, companyId?: string): Promise<PlaceDetails | null> {
 		if (!this.apiKey) {
 			return null;
 		}
 
+		const startTime = Date.now();
 		try {
 			const fields = [
 				"place_id",
@@ -417,13 +452,36 @@ class GooglePlacesService {
 			const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
 
 			if (!res.ok) {
+				if (companyId) {
+					googlePlacesTracker.track("place_details", companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: `HTTP ${res.status}`,
+					}).catch(() => {});
+				}
 				return null;
 			}
 
 			const data = await res.json();
 
 			if (data.status !== "OK" || !data.result) {
+				if (companyId) {
+					googlePlacesTracker.track("place_details", companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: data.status || "No result",
+					}).catch(() => {});
+				}
 				return null;
+			}
+
+			// Track successful API call
+			if (companyId) {
+				googlePlacesTracker.track("place_details", companyId, {
+					success: true,
+					responseTimeMs: Date.now() - startTime,
+					estimatedCostCents: 1.7, // ~$0.017 per place details request
+				}).catch(() => {});
 			}
 
 			const r = data.result;
@@ -453,7 +511,14 @@ class GooglePlacesService {
 					}),
 				),
 			};
-		} catch (_error) {
+		} catch (error) {
+			if (companyId) {
+				googlePlacesTracker.track("place_details", companyId, {
+					success: false,
+					responseTimeMs: Date.now() - startTime,
+					errorMessage: error instanceof Error ? error.message : "Unknown error",
+				}).catch(() => {});
+			}
 			return null;
 		}
 	}

@@ -762,7 +762,7 @@ export const PromptInput = ({
 				onSubmit={handleSubmit}
 				{...props}
 			>
-				<InputGroup className="overflow-hidden">{children}</InputGroup>
+				<InputGroup className="!flex-col !items-stretch !h-auto overflow-hidden">{children}</InputGroup>
 			</form>
 		</>
 	);

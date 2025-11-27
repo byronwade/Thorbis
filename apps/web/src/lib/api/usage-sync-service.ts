@@ -17,7 +17,7 @@ import {
 } from "./providers/google-cloud-client";
 import { stripeBillingClient } from "./providers/stripe-billing-client";
 import { supabaseUsageClient } from "./providers/supabase-usage-client";
-import { telnyxUsageClient } from "./providers/telnyx-usage-client";
+import { twilioUsageClient } from "./providers/twilio-usage-client";
 
 export interface SyncResult {
 	service_id: string;
@@ -58,7 +58,7 @@ export async function syncAllUsage(): Promise<SyncJobResult> {
 
 	// Sync each provider in parallel
 	const syncPromises = [
-		syncTelnyxUsage(),
+		syncTwilioUsage(),
 		syncSupabaseUsage(),
 		syncGoogleUsage(),
 		syncStripeUsage(),
@@ -146,25 +146,25 @@ export async function syncAllUsage(): Promise<SyncJobResult> {
 }
 
 /**
- * Sync Telnyx voice and SMS usage
+ * Sync Twilio voice and SMS usage
  */
-async function syncTelnyxUsage(): Promise<SyncResult[]> {
+async function syncTwilioUsage(): Promise<SyncResult[]> {
 	const results: SyncResult[] = [];
 	const now = new Date().toISOString();
 
 	try {
-		const usage = await telnyxUsageClient.getCurrentMonthUsage();
+		const usage = await twilioUsageClient.getCurrentMonthUsage();
 
 		// Voice usage
 		if (usage.voice) {
-			const voiceService = API_SERVICES["telnyx_voice"];
+			const voiceService = API_SERVICES["twilio_voice"];
 			const usageCount = usage.voice.total_minutes;
 			const freeTierPct = voiceService?.free_tier
 				? calculateFreeTierPercentage(usageCount, voiceService.free_tier)
 				: 0;
 
 			results.push({
-				service_id: "telnyx_voice",
+				service_id: "twilio_voice",
 				success: true,
 				usage_count: usageCount,
 				cost_cents: usage.voice.total_cost_cents,
@@ -174,7 +174,7 @@ async function syncTelnyxUsage(): Promise<SyncResult[]> {
 			});
 		} else {
 			results.push({
-				service_id: "telnyx_voice",
+				service_id: "twilio_voice",
 				success: false,
 				error: "No voice data returned",
 				synced_at: now,
@@ -183,14 +183,14 @@ async function syncTelnyxUsage(): Promise<SyncResult[]> {
 
 		// SMS usage
 		if (usage.sms) {
-			const smsService = API_SERVICES["telnyx_sms"];
+			const smsService = API_SERVICES["twilio_sms"];
 			const usageCount = usage.sms.total_messages;
 			const freeTierPct = smsService?.free_tier
 				? calculateFreeTierPercentage(usageCount, smsService.free_tier)
 				: 0;
 
 			results.push({
-				service_id: "telnyx_sms",
+				service_id: "twilio_sms",
 				success: true,
 				usage_count: usageCount,
 				cost_cents: usage.sms.total_cost_cents,
@@ -200,7 +200,7 @@ async function syncTelnyxUsage(): Promise<SyncResult[]> {
 			});
 		} else {
 			results.push({
-				service_id: "telnyx_sms",
+				service_id: "twilio_sms",
 				success: false,
 				error: "No SMS data returned",
 				synced_at: now,
@@ -208,13 +208,13 @@ async function syncTelnyxUsage(): Promise<SyncResult[]> {
 		}
 	} catch (error) {
 		results.push({
-			service_id: "telnyx_voice",
+			service_id: "twilio_voice",
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
 			synced_at: now,
 		});
 		results.push({
-			service_id: "telnyx_sms",
+			service_id: "twilio_sms",
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
 			synced_at: now,

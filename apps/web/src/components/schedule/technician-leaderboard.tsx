@@ -114,40 +114,40 @@ const BADGE_CONFIG: Record<
 > = {
 	top_performer: {
 		icon: Crown,
-		color: "text-amber-500",
+		color: "text-amber-500 dark:text-amber-400",
 		label: "Top Performer",
 	},
 	revenue_king: {
 		icon: DollarSign,
-		color: "text-green-500",
+		color: "text-green-500 dark:text-green-400",
 		label: "Revenue King",
 	},
-	five_star: { icon: Star, color: "text-yellow-500", label: "5-Star Tech" },
-	speed_demon: { icon: Zap, color: "text-blue-500", label: "Speed Demon" },
+	five_star: { icon: Star, color: "text-yellow-500 dark:text-yellow-400", label: "5-Star Tech" },
+	speed_demon: { icon: Zap, color: "text-blue-500 dark:text-blue-400", label: "Speed Demon" },
 	perfect_attendance: {
 		icon: Target,
-		color: "text-purple-500",
+		color: "text-purple-500 dark:text-purple-400",
 		label: "Perfect Attendance",
 	},
 	customer_favorite: {
 		icon: ThumbsUp,
-		color: "text-pink-500",
+		color: "text-pink-500 dark:text-pink-400",
 		label: "Customer Favorite",
 	},
 	first_time_fixer: {
 		icon: Award,
-		color: "text-orange-500",
+		color: "text-orange-500 dark:text-orange-400",
 		label: "First Time Fixer",
 	},
-	hot_streak: { icon: Flame, color: "text-red-500", label: "Hot Streak" },
+	hot_streak: { icon: Flame, color: "text-red-500 dark:text-red-400", label: "Hot Streak" },
 	utilization_hero: {
 		icon: TrendingUp,
-		color: "text-emerald-500",
+		color: "text-emerald-500 dark:text-emerald-400",
 		label: "Utilization Hero",
 	},
 	on_time_champion: {
 		icon: Timer,
-		color: "text-cyan-500",
+		color: "text-cyan-500 dark:text-cyan-400",
 		label: "On-Time Champion",
 	},
 };
@@ -267,7 +267,7 @@ export function TechnicianLeaderboard({
 				<div className="flex items-center justify-between">
 					<div>
 						<CardTitle className="flex items-center gap-2">
-							<Trophy className="h-5 w-5 text-amber-500" />
+							<Trophy className="h-5 w-5 text-amber-500 dark:text-amber-400" />
 							Technician Leaderboard
 						</CardTitle>
 						<CardDescription>
@@ -363,9 +363,9 @@ type LeaderboardRowProps = {
 
 function LeaderboardRow({ technician, rank, activeTab }: LeaderboardRowProps) {
 	const getRankIcon = () => {
-		if (rank === 1) return <Crown className="h-5 w-5 text-amber-500" />;
-		if (rank === 2) return <Medal className="h-5 w-5 text-gray-400" />;
-		if (rank === 3) return <Medal className="h-5 w-5 text-amber-700" />;
+		if (rank === 1) return <Crown className="h-5 w-5 text-amber-500 dark:text-amber-400" />;
+		if (rank === 2) return <Medal className="h-5 w-5 text-gray-400 dark:text-gray-500" />;
+		if (rank === 3) return <Medal className="h-5 w-5 text-amber-700 dark:text-amber-600" />;
 		return (
 			<span className="flex h-5 w-5 items-center justify-center text-sm font-medium text-muted-foreground">
 				{rank}
@@ -442,8 +442,8 @@ function LeaderboardRow({ technician, rank, activeTab }: LeaderboardRowProps) {
 							variant="secondary"
 							className={cn(
 								"text-xs",
-								technician.rankChange > 0 && "bg-green-100 text-green-700",
-								technician.rankChange < 0 && "bg-red-100 text-red-700",
+								technician.rankChange > 0 && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
+								technician.rankChange < 0 && "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
 							)}
 						>
 							{technician.rankChange > 0 ? "↑" : "↓"}

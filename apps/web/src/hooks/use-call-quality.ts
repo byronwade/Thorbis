@@ -11,7 +11,7 @@
 
 "use client";
 
-import type { Call } from "@telnyx/webrtc";
+import type { Call } from "@twilio/voice-sdk";
 import { useCallback, useEffect, useState } from "react";
 
 export type ConnectionQuality = "excellent" | "good" | "poor" | "unknown";
@@ -59,9 +59,9 @@ function calculateQuality(metrics: QualityMetrics): ConnectionQuality {
  */
 async function getQualityMetrics(call: Call): Promise<QualityMetrics | null> {
 	try {
-		// Access the underlying RTCPeerConnection
-		// @ts-expect-error - Telnyx SDK may not expose this in types
-		const peerConnection = call._peer?.connection;
+		// Access the underlying RTCPeerConnection from Twilio Call
+		// @ts-expect-error - Twilio SDK may not expose this in types
+		const peerConnection = call._mediaHandler?._peerConnection;
 
 		if (!(peerConnection && peerConnection instanceof RTCPeerConnection)) {
 			return null;

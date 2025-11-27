@@ -6,6 +6,8 @@
  * - Schedule data streams in (200-500ms)
  *
  * Performance: 8-20x faster than traditional SSR
+ *
+ * Note: Weather is now displayed in the app header globally
  */
 
 import { addDays, subDays } from "date-fns";
@@ -69,6 +71,7 @@ async function ScheduleData() {
 			end: addDays(now, 30),
 		};
 
+		// Fetch schedule data
 		const { jobs, technicians } = await fetchScheduleData({
 			supabase,
 			companyId,

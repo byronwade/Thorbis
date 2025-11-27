@@ -1025,7 +1025,7 @@ function buildCommunicationsSection(
 			label: "Messaging brand",
 			value: normalizeStatusLabel(raw.messagingBrand?.status, "Not registered"),
 			helper: raw.messagingBrand?.telnyx_brand_id
-				? `Telnyx ${raw.messagingBrand.telnyx_brand_id}`
+				? `Brand ID: ${raw.messagingBrand.telnyx_brand_id}`
 				: "10DLC verification required",
 			status: brandHealth,
 		},

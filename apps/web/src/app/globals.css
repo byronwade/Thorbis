@@ -1,5 +1,340 @@
 @import "tailwindcss";
 
+/* ============================================
+   Tailwindcss-animate utilities for Tailwind v4
+   ============================================ */
+
+/* Base animation keyframes */
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+      scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1))
+      rotate(var(--tw-enter-rotate, 0));
+  }
+}
+
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)
+      scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1))
+      rotate(var(--tw-exit-rotate, 0));
+  }
+}
+
+/* Animation utilities */
+.animate-in {
+  animation-name: enter;
+  animation-duration: 150ms;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+}
+
+.animate-out {
+  animation-name: exit;
+  animation-duration: 150ms;
+  --tw-exit-opacity: initial;
+  --tw-exit-scale: initial;
+  --tw-exit-rotate: initial;
+  --tw-exit-translate-x: initial;
+  --tw-exit-translate-y: initial;
+}
+
+/* Fade utilities */
+.fade-in-0 { --tw-enter-opacity: 0; }
+.fade-in-5 { --tw-enter-opacity: 0.05; }
+.fade-in-10 { --tw-enter-opacity: 0.1; }
+.fade-in-20 { --tw-enter-opacity: 0.2; }
+.fade-in-50 { --tw-enter-opacity: 0.5; }
+.fade-in-100 { --tw-enter-opacity: 1; }
+
+.fade-out-0 { --tw-exit-opacity: 0; }
+.fade-out-5 { --tw-exit-opacity: 0.05; }
+.fade-out-10 { --tw-exit-opacity: 0.1; }
+.fade-out-20 { --tw-exit-opacity: 0.2; }
+.fade-out-50 { --tw-exit-opacity: 0.5; }
+.fade-out-100 { --tw-exit-opacity: 1; }
+
+/* Zoom/Scale utilities */
+.zoom-in-0 { --tw-enter-scale: 0; }
+.zoom-in-50 { --tw-enter-scale: 0.5; }
+.zoom-in-75 { --tw-enter-scale: 0.75; }
+.zoom-in-90 { --tw-enter-scale: 0.9; }
+.zoom-in-95 { --tw-enter-scale: 0.95; }
+.zoom-in-100 { --tw-enter-scale: 1; }
+
+.zoom-out-0 { --tw-exit-scale: 0; }
+.zoom-out-50 { --tw-exit-scale: 0.5; }
+.zoom-out-75 { --tw-exit-scale: 0.75; }
+.zoom-out-90 { --tw-exit-scale: 0.9; }
+.zoom-out-95 { --tw-exit-scale: 0.95; }
+.zoom-out-100 { --tw-exit-scale: 1; }
+
+/* Slide utilities */
+.slide-in-from-top-0 { --tw-enter-translate-y: 0; }
+.slide-in-from-top-1 { --tw-enter-translate-y: -0.25rem; }
+.slide-in-from-top-2 { --tw-enter-translate-y: -0.5rem; }
+.slide-in-from-top-4 { --tw-enter-translate-y: -1rem; }
+.slide-in-from-top-full { --tw-enter-translate-y: -100%; }
+.slide-in-from-top-\[48\%\] { --tw-enter-translate-y: -48%; }
+
+.slide-in-from-bottom-0 { --tw-enter-translate-y: 0; }
+.slide-in-from-bottom-1 { --tw-enter-translate-y: 0.25rem; }
+.slide-in-from-bottom-2 { --tw-enter-translate-y: 0.5rem; }
+.slide-in-from-bottom-4 { --tw-enter-translate-y: 1rem; }
+.slide-in-from-bottom-full { --tw-enter-translate-y: 100%; }
+
+.slide-in-from-left-0 { --tw-enter-translate-x: 0; }
+.slide-in-from-left-1 { --tw-enter-translate-x: -0.25rem; }
+.slide-in-from-left-2 { --tw-enter-translate-x: -0.5rem; }
+.slide-in-from-left-4 { --tw-enter-translate-x: -1rem; }
+.slide-in-from-left-full { --tw-enter-translate-x: -100%; }
+.slide-in-from-left-1\/2 { --tw-enter-translate-x: -50%; }
+
+.slide-in-from-right-0 { --tw-enter-translate-x: 0; }
+.slide-in-from-right-1 { --tw-enter-translate-x: 0.25rem; }
+.slide-in-from-right-2 { --tw-enter-translate-x: 0.5rem; }
+.slide-in-from-right-4 { --tw-enter-translate-x: 1rem; }
+.slide-in-from-right-full { --tw-enter-translate-x: 100%; }
+
+.slide-out-to-top-0 { --tw-exit-translate-y: 0; }
+.slide-out-to-top-1 { --tw-exit-translate-y: -0.25rem; }
+.slide-out-to-top-2 { --tw-exit-translate-y: -0.5rem; }
+.slide-out-to-top-4 { --tw-exit-translate-y: -1rem; }
+.slide-out-to-top-full { --tw-exit-translate-y: -100%; }
+.slide-out-to-top-\[48\%\] { --tw-exit-translate-y: -48%; }
+
+.slide-out-to-bottom-0 { --tw-exit-translate-y: 0; }
+.slide-out-to-bottom-1 { --tw-exit-translate-y: 0.25rem; }
+.slide-out-to-bottom-2 { --tw-exit-translate-y: 0.5rem; }
+.slide-out-to-bottom-4 { --tw-exit-translate-y: 1rem; }
+.slide-out-to-bottom-full { --tw-exit-translate-y: 100%; }
+
+.slide-out-to-left-0 { --tw-exit-translate-x: 0; }
+.slide-out-to-left-1 { --tw-exit-translate-x: -0.25rem; }
+.slide-out-to-left-2 { --tw-exit-translate-x: -0.5rem; }
+.slide-out-to-left-4 { --tw-exit-translate-x: -1rem; }
+.slide-out-to-left-full { --tw-exit-translate-x: -100%; }
+.slide-out-to-left-1\/2 { --tw-exit-translate-x: -50%; }
+
+.slide-out-to-right-0 { --tw-exit-translate-x: 0; }
+.slide-out-to-right-1 { --tw-exit-translate-x: 0.25rem; }
+.slide-out-to-right-2 { --tw-exit-translate-x: 0.5rem; }
+.slide-out-to-right-4 { --tw-exit-translate-x: 1rem; }
+.slide-out-to-right-full { --tw-exit-translate-x: 100%; }
+
+/* Duration utilities for animations */
+.duration-150 { animation-duration: 150ms; }
+.duration-200 { animation-duration: 200ms; }
+.duration-300 { animation-duration: 300ms; }
+.duration-500 { animation-duration: 500ms; }
+
+/* ============================================
+   Dialog/Modal styles (using CSS instead of Tailwind due to v4 issues)
+   ============================================ */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dark .dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 672px;
+  width: calc(100% - 32px);
+  display: grid;
+  gap: 16px;
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.dark .dialog-content {
+  background-color: #0a0a0a;
+  border-color: hsl(var(--border) / 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+  transition: opacity 150ms;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.dialog-close-button:hover {
+  opacity: 1;
+  color: hsl(var(--foreground));
+}
+
+/* Sheet styles */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dark .sheet-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.sheet-content {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: hsl(var(--background));
+  transition: transform 300ms ease-in-out;
+}
+
+.sheet-content[data-side="right"] {
+  inset: 0 0 0 auto;
+  height: 100%;
+  width: 75%;
+  max-width: 384px;
+  border-left: 1px solid hsl(var(--border));
+}
+
+.sheet-content[data-side="left"] {
+  inset: 0 auto 0 0;
+  height: 100%;
+  width: 75%;
+  max-width: 384px;
+  border-right: 1px solid hsl(var(--border));
+}
+
+.sheet-content[data-side="top"] {
+  inset: 0 0 auto 0;
+  width: 100%;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.sheet-content[data-side="bottom"] {
+  inset: auto 0 0 0;
+  width: 100%;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.sheet-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+  transition: opacity 150ms;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sheet-close-button:hover {
+  opacity: 1;
+}
+
+/* Popover Content */
+.popover-content {
+  z-index: 50;
+  width: 18rem;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  outline: none;
+}
+
+/* Dropdown Menu Content */
+.dropdown-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-dropdown-menu-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Select Content */
+.select-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-select-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Context Menu Content */
+.context-menu-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-context-menu-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Hover Card Content */
+.hover-card-content {
+  z-index: 50;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.5rem;
+  outline: none;
+  /* Border, shadow, and width controlled by component classes */
+}
+
+.dark .hover-card-content {
+  /* Stronger shadow and glow for dark mode visibility */
+  box-shadow:
+    0 0 0 1px hsl(var(--border)),
+    0 25px 50px -12px rgba(0, 0, 0, 0.8),
+    0 0 30px -5px rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================ */
+
 @custom-variant dark (&:is(.dark *));
 
 /* iOS/Android Native Feel Optimizations */

@@ -7,7 +7,7 @@ import {
 	ChevronRight,
 	ChevronRight as ChevronRightIcon,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { Job, Technician } from "@/lib/stores/schedule-store";
@@ -69,9 +69,10 @@ export function DayViewMobile() {
 
 	// Local state
 	const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-	const [expandedTechs, setExpandedTechs] = useState<Set<string>>(new Set()); // Collapsed by default for better mobile UX
+	const [expandedTechs, setExpandedTechs] = useState<Set<string>>(new Set());
 	const [showUnassigned, setShowUnassigned] = useState(false);
 	const [showDatePicker, setShowDatePicker] = useState(false);
+	const [hasAutoExpanded, setHasAutoExpanded] = useState(false);
 
 	// Filter jobs for current date
 	const todaysJobs = useMemo(() => {
@@ -122,6 +123,28 @@ export function DayViewMobile() {
 	const unassignedJobs = useMemo(() => {
 		return todaysJobs.filter((job) => job.isUnassigned);
 	}, [todaysJobs]);
+
+	// Auto-expand technicians that have jobs for the day (better UX than starting collapsed)
+	useEffect(() => {
+		if (hasAutoExpanded || jobsByTechnician.size === 0) return;
+
+		const techsWithJobs = new Set<string>();
+		jobsByTechnician.forEach((jobs, techId) => {
+			if (jobs.length > 0) {
+				techsWithJobs.add(techId);
+			}
+		});
+
+		if (techsWithJobs.size > 0) {
+			setExpandedTechs(techsWithJobs);
+			setHasAutoExpanded(true);
+		}
+	}, [jobsByTechnician, hasAutoExpanded]);
+
+	// Reset auto-expand flag when date changes
+	useEffect(() => {
+		setHasAutoExpanded(false);
+	}, [currentDate]);
 
 	// Toggle technician section
 	const toggleTechnician = useCallback((techId: string) => {

@@ -1,3 +1,3 @@
 {
-	"/(dashboard)/dashboard/communication/sms/page": "app/(dashboard)/dashboard/communication/sms/page.js"
+  "/(dashboard)/dashboard/communication/sms/page": "app/(dashboard)/dashboard/communication/sms/page.js"
 }

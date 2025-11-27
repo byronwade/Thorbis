@@ -10,7 +10,7 @@
 
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
-import { PortingStatusDashboard } from "@/components/telnyx/porting-status-dashboard";
+import { PortingStatusDashboard } from "@/components/telephony/porting-status-dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {

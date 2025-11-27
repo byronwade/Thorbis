@@ -341,7 +341,7 @@ export function TechnicianFocusPanel({
 					{/* GPS Location */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium flex items-center gap-2">
-							<Navigation className="h-4 w-4 text-blue-500" />
+							<Navigation className="h-4 w-4 text-blue-500 dark:text-blue-400" />
 							Location
 						</h4>
 						{gpsLocation ? (
@@ -401,7 +401,7 @@ export function TechnicianFocusPanel({
 					{/* Today's Stats */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium flex items-center gap-2">
-							<Gauge className="h-4 w-4 text-purple-500" />
+							<Gauge className="h-4 w-4 text-purple-500 dark:text-purple-400" />
 							Today&apos;s Stats
 						</h4>
 						<div className="grid grid-cols-2 gap-2">
@@ -427,14 +427,14 @@ export function TechnicianFocusPanel({
 								<div className="text-xs text-muted-foreground">On-Time</div>
 								<div className="text-lg font-semibold flex items-center gap-1">
 									{stats.onTimeRate}%
-									<TrendingUp className="h-3 w-3 text-green-500" />
+									<TrendingUp className="h-3 w-3 text-green-500 dark:text-green-400" />
 								</div>
 							</div>
 							<div className="bg-muted/50 rounded-lg p-2.5">
 								<div className="text-xs text-muted-foreground">Rating</div>
 								<div className="text-lg font-semibold flex items-center gap-1">
 									{stats.avgRating}
-									<Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+									<Star className="h-3 w-3 text-amber-500 fill-amber-500 dark:text-amber-400 dark:fill-amber-400" />
 								</div>
 							</div>
 						</div>
@@ -449,12 +449,12 @@ export function TechnicianFocusPanel({
 								<h4 className="text-sm font-medium flex items-center gap-2">
 									{currentJob ? (
 										<>
-											<Zap className="h-4 w-4 text-amber-500" />
+											<Zap className="h-4 w-4 text-amber-500 dark:text-amber-400" />
 											Current Job
 										</>
 									) : (
 										<>
-											<Clock className="h-4 w-4 text-blue-500" />
+											<Clock className="h-4 w-4 text-blue-500 dark:text-blue-400" />
 											Next Job
 										</>
 									)}
@@ -472,7 +472,7 @@ export function TechnicianFocusPanel({
 					{/* Today's Route */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium flex items-center gap-2">
-							<Car className="h-4 w-4 text-green-500" />
+							<Car className="h-4 w-4 text-green-500 dark:text-green-400" />
 							Today&apos;s Route ({todaysJobs.length} jobs)
 						</h4>
 						{todaysJobs.length > 0 ? (
@@ -499,7 +499,7 @@ export function TechnicianFocusPanel({
 					{/* Nearby Unassigned Jobs */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium flex items-center gap-2">
-							<Target className="h-4 w-4 text-red-500" />
+							<Target className="h-4 w-4 text-red-500 dark:text-red-400" />
 							Nearby Unassigned ({nearbyJobs.length})
 						</h4>
 						{nearbyJobs.length > 0 ? (
@@ -527,7 +527,7 @@ export function TechnicianFocusPanel({
 					{/* Skills & Certifications */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium flex items-center gap-2">
-							<Award className="h-4 w-4 text-indigo-500" />
+							<Award className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
 							Skills & Certifications
 						</h4>
 						<div className="flex flex-wrap gap-1.5">
@@ -541,7 +541,7 @@ export function TechnicianFocusPanel({
 								<Badge
 									key={cert}
 									variant="outline"
-									className="text-xs border-amber-500/50 text-amber-600"
+									className="text-xs border-amber-500/50 dark:border-amber-400/50 text-amber-600 dark:text-amber-400"
 								>
 									<Award className="h-3 w-3 mr-1" />
 									{cert}
@@ -562,14 +562,14 @@ export function TechnicianFocusPanel({
 							<Separator />
 							<div className="space-y-2">
 								<h4 className="text-sm font-medium flex items-center gap-2">
-									<Phone className="h-4 w-4 text-teal-500" />
+									<Phone className="h-4 w-4 text-teal-500 dark:text-teal-400" />
 									Contact
 								</h4>
 								<div className="space-y-1 text-sm">
 									{technician.phone && (
 										<a
 											href={`tel:${technician.phone}`}
-											className="flex items-center gap-2 text-blue-500 hover:underline"
+											className="flex items-center gap-2 text-blue-500 dark:text-blue-400 hover:underline"
 										>
 											<Phone className="h-3 w-3" />
 											{technician.phone}
@@ -578,7 +578,7 @@ export function TechnicianFocusPanel({
 									{technician.email && (
 										<a
 											href={`mailto:${technician.email}`}
-											className="flex items-center gap-2 text-blue-500 hover:underline"
+											className="flex items-center gap-2 text-blue-500 dark:text-blue-400 hover:underline"
 										>
 											{technician.email}
 										</a>

@@ -3,105 +3,76 @@
 /**
  * PhoneDropdown - Enterprise Phone Dialer
  *
- * Full-featured dialer with:
- * - WebRTC primary mode (browser audio)
- * - Call Control API fallback (opens call window)
- * - Connection status monitoring
- * - Automatic reconnection
- * - Customer search
+ * Full-featured dialer using Twilio API:
+ * - Makes calls via Twilio API (server-side)
+ * - Opens call window for call management
+ * - Customer search and selection
+ * - Company phone number selection
  *
- * References:
- * - https://developers.telnyx.com/docs/voice/webrtc/js-sdk/quickstart
- * - https://developers.telnyx.com/docs/voice/webrtc/js-sdk/error-handling
+ * All calls are initiated through the Twilio API and managed via the call window.
  */
-
-import type { Call as TelnyxCall } from "@telnyx/webrtc";
-import {
-	AlertCircle,
-	Check,
-	ChevronDown,
-	Clock,
-	ExternalLink,
-	Headphones,
-	Loader2,
-	MessageSquare,
-	Mic,
-	MicOff,
-	Pause,
-	Phone,
-	PhoneCall,
-	PhoneIncoming,
-	PhoneMissed,
-	PhoneOff,
-	PhoneOutgoing,
-	Play,
-	RefreshCw,
-	Server,
-	User,
-	Wifi,
-	WifiOff,
-	X,
-} from "lucide-react";
-import Link from "next/link";
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-	useTransition,
-} from "react";
-import { makeCall } from "@/actions/telnyx";
+import { makeCall } from "@/actions/twilio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
 } from "@/components/ui/command";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDialerCustomers } from "@/hooks/use-dialer-customers";
-import {
-	type CallState,
-	useTelnyxWebRTC,
-	type WebRTCCall,
-} from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
 import { useDialerStore } from "@/lib/stores/dialer-store";
 import { useUIStore } from "@/lib/stores/ui-store";
-import {
-	fetchWebRTCCredentialsOnce,
-	resetWebRTCCredentialsCache,
-} from "@/lib/telnyx/web-credentials-client";
 import { cn } from "@/lib/utils";
+import {
+    Check,
+    Clock,
+    Loader2,
+    MessageSquare,
+    Phone,
+    PhoneCall,
+    PhoneIncoming,
+    PhoneOutgoing,
+    Server,
+    User,
+    X
+} from "lucide-react";
+import Link from "next/link";
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useTransition
+} from "react";
 
 type Customer = {
 	id: string;
@@ -126,13 +97,6 @@ type PhoneDropdownProps = {
 	incomingCallsCount?: number;
 };
 
-type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
-type CallMode = "webrtc" | "api";
-
-// Constants
-const WEBRTC_CONNECTION_TIMEOUT = 15000; // 15 seconds
-const WEBRTC_RETRY_DELAY = 3000; // 3 seconds
-
 // Helper functions
 const cleanValue = (v?: string | null) => (v ?? "").trim();
 
@@ -156,254 +120,6 @@ const formatPhone = (phone: string) => {
 	return phone;
 };
 
-/**
- * Connection Status Badge
- */
-function ConnectionStatusBadge({
-	status,
-	mode,
-	onRetry,
-	className,
-}: {
-	status: ConnectionStatus;
-	mode: CallMode;
-	onRetry?: () => void;
-	className?: string;
-}) {
-	if (mode === "api") {
-		return (
-			<Badge variant="outline" className={cn("gap-1 text-[10px]", className)}>
-				<Server className="h-3 w-3" />
-				API Mode
-			</Badge>
-		);
-	}
-
-	const statusConfig: Record<
-		ConnectionStatus,
-		{
-			icon: typeof WifiOff;
-			label: string;
-			variant: "outline" | "destructive";
-			className: string;
-			animate?: boolean;
-		}
-	> = {
-		disconnected: {
-			icon: WifiOff,
-			label: "Disconnected",
-			variant: "outline",
-			className: "text-muted-foreground",
-		},
-		connecting: {
-			icon: Loader2,
-			label: "Connecting...",
-			variant: "outline",
-			className: "text-warning",
-			animate: true,
-		},
-		connected: {
-			icon: Wifi,
-			label: "WebRTC Ready",
-			variant: "outline",
-			className: "text-success border-success/30",
-		},
-		error: {
-			icon: AlertCircle,
-			label: "Connection Error",
-			variant: "destructive",
-			className: "",
-		},
-	};
-
-	const config = statusConfig[status];
-	const Icon = config.icon;
-
-	return (
-		<div className={cn("flex items-center gap-1", className)}>
-			<Badge
-				variant={config.variant}
-				className={cn("gap-1 text-[10px]", config.className)}
-			>
-				<Icon
-					className={cn("h-3 w-3", config.animate === true && "animate-spin")}
-				/>
-				{config.label}
-			</Badge>
-			{(status === "error" || status === "disconnected") && onRetry && (
-				<Button
-					variant="ghost"
-					size="icon"
-					className="h-5 w-5"
-					onClick={onRetry}
-				>
-					<RefreshCw className="h-3 w-3" />
-				</Button>
-			)}
-		</div>
-	);
-}
-
-/**
- * Active Call Card - Shows when a call is in progress
- */
-function ActiveCallCard({
-	call,
-	onMute,
-	onHold,
-	onEnd,
-	className,
-}: {
-	call: WebRTCCall;
-	onMute: () => void;
-	onHold: () => void;
-	onEnd: () => void;
-	className?: string;
-}) {
-	const [duration, setDuration] = useState(0);
-
-	// Update duration timer
-	useEffect(() => {
-		if (call.state !== "active") {
-			setDuration(0);
-			return;
-		}
-
-		const startTime = call.startTime?.getTime() || Date.now();
-		const interval = setInterval(() => {
-			setDuration(Math.floor((Date.now() - startTime) / 1000));
-		}, 1000);
-
-		return () => clearInterval(interval);
-	}, [call.state, call.startTime]);
-
-	const formatDuration = (seconds: number) => {
-		const mins = Math.floor(seconds / 60);
-		const secs = seconds % 60;
-		return `${mins}:${secs.toString().padStart(2, "0")}`;
-	};
-
-	const stateConfig: Record<
-		CallState,
-		{ label: string; color: string; icon: typeof Phone }
-	> = {
-		idle: { label: "Idle", color: "text-muted-foreground", icon: Phone },
-		connecting: {
-			label: "Connecting...",
-			color: "text-warning",
-			icon: PhoneOutgoing,
-		},
-		ringing: {
-			label: "Ringing...",
-			color: "text-primary",
-			icon: PhoneOutgoing,
-		},
-		active: { label: "Active", color: "text-success", icon: PhoneCall },
-		held: { label: "On Hold", color: "text-warning", icon: Pause },
-		ended: {
-			label: "Call Ended",
-			color: "text-muted-foreground",
-			icon: PhoneOff,
-		},
-	};
-
-	const config = stateConfig[call.state];
-	const StateIcon = config.icon;
-
-	return (
-		<div className={cn("rounded-lg border bg-card p-3", className)}>
-			{/* Call info header */}
-			<div className="mb-3 flex items-center justify-between">
-				<div className="flex items-center gap-2">
-					<div className={cn("rounded-full bg-primary/10 p-2", config.color)}>
-						<StateIcon className="h-4 w-4" />
-					</div>
-					<div>
-						<p className="text-sm font-medium">
-							{call.remoteName || formatPhone(call.remoteNumber)}
-						</p>
-						<p className={cn("text-xs", config.color)}>{config.label}</p>
-					</div>
-				</div>
-				{call.state === "active" && (
-					<Badge variant="outline" className="text-xs tabular-nums">
-						{formatDuration(duration)}
-					</Badge>
-				)}
-			</div>
-
-			{/* Call controls */}
-			{(call.state === "active" || call.state === "held") && (
-				<div className="flex items-center justify-center gap-2">
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								variant={call.isMuted ? "destructive" : "outline"}
-								size="icon"
-								className="h-9 w-9 rounded-full"
-								onClick={onMute}
-							>
-								{call.isMuted ? (
-									<MicOff className="h-4 w-4" />
-								) : (
-									<Mic className="h-4 w-4" />
-								)}
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>{call.isMuted ? "Unmute" : "Mute"}</TooltipContent>
-					</Tooltip>
-
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								variant={call.isHeld ? "secondary" : "outline"}
-								size="icon"
-								className="h-9 w-9 rounded-full"
-								onClick={onHold}
-							>
-								{call.isHeld ? (
-									<Play className="h-4 w-4" />
-								) : (
-									<Pause className="h-4 w-4" />
-								)}
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>{call.isHeld ? "Resume" : "Hold"}</TooltipContent>
-					</Tooltip>
-
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<Button
-								variant="destructive"
-								size="icon"
-								className="h-9 w-9 rounded-full"
-								onClick={onEnd}
-							>
-								<PhoneOff className="h-4 w-4" />
-							</Button>
-						</TooltipTrigger>
-						<TooltipContent>End Call</TooltipContent>
-					</Tooltip>
-				</div>
-			)}
-
-			{/* Connecting/Ringing state */}
-			{(call.state === "connecting" || call.state === "ringing") && (
-				<div className="flex items-center justify-center gap-2">
-					<Button
-						variant="destructive"
-						size="sm"
-						className="gap-2"
-						onClick={onEnd}
-					>
-						<PhoneOff className="h-4 w-4" />
-						Cancel
-					</Button>
-				</div>
-			)}
-		</div>
-	);
-}
 
 export function PhoneDropdown({
 	companyId,
@@ -428,61 +144,15 @@ export function PhoneDropdown({
 	const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
 	const [customerSearchQuery, setCustomerSearchQuery] = useState("");
 
-	// WebRTC state
-	const [callMode, setCallMode] = useState<CallMode>("webrtc");
-	const [webrtcCredentials, setWebrtcCredentials] = useState<{
-		username: string;
-		password: string;
-	} | null>(null);
-	const [connectionStatus, setConnectionStatus] =
-		useState<ConnectionStatus>("disconnected");
-	const [connectionError, setConnectionError] = useState<string | null>(null);
-	const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const retryCountRef = useRef(0);
-	const maxRetries = 3;
-
-	// Audio element for WebRTC
-	const audioRef = useRef<HTMLAudioElement | null>(null);
-
 	// Call state from UI store
 	const callStatus = useUIStore((s) => s.call.status);
 	const caller = useUIStore((s) => s.call.caller);
 	const hasIncomingCall = callStatus === "incoming";
 	const displayCount = incomingCallsCount ?? (hasIncomingCall ? 1 : 0);
 
-	// WebRTC hook
-	const webrtc = useTelnyxWebRTC({
-		username: webrtcCredentials?.username || "",
-		password: webrtcCredentials?.password || "",
-		autoConnect: false,
-		debug: process.env.NODE_ENV === "development",
-		onIncomingCall: (call) => {
-			toast.info(`Incoming call from ${call.remoteName || call.remoteNumber}`);
-		},
-		onCallEnded: () => {
-			toast.info("Call ended");
-		},
-	});
-
 	// Mount
 	useEffect(() => {
 		setMounted(true);
-		// Create audio element for WebRTC
-		if (typeof window !== "undefined" && !audioRef.current) {
-			const audio = document.createElement("audio");
-			audio.id = "telnyx-remote-audio";
-			audio.autoplay = true;
-			audio.style.display = "none";
-			document.body.appendChild(audio);
-			audioRef.current = audio;
-		}
-
-		return () => {
-			if (audioRef.current) {
-				audioRef.current.remove();
-				audioRef.current = null;
-			}
-		};
 	}, []);
 
 	// Sync from number
@@ -505,96 +175,11 @@ export function PhoneDropdown({
 		}
 	}, [dialerStore.customerId, customers, selectedCustomer?.id]);
 
-	// Fetch WebRTC credentials on mount
-	useEffect(() => {
-		if (!mounted) return;
 
-		const fetchCredentials = async () => {
-			try {
-				const result = await fetchWebRTCCredentialsOnce();
-				if (result.success && result.credential) {
-					setWebrtcCredentials({
-						username: result.credential.username,
-						password: result.credential.password,
-					});
-				} else {
-					console.warn("Failed to get WebRTC credentials, using API mode");
-					setCallMode("api");
-				}
-			} catch (error) {
-				console.error("Failed to fetch WebRTC credentials:", error);
-				setCallMode("api");
-			}
-		};
 
-		fetchCredentials();
-	}, [mounted]);
 
-	// Connect WebRTC when credentials are available
-	useEffect(() => {
-		if (!webrtcCredentials || callMode !== "webrtc") return;
 
-		const connectWebRTC = async () => {
-			// Clear any existing timeout
-			if (connectionTimeoutRef.current) {
-				clearTimeout(connectionTimeoutRef.current);
-			}
 
-			setConnectionStatus("connecting");
-			setConnectionError(null);
-
-			// Set connection timeout
-			connectionTimeoutRef.current = setTimeout(() => {
-				if (connectionStatus === "connecting") {
-					setConnectionStatus("error");
-					setConnectionError(
-						"Connection timeout - WebRTC may require Level 2 verification",
-					);
-
-					// Auto-fallback to API mode after timeout
-					if (retryCountRef.current >= maxRetries) {
-						toast.warning("WebRTC unavailable, switching to API mode");
-						setCallMode("api");
-					}
-				}
-			}, WEBRTC_CONNECTION_TIMEOUT);
-
-			try {
-				await webrtc.connect();
-			} catch (error) {
-				console.error("WebRTC connection error:", error);
-				setConnectionStatus("error");
-				setConnectionError(
-					error instanceof Error ? error.message : "Connection failed",
-				);
-			}
-		};
-
-		connectWebRTC();
-
-		return () => {
-			if (connectionTimeoutRef.current) {
-				clearTimeout(connectionTimeoutRef.current);
-			}
-		};
-	}, [webrtcCredentials, callMode]);
-
-	// Sync WebRTC connection state
-	useEffect(() => {
-		if (webrtc.isConnected) {
-			if (connectionTimeoutRef.current) {
-				clearTimeout(connectionTimeoutRef.current);
-			}
-			setConnectionStatus("connected");
-			setConnectionError(null);
-			retryCountRef.current = 0;
-		} else if (webrtc.connectionError) {
-			setConnectionStatus("error");
-			setConnectionError(webrtc.connectionError);
-		} else if (webrtc.isConnecting) {
-			setConnectionStatus("connecting");
-		}
-	}, [webrtc.isConnected, webrtc.isConnecting, webrtc.connectionError]);
 
 	// Handlers
 	const handleOpenChange = useCallback(
@@ -619,35 +204,7 @@ export function PhoneDropdown({
 		setCustomerSearchOpen(false);
 	}, []);
 
-	const handleRetryConnection = useCallback(() => {
-		retryCountRef.current += 1;
 
-		if (retryCountRef.current > maxRetries) {
-			toast.warning("Max retries reached, switching to API mode");
-			setCallMode("api");
-			return;
-		}
-
-		// Reset credentials cache and refetch
-		resetWebRTCCredentialsCache();
-		setWebrtcCredentials(null);
-		setConnectionStatus("disconnected");
-		setConnectionError(null);
-
-		// Refetch credentials
-		fetchWebRTCCredentialsOnce().then((result) => {
-			if (result.success && result.credential) {
-				setWebrtcCredentials({
-					username: result.credential.username,
-					password: result.credential.password,
-				});
-			}
-		});
-	}, [toast]);
-
-	const handleModeToggle = useCallback((checked: boolean) => {
-		setCallMode(checked ? "webrtc" : "api");
-	}, []);
 
 	// Filter customers
 	const filteredCustomers = useMemo(() => {
@@ -745,93 +302,14 @@ export function PhoneDropdown({
 		handleOpenChange,
 	]);
 
-	// Make call via WebRTC (primary mode)
-	const handleWebRTCCall = useCallback(async () => {
-		const to = toNumber.replace(/\D/g, "");
-		if (!to) {
-			toast.error("Please enter a valid phone number");
-			return;
-		}
-
-		if (!webrtc.isConnected) {
-			toast.error("WebRTC not connected. Trying API mode...");
-			handleAPICall();
-			return;
-		}
-
-		if (!fromNumber) {
-			toast.error("Please select a company phone number");
-			return;
-		}
-
-		try {
-			await webrtc.makeCall(to, fromNumber);
-			toast.success(
-				selectedCustomer
-					? `Calling ${getCustomerName(selectedCustomer)}`
-					: `Calling ${formatPhone(toNumber)}`,
-			);
-		} catch (error) {
-			console.error("WebRTC call error:", error);
-			toast.error("Failed to start call via WebRTC");
-
-			// Fallback to API
-			toast.info("Falling back to API mode...");
-			handleAPICall();
-		}
-	}, [toNumber, fromNumber, selectedCustomer, webrtc, toast, handleAPICall]);
-
-	// Start call based on mode
 	const handleStartCall = useCallback(() => {
-		if (callMode === "webrtc" && webrtc.isConnected) {
-			handleWebRTCCall();
-		} else {
-			handleAPICall();
-		}
-	}, [callMode, webrtc.isConnected, handleWebRTCCall, handleAPICall]);
-
-	// Handle WebRTC call controls
-	const handleMuteToggle = useCallback(async () => {
-		try {
-			if (webrtc.currentCall?.isMuted) {
-				await webrtc.unmuteCall();
-			} else {
-				await webrtc.muteCall();
-			}
-		} catch (error) {
-			console.error("Mute toggle error:", error);
-		}
-	}, [webrtc]);
-
-	const handleHoldToggle = useCallback(async () => {
-		try {
-			if (webrtc.currentCall?.isHeld) {
-				await webrtc.unholdCall();
-			} else {
-				await webrtc.holdCall();
-			}
-		} catch (error) {
-			console.error("Hold toggle error:", error);
-		}
-	}, [webrtc]);
-
-	const handleEndCall = useCallback(async () => {
-		try {
-			await webrtc.endCall();
-		} catch (error) {
-			console.error("End call error:", error);
-		}
-	}, [webrtc]);
+		handleAPICall();
+	}, [handleAPICall]);
 
 	const canCall = Boolean(
 		toNumber.trim() && fromNumber && companyPhones.length > 0,
 	);
-	const isWebRTCReady =
-		callMode === "webrtc" && connectionStatus === "connected";
-	const hasActiveCall =
-		webrtc.currentCall &&
-		webrtc.currentCall.state !== "idle" &&
-		webrtc.currentCall.state !== "ended";
+	const hasActiveCall = false; // Calls are managed in the call window
 
 	// SSR placeholder
 	if (!mounted) {
@@ -863,9 +341,7 @@ export function PhoneDropdown({
 								)}
 								type="button"
 							>
-								{hasActiveCall ? (
-									<PhoneCall className="h-4 w-4" />
-								) : hasIncomingCall ? (
+								{hasIncomingCall ? (
 									<PhoneIncoming className="h-4 w-4" />
 								) : (
 									<Phone className="h-4 w-4" />
@@ -882,11 +358,7 @@ export function PhoneDropdown({
 						</DropdownMenuTrigger>
 					</TooltipTrigger>
 					<TooltipContent side="bottom">
-						{hasActiveCall
-							? "Call in Progress"
-							: hasIncomingCall
-								? "Incoming Call"
-								: "Make a Call"}
+						{hasIncomingCall ? "Incoming Call" : "Make a Call"}
 					</TooltipContent>
 				</Tooltip>
 
@@ -900,46 +372,17 @@ export function PhoneDropdown({
 								</div>
 								<div className="min-w-0 flex-1">
 									<h3 className="text-sm font-semibold">Make a Call</h3>
-									<ConnectionStatusBadge
-										status={connectionStatus}
-										mode={callMode}
-										onRetry={handleRetryConnection}
-									/>
+									<Badge variant="outline" className="gap-1 text-[10px]">
+										<Server className="h-3 w-3" />
+										Twilio API
+									</Badge>
 								</div>
 							</div>
 						</div>
 
-						{/* Mode toggle */}
-						<div className="flex items-center justify-between rounded-lg border bg-muted/30 p-2">
-							<div className="flex items-center gap-2">
-								<Server className="h-4 w-4 text-muted-foreground" />
-								<span className="text-xs text-muted-foreground">API Mode</span>
-							</div>
-							<Switch
-								checked={callMode === "webrtc"}
-								onCheckedChange={handleModeToggle}
-								disabled={!webrtcCredentials}
-							/>
-							<div className="flex items-center gap-2">
-								<span className="text-xs text-muted-foreground">
-									Browser Audio
-								</span>
-								<Headphones className="h-4 w-4 text-muted-foreground" />
-							</div>
-						</div>
 
-						{/* Active call card */}
-						{hasActiveCall && webrtc.currentCall && (
-							<>
-								<ActiveCallCard
-									call={webrtc.currentCall}
-									onMute={handleMuteToggle}
-									onHold={handleHoldToggle}
-									onEnd={handleEndCall}
-								/>
-								<DropdownMenuSeparator />
-							</>
-						)}
+
+
 
 						{/* Incoming call alert */}
 						{hasIncomingCall && (
@@ -959,15 +402,7 @@ export function PhoneDropdown({
 							</>
 						)}
 
-						{/* Connection error message */}
-						{connectionError && callMode === "webrtc" && (
-							<div className="rounded-lg border border-warning/30 bg-warning/10 p-2">
-								<p className="text-xs text-warning">{connectionError}</p>
-								<p className="mt-1 text-xs text-muted-foreground">
-									Calls will use API mode (opens in new window)
-								</p>
-							</div>
-						)}
+
 
 						{/* Customer search */}
 						{!hasActiveCall && (
@@ -1099,21 +534,16 @@ export function PhoneDropdown({
 									onClick={handleStartCall}
 								>
 									{isPending ? (
-										<>
-											<Loader2 className="h-4 w-4 animate-spin" />
-											Starting...
-										</>
-									) : isWebRTCReady ? (
-										<>
-											<Headphones className="h-4 w-4" />
-											Call (Browser Audio)
-										</>
-									) : (
-										<>
-											<PhoneOutgoing className="h-4 w-4" />
-											Call (Opens Window)
-										</>
-									)}
+									<>
+										<Loader2 className="h-4 w-4 animate-spin" />
+										Starting...
+									</>
+								) : (
+									<>
+										<PhoneOutgoing className="h-4 w-4" />
+										Call
+									</>
+								)}
 								</Button>
 							</>
 						)}

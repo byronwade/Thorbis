@@ -4,6 +4,7 @@
  * Job Detail Toolbar - AppToolbar Actions
  *
  * Displays in AppToolbar for job detail pages:
+ * - Status update dropdown (inline)
  * - Quick actions (Invoice, Estimate, Clone)
  * - Ellipsis menu with Statistics, Export, Archive
  *
@@ -29,7 +30,8 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { archiveJob } from "@/actions/jobs";
+import { archiveJob, updateJobStatus } from "@/actions/jobs";
+import { StatusUpdateDropdown } from "@/components/work/shared/quick-actions/status-update-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -196,9 +198,42 @@ export function JobDetailToolbar({
 		toast.success("Opening print dialog...");
 	};
 
+	/**
+	 * Handle job status update via server action
+	 */
+	const handleStatusChange = async (
+		entityId: string,
+		newStatus: string
+	): Promise<{ success: boolean; error?: string }> => {
+		try {
+			const result = await updateJobStatus(entityId, newStatus);
+			return {
+				success: result.success,
+				error: result.error,
+			};
+		} catch (error) {
+			console.error("Job status update error:", error);
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "Failed to update status",
+			};
+		}
+	};
+
 	return (
 		<>
 			<div className="flex items-center gap-1.5">
+				{/* Status Update Dropdown - First Position */}
+				{job?.status && jobId && (
+					<StatusUpdateDropdown
+						currentStatus={job.status}
+						entityId={jobId}
+						entityType="job"
+						onStatusChange={handleStatusChange}
+						size="sm"
+					/>
+				)}
+
 				{/* Primary Actions */}
 				<TooltipProvider>
 					{/* Schedule Appointment */}

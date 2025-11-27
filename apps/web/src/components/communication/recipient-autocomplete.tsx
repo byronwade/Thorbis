@@ -58,6 +58,23 @@ type Suggestion = {
 	subtitle?: string;
 };
 
+// Search result types that match API response structure
+type CustomerSearchResult = {
+	id: string;
+	display_name?: string | null;
+	first_name?: string | null;
+	last_name?: string | null;
+	email?: string | null;
+	company_name?: string | null;
+};
+
+type VendorSearchResult = {
+	id: string;
+	name: string;
+	display_name?: string | null;
+	email?: string | null;
+};
+
 type SuggestionGroup = {
 	id: string;
 	label: string;
@@ -127,12 +144,12 @@ export function RecipientAutocomplete({
 								? customersResult.data
 								: [customersResult.data];
 
-							const mapped = customerArray
+							const mapped = (customerArray as CustomerSearchResult[])
 								.filter(
-									(c: any) =>
+									(c) =>
 										c.email && !selectedEmails.has(c.email.toLowerCase()),
 								)
-								.map((c: any) => ({
+								.map((c) => ({
 									id: c.id,
 									type: "customer" as const,
 									name:
@@ -159,12 +176,12 @@ export function RecipientAutocomplete({
 								? vendorsResult.data
 								: [vendorsResult.data];
 
-							const mapped = vendorArray
+							const mapped = (vendorArray as VendorSearchResult[])
 								.filter(
-									(v: any) =>
+									(v) =>
 										v.email && !selectedEmails.has(v.email.toLowerCase()),
 								)
-								.map((v: any) => ({
+								.map((v) => ({
 									id: v.id,
 									type: "vendor" as const,
 									name: v.display_name || v.name,

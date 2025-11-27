@@ -306,43 +306,43 @@ export const API_SERVICES: Record<string, ApiServiceConfig> = {
 	// ==========================================
 	// Communication Services
 	// ==========================================
-	telnyx_voice: {
-		serviceName: "telnyx_voice",
-		displayName: "Telnyx Voice",
+	twilio_voice: {
+		serviceName: "twilio_voice",
+		displayName: "Twilio Voice",
 		category: "communication",
-		provider: "telnyx",
+		provider: "twilio",
 		freeTier: null, // No free tier
-		costAfterFree: { cents: 90, perUnits: 100, unit: "minute" }, // $0.009/min
+		costAfterFree: { cents: 130, perUnits: 100, unit: "minute" }, // $0.013/min
 		baseCostCents: 0,
 		hasExternalApi: true,
-		healthCheckEndpoint: "https://api.telnyx.com/v2/connections",
+		healthCheckEndpoint: "https://api.twilio.com/2010-04-01",
 		warningThresholdPct: 80,
 		criticalThresholdPct: 95,
 		description: "VoIP calls and call control",
 	},
-	telnyx_sms: {
-		serviceName: "telnyx_sms",
-		displayName: "Telnyx SMS",
+	twilio_sms: {
+		serviceName: "twilio_sms",
+		displayName: "Twilio SMS",
 		category: "communication",
-		provider: "telnyx",
+		provider: "twilio",
 		freeTier: null, // No free tier
-		costAfterFree: { cents: 25, perUnits: 100, unit: "message" }, // $0.0025/msg
+		costAfterFree: { cents: 79, perUnits: 100, unit: "message" }, // $0.0079/msg
 		baseCostCents: 0,
 		hasExternalApi: true,
 		warningThresholdPct: 80,
 		criticalThresholdPct: 95,
 		description: "SMS and MMS messaging",
 	},
-	resend: {
-		serviceName: "resend",
-		displayName: "Resend Email",
+	sendgrid: {
+		serviceName: "sendgrid",
+		displayName: "SendGrid Email",
 		category: "communication",
-		provider: "resend",
-		freeTier: { limit: 3000, period: "monthly", unit: "emails" },
-		costAfterFree: { cents: 9, perUnits: 100, unit: "email" }, // ~$0.0009/email
+		provider: "sendgrid",
+		freeTier: { limit: 100, period: "daily", unit: "emails" },
+		costAfterFree: { cents: 8, perUnits: 100, unit: "email" }, // ~$0.0008/email
 		baseCostCents: 0,
 		hasExternalApi: false, // Track internally
-		healthCheckEndpoint: "https://api.resend.com/emails",
+		healthCheckEndpoint: "https://api.sendgrid.com/v3/mail/send",
 		warningThresholdPct: 80,
 		criticalThresholdPct: 95,
 		description: "Transactional email delivery",

@@ -416,10 +416,10 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../src/app/api/webhooks/resend/route.ts
+// Validate ../../src/app/api/webhooks/sendgrid/route.ts
 {
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/webhooks/resend">> = Specific
-  const handler = {} as typeof import("../../src/app/api/webhooks/resend/route.js")
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/webhooks/sendgrid">> = Specific
+  const handler = {} as typeof import("../../src/app/api/webhooks/sendgrid/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

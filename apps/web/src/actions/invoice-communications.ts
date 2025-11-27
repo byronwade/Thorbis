@@ -14,6 +14,7 @@ import InvoiceSentEmail from "@/emails/templates/billing/invoice-sent";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import { createClient } from "@/lib/supabase/server";
+import { sendSms } from "@/lib/twilio/messaging";
 
 /**
  * Format currency amount from cents to display string
@@ -336,6 +337,344 @@ export async function sendEstimateEmail(estimateId: string) {
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send estimate",
+		};
+	}
+}
+
+/**
+ * Send invoice payment reminder via SMS
+ *
+ * Uses Twilio messaging with 10DLC compliance.
+ * Includes payment link for quick mobile payments.
+ */
+export async function sendInvoicePaymentReminderSMS(
+	invoiceId: string,
+	customerPhone: string,
+	reminderType: "upcoming" | "due-today" | "overdue" | "final-notice" = "upcoming",
+) {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get invoice with customer and company details
+		const { data: invoice, error } = await supabase
+			.from("invoices")
+			.select(
+				`
+				*,
+				customer:customers!customer_id(
+					id,
+					first_name,
+					last_name,
+					phone
+				),
+				company:companies!company_id(
+					id,
+					name,
+					phone
+				)
+			`,
+			)
+			.eq("id", invoiceId)
+			.single();
+
+		if (error || !invoice) {
+			return { success: false, error: "Invoice not found" };
+		}
+
+		// Validate phone number
+		const phoneToUse = customerPhone || invoice.customer?.phone;
+		if (!phoneToUse) {
+			return { success: false, error: "No phone number provided" };
+		}
+
+		// Build customer name
+		const customerName =
+			[invoice.customer?.first_name, invoice.customer?.last_name]
+				.filter(Boolean)
+				.join(" ") || "Customer";
+
+		// Build payment URL
+		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+		const paymentUrl = `${siteUrl}/pay/${invoiceId}`;
+
+		// Format amount
+		const amount = formatCurrency(invoice.total_amount);
+		const invoiceNumber = invoice.invoice_number || `INV-${invoiceId.slice(0, 8)}`;
+		const companyName = invoice.company?.name || "Your service provider";
+
+		// Calculate days overdue if applicable
+		const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
+		const today = new Date();
+		const daysOverdue = dueDate
+			? Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
+			: 0;
+
+		// Build message based on reminder type
+		let message: string;
+		switch (reminderType) {
+			case "due-today":
+				message = `Hi ${customerName}, your invoice ${invoiceNumber} for ${amount} from ${companyName} is due today. Pay now: ${paymentUrl}`;
+				break;
+			case "overdue":
+				message = `Hi ${customerName}, your invoice ${invoiceNumber} for ${amount} is ${daysOverdue} day(s) past due. Please pay now to avoid late fees: ${paymentUrl}`;
+				break;
+			case "final-notice":
+				message = `FINAL NOTICE: ${customerName}, your invoice ${invoiceNumber} for ${amount} is seriously overdue. Please pay immediately: ${paymentUrl} or contact us.`;
+				break;
+			case "upcoming":
+			default:
+				message = `Hi ${customerName}, a friendly reminder that invoice ${invoiceNumber} for ${amount} from ${companyName} is due on ${formatDate(invoice.due_date)}. Pay now: ${paymentUrl}`;
+				break;
+		}
+
+		// Send via Twilio
+		const smsResult = await sendSms({
+			companyId: invoice.company_id,
+			to: phoneToUse,
+			body: message,
+		});
+
+		if (!smsResult.success) {
+			return {
+				success: false,
+				error: smsResult.error || "Failed to send SMS",
+			};
+		}
+
+		// Update reminder tracking in invoice
+		await supabase
+			.from("invoices")
+			.update({
+				sms_reminder_count: (invoice.sms_reminder_count || 0) + 1,
+				last_sms_reminder_sent_at: new Date().toISOString(),
+				last_reminder_type: reminderType,
+			})
+			.eq("id", invoiceId);
+
+		// Log communication activity
+		await supabase.from("communications").insert({
+			company_id: invoice.company_id,
+			customer_id: invoice.customer_id,
+			type: "sms",
+			direction: "outbound",
+			subject: `Invoice ${invoiceNumber} Payment Reminder`,
+			body: message,
+			status: "sent",
+			metadata: {
+				invoice_id: invoiceId,
+				reminder_type: reminderType,
+				message_id: smsResult.messageSid,
+			},
+		});
+
+		revalidatePath(`/dashboard/work/invoices/${invoiceId}`);
+		revalidatePath(`/dashboard/work/invoices`);
+
+		return {
+			success: true,
+			message: `Payment reminder sent to ${phoneToUse}`,
+			data: { messageId: smsResult.messageSid },
+		};
+	} catch (error) {
+		console.error("[sendInvoicePaymentReminderSMS] Error:", error);
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "Failed to send payment reminder",
+		};
+	}
+}
+
+/**
+ * Send bulk payment reminders for overdue invoices
+ *
+ * Useful for automated daily/weekly reminder jobs.
+ */
+export async function sendBulkPaymentReminders(
+	companyId: string,
+	reminderType: "upcoming" | "overdue" = "overdue",
+) {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		// Get overdue invoices with customer phone numbers
+		const today = new Date().toISOString().split("T")[0];
+		let query = supabase
+			.from("invoices")
+			.select(
+				`
+				id,
+				invoice_number,
+				total_amount,
+				due_date,
+				sms_reminder_count,
+				customer:customers!customer_id(
+					id,
+					phone,
+					first_name,
+					last_name
+				)
+			`,
+			)
+			.eq("company_id", companyId)
+			.eq("status", "sent")
+			.is("deleted_at", null)
+			.not("customer.phone", "is", null);
+
+		if (reminderType === "overdue") {
+			query = query.lt("due_date", today);
+		} else {
+			// Upcoming: due within 3 days
+			const threeDaysFromNow = new Date();
+			threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+			query = query
+				.gte("due_date", today)
+				.lte("due_date", threeDaysFromNow.toISOString().split("T")[0]);
+		}
+
+		const { data: invoices, error } = await query.limit(50);
+
+		if (error) {
+			return { success: false, error: "Failed to fetch invoices" };
+		}
+
+		if (!invoices || invoices.length === 0) {
+			return { success: true, message: "No invoices to remind", data: { sent: 0 } };
+		}
+
+		// Send reminders
+		const results = await Promise.allSettled(
+			invoices.map((invoice: any) =>
+				sendInvoicePaymentReminderSMS(
+					invoice.id,
+					invoice.customer?.phone,
+					reminderType,
+				),
+			),
+		);
+
+		const successful = results.filter(
+			(r) => r.status === "fulfilled" && r.value.success,
+		).length;
+		const failed = results.length - successful;
+
+		return {
+			success: true,
+			message: `Sent ${successful} reminders, ${failed} failed`,
+			data: { sent: successful, failed },
+		};
+	} catch (error) {
+		console.error("[sendBulkPaymentReminders] Error:", error);
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to send bulk reminders",
+		};
+	}
+}
+
+/**
+ * Send payment confirmation SMS after payment is received
+ */
+export async function sendPaymentConfirmationSMS(
+	invoiceId: string,
+	amountPaid: number,
+	customerPhone: string,
+) {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		// Get invoice with company details
+		const { data: invoice, error } = await supabase
+			.from("invoices")
+			.select(
+				`
+				*,
+				customer:customers!customer_id(
+					id,
+					first_name,
+					last_name
+				),
+				company:companies!company_id(
+					id,
+					name
+				)
+			`,
+			)
+			.eq("id", invoiceId)
+			.single();
+
+		if (error || !invoice) {
+			return { success: false, error: "Invoice not found" };
+		}
+
+		const customerName =
+			[invoice.customer?.first_name, invoice.customer?.last_name]
+				.filter(Boolean)
+				.join(" ") || "Customer";
+
+		const companyName = invoice.company?.name || "Your service provider";
+		const invoiceNumber = invoice.invoice_number || `INV-${invoiceId.slice(0, 8)}`;
+		const amount = formatCurrency(amountPaid);
+		const remainingBalance = invoice.total_amount - (invoice.amount_paid || 0) - amountPaid;
+
+		let message: string;
+		if (remainingBalance <= 0) {
+			message = `Thank you, ${customerName}! Your payment of ${amount} for invoice ${invoiceNumber} has been received. Your invoice is now paid in full. - ${companyName}`;
+		} else {
+			message = `Thank you, ${customerName}! Your payment of ${amount} has been applied to invoice ${invoiceNumber}. Remaining balance: ${formatCurrency(remainingBalance)}. - ${companyName}`;
+		}
+
+		// Send via Twilio
+		const smsResult = await sendMessage(
+			customerPhone,
+			message,
+			undefined,
+			"payment_confirmation",
+		);
+
+		if (!smsResult.success) {
+			return {
+				success: false,
+				error: smsResult.error || "Failed to send SMS",
+			};
+		}
+
+		return {
+			success: true,
+			message: "Payment confirmation sent",
+			data: { messageId: smsResult.messageSid },
+		};
+	} catch (error) {
+		console.error("[sendPaymentConfirmationSMS] Error:", error);
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to send payment confirmation",
 		};
 	}
 }

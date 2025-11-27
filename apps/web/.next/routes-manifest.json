@@ -165,6 +165,14 @@
       "namedRegex": "^/contracts/sign/(?<nxtPid>[^/]+?)/success/opengraph\\-image\\-yqbd0j(?:/)?$"
     },
     {
+      "page": "/dashboard/ai/[chatId]",
+      "regex": "^/dashboard/ai/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPchatId": "nxtPchatId"
+      },
+      "namedRegex": "^/dashboard/ai/(?<nxtPchatId>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/dashboard/appointments/[id]",
       "regex": "^/dashboard/appointments/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -650,6 +658,18 @@
       "namedRegex": "^/api/ai/workflows/content(?:/)?$"
     },
     {
+      "page": "/api/analytics/data",
+      "regex": "^/api/analytics/data(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analytics/data(?:/)?$"
+    },
+    {
+      "page": "/api/analytics/features",
+      "regex": "^/api/analytics/features(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analytics/features(?:/)?$"
+    },
+    {
       "page": "/api/calendar/auth",
       "regex": "^/api/calendar/auth(?:/)?$",
       "routeKeys": {},
@@ -672,6 +692,12 @@
       "regex": "^/api/check\\-onboarding\\-status(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/check\\-onboarding\\-status(?:/)?$"
+    },
+    {
+      "page": "/api/cron/aggregate-analytics",
+      "regex": "^/api/cron/aggregate\\-analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cron/aggregate\\-analytics(?:/)?$"
     },
     {
       "page": "/api/cron/calculate-company-summary",
@@ -722,12 +748,6 @@
       "namedRegex": "^/api/cron/populate\\-analytics(?:/)?$"
     },
     {
-      "page": "/api/cron/resend-domain-sync",
-      "regex": "^/api/cron/resend\\-domain\\-sync(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/cron/resend\\-domain\\-sync(?:/)?$"
-    },
-    {
       "page": "/api/cron/sync-api-usage",
       "regex": "^/api/cron/sync\\-api\\-usage(?:/)?$",
       "routeKeys": {},
@@ -744,12 +764,6 @@
       "regex": "^/api/cron/sync\\-gmail\\-inboxes(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/cron/sync\\-gmail\\-inboxes(?:/)?$"
-    },
-    {
-      "page": "/api/cron/verify-telnyx-webhooks",
-      "regex": "^/api/cron/verify\\-telnyx\\-webhooks(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/cron/verify\\-telnyx\\-webhooks(?:/)?$"
     },
     {
       "page": "/api/data/export",
@@ -1112,46 +1126,10 @@
       "namedRegex": "^/api/street\\-view(?:/)?$"
     },
     {
-      "page": "/api/telnyx/check-phones",
-      "regex": "^/api/telnyx/check\\-phones(?:/)?$",
+      "page": "/api/test-email",
+      "regex": "^/api/test\\-email(?:/)?$",
       "routeKeys": {},
-      "namedRegex": "^/api/telnyx/check\\-phones(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/check-settings",
-      "regex": "^/api/telnyx/check\\-settings(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/check\\-settings(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/diagnostics",
-      "regex": "^/api/telnyx/diagnostics(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/diagnostics(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/message-status",
-      "regex": "^/api/telnyx/message\\-status(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/message\\-status(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/send-test-sms",
-      "regex": "^/api/telnyx/send\\-test\\-sms(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/send\\-test\\-sms(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/validate-company",
-      "regex": "^/api/telnyx/validate\\-company(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/validate\\-company(?:/)?$"
-    },
-    {
-      "page": "/api/telnyx/webhooks",
-      "regex": "^/api/telnyx/webhooks(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/telnyx/webhooks(?:/)?$"
+      "namedRegex": "^/api/test\\-email(?:/)?$"
     },
     {
       "page": "/api/timezone",
@@ -1208,10 +1186,10 @@
       "namedRegex": "^/api/webhooks/postmark(?:/)?$"
     },
     {
-      "page": "/api/webhooks/resend",
-      "regex": "^/api/webhooks/resend(?:/)?$",
+      "page": "/api/webhooks/sendgrid",
+      "regex": "^/api/webhooks/sendgrid(?:/)?$",
       "routeKeys": {},
-      "namedRegex": "^/api/webhooks/resend(?:/)?$"
+      "namedRegex": "^/api/webhooks/sendgrid(?:/)?$"
     },
     {
       "page": "/api/webhooks/stripe",
@@ -1226,34 +1204,10 @@
       "namedRegex": "^/api/webhooks/stripe\\-platform(?:/)?$"
     },
     {
-      "page": "/api/webhooks/telnyx",
-      "regex": "^/api/webhooks/telnyx(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/webhooks/telnyx(?:/)?$"
-    },
-    {
       "page": "/api/webhooks/twilio",
       "regex": "^/api/webhooks/twilio(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/webhooks/twilio(?:/)?$"
-    },
-    {
-      "page": "/api/webrtc/call",
-      "regex": "^/api/webrtc/call(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/webrtc/call(?:/)?$"
-    },
-    {
-      "page": "/api/webrtc/credential",
-      "regex": "^/api/webrtc/credential(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/webrtc/credential(?:/)?$"
-    },
-    {
-      "page": "/api/webrtc/status",
-      "regex": "^/api/webrtc/status(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/webrtc/status(?:/)?$"
     },
     {
       "page": "/api/youtube",
@@ -2456,6 +2410,12 @@
       "namedRegex": "^/dashboard/settings/integrations(?:/)?$"
     },
     {
+      "page": "/dashboard/settings/internal-analytics",
+      "regex": "^/dashboard/settings/internal\\-analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/settings/internal\\-analytics(?:/)?$"
+    },
+    {
       "page": "/dashboard/settings/invoices",
       "regex": "^/dashboard/settings/invoices(?:/)?$",
       "routeKeys": {},
@@ -2688,12 +2648,6 @@
       "regex": "^/dashboard/settings/team/roles(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard/settings/team/roles(?:/)?$"
-    },
-    {
-      "page": "/dashboard/settings/telnyx-verification",
-      "regex": "^/dashboard/settings/telnyx\\-verification(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/dashboard/settings/telnyx\\-verification(?:/)?$"
     },
     {
       "page": "/dashboard/settings/tv",
@@ -3552,30 +3506,6 @@
       "regex": "^/test\\-switch\\-company(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/test\\-switch\\-company(?:/)?$"
-    },
-    {
-      "page": "/test-telnyx-config",
-      "regex": "^/test\\-telnyx\\-config(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-telnyx\\-config(?:/)?$"
-    },
-    {
-      "page": "/test-telnyx-debug",
-      "regex": "^/test\\-telnyx\\-debug(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-telnyx\\-debug(?:/)?$"
-    },
-    {
-      "page": "/test-telnyx-send",
-      "regex": "^/test\\-telnyx\\-send(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-telnyx\\-send(?:/)?$"
-    },
-    {
-      "page": "/test-webhook-fix",
-      "regex": "^/test\\-webhook\\-fix(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-webhook\\-fix(?:/)?$"
     },
     {
       "page": "/tools",

@@ -601,6 +601,243 @@ async function completeAppointment(
 }
 
 /**
+ * Reschedule appointment (simplified)
+ * Updates scheduled times without requiring FormData
+ */
+export async function rescheduleAppointmentSimple(
+	appointmentId: string,
+	scheduledStart: string,
+	scheduledEnd: string,
+	reason?: string,
+): Promise<ActionResult<void>> {
+	return await withErrorHandling(async () => {
+		const supabase = await getSupabaseServerClient();
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await getActiveCompanyId();
+		assertExists(companyId, "Company not found for user");
+
+		// Verify appointment exists and belongs to company
+		const { data: appointment, error: fetchError } = await supabase
+			.from("appointments")
+			.select("id, company_id, job_id")
+			.eq("id", appointmentId)
+			.eq("company_id", companyId)
+			.single();
+
+		if (fetchError || !appointment) {
+			throw new ActionError(
+				"Appointment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		// Calculate duration
+		const duration = calculateDuration(scheduledStart, scheduledEnd);
+
+		// Build update notes
+		const notes = reason ? `Rescheduled: ${reason}` : undefined;
+
+		// Update appointment
+		const { error } = await supabase
+			.from("appointments")
+			.update({
+				scheduled_start: scheduledStart,
+				scheduled_end: scheduledEnd,
+				duration_minutes: duration,
+				status: "rescheduled",
+				...(notes && { notes }),
+			})
+			.eq("id", appointmentId)
+			.eq("company_id", companyId);
+
+		if (error) {
+			throw new ActionError(
+				`Failed to reschedule appointment: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/appointments");
+		revalidatePath(`/dashboard/work/appointments/${appointmentId}`);
+		revalidatePath("/dashboard/schedule");
+		if (appointment.job_id) {
+			revalidatePath(`/dashboard/work/${appointment.job_id}`);
+		}
+	});
+}
+
+/**
+ * Link appointment to a job
+ * Associates an appointment with an existing job
+ */
+export async function linkAppointmentToJob(
+	appointmentId: string,
+	jobId: string,
+): Promise<ActionResult<void>> {
+	return await withErrorHandling(async () => {
+		const supabase = await getSupabaseServerClient();
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await getActiveCompanyId();
+		assertExists(companyId, "Company not found for user");
+
+		// Verify appointment exists and belongs to company
+		const { data: appointment, error: fetchError } = await supabase
+			.from("appointments")
+			.select("id, company_id, job_id")
+			.eq("id", appointmentId)
+			.eq("company_id", companyId)
+			.single();
+
+		if (fetchError || !appointment) {
+			throw new ActionError(
+				"Appointment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		// Verify job exists and belongs to company
+		const { data: job, error: jobError } = await supabase
+			.from("jobs")
+			.select("id, company_id")
+			.eq("id", jobId)
+			.eq("company_id", companyId)
+			.single();
+
+		if (jobError || !job) {
+			throw new ActionError("Job not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+		}
+
+		const previousJobId = appointment.job_id;
+
+		// Link appointment to job
+		const { error } = await supabase
+			.from("appointments")
+			.update({ job_id: jobId })
+			.eq("id", appointmentId)
+			.eq("company_id", companyId);
+
+		if (error) {
+			throw new ActionError(
+				`Failed to link appointment to job: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/appointments");
+		revalidatePath(`/dashboard/work/appointments/${appointmentId}`);
+		revalidatePath(`/dashboard/work/${jobId}`);
+		revalidatePath("/dashboard/schedule");
+		if (previousJobId) {
+			revalidatePath(`/dashboard/work/${previousJobId}`);
+		}
+	});
+}
+
+/**
+ * Update appointment status
+ * Handles status transitions with appropriate timestamp updates
+ */
+export async function updateAppointmentStatus(
+	appointmentId: string,
+	newStatus: string,
+): Promise<ActionResult<void>> {
+	return await withErrorHandling(async () => {
+		const supabase = await getSupabaseServerClient();
+
+		// Get current user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		// Get user's company
+		const companyId = await getActiveCompanyId();
+		assertExists(companyId, "Company not found for user");
+
+		// Validate status
+		const validStatuses = [
+			"scheduled",
+			"confirmed",
+			"in_progress",
+			"completed",
+			"cancelled",
+			"no_show",
+			"rescheduled",
+		];
+		if (!validStatuses.includes(newStatus)) {
+			throw new ActionError(
+				`Invalid status: ${newStatus}. Valid statuses: ${validStatuses.join(", ")}`,
+				ERROR_CODES.VALIDATION_FAILED,
+			);
+		}
+
+		// Verify appointment exists and belongs to company
+		const { data: appointment, error: fetchError } = await supabase
+			.from("appointments")
+			.select("id, status, job_id")
+			.eq("id", appointmentId)
+			.eq("company_id", companyId)
+			.single();
+
+		if (fetchError || !appointment) {
+			throw new ActionError(
+				"Appointment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		// Build update data with appropriate timestamps
+		const updateData: Record<string, unknown> = {
+			status: newStatus,
+		};
+
+		// Add timestamps based on status transitions
+		const now = new Date().toISOString();
+		if (newStatus === "in_progress" && appointment.status !== "in_progress") {
+			updateData.actual_start = now;
+		} else if (newStatus === "completed") {
+			updateData.actual_end = now;
+		} else if (newStatus === "cancelled") {
+			updateData.cancelled_at = now;
+		}
+
+		// Update appointment status
+		const { error } = await supabase
+			.from("appointments")
+			.update(updateData)
+			.eq("id", appointmentId)
+			.eq("company_id", companyId);
+
+		if (error) {
+			throw new ActionError(
+				`Failed to update appointment status: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/appointments");
+		revalidatePath(`/dashboard/work/appointments/${appointmentId}`);
+		revalidatePath("/dashboard/schedule");
+		if (appointment.job_id) {
+			revalidatePath(`/dashboard/work/${appointment.job_id}`);
+		}
+	});
+}
+
+/**
  * Archive an appointment (soft delete)
  */
 export async function archiveAppointment(
@@ -786,5 +1023,69 @@ async function unlinkScheduleFromJob(
 		}
 		revalidatePath("/dashboard/work/appointments");
 		revalidatePath("/dashboard/schedule");
+	});
+}
+
+/**
+ * Restore an archived appointment
+ * Reverses the soft delete by clearing archived_at, deleted_at, deleted_by
+ */
+export async function restoreAppointment(
+	appointmentId: string,
+): Promise<ActionResult<void>> {
+	return await withErrorHandling(async () => {
+		const supabase = await getSupabaseServerClient();
+
+		// Get current user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		// Get user's company
+		const companyId = await getActiveCompanyId();
+		assertExists(companyId, "Company not found for user");
+
+		// Verify the appointment exists and is archived
+		const { data: appointment, error: fetchError } = await supabase
+			.from("appointments")
+			.select("id, status, deleted_at")
+			.eq("id", appointmentId)
+			.eq("company_id", companyId)
+			.not("deleted_at", "is", null)
+			.single();
+
+		if (fetchError || !appointment) {
+			throw new ActionError(
+				"Archived appointment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		// Restore the appointment
+		const { error: updateError } = await supabase
+			.from("appointments")
+			.update({
+				archived_at: null,
+				deleted_at: null,
+				deleted_by: null,
+				status: "scheduled", // Restore to scheduled status
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", appointmentId)
+			.eq("company_id", companyId);
+
+		if (updateError) {
+			throw new ActionError(
+				`Failed to restore appointment: ${updateError.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/appointments");
+		revalidatePath(`/dashboard/work/appointments/${appointmentId}`);
+		revalidatePath("/dashboard/schedule");
+		revalidatePath("/dashboard/work/archive");
 	});
 }

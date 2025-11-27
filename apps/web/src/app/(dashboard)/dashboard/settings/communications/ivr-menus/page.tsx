@@ -10,7 +10,7 @@
 
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
-import { IVRMenuBuilder } from "@/components/telnyx/ivr-menu-builder";
+import { IVRMenuBuilder } from "@/components/telephony/ivr-menu-builder";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {

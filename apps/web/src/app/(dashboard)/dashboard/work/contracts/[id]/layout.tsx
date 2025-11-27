@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { ContractDetailToolbarActions } from "@/components/work/contracts/contract-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Contracts Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/contracts/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function ContractsDetailLayout({
 	children,
@@ -34,8 +35,7 @@ export default function ContractsDetailLayout({
 			back: (
 				<DetailBackButton href="/dashboard/work/contracts" label="Contracts" />
 			),
-			// TODO: Create ContractDetailToolbar component
-			// actions: <ContractDetailToolbar />,
+			actions: <ContractDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

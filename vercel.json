@@ -6,10 +6,6 @@
 			"schedule": "0 2 * * *"
 		},
 		{
-			"path": "/api/cron/verify-telnyx-webhooks",
-			"schedule": "0 9 * * *"
-		},
-		{
 			"path": "/api/cron/sync-gmail-inboxes",
 			"schedule": "0 * * * *"
 		},

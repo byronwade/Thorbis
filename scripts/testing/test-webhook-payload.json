@@ -1,0 +1,26 @@
+{
+	"type": "email.received",
+	"created_at": "2025-11-22T02:20:00.000Z",
+	"data": {
+		"email_id": "test-email-123",
+		"id": "test-email-123",
+		"subject": "Test Email - Should Appear in Dashboard",
+		"from": [
+			{
+				"email": "test@example.com",
+				"name": "Test Sender"
+			}
+		],
+		"to": [
+			{
+				"email": "test@biezru.resend.app"
+			}
+		],
+		"created_at": "2025-11-22T02:20:00.000Z",
+		"text": "This is a test email to verify the webhook processing is working correctly.\n\nIf you see this in the communication dashboard, everything is working!",
+		"html": "<p>This is a <strong>test email</strong> to verify the webhook processing is working correctly.</p><p>If you see this in the communication dashboard, everything is working!</p>",
+		"attachments": []
+	}
+}
+
+

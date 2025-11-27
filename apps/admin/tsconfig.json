@@ -43,5 +43,11 @@
 		"../../packages/database/src/**/*.ts",
 		"../../packages/auth/src/**/*.ts"
 	],
-	"exclude": ["node_modules", ".next", "dist", "build"]
+	"exclude": [
+		"node_modules",
+		".next",
+		"dist",
+		"build",
+		"../web/src/**/*"
+	]
 }

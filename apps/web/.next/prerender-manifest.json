@@ -2158,81 +2158,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/test-telnyx-debug": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/test-telnyx-debug",
-      "dataRoute": "/test-telnyx-debug.rsc",
-      "prefetchDataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/test-telnyx-send": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/test-telnyx-send",
-      "dataRoute": "/test-telnyx-send.rsc",
-      "prefetchDataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/test-webhook-fix": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/test-webhook-fix",
-      "dataRoute": "/test-webhook-fix.rsc",
-      "prefetchDataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/tools/calculators/break-even": {
       "experimentalBypassFor": [
         {
@@ -2596,8 +2521,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "2e52eb0526b6047ce0f68e499f487818",
-    "previewModeSigningKey": "1cc753bd265da9484e7a02c3a9d47d442ae1fb0d9c5dccb609e99fada1663b89",
-    "previewModeEncryptionKey": "2999469d9c53ba6a7dfcd225a63be526aac27f3027bc21de1debaeb323a87d35"
+    "previewModeId": "8c75081b710a21fe2e9798c5a4ef6619",
+    "previewModeSigningKey": "70ef5d83648571d01ec9ac4a7154b1cfd59c39ddbd023db1f13da734f9e7874b",
+    "previewModeEncryptionKey": "becc4f8643386fe5b0877f8ef2647a0dc6c8eab382c21d7937f51eafd9d04823"
   }
 }

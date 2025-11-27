@@ -301,19 +301,45 @@ export const MessageBranchPage = ({
 	);
 };
 
-export type MessageResponseProps = ComponentProps<typeof Streamdown>;
+/**
+ * Streaming cursor - shows a blinking cursor during AI response streaming
+ * Professional ChatGPT-style animation
+ */
+export const StreamingCursor = ({ className }: { className?: string }) => (
+	<span
+		className={cn(
+			"inline-block w-2 h-4 bg-primary/80 ml-0.5 align-middle animate-pulse",
+			className,
+		)}
+		aria-hidden="true"
+	/>
+);
+
+export type MessageResponseProps = ComponentProps<typeof Streamdown> & {
+	/** Whether the message is currently streaming */
+	isStreaming?: boolean;
+};
 
 export const MessageResponse = memo(
-	({ className, ...props }: MessageResponseProps) => (
-		<Streamdown
-			className={cn(
-				"size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-				className,
-			)}
-			{...props}
-		/>
+	({ className, isStreaming, children, ...props }: MessageResponseProps) => (
+		<div className="relative">
+			<Streamdown
+				className={cn(
+					"size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+					// Add smooth transitions for content updates
+					"transition-all duration-75",
+					className,
+				)}
+				{...props}
+			>
+				{children}
+			</Streamdown>
+			{isStreaming && <StreamingCursor />}
+		</div>
 	),
-	(prevProps, nextProps) => prevProps.children === nextProps.children,
+	(prevProps, nextProps) =>
+		prevProps.children === nextProps.children &&
+		prevProps.isStreaming === nextProps.isStreaming,
 );
 
 MessageResponse.displayName = "MessageResponse";

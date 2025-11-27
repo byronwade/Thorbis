@@ -2,7 +2,7 @@
  * Call Window Types
  *
  * Comprehensive type definitions for the call window interface,
- * including customer data, related records, and Telnyx enrichment.
+ * including customer data, related records, and Twilio enrichment.
  */
 
 import type { Database } from "@/types/supabase";
@@ -42,9 +42,9 @@ export type CustomerStats = {
 };
 
 /**
- * Telnyx caller enrichment data
+ * Twilio caller enrichment data (Lookup API)
  */
-export type TelnyxEnrichmentData = {
+export type TwilioEnrichmentData = {
 	callerName: string | null;
 	callerType: string | null;
 	lineType: string | null;
@@ -54,13 +54,30 @@ export type TelnyxEnrichmentData = {
 };
 
 /**
+ * Recent communication record for call context
+ */
+export type RecentCommunication = {
+	id: string;
+	type: "sms" | "email" | "call" | "voicemail";
+	direction: "inbound" | "outbound";
+	subject?: string | null;
+	body?: string | null;
+	from_number?: string | null;
+	to_number?: string | null;
+	from_email?: string | null;
+	to_email?: string | null;
+	created_at: string;
+	status?: string | null;
+};
+
+/**
  * Comprehensive customer data for call window
  */
 export type CustomerCallData = {
 	// Core customer info
 	customer: Customer | null;
 	isKnownCustomer: boolean;
-	source: "database" | "telnyx" | "unknown";
+	source: "database" | "twilio" | "unknown";
 
 	// Quick stats
 	stats: CustomerStats;
@@ -74,8 +91,11 @@ export type CustomerCallData = {
 	equipment: Equipment[];
 	contracts: Contract[];
 
-	// Telnyx enrichment data (if available)
-	telnyxData?: TelnyxEnrichmentData;
+	// Recent communications for context (last 5)
+	recentCommunications: RecentCommunication[];
+
+	// Twilio enrichment data (if available)
+	twilioData?: TwilioEnrichmentData;
 };
 
 /**
@@ -110,9 +130,9 @@ export type CallState = {
 	callSessionId: string | null;
 	direction: "inbound" | "outbound";
 
-	// Telnyx state
-	telnyxCallState: "idle" | "connecting" | "ringing" | "active" | "ended";
-	telnyxError: string | null;
+	// Twilio state
+	twilioCallState: "idle" | "connecting" | "ringing" | "active" | "ended";
+	twilioError: string | null;
 
 	// Enhanced features
 	isScreenSharing: boolean;

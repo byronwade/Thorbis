@@ -32,7 +32,9 @@ export interface Communication {
 	direction: "inbound" | "outbound";
 	status: string;
 	fromAddress?: string;
+	fromName?: string;
 	toAddress?: string;
+	toName?: string;
 	subject?: string;
 	body?: string;
 	customerId?: string;
@@ -51,11 +53,24 @@ export interface Communication {
 	internalNotesUpdatedBy?: string;
 	contentType?: string;
 	createdAt: string;
+	// Call-specific fields
+	callDuration?: number | null;
+	callRecordingUrl?: string | null;
+	callTranscript?: string | null;
+	callSentiment?: string | null;
+	callAnsweredAt?: string | null;
+	callEndedAt?: string | null;
+	hangupCause?: string | null;
+	hangupSource?: string | null;
+	answeringMachineDetected?: boolean | null;
+	twilioCallSid?: string | null;
+	twilioConferenceSid?: string | null;
 	customer?: {
 		id: string;
 		firstName?: string;
 		lastName?: string;
 		email?: string;
+		phone?: string;
 	};
 	assignedTeamMember?: {
 		id: string;
@@ -654,7 +669,9 @@ export const getCompanyCommunications = cache(
 			direction: comm.direction as "inbound" | "outbound",
 			status: comm.status,
 			fromAddress: comm.from_address || undefined,
+			fromName: comm.from_name || undefined,
 			toAddress: comm.to_address || undefined,
+			toName: comm.to_name || undefined,
 			subject: comm.subject || undefined,
 			body: comm.body || undefined,
 			customerId: comm.customer_id || undefined,
@@ -674,6 +691,18 @@ export const getCompanyCommunications = cache(
 			internalNotesUpdatedAt: comm.internal_notes_updated_at || undefined,
 			internalNotesUpdatedBy: comm.internal_notes_updated_by || undefined,
 			createdAt: comm.created_at,
+			// Call-specific fields
+			callDuration: comm.call_duration,
+			callRecordingUrl: comm.call_recording_url,
+			callTranscript: comm.call_transcript,
+			callSentiment: comm.call_sentiment,
+			callAnsweredAt: comm.call_answered_at,
+			callEndedAt: comm.call_ended_at,
+			hangupCause: comm.hangup_cause,
+			hangupSource: comm.hangup_source,
+			answeringMachineDetected: comm.answering_machine_detected,
+			twilioCallSid: comm.twilio_call_sid,
+			twilioConferenceSid: comm.twilio_conference_sid,
 			customer: comm.customer
 				? {
 						id: comm.customer.id,
@@ -683,5 +712,76 @@ export const getCompanyCommunications = cache(
 					}
 				: undefined,
 		}));
+	},
+);
+
+// =============================================================================
+// COUNT FUNCTIONS
+// =============================================================================
+
+/**
+ * Communication type counts
+ */
+export interface CommunicationCounts {
+	all: number;
+	email: number;
+	sms: number;
+	call: number;
+	voicemail: number;
+}
+
+/**
+ * Get communication counts by type for a company
+ *
+ * This returns the total counts for display in filter badges,
+ * not affected by pagination limits.
+ *
+ * @param companyId - Company ID
+ * @returns Promise<CommunicationCounts>
+ */
+export const getCompanyCommunicationCounts = cache(
+	async (companyId: string): Promise<CommunicationCounts> => {
+		const supabase = await createServiceSupabaseClient();
+
+		// Get counts for each type using parallel queries
+		const [allResult, emailResult, smsResult, callResult, voicemailResult] = await Promise.all([
+			supabase
+				.from("communications")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.is("deleted_at", null),
+			supabase
+				.from("communications")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("type", "email")
+				.is("deleted_at", null),
+			supabase
+				.from("communications")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("type", "sms")
+				.is("deleted_at", null),
+			supabase
+				.from("communications")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("type", "call")
+				.is("deleted_at", null),
+			supabase
+				.from("communications")
+				.select("id", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("type", "voicemail")
+				.is("deleted_at", null),
+		]);
+
+		return {
+			all: allResult.count ?? 0,
+			email: emailResult.count ?? 0,
+			sms: smsResult.count ?? 0,
+			call: callResult.count ?? 0,
+			voicemail: voicemailResult.count ?? 0,
+		};
 	},
 );

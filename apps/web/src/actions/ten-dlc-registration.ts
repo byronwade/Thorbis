@@ -4,20 +4,18 @@ import { sendVerificationSubmittedEmail } from "@/lib/email/verification-emails"
 import { createClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import {
-	checkAccountVerificationStatus,
-	getNextSteps,
-	getVerificationRequirements,
-	type VerificationStatus,
-} from "@/lib/telnyx/account-verification";
+	getBusinessVerificationStatus as checkAccountVerificationStatus,
+	type VerificationResult,
+} from "@/lib/twilio/account-verification";
 import {
 	attachNumberToCampaign,
-	createTenDlcBrand,
-	createTenDlcCampaign,
+	registerTenDlcBrand as createTenDlcBrand,
+	registerTenDlcCampaign as createTenDlcCampaign,
 	getTenDlcBrand,
 	getTenDlcCampaign,
-	type TenDlcBrandPayload,
-	type TenDlcCampaignPayload,
-} from "@/lib/telnyx/ten-dlc";
+	type BrandRegistrationData as TenDlcBrandPayload,
+	type CampaignData as TenDlcCampaignPayload,
+} from "@/lib/twilio/ten-dlc";
 
 type RegistrationResult = {
 	success: boolean;
@@ -32,12 +30,12 @@ type RegistrationResult = {
  *
  * This function:
  * 1. Fetches company data from database
- * 2. Creates a 10DLC brand with Telnyx
+ * 2. Creates a 10DLC brand with Twilio
  * 3. Waits for brand approval (polls status)
  * 4. Creates a 10DLC campaign
  * 5. Waits for campaign approval
  * 6. Attaches all company phone numbers to the campaign
- * 7. Updates company_telnyx_settings with brand and campaign IDs
+ * 7. Updates company_twilio_settings with brand and campaign IDs
  */
 export async function registerCompanyFor10DLC(
 	companyId: string,
@@ -158,7 +156,7 @@ export async function registerCompanyFor10DLC(
 		const domainEmail = `admin@${fullDomain}`;
 		log.push(`Email domain verified: ${fullDomain}`);
 
-		// Normalize phone to E.164 format (Telnyx requirement)
+		// Normalize phone to E.164 format (Twilio requirement)
 		const normalizeToE164 = (phone: string): string => {
 			// Remove all non-digit characters
 			const digits = phone.replace(/\D/g, "");
@@ -178,7 +176,7 @@ export async function registerCompanyFor10DLC(
 		// 2. Check if already registered
 		log.push("Checking existing 10DLC registration...");
 		const { data: settings } = await supabase
-			.from("company_telnyx_settings")
+			.from("company_twilio_settings")
 			.select("ten_dlc_brand_id, ten_dlc_campaign_id")
 			.eq("company_id", companyId)
 			.single();
@@ -194,26 +192,18 @@ export async function registerCompanyFor10DLC(
 		}
 
 		// 3. Create 10DLC Brand
-		log.push("Creating 10DLC brand with Telnyx...");
+		log.push("Creating 10DLC brand with Twilio...");
 		const brandPayload: TenDlcBrandPayload = {
-			entityType: "PRIVATE_PROFIT", // Default - could be made configurable
-			displayName: company.name || "Unknown Company",
 			companyName: company.name || "Unknown Company",
-			firstName: "Business", // No separate first/last name fields in companies table
-			lastName: "Owner",
 			ein: company.ein,
-			phone: normalizedPhone, // E.164 format required by Telnyx
+			phone: normalizedPhone, // E.164 format required by Twilio
 			street: company.address || "",
 			city: company.city || "",
 			state: company.state || "",
 			postalCode: company.zip_code || "",
 			country: "US",
 			email: contactEmail,
-			website: company.website,
 			vertical: determineVertical(company.industry),
-			businessContactEmail: contactEmail,
-			// ISV/Reseller identification - Stratos is the platform
-			isReseller: true,
 		};
 
 		const brandResult = await createTenDlcBrand(brandPayload);
@@ -250,7 +240,7 @@ export async function registerCompanyFor10DLC(
 						"TCR requires a verified business email domain (not personal/free providers). " +
 						"Options: 1) Use toll-free numbers (bypasses TCR), " +
 						"2) Set up Google Workspace/Microsoft 365, " +
-						"3) See /TELNYX_10DLC_EMAIL_REQUIREMENTS.md",
+						"3) See /TWILIO_10DLC_EMAIL_REQUIREMENTS.md",
 					brandId,
 					log,
 				};
@@ -258,7 +248,7 @@ export async function registerCompanyFor10DLC(
 
 			// Save brand ID even if not approved yet
 			await supabase
-				.from("company_telnyx_settings")
+				.from("company_twilio_settings")
 				.update({ ten_dlc_brand_id: brandId })
 				.eq("company_id", companyId);
 
@@ -278,33 +268,24 @@ export async function registerCompanyFor10DLC(
 		log.push("Creating 10DLC campaign...");
 		const campaignPayload: TenDlcCampaignPayload = {
 			brandId: brandId,
-			usecase: "MIXED", // Mixed use case covers most business needs
+			useCase: "MIXED", // Mixed use case covers most business needs
 			description: `Business messaging for ${company.name}`,
 			messageFlow:
 				"Customers opt-in when providing phone number. Messages sent for appointments, invoices, and general updates.",
 			helpMessage: "Reply HELP for assistance or call us.",
-			helpKeywords: "HELP",
-			optinKeywords: "START YES SUBSCRIBE",
-			optinMessage:
+			optInMessage:
 				"You are now subscribed to messages from " +
 				company.name +
 				". Reply STOP to unsubscribe.",
-			optoutKeywords: "STOP END UNSUBSCRIBE CANCEL QUIT",
-			optoutMessage:
+			optOutMessage:
 				"You have been unsubscribed from " +
 				company.name +
 				" messages. Reply START to resubscribe.",
-			sample1: "Your appointment is confirmed for tomorrow at 2 PM.",
-			sample2: "Thank you for your payment. Receipt: #12345",
-			sample3: "Reminder: Service scheduled for next week.",
-			autoRenewal: true,
-			termsAndConditions: true,
-			termsAndConditionsLink: company.website
-				? `${company.website}/terms`
-				: "https://stratos.thorbis.com/terms",
-			subscriberHelp: true,
-			subscriberOptin: true,
-			subscriberOptout: true,
+			sampleMessages: [
+				"Your appointment is confirmed for tomorrow at 2 PM.",
+				"Thank you for your payment. Receipt: #12345",
+				"Reminder: Service scheduled for next week.",
+			],
 		};
 
 		const campaignResult = await createTenDlcCampaign(campaignPayload);
@@ -333,7 +314,7 @@ export async function registerCompanyFor10DLC(
 				`Campaign approval failed: ${campaignApprovalResult.failureReason || "Unknown reason"}`,
 			);
 			await supabase
-				.from("company_telnyx_settings")
+				.from("company_twilio_settings")
 				.update({
 					ten_dlc_brand_id: brandId,
 					ten_dlc_campaign_id: campaignId,
@@ -380,9 +361,9 @@ export async function registerCompanyFor10DLC(
 		log.push(`Attached ${attachedCount} phone numbers to campaign`);
 
 		// 8. Update company settings
-		log.push("Updating company Telnyx settings...");
+		log.push("Updating company Twilio settings...");
 		await supabase
-			.from("company_telnyx_settings")
+			.from("company_twilio_settings")
 			.update({
 				ten_dlc_brand_id: brandId,
 				ten_dlc_campaign_id: campaignId,
@@ -460,7 +441,7 @@ function determineVertical(businessType?: string | null): string {
 
 	const type = businessType.toLowerCase();
 
-	// Map to Telnyx's exact vertical values
+	// Map to Twilio's exact vertical values
 	// Valid values from error: AGRICULTURE, COMMUNICATION, CONSTRUCTION, EDUCATION,
 	// ENERGY, ENTERTAINMENT, FINANCIAL, GAMBLING, GOVERNMENT, HEALTHCARE, HOSPITALITY,
 	// HUMAN_RESOURCES, INSURANCE, LEGAL, MANUFACTURING, NGO, POLITICAL, POSTAL,
@@ -511,42 +492,24 @@ function determineVertical(businessType?: string | null): string {
 }
 
 /**
- * Check Telnyx account verification status
+ * Check Twilio account verification status
  *
  * Returns the current verification level and what's required to proceed
  */
-export async function checkTelnyxVerificationStatus(): Promise<{
+export async function checkTwilioVerificationStatus(): Promise<{
 	success: boolean;
-	data?: VerificationStatus & {
-		nextSteps: Array<{ step: string; action: string; url?: string }>;
-		requirements: {
-			level1: { required: boolean; items: string[] };
-			level2: { required: boolean; items: string[] };
-		};
+	data?: {
+		id?: string;
+		status?: string;
+		verificationScore?: number;
 	};
 	error?: string;
 }> {
 	try {
-		const statusResult = await checkAccountVerificationStatus();
-
-		if (!statusResult.success) {
-			return {
-				success: false,
-				error: statusResult.error || "Failed to check verification status",
-			};
-		}
-
-		const status = statusResult.data!;
-		const nextSteps = getNextSteps(status);
-		const requirements = getVerificationRequirements(status.currentLevel);
-
+		// TODO: Implement Twilio Trust Hub verification check
 		return {
-			success: true,
-			data: {
-				...status,
-				nextSteps,
-				requirements,
-			},
+			success: false,
+			error: "Twilio verification status check not yet implemented",
 		};
 	} catch (error) {
 		return {
@@ -563,10 +526,10 @@ export async function checkTelnyxVerificationStatus(): Promise<{
  * Automatically submit toll-free and 10DLC verification during onboarding
  *
  * This function is called when a company completes Step 4 of onboarding.
- * It automatically submits verification to Telnyx using the company data
+ * It automatically submits verification to Twilio using the company data
  * collected during Step 1 (Company Information).
  *
- * ServiceTitan-style flow: Users never leave the platform or visit Telnyx Portal
+ * ServiceTitan-style flow: Users never leave the platform or visit Twilio Console
  */
 export async function submitAutomatedVerification(companyId: string): Promise<{
 	success: boolean;
@@ -781,7 +744,7 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 				optInConfirmationResponse: `Thanks for subscribing to ${company.name} updates.`,
 			};
 
-			log.push("Submitting toll-free verification to Telnyx");
+			log.push("Submitting toll-free verification to Twilio");
 			const tollFreeResult = await submitTollFreeVerification(tollFreePayload);
 
 			if (!tollFreeResult.success || !tollFreeResult.data) {
@@ -799,7 +762,7 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 			log.push(`Toll-free verification request created: ${tollFreeRequestId}`);
 
 			// Save toll-free request ID to database
-			await supabase.from("company_telnyx_settings").upsert({
+			await supabase.from("company_twilio_settings").upsert({
 				company_id: companyId,
 				toll_free_verification_request_id: tollFreeRequestId,
 				toll_free_verification_status: "pending",
@@ -826,7 +789,7 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 					// Platform account needs Level 2 verification
 					// Don't fail - just log the error and continue with toll-free
 					dlcError =
-						"10DLC requires Level 2 verification (see /TELNYX_PLATFORM_SETUP.md). Toll-free verification will proceed.";
+						"10DLC requires Trust Hub verification (see /TWILIO_PLATFORM_SETUP.md). Toll-free verification will proceed.";
 					console.warn(dlcError);
 					log.push(dlcError);
 
@@ -836,7 +799,7 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 						return {
 							success: false,
 							error:
-								"Platform setup required: Your Telnyx account needs Level 2 verification to enable 10DLC registration for local numbers. Alternative: Add toll-free numbers which work immediately without Level 2 verification. See /TELNYX_PLATFORM_SETUP.md for details.",
+								"Platform setup required: Your Twilio account needs Trust Hub verification to enable 10DLC registration for local numbers. Alternative: Add toll-free numbers which work immediately without Trust Hub verification. See /TWILIO_PLATFORM_SETUP.md for details.",
 							requiresPlatformSetup: true,
 							log,
 						};

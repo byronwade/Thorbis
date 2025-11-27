@@ -73,10 +73,10 @@ function getCapacityColor(percent: number): string {
 }
 
 function getCapacityTextColor(percent: number): string {
-	if (percent > 100) return "text-red-600";
-	if (percent > 85) return "text-amber-600";
-	if (percent > 60) return "text-blue-600";
-	return "text-green-600";
+	if (percent > 100) return "text-red-600 dark:text-red-400";
+	if (percent > 85) return "text-amber-600 dark:text-amber-400";
+	if (percent > 60) return "text-blue-600 dark:text-blue-400";
+	return "text-green-600 dark:text-green-400";
 }
 
 function formatMinutes(minutes: number): string {
@@ -186,10 +186,10 @@ export function CapacityIndicator({
 							className={cn(
 								"flex items-center gap-1.5 rounded-full px-2 py-0.5",
 								capacity.status === "available" &&
-									"bg-green-500/10 text-green-600",
-								capacity.status === "busy" && "bg-amber-500/10 text-amber-600",
+									"bg-green-500/10 text-green-600 dark:text-green-400",
+								capacity.status === "busy" && "bg-amber-500/10 text-amber-600 dark:text-amber-400",
 								capacity.status === "overbooked" &&
-									"bg-red-500/10 text-red-600",
+									"bg-red-500/10 text-red-600 dark:text-red-400",
 								className,
 							)}
 						>
@@ -328,7 +328,7 @@ export function CapacityIndicator({
 
 				{/* Travel Time Notice */}
 				{capacity.travelMinutes > 0 && (
-					<div className="flex items-center gap-2 rounded-md bg-amber-500/10 p-2 text-sm text-amber-600">
+					<div className="flex items-center gap-2 rounded-md bg-amber-500/10 p-2 text-sm text-amber-600 dark:text-amber-400">
 						<Car className="h-4 w-4" />
 						<span>
 							Est. {formatMinutes(capacity.travelMinutes)} travel time between
@@ -339,7 +339,7 @@ export function CapacityIndicator({
 
 				{/* Overbooking Warning */}
 				{capacity.status === "overbooked" && (
-					<div className="flex items-center gap-2 rounded-md bg-red-500/10 p-2 text-sm text-red-600">
+					<div className="flex items-center gap-2 rounded-md bg-red-500/10 p-2 text-sm text-red-600 dark:text-red-400">
 						<AlertTriangle className="h-4 w-4" />
 						<span>
 							Scheduled{" "}
@@ -428,19 +428,19 @@ export function TeamCapacityOverview({
 						<div className="text-xs text-muted-foreground">Total</div>
 					</div>
 					<div className="rounded-md bg-green-500/10 p-2">
-						<div className="text-xl font-semibold text-green-600">
+						<div className="text-xl font-semibold text-green-600 dark:text-green-400">
 							{stats.available}
 						</div>
 						<div className="text-xs text-muted-foreground">Available</div>
 					</div>
 					<div className="rounded-md bg-amber-500/10 p-2">
-						<div className="text-xl font-semibold text-amber-600">
+						<div className="text-xl font-semibold text-amber-600 dark:text-amber-400">
 							{stats.busy}
 						</div>
 						<div className="text-xs text-muted-foreground">Busy</div>
 					</div>
 					<div className="rounded-md bg-red-500/10 p-2">
-						<div className="text-xl font-semibold text-red-600">
+						<div className="text-xl font-semibold text-red-600 dark:text-red-400">
 							{stats.overbooked}
 						</div>
 						<div className="text-xs text-muted-foreground">Over</div>

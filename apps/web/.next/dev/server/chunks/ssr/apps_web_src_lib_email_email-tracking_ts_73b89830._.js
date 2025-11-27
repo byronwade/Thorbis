@@ -4,7 +4,7 @@ module.exports = [
 
 /**
  * Email Tracking Utilities
- * 
+ *
  * Adds tracking pixels and link tracking to all outgoing emails
  * to track opens, clicks, and delivery status.
  */ /**

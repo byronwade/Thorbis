@@ -582,7 +582,7 @@ export function MapView({
 										onClick={() => setIsLiveTracking(!isLiveTracking)}
 									>
 										{isLiveTracking ? (
-											<Signal className="h-4 w-4 text-green-500" />
+											<Signal className="h-4 w-4 text-green-500 dark:text-green-400" />
 										) : (
 											<Pause className="h-4 w-4" />
 										)}
@@ -601,7 +601,7 @@ export function MapView({
 					<Card className="mt-2">
 						<CardContent className="p-2">
 							<div className="flex items-center gap-2 text-xs">
-								<div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+								<div className="h-2 w-2 rounded-full bg-green-500 dark:bg-green-400 animate-pulse" />
 								<span className="text-muted-foreground">Live GPS</span>
 								{lastGpsUpdate && (
 									<span className="text-muted-foreground">
@@ -636,8 +636,7 @@ export function MapView({
 							{stats.scheduled > 0 && (
 								<Badge
 									variant="outline"
-									className="text-xs"
-									style={{ borderColor: JOB_STATUS_COLORS.scheduled }}
+									className="text-xs border-blue-500 dark:border-blue-400"
 								>
 									{stats.scheduled} scheduled
 								</Badge>
@@ -645,8 +644,7 @@ export function MapView({
 							{stats.dispatched > 0 && (
 								<Badge
 									variant="outline"
-									className="text-xs"
-									style={{ borderColor: JOB_STATUS_COLORS.dispatched }}
+									className="text-xs border-amber-500 dark:border-amber-400"
 								>
 									{stats.dispatched} dispatched
 								</Badge>
@@ -654,8 +652,7 @@ export function MapView({
 							{stats.inProgress > 0 && (
 								<Badge
 									variant="outline"
-									className="text-xs"
-									style={{ borderColor: JOB_STATUS_COLORS["in-progress"] }}
+									className="text-xs border-purple-500 dark:border-purple-400"
 								>
 									{stats.inProgress} in progress
 								</Badge>
@@ -673,10 +670,7 @@ export function MapView({
 								{stats.availableTechs > 0 && (
 									<Badge
 										variant="outline"
-										className="text-xs"
-										style={{
-											borderColor: TECHNICIAN_STATUS_COLORS.available,
-										}}
+										className="text-xs border-green-500 dark:border-green-400"
 									>
 										{stats.availableTechs} available
 									</Badge>
@@ -684,8 +678,7 @@ export function MapView({
 								{stats.activeTechs > 0 && (
 									<Badge
 										variant="outline"
-										className="text-xs"
-										style={{ borderColor: TECHNICIAN_STATUS_COLORS["on-job"] }}
+										className="text-xs border-blue-500 dark:border-blue-400"
 									>
 										{stats.activeTechs} on job
 									</Badge>
@@ -755,11 +748,17 @@ export function MapView({
 										>
 											<div className="flex items-center gap-2">
 												<div
-													className="h-2 w-2 rounded-full"
-													style={{
-														backgroundColor:
-															JOB_STATUS_COLORS[job.status] || "#6b7280",
-													}}
+													className={cn(
+														"h-2 w-2 rounded-full",
+														job.status === "scheduled" && "bg-blue-500",
+														job.status === "dispatched" && "bg-amber-500",
+														job.status === "arrived" && "bg-green-500",
+														job.status === "in-progress" && "bg-purple-500",
+														job.status === "completed" && "bg-gray-500",
+														job.status === "cancelled" && "bg-red-500",
+														job.status === "closed" && "bg-gray-500",
+														!job.status && "bg-gray-500",
+													)}
 												/>
 												<span className="font-medium">{job.title}</span>
 											</div>

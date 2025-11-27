@@ -4,16 +4,15 @@
  * Call Customer Data Actions
  *
  * Server actions for fetching comprehensive customer data during calls.
- * Priority: Database first, Telnyx caller lookup as fallback.
+ * Priority: Database first, Twilio caller lookup as fallback.
  */
 
 import { createClient } from "@/lib/supabase/server";
-import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";
 import type { ActionResult } from "@/types/actions";
 import type {
 	CustomerCallData,
 	CustomerStats,
-	TelnyxEnrichmentData,
+	TwilioEnrichmentData,
 } from "@/types/call";
 
 type SupabaseServerClient = Exclude<
@@ -29,6 +28,7 @@ type RelatedCustomerData = {
 	properties: CustomerCallData["properties"];
 	equipment: CustomerCallData["equipment"];
 	contracts: CustomerCallData["contracts"];
+	recentCommunications: CustomerCallData["recentCommunications"];
 };
 
 /**
@@ -69,16 +69,16 @@ export async function getCustomerCallData(
 
 		const isKnownCustomer = !!customer;
 
-		// 2. Enrich with Telnyx data if customer is not found
-		const telnyxData = customer
+		// 2. Enrich with Twilio data if customer is not found
+		const twilioData = customer
 			? undefined
-			: await getTelnyxEnrichmentData(phoneNumber);
+			: await getTwilioEnrichmentData(phoneNumber);
 
-		let source: "database" | "telnyx" | "unknown" = "unknown";
+		let source: "database" | "twilio" | "unknown" = "unknown";
 		if (customer) {
 			source = "database";
-		} else if (telnyxData) {
-			source = "telnyx";
+		} else if (twilioData) {
+			source = "twilio";
 		}
 
 		// 3. Fetch related data (jobs, invoices, etc.)
@@ -102,7 +102,8 @@ export async function getCustomerCallData(
 			properties: related.properties,
 			equipment: related.equipment,
 			contracts: related.contracts,
-			telnyxData,
+			recentCommunications: related.recentCommunications,
+			twilioData,
 		};
 
 		return {
@@ -120,7 +121,7 @@ export async function getCustomerCallData(
 	}
 }
 
-type TelnyxLookupPayload = {
+type TwilioLookupPayload = {
 	caller_name?: string | null;
 	caller_type?: string | null;
 	line_type?: string | null;
@@ -129,25 +130,12 @@ type TelnyxLookupPayload = {
 	national_format?: string | null;
 };
 
-async function getTelnyxEnrichmentData(
+async function getTwilioEnrichmentData(
 	phoneNumber: string,
-): Promise<TelnyxEnrichmentData | undefined> {
-	const lookupResult = await lookupCallerInfo(phoneNumber);
-
-	if (!(lookupResult.success && lookupResult.data)) {
-		return;
-	}
-
-	const data = lookupResult.data as TelnyxLookupPayload;
-
-	return {
-		callerName: data.caller_name || null,
-		callerType: data.caller_type || null,
-		lineType: data.line_type || null,
-		carrier: data.carrier?.name || null,
-		country: data.country_code || null,
-		nationalFormat: data.national_format || null,
-	};
+): Promise<TwilioEnrichmentData | undefined> {
+	// TODO: Implement Twilio Lookup API integration
+	// For now, return undefined - customer lookup from database is primary source
+	return undefined;
 }
 
 function getEmptyRelatedCustomerData(): RelatedCustomerData {
@@ -159,6 +147,7 @@ function getEmptyRelatedCustomerData(): RelatedCustomerData {
 		properties: [],
 		equipment: [],
 		contracts: [],
+		recentCommunications: [],
 	};
 }
 
@@ -173,6 +162,7 @@ async function fetchRelatedCustomerData(
 		appointmentsResult,
 		propertiesResult,
 		equipmentResult,
+		communicationsResult,
 	] = await Promise.all([
 		// Jobs (last 10, ordered by created date)
 		// Use getJobListSelect() to get core + financial data (total_amount, paid_amount needed for call window)
@@ -242,7 +232,33 @@ async function fetchRelatedCustomerData(
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })
 			.limit(10),
+
+		// Recent Communications (last 5 for call context)
+		supabase
+			.from("communications")
+			.select(
+				"id, type, direction, subject, body, from_address, to_address, created_at, status",
+			)
+			.eq("customer_id", customerId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false })
+			.limit(5),
 	]);
+
+	// Transform communications data to match RecentCommunication type
+	const recentCommunications = (communicationsResult.data || []).map(
+		(comm) => ({
+			id: comm.id,
+			type: comm.type as "sms" | "email" | "call" | "voicemail",
+			direction: comm.direction as "inbound" | "outbound",
+			subject: comm.subject,
+			body: comm.body,
+			from_number: comm.from_address,
+			to_number: comm.to_address,
+			created_at: comm.created_at,
+			status: comm.status,
+		}),
+	);
 
 	return {
 		jobs: (jobsResult.data || []) as CustomerCallData["jobs"],
@@ -254,6 +270,8 @@ async function fetchRelatedCustomerData(
 		equipment: (equipmentResult.data || []) as CustomerCallData["equipment"],
 		// Note: Contracts table may not exist, handle gracefully
 		contracts: [] as CustomerCallData["contracts"],
+		recentCommunications:
+			recentCommunications as CustomerCallData["recentCommunications"],
 	};
 }
 
@@ -332,8 +350,9 @@ export async function getCustomerCallDataById(
 			appointments: related.appointments,
 			properties: related.properties,
 			equipment: related.equipment,
-			contracts: [],
-			telnyxData: undefined,
+			contracts: related.contracts,
+			recentCommunications: related.recentCommunications,
+			twilioData: undefined,
 		};
 
 		return {

@@ -601,3 +601,65 @@ export async function unlinkPaymentFromJob(
 		return { success: false, error: "Failed to unlink payment from job" };
 	}
 }
+
+/**
+ * Restore an archived payment
+ * Reverses the soft delete by clearing deleted_at and deleted_by
+ */
+export async function restorePayment(
+	paymentId: string,
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Database connection not available" };
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Unauthorized" };
+		}
+
+		// Verify the payment exists and is archived
+		const { data: payment, error: fetchError } = await supabase
+			.from("payments")
+			.select("id, status, deleted_at")
+			.eq("id", paymentId)
+			.not("deleted_at", "is", null)
+			.single();
+
+		if (fetchError || !payment) {
+			return { success: false, error: "Archived payment not found" };
+		}
+
+		// Restore the payment
+		const { error } = await supabase
+			.from("payments")
+			.update({
+				deleted_at: null,
+				deleted_by: null,
+				status: payment.status === "archived" ? "completed" : payment.status,
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", paymentId);
+
+		if (error) {
+			return { success: false, error: error.message };
+		}
+
+		revalidatePath("/dashboard/finance/payments");
+		revalidatePath("/dashboard/work/payments");
+		revalidatePath(`/dashboard/work/payments/${paymentId}`);
+		revalidatePath("/dashboard/work/archive");
+		return { success: true };
+	} catch (error) {
+		if (error instanceof Error) {
+			return { success: false, error: error.message };
+		}
+		return { success: false, error: "Failed to restore payment" };
+	}
+}

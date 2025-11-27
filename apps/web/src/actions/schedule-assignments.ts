@@ -547,7 +547,7 @@ export async function sendOnMyWayNotification(
 			return { success: false, error: "Not authenticated" };
 		}
 
-		// Get company's Telnyx settings for the from number
+		// Get company's Twilio settings for the from number
 		const { data: membership } = await supabase
 			.from("company_memberships")
 			.select("company_id")
@@ -559,14 +559,14 @@ export async function sendOnMyWayNotification(
 			return { success: false, error: "No active company membership" };
 		}
 
-		const { data: telnyxSettings } = await supabase
-			.from("company_telnyx_settings")
-			.select("phone_number, status")
+		const { data: twilioSettings } = await supabase
+			.from("company_twilio_settings")
+			.select("default_from_number, status")
 			.eq("company_id", membership.company_id)
 			.eq("status", "ready")
 			.single();
 
-		if (!telnyxSettings?.phone_number) {
+		if (!twilioSettings?.default_from_number) {
 			return { success: false, error: "No phone number configured for SMS" };
 		}
 
@@ -607,12 +607,13 @@ export async function sendOnMyWayNotification(
 
 		message += " We'll see you soon!";
 
-		// Send the SMS via Telnyx
-		const { sendSMS } = await import("@/lib/telnyx/messaging");
-		const result = await sendSMS({
+		// Send the SMS via Twilio
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
+			companyId: membership.company_id,
 			to: customerPhone,
-			from: telnyxSettings.phone_number,
-			text: message,
+			from: twilioSettings.default_from_number,
+			body: message,
 		});
 
 		if (!result.success) {
@@ -639,6 +640,358 @@ export async function sendOnMyWayNotification(
 				error instanceof Error
 					? error.message
 					: "Failed to send On My Way notification",
+		};
+	}
+}
+
+/**
+ * Send appointment confirmation SMS to customer
+ * Sent when an appointment is first scheduled
+ */
+export async function sendAppointmentConfirmation(
+	scheduleId: string,
+	customerPhone: string,
+	customerName: string,
+	appointmentDate: Date,
+	appointmentTime: string,
+	serviceType?: string,
+) {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return { success: false, error: "Database not available" };
+	}
+
+	try {
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get company info
+		const { data: membership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.single();
+
+		if (!membership?.company_id) {
+			return { success: false, error: "No active company membership" };
+		}
+
+		const { data: twilioSettings } = await supabase
+			.from("company_twilio_settings")
+			.select("default_from_number, status")
+			.eq("company_id", membership.company_id)
+			.eq("status", "ready")
+			.single();
+
+		if (!twilioSettings?.default_from_number) {
+			return { success: false, error: "No phone number configured for SMS" };
+		}
+
+		const { data: company } = await supabase
+			.from("companies")
+			.select("name, phone")
+			.eq("id", membership.company_id)
+			.single();
+
+		// Format the date nicely
+		const dateFormatter = new Intl.DateTimeFormat("en-US", {
+			weekday: "long",
+			month: "long",
+			day: "numeric",
+		});
+
+		const formattedDate = dateFormatter.format(appointmentDate);
+
+		let message = `Hi ${customerName}! Your appointment with ${company?.name || "us"} is confirmed for ${formattedDate} at ${appointmentTime}.`;
+
+		if (serviceType) {
+			message += ` Service: ${serviceType}.`;
+		}
+
+		if (company?.phone) {
+			message += ` Questions? Call us at ${company.phone}.`;
+		}
+
+		message += " Reply STOP to unsubscribe.";
+
+		// Send the SMS
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
+			companyId: membership.company_id,
+			to: customerPhone,
+			from: twilioSettings.default_from_number,
+			body: message,
+		});
+
+		if (!result.success) {
+			return { success: false, error: "Failed to send confirmation SMS" };
+		}
+
+		// Log the notification
+		await supabase.from("communications").insert({
+			company_id: membership.company_id,
+			type: "sms",
+			direction: "outbound",
+			from_address: twilioSettings.default_from_number,
+			to_address: customerPhone,
+			subject: "Appointment Confirmation",
+			body: message,
+			status: "sent",
+			sent_at: new Date().toISOString(),
+			metadata: {
+				appointment_id: scheduleId,
+				notification_type: "confirmation",
+			},
+		});
+
+		return { success: true, message: "Confirmation SMS sent" };
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to send confirmation SMS",
+		};
+	}
+}
+
+/**
+ * Send appointment reminder SMS to customer
+ * Can be used for day-before or day-of reminders
+ */
+export async function sendAppointmentReminder(
+	scheduleId: string,
+	customerPhone: string,
+	customerName: string,
+	appointmentDate: Date,
+	appointmentTime: string,
+	reminderType: "24h" | "day-of" | "1h" = "24h",
+) {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return { success: false, error: "Database not available" };
+	}
+
+	try {
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get company info
+		const { data: membership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.single();
+
+		if (!membership?.company_id) {
+			return { success: false, error: "No active company membership" };
+		}
+
+		const { data: twilioSettings } = await supabase
+			.from("company_twilio_settings")
+			.select("default_from_number, status")
+			.eq("company_id", membership.company_id)
+			.eq("status", "ready")
+			.single();
+
+		if (!twilioSettings?.default_from_number) {
+			return { success: false, error: "No phone number configured for SMS" };
+		}
+
+		const { data: company } = await supabase
+			.from("companies")
+			.select("name, phone")
+			.eq("id", membership.company_id)
+			.single();
+
+		// Build reminder message based on type
+		let message: string;
+		const companyName = company?.name || "us";
+
+		switch (reminderType) {
+			case "24h":
+				message = `Reminder: Hi ${customerName}, your appointment with ${companyName} is tomorrow at ${appointmentTime}. See you then!`;
+				break;
+			case "day-of":
+				message = `Reminder: Hi ${customerName}, your appointment with ${companyName} is today at ${appointmentTime}. We look forward to seeing you!`;
+				break;
+			case "1h":
+				message = `Hi ${customerName}, just a reminder that your ${companyName} appointment is in about 1 hour at ${appointmentTime}. Our technician will arrive shortly!`;
+				break;
+			default:
+				message = `Reminder: Your appointment with ${companyName} is at ${appointmentTime}.`;
+		}
+
+		if (company?.phone) {
+			message += ` Need to reschedule? Call ${company.phone}.`;
+		}
+
+		// Send the SMS
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
+			companyId: membership.company_id,
+			to: customerPhone,
+			from: twilioSettings.default_from_number,
+			body: message,
+		});
+
+		if (!result.success) {
+			return { success: false, error: "Failed to send reminder SMS" };
+		}
+
+		// Log the notification
+		await supabase.from("communications").insert({
+			company_id: membership.company_id,
+			type: "sms",
+			direction: "outbound",
+			from_address: twilioSettings.default_from_number,
+			to_address: customerPhone,
+			subject: `Appointment Reminder (${reminderType})`,
+			body: message,
+			status: "sent",
+			sent_at: new Date().toISOString(),
+			metadata: {
+				appointment_id: scheduleId,
+				notification_type: "reminder",
+				reminder_type: reminderType,
+			},
+		});
+
+		return { success: true, message: `${reminderType} reminder SMS sent` };
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "Failed to send reminder SMS",
+		};
+	}
+}
+
+/**
+ * Send appointment completed notification to customer
+ * Includes thank you message and optional review request
+ */
+export async function sendAppointmentCompletedNotification(
+	scheduleId: string,
+	customerPhone: string,
+	customerName: string,
+	technicianName?: string,
+	requestReview = false,
+) {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return { success: false, error: "Database not available" };
+	}
+
+	try {
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get company info
+		const { data: membership } = await supabase
+			.from("company_memberships")
+			.select("company_id")
+			.eq("user_id", user.id)
+			.eq("status", "active")
+			.single();
+
+		if (!membership?.company_id) {
+			return { success: false, error: "No active company membership" };
+		}
+
+		const { data: twilioSettings } = await supabase
+			.from("company_twilio_settings")
+			.select("default_from_number, status")
+			.eq("company_id", membership.company_id)
+			.eq("status", "ready")
+			.single();
+
+		if (!twilioSettings?.default_from_number) {
+			return { success: false, error: "No phone number configured for SMS" };
+		}
+
+		const { data: company } = await supabase
+			.from("companies")
+			.select("name, phone")
+			.eq("id", membership.company_id)
+			.single();
+
+		const companyName = company?.name || "us";
+
+		let message = `Thank you, ${customerName}! Your service with ${companyName} is complete.`;
+
+		if (technicianName) {
+			message += ` ${technicianName} was happy to help!`;
+		}
+
+		if (requestReview) {
+			message += ` We'd love your feedback - reply with a rating 1-5 stars.`;
+		}
+
+		if (company?.phone) {
+			message += ` Questions? Call ${company.phone}.`;
+		}
+
+		// Send the SMS
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
+			companyId: membership.company_id,
+			to: customerPhone,
+			from: twilioSettings.default_from_number,
+			body: message,
+		});
+
+		if (!result.success) {
+			return { success: false, error: "Failed to send completion SMS" };
+		}
+
+		// Log the notification
+		await supabase.from("communications").insert({
+			company_id: membership.company_id,
+			type: "sms",
+			direction: "outbound",
+			from_address: twilioSettings.default_from_number,
+			to_address: customerPhone,
+			subject: "Service Complete",
+			body: message,
+			status: "sent",
+			sent_at: new Date().toISOString(),
+			metadata: {
+				appointment_id: scheduleId,
+				notification_type: "completed",
+				review_requested: requestReview,
+			},
+		});
+
+		return { success: true, message: "Completion notification sent" };
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to send completion notification",
 		};
 	}
 }

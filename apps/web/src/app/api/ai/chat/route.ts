@@ -2,14 +2,13 @@
  * AI Chat API Route - Proactive Business Manager
  *
  * Features:
- * - Google Gemini as primary AI
- * - Comprehensive business tools
+ * - Groq as the exclusive AI provider (free tier with generous limits)
+ * - Comprehensive business tools (86+ tools)
  * - Permission-based action control
  * - Proactive business insights
  */
 
-import { google } from "@ai-sdk/google";
-import { streamText, tool } from "ai";
+import { convertToModelMessages, generateText, jsonSchema, stepCountIs, streamText, tool } from "ai";
 import { z } from "zod";
 import {
 	type DestructiveToolMetadata,
@@ -22,9 +21,217 @@ import {
 	type ToolCategory,
 	toolCategories,
 } from "@/lib/ai/agent-tools";
-import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { createAIProvider, type AIProvider } from "@/lib/ai/config";
+import { createServiceSupabaseClient } from "@stratos/database";
+import { trackExternalApiCall } from "@/lib/analytics/external-api-tracker";
 
 export const maxDuration = 60;
+
+// ============================================================================
+// MESSAGE PERSISTENCE - Save chat history to Supabase
+// ============================================================================
+
+interface MessagePart {
+	type: string;
+	text?: string;
+	toolName?: string;
+	toolCallId?: string;
+	args?: unknown;
+	result?: unknown;
+}
+
+/**
+ * UUID validation regex
+ */
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isValidUUID(str: string): boolean {
+	return UUID_REGEX.test(str);
+}
+
+/**
+ * Generate a meaningful chat title using AI
+ * Runs asynchronously after chat creation to avoid blocking
+ */
+async function generateChatTitleWithAI(
+	supabase: Awaited<ReturnType<typeof createServiceSupabaseClient>>,
+	chatId: string,
+	firstMessage: string,
+): Promise<void> {
+	if (!supabase || !firstMessage.trim()) return;
+
+	try {
+		// Use Groq for title generation (free)
+		if (!process.env.GROQ_API_KEY) {
+			console.log("[AI Chat API] No GROQ_API_KEY available for title generation");
+			return;
+		}
+
+		const model = createAIProvider({ provider: "groq", model: "llama-3.3-70b-versatile" });
+
+		const { text: title } = await generateText({
+			model,
+			prompt: `Generate a very brief, descriptive title (3-6 words max) for a conversation that starts with this message. Return ONLY the title, no quotes or extra text.
+
+Message: "${firstMessage.slice(0, 500)}"
+
+Title:`,
+			maxOutputTokens: 30, // AI SDK 5: maxTokens renamed to maxOutputTokens
+			temperature: 0.3,
+		});
+
+		// Clean up the title
+		let cleanTitle = title
+			.trim()
+			.replace(/^["']|["']$/g, "") // Remove surrounding quotes
+			.replace(/^Title:\s*/i, "") // Remove "Title:" prefix if AI added it
+			.slice(0, 100); // Ensure max length
+
+		// Capitalize first letter
+		if (cleanTitle) {
+			cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+		}
+
+		if (cleanTitle && cleanTitle !== "New Chat") {
+			await supabase
+				.from("chats")
+				.update({ title: cleanTitle, updated_at: new Date().toISOString() })
+				.eq("id", chatId);
+
+			console.log("[AI Chat API] Generated title for chat:", chatId, "->", cleanTitle);
+		}
+	} catch (error) {
+		// Non-critical error - just log and continue
+		console.error("[AI Chat API] Title generation failed:", error);
+	}
+}
+
+/**
+ * Ensure a chat exists, creating one if needed
+ * Returns canPersist: false if persistence is not possible (invalid UUIDs, no supabase, etc.)
+ */
+async function ensureChat(
+	supabase: Awaited<ReturnType<typeof createServiceSupabaseClient>>,
+	chatId: string,
+	userId: string,
+	companyId: string,
+	firstMessageContent?: string,
+): Promise<{ id: string; isNew: boolean; canPersist: boolean }> {
+	// If no supabase, skip persistence
+	if (!supabase) {
+		console.log("[AI Chat API] Supabase not available, skipping chat persistence");
+		return { id: chatId, isNew: false, canPersist: false };
+	}
+
+	// Validate all required UUIDs - if invalid, skip persistence but continue with chat
+	if (!isValidUUID(chatId)) {
+		console.log("[AI Chat API] Invalid chatId UUID, skipping persistence:", chatId);
+		return { id: chatId, isNew: false, canPersist: false };
+	}
+	if (!isValidUUID(userId) || userId === "anonymous") {
+		console.log("[AI Chat API] Invalid or anonymous userId, skipping persistence:", userId);
+		return { id: chatId, isNew: false, canPersist: false };
+	}
+	if (!isValidUUID(companyId)) {
+		console.log("[AI Chat API] Invalid companyId UUID, skipping persistence:", companyId);
+		return { id: chatId, isNew: false, canPersist: false };
+	}
+
+	// Check if chat exists
+	const { data: existingChat } = await supabase
+		.from("chats")
+		.select("id")
+		.eq("id", chatId)
+		.single();
+
+	if (existingChat) {
+		return { id: existingChat.id, isNew: false, canPersist: true };
+	}
+
+	// Create new chat with placeholder title - AI will generate a better one
+	const { data: newChat, error } = await supabase
+		.from("chats")
+		.insert({
+			id: chatId,
+			title: "New Chat",
+			user_id: userId,
+			company_id: companyId,
+			visibility: "private",
+		})
+		.select("id")
+		.single();
+
+	if (error) {
+		console.error("[AI Chat API] Error creating chat:", error);
+		return { id: chatId, isNew: false, canPersist: false };
+	}
+
+	console.log("[AI Chat API] Created new chat:", newChat.id);
+
+	// Generate AI title in background (non-blocking, fire-and-forget)
+	if (firstMessageContent && firstMessageContent.trim()) {
+		generateChatTitleWithAI(supabase, chatId, firstMessageContent).catch((err) => {
+			console.error("[AI Chat API] Background title generation failed:", err);
+		});
+	}
+
+	return { id: newChat.id, isNew: true, canPersist: true };
+}
+
+/**
+ * Save a message to the messages_v2 table
+ */
+async function saveMessage(
+	supabase: Awaited<ReturnType<typeof createServiceSupabaseClient>>,
+	chatId: string,
+	role: "user" | "assistant" | "system",
+	parts: MessagePart[],
+	attachments: unknown[] = [],
+): Promise<string | null> {
+	if (!supabase) {
+		return null;
+	}
+
+	const { data, error } = await supabase
+		.from("messages_v2")
+		.insert({
+			chat_id: chatId,
+			role,
+			parts,
+			attachments,
+		})
+		.select("id")
+		.single();
+
+	if (error) {
+		console.error("[AI Chat API] Error saving message:", error);
+		return null;
+	}
+
+	return data.id;
+}
+
+/**
+ * Convert AI SDK message to parts format for storage
+ */
+function convertToMessageParts(content: string | unknown[]): MessagePart[] {
+	// If content is already an array of parts, use it
+	if (Array.isArray(content)) {
+		return content.map((part) => {
+			if (typeof part === "string") {
+				return { type: "text", text: part };
+			}
+			return part as MessagePart;
+		});
+	}
+
+	// If content is a string, wrap it as a text part
+	if (typeof content === "string") {
+		return [{ type: "text", text: content }];
+	}
+
+	return [{ type: "text", text: String(content) }];
+}
 
 // ============================================================================
 // COMPANY CONTEXT CACHE - Reduces AI costs by ~$300-800/month
@@ -96,7 +303,11 @@ interface AISettings {
 }
 
 async function getAISettings(companyId: string): Promise<AISettings | null> {
-	const supabase = createServiceSupabaseClient();
+	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		console.warn("[AI Chat API] Service client not configured, skipping AI settings");
+		return null;
+	}
 	const { data } = await supabase
 		.from("ai_agent_settings")
 		.select("*")
@@ -113,7 +324,10 @@ async function getCompanyContext(companyId: string): Promise<string> {
 		return cached;
 	}
 
-	const supabase = createServiceSupabaseClient();
+	const supabase = await createServiceSupabaseClient();
+	if (!supabase) {
+		return "## Company Context\nService client not configured - company context unavailable.";
+	}
 
 	// Get comprehensive business context in parallel
 	// Using head: true for count-only queries to minimize data transfer
@@ -379,6 +593,9 @@ ${
 4. When scheduling, check availability first
 5. Log all communications and actions taken
 6. Provide proactive insights when relevant (overdue invoices, inactive customers, etc.)
+7. Do NOT list database tables or perform schema introspection unless the user explicitly asks for it
+8. Keep responses concise and focused on the user request; avoid verbose summaries
+9. When a question needs current or external information, use the web search tools (webSearchTool/webSearchNewsTool/webSearchSiteTool) and cite the sources you used
 
 ## IMPORTANT: Destructive Action Approval
 Certain actions are classified as "destructive" and REQUIRE owner approval before execution:
@@ -415,6 +632,9 @@ function filterToolsByPermissions(
 		const category = toolCategories[toolName];
 		const categoryPermission =
 			settings.action_permissions?.[category] || permissionMode;
+
+		// Avoid noisy introspection tools unless explicitly requested
+		if (toolName === "listDatabaseTables") continue;
 
 		// Skip if category is disabled
 		if (categoryPermission === "disabled") continue;
@@ -487,10 +707,11 @@ function filterToolsByPermissions(
 }
 
 // Request action approval tool - used when permission mode is ask_permission
+// AI SDK 6: parameters -> inputSchema
 const requestApprovalTool = tool({
 	description:
 		"Request user approval before taking an action. Use this when you need permission to proceed.",
-	parameters: z.object({
+	inputSchema: z.object({
 		action: z.string().describe("The action you want to take"),
 		reason: z.string().describe("Why this action is beneficial"),
 		details: z.string().describe("Specific details of what will happen"),
@@ -531,9 +752,11 @@ function wrapToolsWithApprovalCheck(
 
 		if (metadata && metadata.requiresOwnerApproval) {
 			// Wrap the tool to intercept and require approval
+			// AI SDK 6: parameters -> inputSchema, and access toolInstance.inputSchema
+			const toolSchema = "inputSchema" in toolInstance ? toolInstance.inputSchema : (toolInstance as { parameters?: unknown }).parameters;
 			wrappedTools[toolName] = tool({
 				description: toolInstance.description,
-				parameters: toolInstance.parameters,
+				inputSchema: toolSchema,
 				execute: async (args: Record<string, unknown>) => {
 					// Intercept the tool call and create a pending action
 					const interception = await shouldInterceptTool(toolName, args, {
@@ -604,8 +827,24 @@ export async function POST(req: Request) {
 			return Response.json({ error: "Messages are required" }, { status: 400 });
 		}
 
+		console.log("[AI Chat API] Received request:", {
+			messageCount: messages.length,
+			companyId: providedCompanyId,
+			chatId: providedChatId,
+			model: requestedModel,
+		});
+
 		// Get company ID from auth or use provided (for demo)
-		const companyId = providedCompanyId || process.env.DEFAULT_COMPANY_ID;
+		let companyId = providedCompanyId || process.env.DEFAULT_COMPANY_ID;
+		if (!companyId) {
+			// Fallback to active company cookie if available
+			try {
+				const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+				companyId = (await getActiveCompanyId()) || companyId;
+			} catch (err) {
+				console.warn("[AI Chat API] Unable to read active company:", err);
+			}
+		}
 
 		if (!companyId) {
 			return Response.json({ error: "Company ID required" }, { status: 400 });
@@ -621,10 +860,41 @@ export async function POST(req: Request) {
 		const messageId = crypto.randomUUID();
 
 		// Load AI settings and company context
-		const [settings, companyContext] = await Promise.all([
+		const [settings, companyContext, supabase] = await Promise.all([
 			getAISettings(companyId),
 			getCompanyContext(companyId),
+			createServiceSupabaseClient(),
 		]);
+
+		// === MESSAGE PERSISTENCE: Ensure chat exists and save user message ===
+		// Get the last user message (the new one being sent)
+		const lastMessage = messages[messages.length - 1];
+		const isNewUserMessage = lastMessage?.role === "user";
+		const userMessageContent = isNewUserMessage
+			? (typeof lastMessage.content === "string"
+					? lastMessage.content
+					: lastMessage.parts?.[0]?.text || "")
+			: "";
+
+		// Ensure chat exists (creates if new)
+		const chatResult = await ensureChat(
+			supabase,
+			chatId,
+			userId,
+			companyId,
+			userMessageContent,
+		);
+
+		// Save the new user message if this is a new message AND persistence is possible
+		if (isNewUserMessage && supabase && chatResult.canPersist) {
+			const parts = lastMessage.parts
+				? lastMessage.parts
+				: convertToMessageParts(lastMessage.content);
+			const savedId = await saveMessage(supabase, chatId, "user", parts, lastMessage.attachments || []);
+			if (savedId) {
+				console.log("[AI Chat API] Saved user message:", savedId);
+			}
+		}
 
 		// Build system prompt based on settings
 		const systemPrompt = buildSystemPrompt(settings, companyContext);
@@ -646,48 +916,209 @@ export async function POST(req: Request) {
 			availableTools.requestApproval = requestApprovalTool;
 		}
 
-		// Determine model - using Google Gemini
-		const modelId =
-			requestedModel || settings?.preferred_model || "gemini-2.0-flash-exp";
+		// Determine model and provider - Groq only
 		const temperature = settings?.model_temperature || 0.7;
 
-		// Create model instance
-		const model = google(modelId);
+		// Use Groq exclusively (free with tools)
+		const modelId = requestedModel || settings?.preferred_model || "llama-3.3-70b-versatile";
+		const provider: AIProvider = "groq";
 
-		// Create tool context with company ID
-		const toolContext = { companyId };
+		console.log("[AI Chat API] Using model:", modelId, "provider:", provider);
 
-		// Stream the response
-		const result = streamText({
-			model,
-			messages,
-			temperature,
-			system: systemPrompt,
-			tools: availableTools,
-			maxSteps: 5, // Reduced from 10 to lower AI costs (15-20% savings)
-			experimental_toolCallStreaming: true,
+		// Create model instance using Groq
+		const model = createAIProvider({ provider, model: modelId });
+
+	// Create tool context with company ID
+	const toolContext = { companyId };
+
+	// Convert messages to ModelMessage format for streamText
+	// AI SDK v5: UIMessage has 'parts' array, ModelMessage has 'content' string
+		// Handle both formats for backward compatibility and direct API calls
+		let modelMessages;
+		const isUIMessageFormat = messages[0]?.parts !== undefined;
+
+		if (isUIMessageFormat) {
+			// UIMessage format from useChat hook - convert to ModelMessage
+			modelMessages = convertToModelMessages(messages);
+			// Strip tool invocations from prior assistant messages to avoid malformed tool_calls
+			modelMessages = modelMessages.map((m: any) => {
+				if (m.role === "assistant") {
+					delete m.toolInvocations;
+				}
+				return m;
+			});
+		} else {
+			// Already in simple/ModelMessage format (role + content) - use as-is
+			modelMessages = messages.map((msg: { role: string; content: string }) => ({
+				role: msg.role as "user" | "assistant" | "system",
+				content: msg.content,
+			}));
+		}
+
+		console.log("[AI Chat API] Processed messages:", {
+			originalFormat: isUIMessageFormat ? "UIMessage (parts)" : "ModelMessage (content)",
+			convertedCount: modelMessages.length,
+		});
+
+		// Groq supports tools with llama-3.3-70b-versatile model
+		const shouldDisableTools = false;
+
+	// Build the streamText configuration
+	const streamConfig: Parameters<typeof streamText>[0] = {
+		model,
+		messages: modelMessages,
+		temperature,
+		system: systemPrompt,
+		maxOutputTokens: 512, // keep replies concise and reduce latency
+	};
+
+	// Enable tools - Groq with llama-3.3-70b-versatile supports tools
+	if (!shouldDisableTools) {
+		streamConfig.tools = availableTools;
+		streamConfig.stopWhen = stepCountIs(5); // Reduced from 10 to lower AI costs
+		streamConfig.maxToolRoundtrips = 2; // cap tool loops to improve response time
+	}
+
+	// Stream the response
+	const aiStartTime = Date.now();
+	const result = streamText({
+		...streamConfig,
+			// === AI SDK 6 BEST PRACTICE: Handle streaming errors ===
+			onError: (event) => {
+				console.error("[AI Chat API] Stream error:", {
+					error: event.error,
+					message: (event.error as any)?.message,
+					stack: (event.error as any)?.stack,
+					name: (event.error as any)?.name,
+					modelMessages: modelMessages,
+				});
+				// Track failed API call
+				trackExternalApiCall({
+					apiName: "groq",
+					endpoint: `chat.${modelId}`,
+					companyId,
+					success: false,
+					responseTimeMs: Date.now() - aiStartTime,
+					estimatedCostCents: 0,
+					errorMessage: event.error instanceof Error ? event.error.message : String(event.error),
+				}).catch(() => {});
+			},
+			// === AI SDK 6 BEST PRACTICE: Track individual chunks for debugging ===
+			onChunk: (event) => {
+				// Log tool calls as they stream in for better debugging
+				if (event.chunk.type === "tool-call") {
+					console.log("[AI Chat API] Tool call started:", event.chunk.toolName);
+				}
+			},
+			onToolCall: (event) => {
+				console.log("[AI Chat API] Tool call event:", {
+					name: event.toolName,
+					callId: event.toolCallId,
+				});
+			},
+			onToolResult: (event) => {
+				console.log("[AI Chat API] Tool result event:", {
+					callId: event.toolCallId,
+					hasResult: !!event.result,
+				});
+			},
+			// === MESSAGE PERSISTENCE: Save assistant response when complete ===
+			onFinish: async ({ text, toolCalls, toolResults, usage }) => {
+				// Track AI API usage for admin dashboard
+				const responseTimeMs = Date.now() - aiStartTime;
+				const totalTokens = (usage?.promptTokens || 0) + (usage?.completionTokens || 0);
+
+				// Groq is free tier - no cost
+				const estimatedCostCents = 0;
+
+				// Track the API call (fire-and-forget)
+				trackExternalApiCall({
+					apiName: "groq",
+					endpoint: `chat.${modelId}`,
+					companyId,
+					success: true,
+					responseTimeMs,
+					estimatedCostCents,
+				}).catch(() => {});
+
+				// Save the assistant's response to messages_v2 (only if persistence is possible)
+				if (text && supabase && chatResult.canPersist) {
+					// Build parts array with text and any tool calls/results
+					const parts: MessagePart[] = [];
+
+					// Add text content
+					if (text) {
+						parts.push({ type: "text", text });
+					}
+
+					// Add tool calls and results if any
+					if (toolCalls && toolCalls.length > 0) {
+						for (const call of toolCalls) {
+							const toolName = "toolName" in call ? call.toolName : (call as { name?: string }).name || "unknown";
+							const toolInput = "input" in call ? call.input : ("args" in call ? (call as { args?: unknown }).args : null);
+
+							parts.push({
+								type: "tool-invocation",
+								toolName,
+								toolCallId: call.toolCallId,
+								args: toolInput,
+							});
+
+							// Find and add the result
+							const resultData = toolResults?.find((r) => r.toolCallId === call.toolCallId);
+							if (resultData) {
+								const toolOutput = "output" in resultData ? resultData.output : (resultData as { result?: unknown })?.result;
+								parts.push({
+									type: "tool-result",
+									toolCallId: call.toolCallId,
+									result: toolOutput,
+								});
+							}
+						}
+					}
+
+					const savedId = await saveMessage(supabase, chatId, "assistant", parts, []);
+					if (savedId) {
+						console.log("[AI Chat API] Saved assistant message:", savedId);
+					}
+				}
+			},
 			onStepFinish: async ({ toolCalls, toolResults }) => {
 				// Log AI actions to the database
 				if (toolCalls && toolCalls.length > 0) {
-					const supabase = createServiceSupabaseClient();
+					const supabase = await createServiceSupabaseClient();
+					if (!supabase) {
+						console.warn("[AI Chat API] Service client not configured, skipping action log");
+						return;
+					}
 					for (const call of toolCalls) {
-						const category = toolCategories[call.toolName] || "system";
+						// AI SDK v5: toolName may be on different property, check for dynamic tools
+						const toolName = "toolName" in call ? call.toolName : (call as { name?: string }).name || "unknown";
+						const category = toolCategories[toolName] || "system";
+
+						// AI SDK v5: args is now input
+						const toolInput = "input" in call ? call.input : ("args" in call ? (call as { args?: unknown }).args : null);
+
 						const result = toolResults?.find(
 							(r) => r.toolCallId === call.toolCallId,
 						);
 
+						// AI SDK v5: result.result is now result.output
+						const toolOutput = result && "output" in result ? result.output : (result as { result?: unknown })?.result;
+						const isSuccess = toolOutput && typeof toolOutput === "object" && "success" in toolOutput ? (toolOutput as { success?: boolean }).success : false;
+
 						await supabase.from("ai_action_log").insert({
 							company_id: companyId,
 							action_type: category,
-							action_name: call.toolName,
-							action_description: JSON.stringify(call.args),
+							action_name: toolName,
+							action_description: JSON.stringify(toolInput),
 							permission_mode: settings?.permission_mode || "ask_permission",
 							permission_requested:
 								settings?.permission_mode === "ask_permission",
 							permission_granted: settings?.permission_mode === "autonomous",
-							status: result?.result?.success ? "executed" : "failed",
-							input_data: call.args,
-							output_data: result?.result,
+							status: isSuccess ? "executed" : "failed",
+							input_data: toolInput,
+							output_data: toolOutput,
 							executed_at: new Date().toISOString(),
 						});
 					}
@@ -695,11 +1126,21 @@ export async function POST(req: Request) {
 			},
 		});
 
-		return result.toDataStreamResponse();
+		// AI SDK v5: Use toUIMessageStreamResponse for full-featured streaming with tools
+		return result.toUIMessageStreamResponse();
 	} catch (error) {
-		console.error("AI Chat Error:", error);
+		console.error("[AI Chat API] Error:", error);
+
+		// Provide more detailed error info for debugging
+		const errorMessage = error instanceof Error ? error.message : "Unknown error";
+		const errorName = error instanceof Error ? error.name : "UnknownError";
+
 		return Response.json(
-			{ error: error instanceof Error ? error.message : "Unknown error" },
+			{
+				error: errorMessage,
+				errorType: errorName,
+				timestamp: new Date().toISOString(),
+			},
 			{ status: 500 },
 		);
 	}

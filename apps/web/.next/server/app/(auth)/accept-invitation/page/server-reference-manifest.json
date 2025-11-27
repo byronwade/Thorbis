@@ -1,6 +1,6 @@
 {
   "node": {
-    "001f005176797ef23488068124fb9a744915a477de": {
+    "007f6ab33dab55fcd65110391bb9985547ca9d3bec": {
       "workers": {
         "app/(auth)/accept-invitation/page": {
           "moduleId": 447480,
@@ -15,7 +15,7 @@
       "exportedName": "getCurrentUserRole",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+    "40389aae21f1d21bd0b45e4ebad980b6ef81b08fcf": {
       "workers": {
         "app/(auth)/accept-invitation/page": {
           "moduleId": 447480,
@@ -30,7 +30,7 @@
       "exportedName": "canDeleteTeamMember",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "40b17c6e2f31505c0fb75484ff7f8b005e7bcf1c97": {
+    "407df9d31c36491bb0f83d621021140e5e4ac4adce": {
       "workers": {
         "app/(auth)/accept-invitation/page": {
           "moduleId": 447480,

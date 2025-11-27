@@ -24,7 +24,7 @@ const createClient = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_mo
     try {
         headersStore = await headers();
         // If we can get headers and there's no x-prerender header, we might be safe
-        if (headersStore.get('x-prerender')) {
+        if (headersStore.get("x-prerender")) {
             return null;
         }
     } catch  {
@@ -72,7 +72,7 @@ const createClient = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_mo
 "[project]/packages/database/src/service-client.ts [app-rsc] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-/* __next_internal_action_entry_do_not_use__ [{"0065abb4e4ef4b97e2016c1b54c8d9b3a9ff7b955e":"createServiceSupabaseClient"},"",""] */ __turbopack_context__.s([
+/* __next_internal_action_entry_do_not_use__ [{"005adb1d7e8dfb8147dcd7faf3f97a1fc6f745616b":"createServiceSupabaseClient"},"",""] */ __turbopack_context__.s([
     "createServiceSupabaseClient",
     ()=>createServiceSupabaseClient
 ]);
@@ -83,9 +83,15 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$ne
 ;
 async function createServiceSupabaseClient() {
     // Prefer pooler URL for Transaction Mode (better performance)
-    const supabaseUrl = process.env.SUPABASE_POOLER_URL || ("TURBOPACK compile-time value", "https://togejqdwggezkxahomeh.supabase.co");
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    // WEB_SUPABASE_URL allows admin app to connect to web database for cross-app queries
+    const supabaseUrl = process.env.SUPABASE_POOLER_URL || process.env.WEB_SUPABASE_URL || ("TURBOPACK compile-time value", "https://togejqdwggezkxahomeh.supabase.co");
+    // Support multiple env var names for flexibility across apps
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.WEB_SUPABASE_SERVICE_ROLE_KEY || process.env.ADMIN_SUPABASE_SERVICE_ROLE_KEY;
     if (!supabaseUrl || !serviceRoleKey) {
+        console.error("[Service Client] Missing env vars:", {
+            hasUrl: !!supabaseUrl,
+            hasKey: !!serviceRoleKey
+        });
         return null;
     }
     return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$supabase$2b$supabase$2d$js$40$2$2e$81$2e$0$2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$module$2f$index$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, serviceRoleKey, {
@@ -107,7 +113,7 @@ async function createServiceSupabaseClient() {
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
     createServiceSupabaseClient
 ]);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createServiceSupabaseClient, "0065abb4e4ef4b97e2016c1b54c8d9b3a9ff7b955e", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createServiceSupabaseClient, "005adb1d7e8dfb8147dcd7faf3f97a1fc6f745616b", null);
 }),
 "[project]/packages/shared/src/onboarding.ts [app-rsc] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
@@ -215,8 +221,8 @@ function getCurrentOnboardingStep(options) {
     "requireUser",
     ()=>requireUser
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/server/route-modules/app-page/vendored/rsc/react.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$packages$2f$database$2f$src$2f$server$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/packages/database/src/server.ts [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/server/route-modules/app-page/vendored/rsc/react.js [app-rsc] (ecmascript)");
 ;
 ;
 const getCurrentUser = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cache"])(async ()=>{
@@ -1223,7 +1229,7 @@ function assertExists(resource, resourceName) {
  *
  * Server-side actions for role management and permission checks.
  * Uses Supabase RLS and database functions for security.
- */ /* __next_internal_action_entry_do_not_use__ [{"007ac1f2ec6b09cd36e4a3e4cc595b494ec49ec2d7":"getCurrentUserRole","40403f075dde1b08a909eead4279652620ac8d96b4":"canDeleteTeamMember"},"",""] */ __turbopack_context__.s([
+ */ /* __next_internal_action_entry_do_not_use__ [{"009c286914ac93fa18d3cac3814f6b0541c533da31":"getCurrentUserRole","409e41270103fb45f1105fb5721c09fb5921f7de6f":"canDeleteTeamMember"},"",""] */ __turbopack_context__.s([
     "canDeleteTeamMember",
     ()=>canDeleteTeamMember,
     "getCurrentUserRole",
@@ -1646,8 +1652,8 @@ async function canDeleteTeamMember(teamMemberId) {
     getCurrentUserRole,
     canDeleteTeamMember
 ]);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getCurrentUserRole, "007ac1f2ec6b09cd36e4a3e4cc595b494ec49ec2d7", null);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(canDeleteTeamMember, "40403f075dde1b08a909eead4279652620ac8d96b4", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getCurrentUserRole, "009c286914ac93fa18d3cac3814f6b0541c533da31", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(canDeleteTeamMember, "409e41270103fb45f1105fb5721c09fb5921f7de6f", null);
 }),
 "[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <locals>", ((__turbopack_context__) => {
 "use strict";
@@ -1661,9 +1667,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$action
 "use strict";
 
 __turbopack_context__.s([
-    "007ac1f2ec6b09cd36e4a3e4cc595b494ec49ec2d7",
+    "009c286914ac93fa18d3cac3814f6b0541c533da31",
     ()=>__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$actions$2f$roles$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getCurrentUserRole"],
-    "40403f075dde1b08a909eead4279652620ac8d96b4",
+    "409e41270103fb45f1105fb5721c09fb5921f7de6f",
     ()=>__TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$actions$2f$roles$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["canDeleteTeamMember"]
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f2e$next$2d$internal$2f$server$2f$app$2f$_not$2d$found$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$apps$2f$web$2f$src$2f$actions$2f$roles$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => "[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');

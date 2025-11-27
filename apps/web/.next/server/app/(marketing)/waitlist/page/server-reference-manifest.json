@@ -1,6 +1,6 @@
 {
   "node": {
-    "001f005176797ef23488068124fb9a744915a477de": {
+    "007f6ab33dab55fcd65110391bb9985547ca9d3bec": {
       "workers": {
         "app/(marketing)/waitlist/page": {
           "moduleId": 876955,
@@ -15,7 +15,7 @@
       "exportedName": "getCurrentUserRole",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+    "40389aae21f1d21bd0b45e4ebad980b6ef81b08fcf": {
       "workers": {
         "app/(marketing)/waitlist/page": {
           "moduleId": 876955,
@@ -30,7 +30,7 @@
       "exportedName": "canDeleteTeamMember",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "407e41cc1a40ac9992becb8cd7e55b4a117c57d7b2": {
+    "402bc1e443c890f8487b1455aa77df31f45083a09f": {
       "workers": {
         "app/(marketing)/waitlist/page": {
           "moduleId": 876955,

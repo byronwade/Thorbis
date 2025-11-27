@@ -9,10 +9,10 @@
  * - Communication Agent: Email, SMS, and internal messaging
  *
  * Uses @ai-sdk-tools/agents for automatic handoffs and routing
- * Powered by Google Gemini
+ * Powered by Groq (free tier)
  */
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createGroq } from "@ai-sdk/groq";
 import { Agent, type AgentConfig, handoff } from "@ai-sdk-tools/agents";
 import { tool } from "ai";
 import { z } from "zod";
@@ -91,9 +91,9 @@ import {
 	DEFAULT_WORKING_MEMORY_TEMPLATE,
 } from "../memory-provider";
 
-// Initialize Google Gemini provider
-const googleAI = createGoogleGenerativeAI();
-const geminiFlash = googleAI("gemini-2.0-flash-exp");
+// Initialize Groq provider (free tier with generous limits)
+const groq = createGroq();
+const groqModel = groq("llama-3.3-70b-versatile");
 
 /**
  * Create the multi-agent system for a company
@@ -138,7 +138,7 @@ export function createAgentSystem(companyId: string) {
 	// Customer Agent - handles customer lookups, updates, and management
 	const customerAgent = Agent.create({
 		name: "customer-agent",
-		model: geminiFlash,
+		model: groqModel,
 		instructions: `You are a Customer Management specialist for a field service company.
 
 Your responsibilities:
@@ -187,7 +187,7 @@ When updating customer data, confirm the changes with the user.`,
 	// Scheduling Agent - handles job scheduling and dispatch
 	const schedulingAgent = Agent.create({
 		name: "scheduling-agent",
-		model: geminiFlash,
+		model: groqModel,
 		instructions: `You are a Scheduling and Dispatch specialist for a field service company.
 
 Your responsibilities:
@@ -243,7 +243,7 @@ Always confirm scheduling changes with the user.`,
 	// Financial Agent - handles invoices, payments, and estimates
 	const financialAgent = Agent.create({
 		name: "financial-agent",
-		model: geminiFlash,
+		model: groqModel,
 		instructions: `You are a Financial Operations specialist for a field service company.
 
 Your responsibilities:
@@ -287,7 +287,7 @@ Confirm all financial transactions with the user before executing.`,
 	// Communication Agent - handles email, SMS, and messaging
 	const communicationAgent = Agent.create({
 		name: "communication-agent",
-		model: geminiFlash,
+		model: groqModel,
 		instructions: `You are a Communication specialist for a field service company.
 
 Your responsibilities:
@@ -325,7 +325,7 @@ Confirm message content before sending.`,
 	// Triage Agent - orchestrates all specialized agents
 	const triageAgent = Agent.create({
 		name: "triage-agent",
-		model: geminiFlash,
+		model: groqModel,
 		instructions: (
 			context,
 		) => `You are Stratos AI, an intelligent assistant for a field service management company.

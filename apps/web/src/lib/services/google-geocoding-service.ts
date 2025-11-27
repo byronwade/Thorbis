@@ -13,6 +13,7 @@
  */
 
 import { z } from "zod";
+import { googleMapsTracker } from "@/lib/analytics/external-api-tracker";
 
 const USER_AGENT = "Stratos-FMS/1.0 (support@stratos.app)";
 
@@ -120,6 +121,7 @@ export interface GeocodingOptions {
 		route?: string;
 	};
 	language?: string;
+	companyId?: string; // For usage tracking
 }
 
 /**
@@ -134,6 +136,7 @@ export interface ReverseGeocodingOptions {
 		| "APPROXIMATE"
 	)[];
 	language?: string;
+	companyId?: string; // For usage tracking
 }
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 days
@@ -173,6 +176,7 @@ class GoogleGeocodingService {
 			return cached.data;
 		}
 
+		const startTime = Date.now();
 		try {
 			const params = new URLSearchParams({
 				address,
@@ -220,6 +224,13 @@ class GoogleGeocodingService {
 
 			if (!response.ok) {
 				console.error("Geocoding API error:", response.status);
+				if (options.companyId) {
+					googleMapsTracker.track("geocode", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: `HTTP ${response.status}`,
+					}).catch(() => {});
+				}
 				return null;
 			}
 
@@ -227,10 +238,25 @@ class GoogleGeocodingService {
 
 			if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
 				console.error("Geocoding API status:", data.status, data.error_message);
+				if (options.companyId) {
+					googleMapsTracker.track("geocode", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: data.status,
+					}).catch(() => {});
+				}
 				return null;
 			}
 
 			if (!data.results || data.results.length === 0) {
+				// Track successful (but empty) result
+				if (options.companyId) {
+					googleMapsTracker.track("geocode", options.companyId, {
+						success: true,
+						responseTimeMs: Date.now() - startTime,
+						estimatedCostCents: 0.5, // ~$0.005 per geocode request
+					}).catch(() => {});
+				}
 				return [];
 			}
 
@@ -275,9 +301,25 @@ class GoogleGeocodingService {
 
 			this.forwardCache.set(cacheKey, { data: results, timestamp: Date.now() });
 
+			// Track successful API call
+			if (options.companyId) {
+				googleMapsTracker.track("geocode", options.companyId, {
+					success: true,
+					responseTimeMs: Date.now() - startTime,
+					estimatedCostCents: 0.5, // ~$0.005 per geocode request
+				}).catch(() => {});
+			}
+
 			return results;
 		} catch (error) {
 			console.error("Geocoding error:", error);
+			if (options.companyId) {
+				googleMapsTracker.track("geocode", options.companyId, {
+					success: false,
+					responseTimeMs: Date.now() - startTime,
+					errorMessage: error instanceof Error ? error.message : "Unknown error",
+				}).catch(() => {});
+			}
 			return null;
 		}
 	}
@@ -301,6 +343,7 @@ class GoogleGeocodingService {
 			return cached.data;
 		}
 
+		const startTime = Date.now();
 		try {
 			const params = new URLSearchParams({
 				latlng: `${latitude},${longitude}`,
@@ -326,6 +369,13 @@ class GoogleGeocodingService {
 
 			if (!response.ok) {
 				console.error("Reverse geocoding API error:", response.status);
+				if (options.companyId) {
+					googleMapsTracker.track("reverse_geocode", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: `HTTP ${response.status}`,
+					}).catch(() => {});
+				}
 				return null;
 			}
 
@@ -337,10 +387,25 @@ class GoogleGeocodingService {
 					data.status,
 					data.error_message,
 				);
+				if (options.companyId) {
+					googleMapsTracker.track("reverse_geocode", options.companyId, {
+						success: false,
+						responseTimeMs: Date.now() - startTime,
+						errorMessage: data.status,
+					}).catch(() => {});
+				}
 				return null;
 			}
 
 			if (!data.results || data.results.length === 0) {
+				// Track successful (but empty) result
+				if (options.companyId) {
+					googleMapsTracker.track("reverse_geocode", options.companyId, {
+						success: true,
+						responseTimeMs: Date.now() - startTime,
+						estimatedCostCents: 0.5, // ~$0.005 per geocode request
+					}).catch(() => {});
+				}
 				return [];
 			}
 
@@ -384,9 +449,25 @@ class GoogleGeocodingService {
 
 			this.reverseCache.set(cacheKey, { data: results, timestamp: Date.now() });
 
+			// Track successful API call
+			if (options.companyId) {
+				googleMapsTracker.track("reverse_geocode", options.companyId, {
+					success: true,
+					responseTimeMs: Date.now() - startTime,
+					estimatedCostCents: 0.5, // ~$0.005 per geocode request
+				}).catch(() => {});
+			}
+
 			return results;
 		} catch (error) {
 			console.error("Reverse geocoding error:", error);
+			if (options.companyId) {
+				googleMapsTracker.track("reverse_geocode", options.companyId, {
+					success: false,
+					responseTimeMs: Date.now() - startTime,
+					errorMessage: error instanceof Error ? error.message : "Unknown error",
+				}).catch(() => {});
+			}
 			return null;
 		}
 	}

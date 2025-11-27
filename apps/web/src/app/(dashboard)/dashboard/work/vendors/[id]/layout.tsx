@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { VendorDetailToolbarActions } from "@/components/work/vendors/vendor-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Vendors Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/vendors/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function VendorsDetailLayout({
 	children,
@@ -32,8 +33,7 @@ export default function VendorsDetailLayout({
 		toolbar: {
 			show: true,
 			back: <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />,
-			// TODO: Create VendorDetailToolbar component
-			// actions: <VendorDetailToolbar />,
+			actions: <VendorDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

@@ -19,7 +19,7 @@ import {
 	SMS_TEST_DATA,
 } from "@/lib/notifications/sms-templates";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
-import { sendSMS } from "@/lib/telnyx/messaging";
+import { sendSms } from "@/lib/twilio/messaging";
 
 export async function POST(request: Request) {
 	try {
@@ -217,17 +217,26 @@ async function sendTestSMS(
 		// Generate SMS text
 		const message = template(props);
 
-		// Send SMS via Telnyx
-		const result = await sendSMS({
+		// Send SMS via Twilio (requires a companyId for multi-tenant setup)
+		// For testing, use the TEST_COMPANY_ID env var or fail gracefully
+		const testCompanyId = process.env.TEST_COMPANY_ID;
+		if (!testCompanyId) {
+			return {
+				success: false,
+				error: "TEST_COMPANY_ID not configured for SMS testing",
+			};
+		}
+
+		const result = await sendSms({
+			companyId: testCompanyId,
 			to: recipient,
-			text: message,
-			from: process.env.TELNYX_PHONE_NUMBER || "+15555555555", // Use configured Telnyx number
+			body: message,
 		});
 
 		if (result.success) {
 			return {
 				success: true,
-				data: { messageId: result.data?.id, message },
+				data: { messageId: result.messageSid, message },
 			};
 		} else {
 			return {

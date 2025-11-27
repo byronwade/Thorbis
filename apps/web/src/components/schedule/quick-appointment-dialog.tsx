@@ -54,34 +54,34 @@ import { cn } from "@/lib/utils";
 // Job types matching the backend schema
 // Valid types: service_call, installation, maintenance, inspection, repair, estimate, follow_up, winterization, emergency
 const JOB_TYPES = [
-	{ value: "emergency", label: "Emergency / Urgent", color: "text-red-500" },
+	{ value: "emergency", label: "Emergency / Urgent", color: "text-red-500 dark:text-red-400" },
 	{
 		value: "follow_up",
 		label: "Callback / Follow Up",
-		color: "text-orange-500",
+		color: "text-orange-500 dark:text-orange-400",
 	},
 	{
 		value: "maintenance",
 		label: "Maintenance / Recurring",
-		color: "text-purple-500",
+		color: "text-purple-500 dark:text-purple-400",
 	},
 	{
 		value: "installation",
 		label: "Install / New Work",
-		color: "text-green-500",
+		color: "text-green-500 dark:text-green-400",
 	},
-	{ value: "service_call", label: "Service Call", color: "text-blue-500" },
-	{ value: "inspection", label: "Inspection", color: "text-slate-500" },
-	{ value: "estimate", label: "Estimate", color: "text-amber-500" },
-	{ value: "repair", label: "Repair", color: "text-cyan-500" },
-	{ value: "winterization", label: "Winterization", color: "text-indigo-500" },
+	{ value: "service_call", label: "Service Call", color: "text-blue-500 dark:text-blue-400" },
+	{ value: "inspection", label: "Inspection", color: "text-slate-500 dark:text-slate-400" },
+	{ value: "estimate", label: "Estimate", color: "text-amber-500 dark:text-amber-400" },
+	{ value: "repair", label: "Repair", color: "text-cyan-500 dark:text-cyan-400" },
+	{ value: "winterization", label: "Winterization", color: "text-indigo-500 dark:text-indigo-400" },
 ] as const;
 
 const PRIORITIES = [
-	{ value: "low", label: "Low", color: "text-slate-500" },
-	{ value: "normal", label: "Normal", color: "text-blue-500" },
-	{ value: "high", label: "High", color: "text-orange-500" },
-	{ value: "urgent", label: "Urgent", color: "text-red-500" },
+	{ value: "low", label: "Low", color: "text-slate-500 dark:text-slate-400" },
+	{ value: "normal", label: "Normal", color: "text-blue-500 dark:text-blue-400" },
+	{ value: "high", label: "High", color: "text-orange-500 dark:text-orange-400" },
+	{ value: "urgent", label: "Urgent", color: "text-red-500 dark:text-red-400" },
 ] as const;
 
 const DURATIONS = [

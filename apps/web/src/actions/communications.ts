@@ -77,7 +77,7 @@ export async function sendCustomerEmailAction(
 			invoice_id: payload.invoiceId ?? null,
 			estimate_id: payload.estimateId ?? null,
 			type: "email",
-			channel: "resend",
+			channel: "sendgrid",
 			direction: "outbound",
 			from_address: null,
 			to_address: toAddress,
@@ -585,6 +585,103 @@ export async function getAutoLinkSuggestionsAction(
 		}
 
 		return { success: true, suggestions };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Transfer a communication to another team member
+ * Updates assigned_to and creates a transfer record
+ */
+const transferCommunicationSchema = z.object({
+	communicationId: z.string().uuid(),
+	toTeamMemberId: z.string().uuid(),
+	notes: z.string().optional(),
+	priority: z.enum(["normal", "high", "urgent"]).default("normal"),
+});
+
+export type TransferCommunicationInput = z.infer<
+	typeof transferCommunicationSchema
+>;
+
+export async function transferCommunicationAction(
+	input: TransferCommunicationInput,
+): Promise<{
+	success: boolean;
+	error?: string;
+}> {
+	try {
+		const payload = transferCommunicationSchema.parse(input);
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Unable to access database" };
+		}
+
+		// Get authenticated user
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, error: "Not authenticated" };
+		}
+
+		// Get current team member ID for the user
+		const { data: profile } = await supabase
+			.from("profiles")
+			.select("company_id")
+			.eq("id", user.id)
+			.single();
+
+		if (!profile?.company_id) {
+			return { success: false, error: "No company found" };
+		}
+
+		// Get current team member
+		const { data: currentTeamMember } = await supabase
+			.from("team_members")
+			.select("id")
+			.eq("user_id", user.id)
+			.eq("company_id", profile.company_id)
+			.single();
+
+		// Get the communication to verify it exists and get current transfer count
+		const { data: communication, error: commError } = await supabase
+			.from("communications")
+			.select("id, transfer_count, assigned_to")
+			.eq("id", payload.communicationId)
+			.eq("company_id", profile.company_id)
+			.single();
+
+		if (commError || !communication) {
+			return { success: false, error: "Communication not found" };
+		}
+
+		// Update the communication with transfer info
+		const { error: updateError } = await supabase
+			.from("communications")
+			.update({
+				assigned_to: payload.toTeamMemberId,
+				transferred_from_team_member_id: currentTeamMember?.id || null,
+				transfer_count: (communication.transfer_count || 0) + 1,
+				priority: payload.priority,
+				internal_notes: payload.notes
+					? `[Transfer Note] ${payload.notes}${communication.assigned_to ? `\n\n---\n${communication.assigned_to}` : ""}`
+					: undefined,
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", payload.communicationId);
+
+		if (updateError) {
+			return { success: false, error: updateError.message };
+		}
+
+		revalidatePath(COMMUNICATIONS_PATH);
+		return { success: true };
 	} catch (error) {
 		return {
 			success: false,

@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { MaterialDetailToolbarActions } from "@/components/work/materials/material-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Materials Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/materials/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function MaterialsDetailLayout({
 	children,
@@ -34,8 +35,7 @@ export default function MaterialsDetailLayout({
 			back: (
 				<DetailBackButton href="/dashboard/work/materials" label="Materials" />
 			),
-			// TODO: Create MaterialDetailToolbar component
-			// actions: <MaterialDetailToolbar />,
+			actions: <MaterialDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

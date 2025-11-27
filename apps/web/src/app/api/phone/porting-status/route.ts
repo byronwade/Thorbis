@@ -1,12 +1,12 @@
 /**
  * Porting Status API Route
  *
- * Polls Telnyx API to get real-time status of phone number porting orders.
+ * Polls Twilio API to get real-time status of phone number porting orders.
  * Used by PortingStatusTracker component to show progress.
  */
 
 import { type NextRequest, NextResponse } from "next/server";
-import { getPortingOrderStatus } from "@/lib/telnyx/porting";
+import { getPortingOrderStatus } from "@/lib/twilio/porting";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// Call Telnyx API to get porting status
+		// Call Twilio API to get porting status
 		const result = await getPortingOrderStatus(orderId);
 
 		if (!result.success) {

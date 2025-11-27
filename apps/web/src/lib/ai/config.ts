@@ -1,13 +1,16 @@
 /**
  * AI Provider Configuration
- * Supports OpenAI, Anthropic, and Google with Vercel AI Gateway
+ *
+ * Uses Groq as the exclusive AI provider.
+ * Groq offers a free tier with generous limits and supports tool calling.
+ *
+ * Environment variables:
+ * - GROQ_API_KEY: Free API key from https://console.groq.com
  */
 
-import { anthropic } from "@ai-sdk/anthropic";
-import { google } from "@ai-sdk/google";
-import { openai } from "@ai-sdk/openai";
+import { createGroq } from "@ai-sdk/groq";
 
-export type AIProvider = "openai" | "anthropic" | "google";
+export type AIProvider = "groq";
 
 export type AIConfig = {
 	provider: AIProvider;
@@ -20,8 +23,8 @@ export type AIConfig = {
  * Get AI configuration from environment variables
  */
 function getAIConfig(): AIConfig {
-	const provider = (process.env.AI_PROVIDER || "google") as AIProvider;
-	const model = process.env.AI_MODEL || getDefaultModel(provider);
+	const provider: AIProvider = "groq";
+	const model = process.env.AI_MODEL || "llama-3.3-70b-versatile";
 	const gatewayUrl = process.env.AI_GATEWAY_URL;
 	const gatewayToken = process.env.AI_GATEWAY_TOKEN;
 
@@ -34,91 +37,29 @@ function getAIConfig(): AIConfig {
 }
 
 /**
- * Get default model for provider
- */
-function getDefaultModel(provider: AIProvider): string {
-	switch (provider) {
-		case "openai":
-			return "gpt-4o";
-		case "anthropic":
-			return "claude-3-5-sonnet-20241022";
-		case "google":
-			return "gemini-2.0-flash-exp";
-		default:
-			return "gemini-2.0-flash-exp"; // Default to Google Gemini
-	}
-}
-
-/**
- * Create AI provider instance with optional gateway routing
+ * Create AI provider instance
+ *
+ * Uses Groq exclusively for all AI operations.
+ * Groq supports tools and has a generous free tier.
  */
 export function createAIProvider(config?: Partial<AIConfig>) {
 	const fullConfig = { ...getAIConfig(), ...config };
-	const { provider, gatewayUrl, gatewayToken } = fullConfig;
-
-	// Base configuration for gateway
-	const _baseConfig =
-		gatewayUrl && gatewayToken
-			? {
-					baseURL: `${gatewayUrl}/v1`,
-					headers: {
-						Authorization: `Bearer ${gatewayToken}`,
-					},
-				}
-			: {};
-
-	switch (provider) {
-		case "openai":
-			return openai(fullConfig.model);
-		case "anthropic":
-			return anthropic(fullConfig.model);
-		case "google":
-			return google(fullConfig.model);
-		default:
-			throw new Error(`Unsupported AI provider: ${provider}`);
-	}
+	const groq = createGroq();
+	return groq(fullConfig.model);
 }
 
 /**
- * Create provider-specific client for direct API access
+ * Available models - Groq only
+ *
+ * All models are FREE on Groq with generous rate limits.
+ * Get an API key at https://console.groq.com
  */
-function createProviderClient(provider?: AIProvider) {
-	const selectedProvider = provider || getAIConfig().provider;
-	const config = getAIConfig();
-
-	const _gatewayConfig =
-		config.gatewayUrl && config.gatewayToken
-			? {
-					baseURL: `${config.gatewayUrl}/v1`,
-					headers: {
-						Authorization: `Bearer ${config.gatewayToken}`,
-					},
-				}
-			: {};
-
-	switch (selectedProvider) {
-		case "openai":
-			return openai;
-		case "anthropic":
-			return anthropic;
-		case "google":
-			return google;
-		default:
-			throw new Error(`Unsupported provider: ${selectedProvider}`);
-	}
-}
-
-/**
- * Available models by provider
- */
-const AVAILABLE_MODELS = {
-	openai: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"],
-	anthropic: [
-		"claude-3-5-sonnet-20241022",
-		"claude-3-5-haiku-20241022",
-		"claude-3-opus-20240229",
-		"claude-3-sonnet-20240229",
-		"claude-3-haiku-20240307",
+export const AVAILABLE_MODELS = {
+	groq: [
+		"llama-3.3-70b-versatile", // Best for tool calling, free tier
+		"llama-3.1-70b-versatile",
+		"llama-3.1-8b-instant", // Faster, lower latency
+		"mixtral-8x7b-32768", // Good for long context
+		"gemma2-9b-it", // Google's open model on Groq
 	],
-	google: ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"],
 } as const;

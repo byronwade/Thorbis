@@ -1,8 +1,11 @@
 "use client";
 
+import type { ChatSession } from "@ai-sdk-tools/memory";
 import { PenLine, Search, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { getChats, deleteChat as deleteChatAction } from "@/actions/chats";
 import { ChatSearchCommand } from "@/components/ai/chat-search-command";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,26 +16,74 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { chatSelectors, useChatStore } from "@/lib/stores/chat-store";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lightweight client cache to avoid spamming server actions on every rerender/navigation
+const CHAT_CACHE_TTL = 30_000;
+let cachedChats: ChatSession[] | null = null;
+let cachedChatsAt = 0;
+let inflightChatRequest: Promise<ChatSession[]> | null = null;
+
+async function loadChatCache(limit: number, force = false): Promise<ChatSession[]> {
+	const now = Date.now();
+
+	// Return cached data when still fresh
+	if (!force && cachedChats && now - cachedChatsAt < CHAT_CACHE_TTL) {
+		return cachedChats.slice(0, limit);
+	}
+
+	// Deduplicate concurrent requests between button + history
+	if (inflightChatRequest) {
+		return inflightChatRequest.then((data) => data.slice(0, limit));
+	}
+
+	inflightChatRequest = (async () => {
+		try {
+			const result = await getChats({ limit });
+			if (result.success && result.data) {
+				cachedChats = result.data;
+				cachedChatsAt = Date.now();
+				return result.data;
+			}
+		} catch (error) {
+			console.error("[NavChatHistory] Failed to load chats", error);
+		} finally {
+			inflightChatRequest = null;
+		}
+
+		// On failure, return empty list and clear cache timestamp to retry later
+		cachedChats = null;
+		cachedChatsAt = 0;
+		return [];
+	})();
+
+	return inflightChatRequest;
+}
+
+function updateChatCache(nextChats: ChatSession[]) {
+	cachedChats = nextChats;
+	cachedChatsAt = Date.now();
+}
 
 // New Chat button + Search bar - rendered above AI nav items
 export function AiNewChatButton() {
 	const router = useRouter();
-	const chats = useChatStore(chatSelectors.chats);
-	const { createChat, setActiveChat } = useChatStore();
 	const [searchOpen, setSearchOpen] = useState(false);
+	const [hasChats, setHasChats] = useState(false);
+
+	// Check if there are any chats for showing search
+	useEffect(() => {
+		const checkChats = async () => {
+			const chats = await loadChatCache(1);
+			setHasChats(chats.length > 0);
+		};
+		checkChats();
+	}, []);
 
 	const handleNewChat = () => {
-		// Create a new temporary chat and navigate to the AI landing page
-		const newChatId = createChat("New Chat");
-		if (newChatId) {
-			setActiveChat(newChatId);
-		}
-		// Navigate to the AI landing page (Thorbis AI)
+		// Navigate to the AI landing page to start a new chat
 		router.push("/dashboard/ai");
 	};
-
-	const hasChats = chats.length > 0;
 
 	return (
 		<>
@@ -73,19 +124,82 @@ export function AiNewChatButton() {
 
 // Chat history list - rendered below AI Assistant nav
 export function NavChatHistory() {
-	const chats = useChatStore(chatSelectors.chats);
-	const activeChatId = useChatStore(chatSelectors.activeChatId);
-	const { setActiveChat, deleteChat } = useChatStore();
+	const router = useRouter();
+	const pathname = usePathname();
+	const [chats, setChats] = useState<ChatSession[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isPending, startTransition] = useTransition();
 
-	const handleSelectChat = (chatId: string) => {
-		setActiveChat(chatId);
-	};
+	// Extract active chat ID from pathname
+	const activeChatId = pathname?.match(/\/dashboard\/ai\/([^/]+)/)?.[1] ?? null;
 
-	const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
+	// Load chats from database on mount
+	useEffect(() => {
+		const loadChats = async () => {
+			setIsLoading(true);
+			const data = await loadChatCache(10);
+			setChats(data);
+			setIsLoading(false);
+		};
+		loadChats();
+	}, []);
+
+	// Refresh chats when navigating AWAY and BACK to AI pages (not on every pathname change)
+	// This prevents the looping POST requests caused by router.replace and revalidatePath
+	const [prevWasAiPage, setPrevWasAiPage] = useState(false);
+	useEffect(() => {
+		const isAiPage = pathname?.startsWith("/dashboard/ai") ?? false;
+		// Only refresh when transitioning INTO an AI page (not on every pathname change within AI)
+		if (isAiPage && !prevWasAiPage) {
+			const refreshChats = async () => {
+				const data = await loadChatCache(10, true);
+				setChats(data);
+			};
+			refreshChats();
+		}
+		setPrevWasAiPage(isAiPage);
+	}, [pathname, prevWasAiPage]);
+
+	const handleSelectChat = useCallback((chatId: string) => {
+		router.push(`/dashboard/ai/${chatId}`);
+	}, [router]);
+
+	const handleDeleteChat = useCallback(async (e: React.MouseEvent, chatId: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		deleteChat(chatId);
-	};
+
+		startTransition(async () => {
+			const result = await deleteChatAction(chatId);
+			if (result.success) {
+				setChats((prev) => {
+					const next = prev.filter((c) => c.chatId !== chatId);
+					updateChatCache(next);
+					return next;
+				});
+				toast.success("Chat deleted");
+				// Navigate away if we deleted the active chat
+				if (activeChatId === chatId) {
+					router.push("/dashboard/ai");
+				}
+			} else {
+				toast.error("Failed to delete chat");
+			}
+		});
+	}, [activeChatId, router]);
+
+	// Loading skeleton
+	if (isLoading) {
+		return (
+			<SidebarGroup>
+				<SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+				<div className="space-y-1 px-2">
+					<Skeleton className="h-8 w-full" />
+					<Skeleton className="h-8 w-full" />
+					<Skeleton className="h-8 w-full" />
+				</div>
+			</SidebarGroup>
+		);
+	}
 
 	// Don't render anything if no chats
 	if (chats.length === 0) {
@@ -96,21 +210,22 @@ export function NavChatHistory() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
 			<SidebarMenu>
-				{chats.slice(0, 10).map((chat) => {
-					const isActive = activeChatId === chat.id;
+				{chats.map((chat) => {
+					const isActive = activeChatId === chat.chatId;
 
 					return (
-						<SidebarMenuItem key={chat.id}>
+						<SidebarMenuItem key={chat.chatId}>
 							<SidebarMenuButton
 								isActive={isActive}
-								onClick={() => handleSelectChat(chat.id)}
+								onClick={() => handleSelectChat(chat.chatId)}
 								title={chat.title}
+								disabled={isPending}
 							>
 								<span className="flex-1 truncate text-left">{chat.title}</span>
 							</SidebarMenuButton>
 							<SidebarMenuAction
 								aria-label="Delete chat"
-								onClick={(e) => handleDeleteChat(e, chat.id)}
+								onClick={(e) => handleDeleteChat(e, chat.chatId)}
 								showOnHover
 								title="Delete chat"
 							>

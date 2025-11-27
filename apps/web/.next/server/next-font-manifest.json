@@ -16,6 +16,10 @@
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],
+    "[project]/apps/web/src/app/(dashboard)/dashboard/ai/[chatId]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
+    ],
     "[project]/apps/web/src/app/(dashboard)/dashboard/ai/activity/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
@@ -764,6 +768,10 @@
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],
+    "[project]/apps/web/src/app/(dashboard)/dashboard/settings/internal-analytics/page": [
+      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
+    ],
     "[project]/apps/web/src/app/(dashboard)/dashboard/settings/invoices/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
@@ -925,10 +933,6 @@
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],
     "[project]/apps/web/src/app/(dashboard)/dashboard/settings/team/roles/page": [
-      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
-      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
-    ],
-    "[project]/apps/web/src/app/(dashboard)/dashboard/settings/telnyx-verification/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],
@@ -1541,22 +1545,6 @@
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],
     "[project]/apps/web/src/app/test-switch-company/page": [
-      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
-      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
-    ],
-    "[project]/apps/web/src/app/test-telnyx-config/page": [
-      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
-      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
-    ],
-    "[project]/apps/web/src/app/test-telnyx-debug/page": [
-      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
-      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
-    ],
-    "[project]/apps/web/src/app/test-telnyx-send/page": [
-      "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
-      "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
-    ],
-    "[project]/apps/web/src/app/test-webhook-fix/page": [
       "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
       "static/media/70bc3e132a0a741e-s.p.15008bfb.woff2"
     ],

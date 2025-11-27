@@ -1,9 +1,9 @@
 {
   "node": {
-    "001f005176797ef23488068124fb9a744915a477de": {
+    "007f6ab33dab55fcd65110391bb9985547ca9d3bec": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getCurrentUserRole",
           "filename": "apps/web/src/actions/roles.ts"
@@ -15,10 +15,10 @@
       "exportedName": "getCurrentUserRole",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+    "40389aae21f1d21bd0b45e4ebad980b6ef81b08fcf": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "canDeleteTeamMember",
           "filename": "apps/web/src/actions/roles.ts"
@@ -30,10 +30,10 @@
       "exportedName": "canDeleteTeamMember",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "40704f0e856ad801ef93b43436f219a36f7c0efd2c": {
+    "40b949438863af2dd6abea5c9f1750a743ad07f1a6": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getPayrixMerchantAccount",
           "filename": "apps/web/src/actions/payrix.ts"
@@ -45,235 +45,265 @@
       "exportedName": "getPayrixMerchantAccount",
       "filename": "apps/web/src/actions/payrix.ts"
     },
-    "000478fbf5363dae5000d525663da13e29908cb952": {
+    "40335353397548ff1f3fb8e1be08772186f76d5dc0": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getWebRTCCredentials",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "getWebRTCCredentials",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "4002f454c46f4c21ca6e9e26362583ccff69c9f914": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "transcribeCallRecording",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "transcribeCallRecording",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "4019cf9f81eb3c06f82b5c2f8eb042f3d95d91e933": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getCompanyPhoneNumbers",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
       },
       "exportedName": "getCompanyPhoneNumbers",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "40247c617842c31b242455a0961cbd2c3297606a16": {
+    "403a9b47d01a351a3d9d46c5c73dcba09723524a22": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
-          "exportedName": "getCallRoutingRules",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "exportedName": "getWebRTCCredentials",
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
       },
-      "exportedName": "getCallRoutingRules",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "exportedName": "getWebRTCCredentials",
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "40413bfa888916480edbc33ebb812158fddf960f89": {
+    "403f7bd146866737d948d3fa566f85115e4ba0a21a": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "updateCallRoutingRule",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "updateCallRoutingRule",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "404e47931374ad2a1b54bc11f357703790f6104530": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "startCallRecording",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
       },
       "exportedName": "startCallRecording",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "405a16958f97c37bd4b5711bd8761510bdab55839f": {
+    "4042a2165fc670209564bf40053a46e0541bc974f4": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "transferActiveCall",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "transferActiveCall",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "406864ae05b8b51c66cc2c335999e5011a41cb521f": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "searchPhoneNumbers",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "searchPhoneNumbers",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "40b2df540ec465c5dc19545c96486485bb50b5633b": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "makeCall",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "makeCall",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "40d050abdabe2ee7293436c505c5f27b4408a2f27c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "sendTextMessage",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "sendTextMessage",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "40d5cc291162e2fd61245bdb851d5e8ed609e4ed19": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "stopCallRecording",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "stopCallRecording",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "40edd91786b2a482e617fb16f2474d26ec295435e7": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "sendMMSMessage",
-          "filename": "apps/web/src/actions/telnyx.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "sendMMSMessage",
-      "filename": "apps/web/src/actions/telnyx.ts"
-    },
-    "40fd6a80b32792fab749933f98f07503d8e94c0305": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "purchasePhoneNumber",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
       },
       "exportedName": "purchasePhoneNumber",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "607d0f958daf66b2a0d5277cdda17600dace5156bb": {
+    "404c6489442d8a6291c4115d7ad926c94c5ce890aa": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
-          "exportedName": "deleteCallRoutingRule",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "exportedName": "sendMMSMessage",
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
       },
-      "exportedName": "deleteCallRoutingRule",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "exportedName": "sendMMSMessage",
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "60853f1e409364f7e171e27229217994ff224414e6": {
+    "4061b8dc963a5c4702863118281f7afdd42e2b34ea": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "transferActiveCall",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "transferActiveCall",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "406e6fa0d82393f1776e62db238f1e00a029bbce71": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "deletePhoneNumber",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "deletePhoneNumber",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "40766cbb41e317cdd5fd95529dd97992fdf9e11714": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "stopCallRecording",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "stopCallRecording",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "4077e849d759a44cf1d7f2b858202022bb721a889f": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "makeCall",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "makeCall",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "407b9e16009a6632195f1a2f00f598984289a531d5": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "endActiveCall",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "endActiveCall",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "407dd5de4775b8e3f5e6645a4fc7d60bc24504580c": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "updateCallRoutingRule",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "updateCallRoutingRule",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "40a585b8ba1df80ec72a61d175cc5b385092bccd67": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "transcribeCallRecording",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "transcribeCallRecording",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "40be638614021e5941a4c6c944d60796d57a1912f3": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCallRoutingRules",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "getCallRoutingRules",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "40da66b4a671773ca1eb8571fbedada4036a86b43a": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "searchPhoneNumbers",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "searchPhoneNumbers",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "40fec4269041b0a4216ec0b59020d367bb9f1404f5": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "sendTextMessage",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "sendTextMessage",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "60b6230f1e44f58836567ab43aff7a77e0981bdf9b": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "toggleCallRoutingRule",
-          "filename": "apps/web/src/actions/telnyx.ts"
+          "filename": "apps/web/src/actions/twilio.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
       },
       "exportedName": "toggleCallRoutingRule",
-      "filename": "apps/web/src/actions/telnyx.ts"
+      "filename": "apps/web/src/actions/twilio.ts"
     },
-    "00a13dbd00149949fc1367d3e76ae7d789e07f5321": {
+    "60d8b96c8eaaea4d0b97f4af878b23c417ddc1010b": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "deleteCallRoutingRule",
+          "filename": "apps/web/src/actions/twilio.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
+      },
+      "exportedName": "deleteCallRoutingRule",
+      "filename": "apps/web/src/actions/twilio.ts"
+    },
+    "0019fc87e7e6431afdf7d20a35eba18ff0e93dd810": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "createServiceSupabaseClient",
           "filename": "packages/database/src/service-client.ts"
@@ -285,760 +315,25 @@
       "exportedName": "createServiceSupabaseClient",
       "filename": "packages/database/src/service-client.ts"
     },
-    "606753f8910b46d5792f4bdeb457cdf29d1a8bbadc": {
+    "00816a4df4767e0f1b6b31f87501b6b20751f4b08b": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
-          "exportedName": "ensureMessagingBranding",
-          "filename": "apps/web/src/actions/messaging-branding.ts"
+          "exportedName": "getCompanyWeather",
+          "filename": "apps/web/src/actions/weather.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
       },
-      "exportedName": "ensureMessagingBranding",
-      "filename": "apps/web/src/actions/messaging-branding.ts"
+      "exportedName": "getCompanyWeather",
+      "filename": "apps/web/src/actions/weather.ts"
     },
-    "70a648f43fa62ae3dcf2070eb90413e96e81591e77": {
+    "005c08c128d831c1fa5cf8d30d6a40715ced3b011f": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "ensureMessagingCampaign",
-          "filename": "apps/web/src/actions/messaging-branding.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "ensureMessagingCampaign",
-      "filename": "apps/web/src/actions/messaging-branding.ts"
-    },
-    "007505a78985e53e083a498c97761ed8a463d3d379": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "checkTelnyxVerificationStatus",
-          "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "checkTelnyxVerificationStatus",
-      "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-    },
-    "4087f0badccd6aaf6a28b640ab4bbc513f0832d105": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "submitAutomatedVerification",
-          "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "submitAutomatedVerification",
-      "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-    },
-    "40ae25402a089e45aa071d979e8cc6ad136205cc98": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "registerCompanyFor10DLC",
-          "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "registerCompanyFor10DLC",
-      "filename": "apps/web/src/actions/ten-dlc-registration.ts"
-    },
-    "70f58c5ba46ef02b620d7dc87bae8fc83f6d480755": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "sendVerificationSubmittedEmail",
-          "filename": "apps/web/src/lib/email/verification-emails.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "sendVerificationSubmittedEmail",
-      "filename": "apps/web/src/lib/email/verification-emails.ts"
-    },
-    "40f8c061cf84f884e77af3425bc24b8a8d72f598fb": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "sendEmail",
-          "filename": "apps/web/src/lib/email/email-sender.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "sendEmail",
-      "filename": "apps/web/src/lib/email/email-sender.ts"
-    },
-    "6045f8436f9cdfdadb7bfe3955677adfc5f4102de0": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "handleComplaintWebhook",
-          "filename": "apps/web/src/lib/email/email-sender.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "handleComplaintWebhook",
-      "filename": "apps/web/src/lib/email/email-sender.ts"
-    },
-    "78a8ea4f1cfa571a366adccf36ac04b1c85d61ae2b": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "handleBounceWebhook",
-          "filename": "apps/web/src/lib/email/email-sender.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "handleBounceWebhook",
-      "filename": "apps/web/src/lib/email/email-sender.ts"
-    },
-    "00c53a1f02416c3261983f8096f19a3450bfd51775": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "runHealthCheckForAllDomains",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "runHealthCheckForAllDomains",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "400b8fb96146bfd004a3166563a5ab5536bb610c70": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getDomainHealth",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getDomainHealth",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "404d6f2891af89c71d5bde33d110a216bdd3ee4729": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "recordDeliveryEvent",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "recordDeliveryEvent",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "405c57a8fed352b8679525b56014eb8c49105c850c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getCompanyDomainsHealth",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getCompanyDomainsHealth",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "40ad037af6f6ab1a3004746d3a1b65afa65527002d": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "processResendWebhookEvent",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "processResendWebhookEvent",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "40ecf2c792e84ef4b898fda98ec27277b4a9dddef2": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "generateDeliverabilityReport",
-          "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "generateDeliverabilityReport",
-      "filename": "apps/web/src/lib/email/deliverability-monitor.ts"
-    },
-    "004cdde5e6ae8991bab4ba61ae40647c2b823200ba": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "resetHourlyCounters",
-          "filename": "apps/web/src/lib/email/rate-limiter.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "resetHourlyCounters",
-      "filename": "apps/web/src/lib/email/rate-limiter.ts"
-    },
-    "006acf41615a2f7795c47b6d7a3016e18300f2ad17": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "resetDailyCounters",
-          "filename": "apps/web/src/lib/email/rate-limiter.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "resetDailyCounters",
-      "filename": "apps/web/src/lib/email/rate-limiter.ts"
-    },
-    "4029b163c1c0acfd806352a72fe8030c8ae4f7f8ac": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "incrementEmailCounter",
-          "filename": "apps/web/src/lib/email/rate-limiter.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "incrementEmailCounter",
-      "filename": "apps/web/src/lib/email/rate-limiter.ts"
-    },
-    "407a5a7d0a7dd7989a963eb2485a3527c1dcb20a70": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getCompanyActiveDomain",
-          "filename": "apps/web/src/lib/email/rate-limiter.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getCompanyActiveDomain",
-      "filename": "apps/web/src/lib/email/rate-limiter.ts"
-    },
-    "40af86a915f04df8d7cc189fe26e45e0cc24663080": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "checkRateLimit",
-          "filename": "apps/web/src/lib/email/rate-limiter.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "checkRateLimit",
-      "filename": "apps/web/src/lib/email/rate-limiter.ts"
-    },
-    "00fe74bdf14126b5ad89e9480e82978d6357f356b3": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "isGmailIntegrationEnabled",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "isGmailIntegrationEnabled",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "400ce95360aaffa14a99dfdf969ba5166c69a59eb6": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getUserGmailTokens",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getUserGmailTokens",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "401d3d830065dd7c4777fad67f642392f48735c4ab": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "disconnectCompanyGmail",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "disconnectCompanyGmail",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "404575d602ef4c60c0058b592b8c3e42fbcd13fc4c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "disconnectUserGmail",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "disconnectUserGmail",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "40787b1598849126560f9f0b0f8fe8967338c7bf28": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getCompanyEmailProvider",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getCompanyEmailProvider",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "40beeb56302a20d27cd8ba7a0988310f855633d7e6": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getCompanyGmailTokens",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getCompanyGmailTokens",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "602fab67313b110e6ccb66e54b1e16450b2a772cc7": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "refreshUserGmailToken",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "refreshUserGmailToken",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "60302947fc4caffa53a719728f3c2cebace926098c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "sendCompanyGmailEmail",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "sendCompanyGmailEmail",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "603643b13bf288cc628303bb4d12df0311b11434c7": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "syncUserInbox",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "syncUserInbox",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "60856182db5eaec7f85eda2a5a94c5d7d3524325d6": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "checkCompanyGmailHealth",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "checkCompanyGmailHealth",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "60eeb51685ac265a4ad793a230a515fe6e462f16f4": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "refreshCompanyGmailToken",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "refreshCompanyGmailToken",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "708daa303e36e37247e22b5b828b6aad8c73ac283b": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "fetchUserInbox",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "fetchUserInbox",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "70dd3bc4222a87350dc137fa9cbcb849fa1913b397": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "setCompanyEmailProvider",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "setCompanyEmailProvider",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "78d41ef818e75fef94d65a87ea1f0faf418132e3c5": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "storeGmailMessage",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "storeGmailMessage",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "7e3a356960ddd52a3fa4dc6d981ae7202a59eb9a3d": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "storeUserGmailTokens",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "storeUserGmailTokens",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "7f06df826c4fff42950e712c0f548254e275be2a52": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "storeCompanyGmailTokens",
-          "filename": "apps/web/src/lib/email/gmail-client.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "storeCompanyGmailTokens",
-      "filename": "apps/web/src/lib/email/gmail-client.ts"
-    },
-    "00a122f9d5fe3a1603c636c3a251886129b66154f8": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getProviderHealthDashboard",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getProviderHealthDashboard",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "40c7885bdc4fe4cdd5f57e78579230c58088adbef4": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "checkProviderAlert",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "checkProviderAlert",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "40d3c4ceeaee653aa257a28ed429a7fd272fa9fb66": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "cleanupOldEvents",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "cleanupOldEvents",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "40e06418f4b93b40c84a25511e0468e1e8a41ddecf": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "recordProviderEvent",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "recordProviderEvent",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "60c643a41ce1a8e6cc8338da6e2f3678c386910460": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getProviderStats",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "getProviderStats",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "78255c3fa8c9facf7c3f353202f2907836e8eb5539": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "recordSendFailure",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "recordSendFailure",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "783861d25688b32ba086bbe9e45444975c36a1b285": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "recordSendSuccess",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "recordSendSuccess",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "78766431b437b16f7cb00b4d64a2f3be5e092ed724": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "recordFallbackTriggered",
-          "filename": "apps/web/src/lib/email/provider-monitor.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "rsc"
-      },
-      "exportedName": "recordFallbackTriggered",
-      "filename": "apps/web/src/lib/email/provider-monitor.ts"
-    },
-    "40fab1894acc5e3d1fdd8d8c6128a7cecee06e7e6a": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "deleteNotification",
-          "filename": "apps/web/src/actions/notifications.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "deleteNotification",
-      "filename": "apps/web/src/actions/notifications.ts"
-    },
-    "00cf212b0097820096122537beac12e3403b97d564": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "markAllAsRead",
-          "filename": "apps/web/src/actions/notifications.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "markAllAsRead",
-      "filename": "apps/web/src/actions/notifications.ts"
-    },
-    "4094cf679b4a10ca0f969f4fc1b55602aac4e0fbc3": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "markAsRead",
-          "filename": "apps/web/src/actions/notifications.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "markAsRead",
-      "filename": "apps/web/src/actions/notifications.ts"
-    },
-    "0043ae510c3322ea499beb9e1bb77d06afb4ef19bd": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "signOut",
-          "filename": "apps/web/src/actions/auth.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "signOut",
-      "filename": "apps/web/src/actions/auth.ts"
-    },
-    "4097c3c574342661f9a3c8244961d001234449f36f": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "switchCompany",
-          "filename": "apps/web/src/actions/company-context.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "switchCompany",
-      "filename": "apps/web/src/actions/company-context.ts"
-    },
-    "4081009dd4dff14ff4ece62648bad23a83f2f9f63c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "updateUserStatus",
-          "filename": "apps/web/src/actions/user-status.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "updateUserStatus",
-      "filename": "apps/web/src/actions/user-status.ts"
-    },
-    "00ebc03a4ffc993aea7ec2e541686105c2bace2437": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getTotalUnreadCountAction",
           "filename": "apps/web/src/actions/email-actions.ts"
@@ -1050,25 +345,10 @@
       "exportedName": "getTotalUnreadCountAction",
       "filename": "apps/web/src/actions/email-actions.ts"
     },
-    "40e9589cb639f2902eb841bedc1247d966486d6fd7": {
+    "001f227b709d25c48f9adf4fd415bbe05926397e4e": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getCompanyPendingActions",
-          "filename": "apps/web/src/actions/ai-approval.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "getCompanyPendingActions",
-      "filename": "apps/web/src/actions/ai-approval.ts"
-    },
-    "001be5cf82b793f19f6a7d010c91c14577fa7a130d": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "checkIsCompanyOwner",
           "filename": "apps/web/src/actions/ai-approval.ts"
@@ -1080,10 +360,130 @@
       "exportedName": "checkIsCompanyOwner",
       "filename": "apps/web/src/actions/ai-approval.ts"
     },
-    "6013add076e3eaed7dc37e8b800ce977d5abb8d49a": {
+    "40cd70aa8f54a29c0adfc10a36a4b84e228903b7c5": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCompanyPendingActions",
+          "filename": "apps/web/src/actions/ai-approval.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getCompanyPendingActions",
+      "filename": "apps/web/src/actions/ai-approval.ts"
+    },
+    "40b825a09b2c79b6363e4dc3a0743fed70fca32161": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "deleteNotification",
+          "filename": "apps/web/src/actions/notifications.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "deleteNotification",
+      "filename": "apps/web/src/actions/notifications.ts"
+    },
+    "002040a35a422da64836d084a97409c3289b5c0243": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "markAllAsRead",
+          "filename": "apps/web/src/actions/notifications.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "markAllAsRead",
+      "filename": "apps/web/src/actions/notifications.ts"
+    },
+    "409aa7a6fa400bed56fd4c30b8acfe2850e8a96349": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "markAsRead",
+          "filename": "apps/web/src/actions/notifications.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "markAsRead",
+      "filename": "apps/web/src/actions/notifications.ts"
+    },
+    "00a228ba285079c20ec6c715bf57b47a3f7e51fdd8": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "signOut",
+          "filename": "apps/web/src/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "signOut",
+      "filename": "apps/web/src/actions/auth.ts"
+    },
+    "40950954be1197ba127fc2f1e083c474ffab0341c2": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "switchCompany",
+          "filename": "apps/web/src/actions/company-context.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "switchCompany",
+      "filename": "apps/web/src/actions/company-context.ts"
+    },
+    "403e07744ca4209b5e6e19242acb3ba62fec19e30b": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "updateUserStatus",
+          "filename": "apps/web/src/actions/user-status.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "updateUserStatus",
+      "filename": "apps/web/src/actions/user-status.ts"
+    },
+    "00a0ba91269403ddbe89fa8dff7f458046164e44c0": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCompanyAirQuality",
+          "filename": "apps/web/src/actions/air-quality.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getCompanyAirQuality",
+      "filename": "apps/web/src/actions/air-quality.ts"
+    },
+    "60932150d189912d87c1f112fc83717964a0a3e111": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getCustomerByPhone",
           "filename": "apps/web/src/actions/customers.ts"
@@ -1095,10 +495,10 @@
       "exportedName": "getCustomerByPhone",
       "filename": "apps/web/src/actions/customers.ts"
     },
-    "4082b52123c24a95685a53c36313418a95c259c65b": {
+    "40d50ee235579ecdb3668988207cec81de072ea844": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "deleteCustomer",
           "filename": "apps/web/src/actions/customers.ts"
@@ -1110,10 +510,10 @@
       "exportedName": "deleteCustomer",
       "filename": "apps/web/src/actions/customers.ts"
     },
-    "60193685409a9d118f1b364e14ecf57d05fa5638a9": {
+    "60e5dda6a67f12ee53799f82da1b8e32c6f50f83cf": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "searchCustomers",
           "filename": "apps/web/src/actions/customers.ts"
@@ -1125,10 +525,10 @@
       "exportedName": "searchCustomers",
       "filename": "apps/web/src/actions/customers.ts"
     },
-    "0077abd0cb1e555f91adaa482ad0b2f565bbd0629a": {
+    "00373fde3bbd88c8b5ec862add5de4085689bc419d": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getCustomersForDialer",
           "filename": "apps/web/src/actions/customers.ts"
@@ -1140,25 +540,10 @@
       "exportedName": "getCustomersForDialer",
       "filename": "apps/web/src/actions/customers.ts"
     },
-    "000f90f949d6a2f5484d061d5a738a59a8c846aeaa": {
+    "009b46fb496bf30a0dc9241f6c7c49271f43763595": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getPendingSupportSessions",
-          "filename": "apps/web/src/actions/support-sessions.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "getPendingSupportSessions",
-      "filename": "apps/web/src/actions/support-sessions.ts"
-    },
-    "00665c1bbcd52d612d5bb4bf3be5e7fc75554132e6": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getActiveSupportSessions",
           "filename": "apps/web/src/actions/support-sessions.ts"
@@ -1170,40 +555,25 @@
       "exportedName": "getActiveSupportSessions",
       "filename": "apps/web/src/actions/support-sessions.ts"
     },
-    "602e89ae7ace85fc30cd3b4b1dd865d517c0cb1cd5": {
+    "0019bf5dd276add0555a432b0d8d2d1a5ca01b8ff2": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
-          "exportedName": "approveSupportSessionRequest",
+          "exportedName": "getPendingSupportSessions",
           "filename": "apps/web/src/actions/support-sessions.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
       },
-      "exportedName": "approveSupportSessionRequest",
+      "exportedName": "getPendingSupportSessions",
       "filename": "apps/web/src/actions/support-sessions.ts"
     },
-    "60886af124323873afd4d5b64bb4143abbcba2c154": {
+    "40c64fda0c4b4065a36951170bd84fafde18cd4af2": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "rejectSupportSessionRequest",
-          "filename": "apps/web/src/actions/support-sessions.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "rejectSupportSessionRequest",
-      "filename": "apps/web/src/actions/support-sessions.ts"
-    },
-    "40369e8ea4eced7bdaef8203d369469ee7b630db8c": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "endActiveSupportSession",
           "filename": "apps/web/src/actions/support-sessions.ts"
@@ -1215,25 +585,40 @@
       "exportedName": "endActiveSupportSession",
       "filename": "apps/web/src/actions/support-sessions.ts"
     },
-    "408d3694fd0dd48e424f53c9bf5083b946ab3ec990": {
+    "603ca55fe9cb041d92b3627d70a7ec149dc4ea30ea": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
-          "exportedName": "createEmailFolderAction",
-          "filename": "apps/web/src/actions/email-folders.ts"
+          "exportedName": "approveSupportSessionRequest",
+          "filename": "apps/web/src/actions/support-sessions.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
       },
-      "exportedName": "createEmailFolderAction",
-      "filename": "apps/web/src/actions/email-folders.ts"
+      "exportedName": "approveSupportSessionRequest",
+      "filename": "apps/web/src/actions/support-sessions.ts"
     },
-    "009e962eae57bf128b2023081fd7259048edd8884a": {
+    "60fd82c4e94cc5fb9a8bb3e68e9968ee07a343068a": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "rejectSupportSessionRequest",
+          "filename": "apps/web/src/actions/support-sessions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "rejectSupportSessionRequest",
+      "filename": "apps/web/src/actions/support-sessions.ts"
+    },
+    "002a52e1ff704776b01df3f08e5ca73c1373f2903c": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getEmailFolderCountsAction",
           "filename": "apps/web/src/actions/email-actions.ts"
@@ -1245,25 +630,10 @@
       "exportedName": "getEmailFolderCountsAction",
       "filename": "apps/web/src/actions/email-actions.ts"
     },
-    "00235a0ba91f1ba226f33fa40dcf4c93a2c3548c70": {
+    "40ab3b361b2041f77f436c8d1e4550cc0e1195ba49": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
-          "async": true,
-          "exportedName": "getEmailFoldersAction",
-          "filename": "apps/web/src/actions/email-folders.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
-      },
-      "exportedName": "getEmailFoldersAction",
-      "filename": "apps/web/src/actions/email-folders.ts"
-    },
-    "40c55f8e0922f2c7fd8d502e4c75395bf5f0470430": {
-      "workers": {
-        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
           "async": true,
           "exportedName": "deleteEmailFolderAction",
           "filename": "apps/web/src/actions/email-folders.ts"
@@ -1275,10 +645,25 @@
       "exportedName": "deleteEmailFolderAction",
       "filename": "apps/web/src/actions/email-folders.ts"
     },
-    "404a3266e0319dbd8c24fec80bb69ecfe029d2a768": {
+    "009d2437f279bb220435d6b93fe38eb909817e6046": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getEmailFoldersAction",
+          "filename": "apps/web/src/actions/email-folders.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getEmailFoldersAction",
+      "filename": "apps/web/src/actions/email-folders.ts"
+    },
+    "40990cbea52b9beb7f6d90e3e041e715107bac3abd": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "searchVendors",
           "filename": "apps/web/src/actions/vendors.ts"
@@ -1290,10 +675,25 @@
       "exportedName": "searchVendors",
       "filename": "apps/web/src/actions/vendors.ts"
     },
-    "0006f7bd89b72f0836ec7bf4db73019f1b32e6c24a": {
+    "40d07b28bd187d6d3394516f5d39d8c4717c1b232c": {
       "workers": {
         "app/(dashboard)/dashboard/work/service-agreements/new/page": {
-          "moduleId": 692358,
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "createEmailFolderAction",
+          "filename": "apps/web/src/actions/email-folders.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "createEmailFolderAction",
+      "filename": "apps/web/src/actions/email-folders.ts"
+    },
+    "00293c80ddd7e21774931b2aa90ea8f76b4702377f": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
           "async": true,
           "exportedName": "getSmsFolderCountsAction",
           "filename": "apps/web/src/actions/sms-actions.ts"
@@ -1304,6 +704,471 @@
       },
       "exportedName": "getSmsFolderCountsAction",
       "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "40a40c829e04f0f2331ce59738ebc3778614fdc5a9": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getEmailsAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getEmailsAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "4082794a09713a128da4eefc479723304ffeff6917": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getEmailByIdAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getEmailByIdAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40b2002e32f7b8bd653308f29398b461665e1f6b90": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "markEmailAsReadAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "markEmailAsReadAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "70aaac9c1e4a8cfa0e84ddee428426d03671401dd0": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "fetchEmailContentAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "fetchEmailContentAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "002344aee9628bb8577419eefe1a5affbcf66aff30": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "syncInboundRoutesToResendAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "syncInboundRoutesToResendAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "409e336343f6c721260c905efa541a651dc97b96aa": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "archiveEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "archiveEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "403bfe3a99f659c770560002ce2796b8b12a7290ed": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "bulkArchiveEmailsAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "bulkArchiveEmailsAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40ac9e61c5dcf02f5435087fc7c067c5ff14a5b02e": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "archiveAllEmailsAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "archiveAllEmailsAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40da93c9516559b09f91ac8bed4953ac7ddb21a67f": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "toggleStarEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "toggleStarEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40fa56d4524ff4edcfb379197f423e5b4a25dc7170": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "toggleSpamEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "toggleSpamEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "60385a3e0d3faeee597b84cc77f55e029daa855781": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "snoozeEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "snoozeEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40d3b733f68c0de9c0a725f62d6d077a9acd7da263": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "unsnoozeEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "unsnoozeEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "60c70253ee2f34e81a1937a810c0cfd6641be72e75": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "bulkMarkReadUnreadAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "bulkMarkReadUnreadAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "60f9a8295a44b15bf9b9414670d2f9740de9318acb": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "bulkStarEmailsAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "bulkStarEmailsAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40f32c45ccc2359f2ac7f2bb8963b4f6b28d4c1a8d": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "bulkDeleteEmailsAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "bulkDeleteEmailsAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40e3767c0e147700f1581c192f72c92b971413cd90": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "bulkMoveToSpamAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "bulkMoveToSpamAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40f9d499b2a6e462c9b2cc7d1e4d78e9981b5acd7d": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "saveDraftAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "saveDraftAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "401ef82d070f0014339a111783250dfad49cf74e77": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getDraftAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getDraftAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "4047a2c4eafd645dd821bebcd42f24a2d7df105cfe": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "deleteDraftAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "deleteDraftAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40f5c6c12e66ae02d0fd7764a334540e764a11aa44": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "retryFailedEmailAction",
+          "filename": "apps/web/src/actions/email-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "retryFailedEmailAction",
+      "filename": "apps/web/src/actions/email-actions.ts"
+    },
+    "40246d2ac6064d31c760c43accb4ec8b6c55cef244": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getSmsAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getSmsAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "40efea2cee7f987036a7ca565372098816f49d7fcb": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getSmsByIdAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getSmsByIdAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "40a1a8e059d6738045c6294848fba2847280b7083d": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "markSmsAsReadAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "markSmsAsReadAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "40033c39afb1f8e42a29a8aab61cef762cd8b24d7a": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "markSmsConversationAsReadAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "markSmsConversationAsReadAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "402c01c23076f1fba636e54e2907ccf8608b9912a2": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getSmsConversationAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getSmsConversationAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "405bcfa2fc789d21543f496033bdb109dd1f2971c5": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "uploadSmsAttachments",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "uploadSmsAttachments",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "00ebb6c499f7a5e6d513a704d0b94c506f282b9a41": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCompanyContextAction",
+          "filename": "apps/web/src/actions/sms-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getCompanyContextAction",
+      "filename": "apps/web/src/actions/sms-actions.ts"
+    },
+    "000697c244dba4f7340ad198eed1a3696041dcdd1d": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCommunicationCountsAction",
+          "filename": "apps/web/src/actions/communication-stats-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getCommunicationCountsAction",
+      "filename": "apps/web/src/actions/communication-stats-actions.ts"
+    },
+    "408e7dd37fee8b41774db173b031a4456b533f1386": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getCommunicationStatsAction",
+          "filename": "apps/web/src/actions/communication-stats-actions.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getCommunicationStatsAction",
+      "filename": "apps/web/src/actions/communication-stats-actions.ts"
+    },
+    "4019c922633b8ec9611fbf9a4260f8b6365e540a39": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "getChats",
+          "filename": "apps/web/src/actions/chats.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "getChats",
+      "filename": "apps/web/src/actions/chats.ts"
+    },
+    "4072d8665dd8168ec873c971190c1b50389e0de901": {
+      "workers": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": {
+          "moduleId": 166516,
+          "async": true,
+          "exportedName": "deleteChat",
+          "filename": "apps/web/src/actions/chats.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/work/service-agreements/new/page": "action-browser"
+      },
+      "exportedName": "deleteChat",
+      "filename": "apps/web/src/actions/chats.ts"
     }
   },
   "edge": {}

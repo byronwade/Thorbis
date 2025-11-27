@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { PaymentDetailToolbarActions } from "@/components/work/payments/payment-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Payments Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/payments/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function PaymentsDetailLayout({
 	children,
@@ -34,8 +35,7 @@ export default function PaymentsDetailLayout({
 			back: (
 				<DetailBackButton href="/dashboard/work/payments" label="Payments" />
 			),
-			// TODO: Create PaymentDetailToolbar component
-			// actions: <PaymentDetailToolbar />,
+			actions: <PaymentDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

@@ -343,7 +343,7 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				supabaseSources: ["finance_accounting_settings"],
 			},
 			{
-				title: "Telnyx & Communications",
+				title: "Twilio & Communications",
 				description: "Phone numbers, SMS campaigns, and 10DLC",
 				href: "/dashboard/settings/communications/phone-numbers",
 				supabaseSources: ["phone_numbers", "communication_sms_settings"],

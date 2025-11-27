@@ -8,6 +8,7 @@ import type {
 import { arrayMove } from "@dnd-kit/sortable";
 import { format } from "date-fns";
 import { useCallback, useRef } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import {
 	assignNewAppointment,
@@ -106,6 +107,8 @@ export function useScheduleDrag(
 
 	/**
 	 * Handle drag start - cache job data for performance
+	 * IMPORTANT: Check technician lanes FIRST to correctly identify existing appointments
+	 * A job might appear in both lists during state transitions, so lane check takes priority
 	 */
 	const handleDragStart = useCallback(
 		(event: DragStartEvent) => {
@@ -113,53 +116,56 @@ export function useScheduleDrag(
 			setActiveJobId(jobId);
 			setDragPreview(null);
 
-			// Check if dragging from unassigned panel first (faster check)
-			const unassignedJob = unassignedJobs.find((j) => j.id === jobId);
-			const isFromUnassigned = !!unassignedJob;
+			// CRITICAL: Check technician lanes FIRST to correctly identify existing appointments
+			// If a job exists in a technician lane, it's an existing appointment (MOVE operation)
+			// Only if NOT found in lanes, check unassigned panel (CREATE/ASSIGN operation)
+			const jobData = technicianLanes
+				.flatMap((lane) => lane.jobs)
+				.find((j) => j.job.id === jobId);
 
-			if (isFromUnassigned && unassignedJob) {
-				// Cache unassigned job data
+			if (jobData) {
+				// Found in technician lanes - this is an EXISTING appointment
+				const job = jobData.job;
 				const startTime =
-					unassignedJob.startTime instanceof Date
-						? unassignedJob.startTime
-						: new Date(unassignedJob.startTime || Date.now());
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
 				const endTime =
-					unassignedJob.endTime instanceof Date
-						? unassignedJob.endTime
-						: new Date(
-								unassignedJob.endTime || Date.now() + 2 * 60 * 60 * 1000,
-							);
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 				dragJobCacheRef.current = {
-					job: unassignedJob,
+					job,
 					startTime,
 					endTime,
 					duration: endTime.getTime() - startTime.getTime(),
-					isFromUnassigned: true,
+					isFromUnassigned: false,
 				};
 			} else {
-				// Search technician lanes for existing job
-				const jobData = technicianLanes
-					.flatMap((lane) => lane.jobs)
-					.find((j) => j.job.id === jobId);
+				// Not in lanes - check unassigned panel
+				const unassignedJob = unassignedJobs.find((j) => j.id === jobId);
 
-				if (jobData) {
-					const job = jobData.job;
+				if (unassignedJob) {
+					// Cache unassigned job data
 					const startTime =
-						job.startTime instanceof Date
-							? job.startTime
-							: new Date(job.startTime);
+						unassignedJob.startTime instanceof Date
+							? unassignedJob.startTime
+							: new Date(unassignedJob.startTime || Date.now());
 					const endTime =
-						job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+						unassignedJob.endTime instanceof Date
+							? unassignedJob.endTime
+							: new Date(
+									unassignedJob.endTime || Date.now() + 2 * 60 * 60 * 1000,
+								);
 
 					dragJobCacheRef.current = {
-						job,
+						job: unassignedJob,
 						startTime,
 						endTime,
 						duration: endTime.getTime() - startTime.getTime(),
-						isFromUnassigned: false,
+						isFromUnassigned: true,
 					};
 				} else {
+					// Job not found in either list
 					dragJobCacheRef.current = null;
 				}
 			}
@@ -307,8 +313,11 @@ export function useScheduleDrag(
 				},
 			};
 
-			// Optimistic update
-			moveJob(job.id, targetTechnicianId, newStart, newEnd);
+			// Optimistic update - use flushSync to ensure position updates before drag state clears
+			// This prevents "snap back" visual glitch
+			flushSync(() => {
+				moveJob(job.id, targetTechnicianId, newStart, newEnd);
+			});
 
 			const toastId = toast.loading(
 				`Moving to ${targetTech?.name} at ${format(newStart, "h:mm a")}...`,
@@ -401,8 +410,11 @@ export function useScheduleDrag(
 				},
 			};
 
-			// Optimistic update
-			moveJob(job.id, targetTechnicianId, newStart, newEnd);
+			// Optimistic update - use flushSync to ensure position updates before drag state clears
+			// This prevents "snap back" visual glitch
+			flushSync(() => {
+				moveJob(job.id, targetTechnicianId, newStart, newEnd);
+			});
 
 			const toastId = toast.loading(
 				`Scheduling for ${targetTech?.name} at ${format(newStart, "h:mm a")}...`,
@@ -528,12 +540,15 @@ export function useScheduleDrag(
 				const endTime =
 					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
-				updateJob(jobId, {
-					technicianId: "",
-					assignments: [],
-					isUnassigned: true,
-					startTime,
-					endTime,
+				// Use flushSync to ensure state update is synchronous
+				flushSync(() => {
+					updateJob(jobId, {
+						technicianId: "",
+						assignments: [],
+						isUnassigned: true,
+						startTime,
+						endTime,
+					});
 				});
 
 				const toastId = toast.loading("Moving appointment to Unscheduled...");

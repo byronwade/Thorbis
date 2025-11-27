@@ -820,6 +820,128 @@ async function cancelInvoice(
 }
 
 /**
+ * Update invoice status
+ * Handles status transitions with appropriate timestamp updates
+ */
+export async function updateInvoiceStatus(
+	invoiceId: string,
+	newStatus: string,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		// Get active company ID
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Validate status
+		const validStatuses = [
+			"draft",
+			"sent",
+			"viewed",
+			"partial",
+			"paid",
+			"overdue",
+			"cancelled",
+		];
+		if (!validStatuses.includes(newStatus)) {
+			throw new ActionError(
+				`Invalid status: ${newStatus}. Valid statuses: ${validStatuses.join(", ")}`,
+				ERROR_CODES.VALIDATION_FAILED,
+			);
+		}
+
+		// Verify invoice exists and belongs to company
+		const { data: invoice, error: fetchError } = await supabase
+			.from("invoices")
+			.select("id, company_id, status, paid_amount, balance_amount, job_id")
+			.eq("id", invoiceId)
+			.single();
+
+		if (fetchError || !invoice) {
+			throw new ActionError("Invoice not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+		}
+
+		if (invoice.company_id !== companyId) {
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("invoice"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Business rule validations
+		if (newStatus === "paid" && invoice.balance_amount > 0) {
+			throw new ActionError(
+				"Cannot mark as paid - invoice has outstanding balance. Record a payment first.",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
+		}
+
+		if (invoice.status === "paid" && newStatus !== "paid") {
+			throw new ActionError(
+				"Paid invoices cannot have their status changed. Issue a refund if needed.",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
+		}
+
+		// Build update data with appropriate timestamps
+		const updateData: Record<string, unknown> = {
+			status: newStatus,
+		};
+
+		const now = new Date().toISOString();
+
+		// Add timestamps based on status transitions
+		if (newStatus === "sent" && invoice.status === "draft") {
+			updateData.sent_at = now;
+		} else if (newStatus === "viewed" && !invoice.viewed_at) {
+			updateData.viewed_at = now;
+		} else if (newStatus === "cancelled") {
+			updateData.cancelled_at = now;
+		}
+
+		// Update invoice status
+		const { error } = await supabase
+			.from("invoices")
+			.update(updateData)
+			.eq("id", invoiceId);
+
+		if (error) {
+			throw new ActionError(
+				`Failed to update invoice status: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/invoices");
+		revalidatePath(`/dashboard/work/invoices/${invoiceId}`);
+		revalidatePath("/dashboard/finance/invoices");
+		if (invoice.job_id) {
+			revalidatePath(`/dashboard/work/${invoice.job_id}`);
+		}
+	});
+}
+
+/**
  * Archive invoice (soft delete)
  *
  * Replaces deleteInvoice - now archives instead of permanently deleting.

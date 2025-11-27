@@ -4,18 +4,20 @@
  * Contract Detail Toolbar Actions - Client Component
  *
  * Provides contract-specific toolbar actions:
+ * - Status update dropdown (inline)
  * - Send for signature
  * - Download PDF
  * - Duplicate contract
  * - Archive contract
  *
- * Design: Clean, compact, outline buttons with consistent grouping
+ * Design: Clean, compact, outline variant buttons
  */
 
 import { Archive, Copy, Download, Mail } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { archiveContract } from "@/actions/contracts";
+import { archiveContract, updateContractStatus } from "@/actions/contracts";
+import { StatusUpdateDropdown } from "@/components/work/shared/quick-actions/status-update-dropdown";
 import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +37,45 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
-export function ContractDetailToolbarActions() {
+type ContractDetailToolbarActionsProps = {
+	/** Contract data for status and actions */
+	contract?: {
+		id: string;
+		status?: string;
+	};
+};
+
+export function ContractDetailToolbarActions({
+	contract,
+}: ContractDetailToolbarActionsProps) {
 	const pathname = usePathname();
 	const router = useRouter();
 	const { toast } = useToast();
-	const contractId = pathname?.split("/").pop();
+	const contractId = contract?.id || pathname?.split("/").pop() || "";
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
+
+	/**
+	 * Handle contract status update via server action
+	 */
+	const handleStatusChange = async (
+		entityId: string,
+		newStatus: string
+	): Promise<{ success: boolean; error?: string }> => {
+		try {
+			const result = await updateContractStatus(entityId, newStatus);
+			return {
+				success: result.success,
+				error: result.error,
+			};
+		} catch (error) {
+			console.error("Contract status update error:", error);
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "Failed to update status",
+			};
+		}
+	};
 
 	const handleArchive = async () => {
 		if (!contractId) {
@@ -70,12 +104,23 @@ export function ContractDetailToolbarActions() {
 	return (
 		<>
 			<div className="flex items-center gap-1.5">
-				{/* Quick Actions - Standardized styling */}
+				{/* Status Update Dropdown - First Position */}
+				{contract?.status && contractId && (
+					<StatusUpdateDropdown
+						currentStatus={contract.status}
+						entityId={contractId}
+						entityType="contract"
+						onStatusChange={handleStatusChange}
+						size="sm"
+					/>
+				)}
+
+				{/* Quick Actions - Individual Buttons */}
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button size="sm" variant="outline">
-								<Mail />
+							<Button className="h-8 gap-1.5" size="sm" variant="outline">
+								<Mail className="size-3.5" />
 								<span className="hidden md:inline">Send</span>
 							</Button>
 						</TooltipTrigger>
@@ -83,11 +128,13 @@ export function ContractDetailToolbarActions() {
 							<p>Send for signature</p>
 						</TooltipContent>
 					</Tooltip>
+				</TooltipProvider>
 
+				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button size="sm" variant="outline">
-								<Download />
+							<Button className="h-8 gap-1.5" size="sm" variant="outline">
+								<Download className="size-3.5" />
 								<span className="hidden lg:inline">PDF</span>
 							</Button>
 						</TooltipTrigger>
@@ -95,14 +142,16 @@ export function ContractDetailToolbarActions() {
 							<p>Download PDF</p>
 						</TooltipContent>
 					</Tooltip>
+				</TooltipProvider>
 
+				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button asChild size="sm" variant="outline">
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
 								<a
 									href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}
 								>
-									<Copy />
+									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
 							</Button>
@@ -113,10 +162,10 @@ export function ContractDetailToolbarActions() {
 					</Tooltip>
 				</TooltipProvider>
 
-				<Separator className="h-8" orientation="vertical" />
+				<Separator className="h-6" orientation="vertical" />
 				<ImportExportDropdown dataType="contracts" />
 
-				<Separator className="h-8" orientation="vertical" />
+				<Separator className="h-6" orientation="vertical" />
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>

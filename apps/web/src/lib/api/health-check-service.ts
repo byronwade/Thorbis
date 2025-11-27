@@ -10,7 +10,7 @@ import { API_SERVICES } from "./api-service-config";
 import { googleCloudClient } from "./providers/google-cloud-client";
 import { stripeBillingClient } from "./providers/stripe-billing-client";
 import { supabaseUsageClient } from "./providers/supabase-usage-client";
-import { telnyxUsageClient } from "./providers/telnyx-usage-client";
+// Twilio health checks are done via simple HTTP endpoint check
 
 export interface HealthCheckResult {
 	service_id: string;
@@ -57,9 +57,13 @@ const HEALTH_ENDPOINTS: Record<
 		}>;
 	}
 > = {
-	// Telnyx
-	telnyx_voice: { check: () => telnyxUsageClient.checkHealth() },
-	telnyx_sms: { check: () => telnyxUsageClient.checkHealth() },
+	// Twilio
+	twilio_voice: {
+		check: () => checkHttpEndpoint("https://api.twilio.com/2010-04-01", "Twilio"),
+	},
+	twilio_sms: {
+		check: () => checkHttpEndpoint("https://api.twilio.com/2010-04-01", "Twilio"),
+	},
 
 	// Supabase
 	supabase_database: { check: () => supabaseUsageClient.checkHealth() },
@@ -75,8 +79,8 @@ const HEALTH_ENDPOINTS: Record<
 	stripe_payments: { check: () => stripeBillingClient.checkHealth() },
 
 	// External APIs - simple HTTP checks
-	resend: {
-		check: () => checkHttpEndpoint("https://api.resend.com/emails", "Resend"),
+	sendgrid: {
+		check: () => checkHttpEndpoint("https://api.sendgrid.com/v3/mail/send", "SendGrid"),
 	},
 	assembly_ai: {
 		check: () =>

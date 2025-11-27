@@ -2,6 +2,7 @@
 
 import {
 	Archive,
+	Bell,
 	Calendar,
 	CheckCircle2,
 	ChevronRight,
@@ -14,6 +15,7 @@ import {
 	Navigation,
 	Phone,
 	Send,
+	Star,
 	Trash2,
 	Truck,
 	UserCheck,
@@ -30,6 +32,9 @@ import {
 	closeAppointment,
 	completeAppointment,
 	dispatchAppointment,
+	sendAppointmentCompletedNotification,
+	sendAppointmentConfirmation,
+	sendAppointmentReminder,
 	sendOnMyWayNotification,
 	unassignAppointment,
 } from "@/actions/schedule-assignments";
@@ -121,6 +126,96 @@ export function ScheduleJobContextMenu({
 
 		if (result.success) {
 			toast.success("On My Way notification sent!");
+		} else {
+			toast.error(result.error || "Failed to send notification");
+		}
+	};
+
+	const handleSendConfirmation = async () => {
+		if (!job.customer?.phone) {
+			toast.error("Customer has no phone number");
+			return;
+		}
+		const appointmentDate = new Date(job.startTime);
+		const appointmentTime = appointmentDate.toLocaleTimeString("en-US", {
+			hour: "numeric",
+			minute: "2-digit",
+		});
+
+		toast.loading("Sending confirmation...");
+		const result = await sendAppointmentConfirmation(
+			job.id,
+			job.customer.phone,
+			job.customer.name || "Customer",
+			appointmentDate,
+			appointmentTime,
+			job.title,
+		);
+		toast.dismiss();
+
+		if (result.success) {
+			toast.success("Appointment confirmation sent!");
+		} else {
+			toast.error(result.error || "Failed to send confirmation");
+		}
+	};
+
+	const handleSendReminder = async (
+		reminderType: "24h" | "day-of" | "1h",
+	) => {
+		if (!job.customer?.phone) {
+			toast.error("Customer has no phone number");
+			return;
+		}
+		const appointmentDate = new Date(job.startTime);
+		const appointmentTime = appointmentDate.toLocaleTimeString("en-US", {
+			hour: "numeric",
+			minute: "2-digit",
+		});
+
+		const reminderLabels = {
+			"24h": "24-hour reminder",
+			"day-of": "day-of reminder",
+			"1h": "1-hour reminder",
+		};
+
+		toast.loading(`Sending ${reminderLabels[reminderType]}...`);
+		const result = await sendAppointmentReminder(
+			job.id,
+			job.customer.phone,
+			job.customer.name || "Customer",
+			appointmentDate,
+			appointmentTime,
+			reminderType,
+		);
+		toast.dismiss();
+
+		if (result.success) {
+			toast.success(`${reminderLabels[reminderType]} sent!`);
+		} else {
+			toast.error(result.error || "Failed to send reminder");
+		}
+	};
+
+	const handleSendCompletion = async () => {
+		if (!job.customer?.phone) {
+			toast.error("Customer has no phone number");
+			return;
+		}
+		const techName = job.assignments[0]?.displayName;
+
+		toast.loading("Sending completion notification...");
+		const result = await sendAppointmentCompletedNotification(
+			job.id,
+			job.customer.phone,
+			job.customer.name || "Customer",
+			techName,
+			true, // Request review
+		);
+		toast.dismiss();
+
+		if (result.success) {
+			toast.success("Completion notification sent!");
 		} else {
 			toast.error(result.error || "Failed to send notification");
 		}
@@ -284,7 +379,7 @@ export function ScheduleJobContextMenu({
 								<MessageSquare className="size-4" />
 								<span>Contact Customer</span>
 							</ContextMenuSubTrigger>
-							<ContextMenuSubContent className="w-48">
+							<ContextMenuSubContent className="w-56">
 								{job.customer?.phone && (
 									<ContextMenuItem
 										onClick={() => {
@@ -302,8 +397,54 @@ export function ScheduleJobContextMenu({
 										}}
 									>
 										<MessageSquare className="size-4" />
-										<span>Send SMS</span>
+										<span>Open SMS App</span>
 									</ContextMenuItem>
+								)}
+
+								{job.customer?.phone && (
+									<>
+										<ContextMenuSeparator />
+										<ContextMenuLabel className="text-xs text-muted-foreground font-normal">
+											Send Automated SMS
+										</ContextMenuLabel>
+										<ContextMenuItem
+											onClick={handleSendConfirmation}
+											className="text-blue-600 dark:text-blue-400"
+										>
+											<CheckCircle2 className="size-4" />
+											<span>Send Confirmation</span>
+										</ContextMenuItem>
+
+										<ContextMenuSub>
+											<ContextMenuSubTrigger className="text-amber-600 dark:text-amber-400">
+												<Bell className="size-4" />
+												<span>Send Reminder</span>
+											</ContextMenuSubTrigger>
+											<ContextMenuSubContent className="w-44">
+												<ContextMenuItem onClick={() => handleSendReminder("24h")}>
+													<Clock className="size-4" />
+													<span>24-Hour Reminder</span>
+												</ContextMenuItem>
+												<ContextMenuItem onClick={() => handleSendReminder("day-of")}>
+													<Calendar className="size-4" />
+													<span>Day-Of Reminder</span>
+												</ContextMenuItem>
+												<ContextMenuItem onClick={() => handleSendReminder("1h")}>
+													<Bell className="size-4" />
+													<span>1-Hour Reminder</span>
+												</ContextMenuItem>
+											</ContextMenuSubContent>
+										</ContextMenuSub>
+
+										<ContextMenuItem
+											onClick={handleSendCompletion}
+											disabled={job.status !== "completed" && job.status !== "closed"}
+											className="text-emerald-600 dark:text-emerald-400"
+										>
+											<Star className="size-4" />
+											<span>Send Completion Thanks</span>
+										</ContextMenuItem>
+									</>
 								)}
 							</ContextMenuSubContent>
 						</ContextMenuSub>

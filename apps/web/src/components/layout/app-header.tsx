@@ -1,12 +1,14 @@
 import { headers } from "next/headers";
 import { getPayrixMerchantAccount } from "@/actions/payrix";
-import { getCompanyPhoneNumbers } from "@/actions/telnyx";
+import { getCompanyPhoneNumbers } from "@/actions/twilio";
+import { getCompanyWeather } from "@/actions/weather";
 import {
 	getActiveCompanyId,
 	getUserCompanies,
 } from "@/lib/auth/company-context";
 import { getUserProfile } from "@/lib/auth/user-data";
 import { getUnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
+import type { WeatherData } from "@/lib/services/weather-service";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -72,12 +74,14 @@ export async function AppHeader() {
 	let hasPhoneNumbers = false;
 	let hasPayrixAccount = false;
 	let payrixStatus: string | null = null;
+	let weatherData: WeatherData | null = null;
 
 	if (activeCompanyId) {
 		try {
-			const [phonesResult, payrixResult] = await Promise.all([
+			const [phonesResult, payrixResult, weatherResult] = await Promise.all([
 				getCompanyPhoneNumbers(activeCompanyId),
 				getPayrixMerchantAccount(activeCompanyId),
+				getCompanyWeather().catch(() => ({ success: false, error: "Weather fetch failed" })),
 			]);
 
 			if (phonesResult.success && phonesResult.data) {
@@ -93,8 +97,12 @@ export async function AppHeader() {
 				hasPayrixAccount = true;
 				payrixStatus = payrixResult.data.status;
 			}
+
+			if (weatherResult.success && "data" in weatherResult) {
+				weatherData = weatherResult.data;
+			}
 		} catch (_error) {
-			// Continue without phone/payrix data - component will handle empty array
+			// Continue without phone/payrix/weather data - component will handle empty array
 		}
 	}
 
@@ -110,6 +118,7 @@ export async function AppHeader() {
 			hasPayrixAccount={hasPayrixAccount}
 			payrixStatus={payrixStatus}
 			subHeader={subHeaderComponent}
+			initialWeather={weatherData}
 		/>
 	);
 }

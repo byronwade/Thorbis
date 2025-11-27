@@ -3,7 +3,7 @@
 /**
  * Phone & SMS Step - Real Number Porting
  *
- * Integrates with Telnyx porting API to:
+ * Integrates with Twilio porting API to:
  * - Check number portability
  * - Collect current carrier info
  * - Submit real porting orders
@@ -38,7 +38,7 @@ import {
 	PHONE_PORTING_FEE,
 } from "@/lib/onboarding/onboarding-fees";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { getEstimatedFocDate } from "@/lib/telnyx/porting";
+import { getEstimatedFocDate } from "@/lib/twilio/porting";
 import { cn } from "@/lib/utils";
 
 type PhoneSetupOption = "new" | "port" | "skip";
@@ -359,7 +359,7 @@ export function PhoneStep() {
 				</div>
 			)}
 
-			{/* Porting Configuration - With Real Telnyx Integration */}
+			{/* Porting Configuration - With Real Twilio Integration */}
 			{data.phoneSetupType === "port" && (
 				<div className="space-y-6">
 					{/* Step 1: Enter Number & Check Portability */}
@@ -490,9 +490,9 @@ export function PhoneStep() {
 										<div className="space-y-1">
 											<p className="text-sm font-medium">Third-Party Service</p>
 											<p className="text-sm text-muted-foreground">
-												We use Telnyx, a professional porting service, to
+												We use Twilio, a professional porting service, to
 												coordinate with {portability.carrier}. Neither we nor
-												Telnyx can speed up the process.
+												Twilio can speed up the process.
 											</p>
 										</div>
 									</div>
@@ -616,7 +616,7 @@ export function PhoneStep() {
 											portingBillingPhone: billingPhone,
 										});
 
-										// In production, this would call a server action to submit to Telnyx
+										// In production, this would call a server action to submit to Twilio
 										// For now, simulate getting an order ID
 										const mockOrderId = `port_${Date.now()}`;
 										setPortingOrderId(mockOrderId);

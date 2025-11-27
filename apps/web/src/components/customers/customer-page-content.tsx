@@ -7,12 +7,14 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
+	AlertTriangle,
 	Archive,
 	Building2,
 	Calendar,
 	CreditCard,
 	Download,
 	FileText,
+	Loader2,
 	Mail,
 	MapPin,
 	MoreVertical,
@@ -22,6 +24,7 @@ import {
 	Printer,
 	Receipt,
 	Save,
+	Search,
 	Share2,
 	ShieldCheck,
 	Sparkles,
@@ -39,10 +42,12 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import { enrichCustomerData } from "@/actions/customer-enrichment";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
 import { PropertiesTable } from "@/components/customers/properties-table";
+import { PropertyRiskCard } from "@/components/customers/property-risk-card";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
@@ -99,6 +104,7 @@ export function CustomerPageContent({
 	const [localCustomer, setLocalCustomer] = useState(customerData.customer);
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const [isEnriching, setIsEnriching] = useState(false);
 	const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
 
 	// Extract data before hooks (Customer 360° view - all related entities)
@@ -388,6 +394,25 @@ export function CustomerPageContent({
 		setHasChanges(false);
 	};
 
+	// Enrich customer data with external APIs
+	const handleEnrich = async () => {
+		setIsEnriching(true);
+		try {
+			const result = await enrichCustomerData(customer.id);
+			if (result.success) {
+				toast.success("Customer data enriched successfully! Refreshing page...");
+				// Refresh the page to show updated data
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to enrich customer data");
+			}
+		} catch (_error) {
+			toast.error("Failed to enrich customer data");
+		} finally {
+			setIsEnriching(false);
+		}
+	};
+
 	// Helper to determine badge type based on status
 	const _getStatusBadge = (
 		status: string,
@@ -509,6 +534,18 @@ export function CustomerPageContent({
 
 						<DropdownMenuSeparator />
 
+						<DropdownMenuItem
+							disabled={isEnriching}
+							onClick={handleEnrich}
+						>
+							{isEnriching ? (
+								<Loader2 className="mr-2 size-3.5 animate-spin" />
+							) : (
+								<Search className="mr-2 size-3.5" />
+							)}
+							{isEnriching ? "Enriching..." : "Enrich Customer Data"}
+						</DropdownMenuItem>
+
 						<DropdownMenuItem onClick={() => {}}>
 							<Download className="mr-2 size-3.5" />
 							Export Customer Data
@@ -545,8 +582,10 @@ export function CustomerPageContent({
 	}, [
 		hasChanges,
 		isSaving,
+		isEnriching,
 		handleSave,
 		handleCancel,
+		handleEnrich,
 		renderQuickActions,
 		router,
 		customer.id,
@@ -1017,6 +1056,64 @@ export function CustomerPageContent({
 							itemsPerPage={10}
 							properties={properties}
 						/>
+					</UnifiedAccordionContent>
+				),
+			},
+			// Property Risk Assessment - uses ATTOM, FEMA Flood, and Crime data APIs
+			{
+				id: "property-risk",
+				title: "Property Risk Assessment",
+				icon: <AlertTriangle className="size-4" />,
+				count: properties.length,
+				content: (
+					<UnifiedAccordionContent className="p-0">
+						<div className="text-muted-foreground border-b px-6 py-4 text-sm">
+							Risk analysis for service properties using flood, crime, and property data.
+						</div>
+						{properties.length > 0 ? (
+							<div className="space-y-4 p-4">
+								{properties.slice(0, 3).map((property: any) => (
+									<PropertyRiskCard
+										key={property.id}
+										propertyId={property.id}
+										propertyName={property.name}
+										address={{
+											street: property.address || property.street,
+											city: property.city,
+											state: property.state,
+											postal_code: property.postal_code || property.zip,
+											lat: property.latitude,
+											lng: property.longitude,
+										}}
+									/>
+								))}
+								{properties.length > 3 && (
+									<p className="text-center text-sm text-muted-foreground">
+										Showing top 3 properties.{" "}
+										<button
+											onClick={() => {
+												const element = document.querySelector(
+													'[data-section-id="properties"]',
+												);
+												if (element) {
+													element.scrollIntoView({ behavior: "smooth" });
+												}
+											}}
+											className="text-primary hover:underline"
+										>
+											View all {properties.length} properties
+										</button>
+									</p>
+								)}
+							</div>
+						) : (
+							<div className="flex flex-col items-center justify-center p-12 text-center">
+								<AlertTriangle className="text-muted-foreground h-8 w-8" />
+								<p className="text-muted-foreground mt-2 text-sm">
+									Add properties to see risk assessments.
+								</p>
+							</div>
+						)}
 					</UnifiedAccordionContent>
 				),
 			},

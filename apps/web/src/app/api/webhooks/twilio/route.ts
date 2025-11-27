@@ -14,16 +14,60 @@ import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import Twilio from "twilio";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { formatE164 } from "@/lib/twilio";
 
 // =============================================================================
 // CONFIGURATION
 // =============================================================================
 
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
+const FALLBACK_TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 
 // =============================================================================
 // REQUEST VALIDATION
 // =============================================================================
+
+async function resolveTwilioAuthToken(params: Record<string, string>): Promise<string | null> {
+	const supabase = createServiceSupabaseClient();
+	const accountSid = params.AccountSid;
+
+	try {
+		if (supabase && accountSid) {
+			const { data } = await supabase
+				.from("company_twilio_settings")
+				.select("auth_token")
+				.eq("account_sid", accountSid)
+				.eq("is_active", true)
+				.maybeSingle();
+
+			if (data?.auth_token) return data.auth_token as string;
+		}
+
+		const toNumber = params.To || params.Called;
+		if (supabase && toNumber) {
+			const normalizedTo = formatE164(toNumber);
+			const { data: phoneNumber } = await supabase
+				.from("phone_numbers")
+				.select("company_id")
+				.in("phone_number", [toNumber, normalizedTo])
+				.maybeSingle();
+
+			if (phoneNumber?.company_id) {
+				const { data: settings } = await supabase
+					.from("company_twilio_settings")
+					.select("auth_token")
+					.eq("company_id", phoneNumber.company_id)
+					.eq("is_active", true)
+					.maybeSingle();
+
+				if (settings?.auth_token) return settings.auth_token as string;
+			}
+		}
+	} catch (error) {
+		console.error("[TwilioWebhook] Failed to resolve auth token:", error);
+	}
+
+	return FALLBACK_TWILIO_AUTH_TOKEN || null;
+}
 
 /**
  * Validate Twilio webhook request signature
@@ -31,12 +75,13 @@ const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 async function validateTwilioRequest(
 	request: NextRequest,
 	body: string,
+	params: Record<string, string>,
 ): Promise<boolean> {
-	if (!TWILIO_AUTH_TOKEN) {
-		console.warn(
-			"[TwilioWebhook] No auth token configured, skipping validation",
-		);
-		return true; // Skip validation in development
+	const authToken = await resolveTwilioAuthToken(params);
+
+	if (!authToken) {
+		console.error("[TwilioWebhook] No auth token available for validation");
+		return process.env.NODE_ENV === "production" ? false : true;
 	}
 
 	const headersList = await headers();
@@ -47,11 +92,8 @@ async function validateTwilioRequest(
 		return false;
 	}
 
-	const url = request.url;
-	const params = Object.fromEntries(new URLSearchParams(body));
-
 	try {
-		return Twilio.validateRequest(TWILIO_AUTH_TOKEN, signature, url, params);
+		return Twilio.validateRequest(authToken, signature, request.url, params);
 	} catch (error) {
 		console.error("[TwilioWebhook] Signature validation error:", error);
 		return false;
@@ -65,10 +107,11 @@ async function validateTwilioRequest(
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.text();
+		const params = Object.fromEntries(new URLSearchParams(body));
 
-		// Validate request in production
+		// Validate request in production (per-company auth tokens)
 		if (process.env.NODE_ENV === "production") {
-			const isValid = await validateTwilioRequest(request, body);
+			const isValid = await validateTwilioRequest(request, body, params);
 			if (!isValid) {
 				console.error("[TwilioWebhook] Invalid request signature");
 				return NextResponse.json(
@@ -77,9 +120,6 @@ export async function POST(request: NextRequest) {
 				);
 			}
 		}
-
-		// Parse form data
-		const params = Object.fromEntries(new URLSearchParams(body));
 		const eventType = determineEventType(params);
 
 		console.log(`[TwilioWebhook] Received ${eventType} event`);
@@ -173,11 +213,10 @@ async function handleSmsStatusUpdate(params: Record<string, string>) {
 		const supabase = createServiceSupabaseClient();
 
 		// Find communication by Twilio message ID
-		// Note: We store provider info in provider_metadata
 		const { data: communication, error: fetchError } = await supabase
 			.from("communications")
 			.select("id")
-			.eq("telnyx_message_id", MessageSid) // Reusing field for Twilio
+			.eq("twilio_message_sid", MessageSid)
 			.maybeSingle();
 
 		if (fetchError) {
@@ -289,7 +328,7 @@ async function handleIncomingSms(params: Record<string, string>) {
 			is_automated: false,
 			is_internal: false,
 			is_thread_starter: false,
-			telnyx_message_id: MessageSid, // Reusing field
+			twilio_message_sid: MessageSid,
 			attachments: attachments.length > 0 ? attachments : null,
 			attachment_count: attachments.length,
 			provider_metadata: {
@@ -347,7 +386,7 @@ async function handleCallStatusUpdate(params: Record<string, string>) {
 		const { data: communication } = await supabase
 			.from("communications")
 			.select("id, provider_metadata")
-			.eq("telnyx_call_control_id", CallSid) // Reusing field
+			.eq("twilio_call_sid", CallSid)
 			.maybeSingle();
 
 		if (communication) {
@@ -396,23 +435,86 @@ async function handleVoiceRequest(params: Record<string, string>) {
 		`[TwilioWebhook] Voice request: ${CallSid} from ${From} to ${To}`,
 	);
 
-	// For incoming calls, return TwiML with instructions
-	// This is a basic implementation - can be customized based on routing rules
-
+	// For incoming calls, return TwiML with instructions and log communication
 	if (Direction === "inbound") {
-		// Check for custom routing rules in database
 		try {
 			const supabase = createServiceSupabaseClient();
+			if (!supabase) {
+				throw new Error("Supabase client unavailable");
+			}
 
-			// Find company by phone number
 			const { data: phoneNumber } = await supabase
 				.from("phone_numbers")
 				.select("company_id, forward_to_number, voicemail_enabled")
 				.eq("phone_number", To)
 				.maybeSingle();
 
+			const companyId = phoneNumber?.company_id;
+
+			// Create communication record so the dashboard/inbox can display it
+			if (companyId) {
+				const normalizedFrom = normalizePhoneNumber(From);
+				const { data: customer } = await supabase
+					.from("customers")
+					.select("id")
+					.eq("company_id", companyId)
+					.or(`phone.eq.${normalizedFrom},mobile_phone.eq.${normalizedFrom}`)
+					.maybeSingle();
+
+				const { data: communication } = await supabase
+					.from("communications")
+					.insert({
+						company_id: companyId,
+						customer_id: customer?.id ?? null,
+						type: "call",
+						channel: "twilio",
+						direction: "inbound",
+						status: "incoming",
+						from_address: From,
+						to_address: To,
+						twilio_call_sid: CallSid,
+						priority: "normal",
+						provider_metadata: {
+							call_sid: CallSid,
+							direction: Direction,
+						},
+						sent_at: new Date().toISOString(),
+					})
+					.select("id")
+					.single();
+
+				// Fire in-app notifications for active company members
+				const { data: members } = await supabase
+					.from("company_memberships")
+					.select("user_id")
+					.eq("company_id", companyId)
+					.eq("status", "active");
+
+				if (members && members.length > 0) {
+					const notifications = members.map((member) => ({
+						user_id: member.user_id,
+						company_id: companyId,
+						type: "system",
+						priority: "high",
+						title: "Incoming call",
+						message: `Call from ${From}`,
+						action_url: `/call?callSid=${CallSid}`,
+						action_label: "Answer",
+						metadata: {
+							communication_id: communication?.id,
+							communication_type: "call",
+							from: From,
+							to: To,
+							call_sid: CallSid,
+						},
+					}));
+
+					await supabase.from("notifications").insert(notifications);
+				}
+			}
+
+			// If a forward target is configured, route the call there
 			if (phoneNumber?.forward_to_number) {
-				// Forward the call
 				const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Dial timeout="30">

@@ -1,6 +1,7 @@
 "use client";
 
 import { type UIMessage as AiMessage, useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, isTextUIPart } from "ai";
 import {
 	Bot,
 	Calendar,
@@ -21,23 +22,19 @@ import {
 	TrendingUp,
 	Users,
 	Wrench,
-	X,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
-	approveAIAction,
-	checkIsCompanyOwner,
-	getChatPendingActions,
-	type PendingAction,
-	rejectAIAction,
-} from "@/actions/ai-approval";
+	createChat as createChatAction,
+	generateChatTitle,
+	getChatMessages,
+} from "@/actions/chats";
 import {
 	Artifact,
 	ArtifactAction,
 	ArtifactActions,
-	ArtifactClose,
 	ArtifactContent,
 	ArtifactDescription,
 	ArtifactHeader,
@@ -56,12 +53,6 @@ import {
 	MessageActions,
 	MessageAttachment,
 	MessageAttachments,
-	MessageBranch,
-	MessageBranchContent,
-	MessageBranchNext,
-	MessageBranchPage,
-	MessageBranchPrevious,
-	MessageBranchSelector,
 	MessageContent,
 	MessageResponse,
 	MessageToolbar,
@@ -77,14 +68,8 @@ import {
 	ModelSelectorLogo,
 	ModelSelectorLogoGroup,
 	ModelSelectorName,
-	ModelSelectorSeparator,
-	ModelSelectorShortcut,
 	ModelSelectorTrigger,
 } from "@/components/ai/model-selector";
-import {
-	ActionApprovalBanner,
-	OwnerActionApprovalDialog,
-} from "@/components/ai/owner-action-approval-dialog";
 import {
 	PromptInput,
 	PromptInputActionAddAttachments,
@@ -102,12 +87,6 @@ import {
 	PromptInputTools,
 } from "@/components/ai/prompt-input";
 import { Button } from "@/components/ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useChatStore } from "@/lib/stores/chat-store";
 import { cn } from "@/lib/utils";
 
@@ -119,30 +98,30 @@ const SUGGESTED_ACTIONS = [
 	{ text: "Monthly financial summary", icon: TrendingUp },
 ];
 
-// AI Models available - Google Gemini is primary
+// AI Models available - Groq is primary (free tier)
 const models = [
 	{
-		id: "gemini-2.0-flash-exp",
-		name: "Gemini 2.0 Flash",
-		chef: "Google",
-		chefSlug: "google",
-		providers: ["google"],
-		description: "Fast and efficient for most tasks",
+		id: "llama-3.3-70b-versatile",
+		name: "LLaMA 3.3 70B",
+		chef: "Groq",
+		chefSlug: "groq",
+		providers: ["groq"],
+		description: "Best for tool calling and complex tasks",
 	},
 	{
-		id: "gemini-1.5-pro",
-		name: "Gemini 1.5 Pro",
-		chef: "Google",
-		chefSlug: "google",
-		providers: ["google"],
-		description: "Best for complex reasoning and analysis",
+		id: "llama-3.1-70b-versatile",
+		name: "LLaMA 3.1 70B",
+		chef: "Groq",
+		chefSlug: "groq",
+		providers: ["groq"],
+		description: "Versatile model for general tasks",
 	},
 	{
-		id: "gemini-1.5-flash",
-		name: "Gemini 1.5 Flash",
-		chef: "Google",
-		chefSlug: "google",
-		providers: ["google"],
+		id: "llama-3.1-8b-instant",
+		name: "LLaMA 3.1 8B",
+		chef: "Groq",
+		chefSlug: "groq",
+		providers: ["groq"],
 		description: "Ultra fast for quick tasks",
 	},
 ];
@@ -186,22 +165,37 @@ interface ToolInvocation {
 	result?: unknown;
 }
 
-interface ApprovalRequest {
-	action: string;
-	reason: string;
-	details: string;
-	toolCallId: string;
+// AI SDK 6: Messages use parts array (no content property)
+// This helper extracts the text content from the parts array
+function getMessageTextContent(message: AiMessage): string {
+	// AI SDK 6 uses parts array for message content
+	if (message.parts && Array.isArray(message.parts)) {
+		return message.parts
+			.filter(isTextUIPart)
+			.map((part) => part.text)
+			.join("");
+	}
+
+	return "";
 }
 
 // Action selectors - get actions without subscribing to state changes
 // This prevents infinite re-renders when any store state changes
 const createChatSelector = (state: ReturnType<typeof useChatStore.getState>) =>
 	state.createChat;
-const addMessageSelector = (state: ReturnType<typeof useChatStore.getState>) =>
-	state.addMessage;
 
 interface AiChatInterfaceProps {
 	companyId?: string;
+	/** User ID for message persistence */
+	userId?: string;
+	/** Optional chat ID - if provided, loads existing chat; if undefined, creates new chat */
+	chatId?: string;
+	/** Initial messages from SSR (optional - can also be loaded client-side) */
+	initialMessages?: AiMessage[];
+	/** Callback when a new chat is created (for URL routing) */
+	onChatCreated?: (chatId: string) => void;
+	/** Callback when chat title is updated */
+	onTitleUpdated?: (title: string) => void;
 }
 
 // ChatInputInner component - defined outside to prevent re-creation on every render
@@ -273,7 +267,7 @@ function ChatInputInner({
 							<ModelSelectorInput placeholder="Search models..." />
 							<ModelSelectorList>
 								<ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-								{["Google"].map((chef) => (
+								{["Groq"].map((chef) => (
 									<ModelSelectorGroup heading={chef} key={chef}>
 										{models
 											.filter((m) => m.chef === chef)
@@ -319,226 +313,195 @@ function ChatInputInner({
 	);
 }
 
-export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
-	// STABLE chat ID for this component instance - created once, never changes
-	// This prevents useChat from reinitializing when Zustand state changes
-	const [stableChatId] = useState(() => crypto.randomUUID());
+export function AiChatInterface({
+	companyId,
+	userId,
+	chatId: propChatId,
+	initialMessages,
+	onChatCreated,
+	onTitleUpdated,
+}: AiChatInterfaceProps) {
+	// Chat ID management:
+	// - If propChatId is provided, use it (existing chat)
+	// - Otherwise, generate a new ID once when the component mounts
+	const generatedChatId = useMemo(() => crypto.randomUUID(), []);
+	const activeChatId = propChatId || generatedChatId;
 
-	// Track if we've initialized the store chat (prevents infinite loop)
-	const hasInitializedRef = useRef(false);
+	// Track whether this chat exists in the database
+	const [isNewChat, setIsNewChat] = useState(!propChatId);
+	const hasCreatedChatRef = useRef(false);
+	const hasTitleGeneratedRef = useRef(false);
+	const firstUserMessageRef = useRef<string | null>(null);
+
+	// Track if we've loaded messages for this chat ID
+	const loadedChatIdRef = useRef<string | null>(null);
+	const [dbMessages, setDbMessages] = useState<AiMessage[]>(
+		initialMessages || []
+	);
+	// Skip client-side fetch when SSR provided messages
+	useEffect(() => {
+		if (propChatId && initialMessages?.length) {
+			loadedChatIdRef.current = propChatId;
+		}
+	}, [propChatId, initialMessages]);
 
 	// Use action selectors to avoid subscribing to entire store state
 	// This prevents infinite re-renders when any store state changes
 	const createChat = useChatStore(createChatSelector);
-	const addMessage = useChatStore(addMessageSelector);
 	const [showSuggestedActions, setShowSuggestedActions] = useState(true);
 	const [selectedModel, setSelectedModel] = useState(models[0].id);
-	const [pendingApprovals, setPendingApprovals] = useState<ApprovalRequest[]>(
+	const transport = useMemo(
+		() =>
+			new DefaultChatTransport({
+				api: "/api/ai/chat",
+				streamProtocol: "sse", // Ensure partial tokens stream immediately
+			}),
 		[],
 	);
+	const abortControllerRef = useRef<AbortController | null>(null);
 
-	// Owner approval state
-	const [ownerPendingActions, setOwnerPendingActions] = useState<
-		PendingAction[]
-	>([]);
-	const [selectedPendingAction, setSelectedPendingAction] =
-		useState<PendingAction | null>(null);
-	const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
-	const [isOwner, setIsOwner] = useState(false);
-
-	// Store chat ID for persistence (separate from useChat's ID)
-	const [storeChatId, setStoreChatId] = useState<string | null>(null);
-
-	// Initialize chat in store ONCE when component mounts
+	// Load messages from database when chatId changes (only for existing chats)
 	useEffect(() => {
-		if (!hasInitializedRef.current) {
-			hasInitializedRef.current = true;
-			const newChatId = createChat("New Chat");
-			setStoreChatId(newChatId);
+		// Skip if no chatId provided (new chat) or already loaded for this ID
+		if (!propChatId || loadedChatIdRef.current === propChatId) {
+			return;
 		}
-	}, [createChat]);
 
-	// Check if user is owner on mount
-	useEffect(() => {
-		const checkOwner = async () => {
-			const result = await checkIsCompanyOwner();
+		const loadMessages = async () => {
+			console.log("[AI Chat] Loading messages for chat:", propChatId);
+			const result = await getChatMessages(propChatId);
+
 			if (result.success && result.data) {
-				setIsOwner(result.data);
+				setDbMessages(result.data);
+				loadedChatIdRef.current = propChatId;
+				console.log(
+					"[AI Chat] Loaded",
+					result.data.length,
+					"messages from DB"
+				);
+			} else {
+				console.error("[AI Chat] Failed to load messages:", result.error);
 			}
 		};
-		checkOwner();
-	}, []);
 
-	// Fetch pending actions for this chat
-	const fetchPendingActions = useCallback(async () => {
-		if (!stableChatId) return;
-		const result = await getChatPendingActions({ chatId: stableChatId });
+		loadMessages();
+	}, [propChatId]);
+
+	// Create chat in database when first message is sent (for new chats only)
+	const createChatInDb = useCallback(async () => {
+		if (!isNewChat || hasCreatedChatRef.current) {
+			return activeChatId; // Already created or existing chat
+		}
+
+		hasCreatedChatRef.current = true;
+		console.log("[AI Chat] Creating new chat in database:", activeChatId);
+
+		// Pass the client-generated chatId to ensure sync between client and API
+		const result = await createChatAction("New Chat", activeChatId);
 		if (result.success && result.data) {
-			setOwnerPendingActions(result.data);
+			setIsNewChat(false);
+			// Notify parent with the chatId (should match activeChatId now)
+			onChatCreated?.(result.data.chatId);
+			console.log("[AI Chat] Chat created:", result.data.chatId);
+			return result.data.chatId;
+		} else {
+			console.error("[AI Chat] Failed to create chat:", result.error);
+			hasCreatedChatRef.current = false; // Allow retry
+			return activeChatId;
 		}
-	}, [stableChatId]);
+	}, [isNewChat, activeChatId, onChatCreated]);
 
-	// Poll for pending actions periodically (every 10 seconds)
+	// Generate title after first assistant response
+	const maybeGenerateTitle = useCallback(
+		async (firstMessage: string) => {
+			if (hasTitleGeneratedRef.current || !isNewChat) {
+				return; // Already generated or existing chat has a title
+			}
+
+			hasTitleGeneratedRef.current = true;
+			console.log("[AI Chat] Generating title for chat:", activeChatId);
+
+			const result = await generateChatTitle(activeChatId, firstMessage);
+			if (result.success && result.data) {
+				onTitleUpdated?.(result.data);
+				console.log("[AI Chat] Title generated:", result.data);
+			} else {
+				console.error("[AI Chat] Failed to generate title:", result.error);
+				hasTitleGeneratedRef.current = false; // Allow retry
+			}
+		},
+		[activeChatId, isNewChat, onTitleUpdated]
+	);
+
+	// Simple onFinish callback - generates title after first response
+	// AI SDK v5 changed signature: receives options object instead of message directly
+	const handleChatFinish = useCallback(() => {
+		console.log("[AI Chat] Response completed");
+
+		// Generate title if this is the first response and we have the first user message
+		if (firstUserMessageRef.current && !hasTitleGeneratedRef.current) {
+			maybeGenerateTitle(firstUserMessageRef.current);
+		}
+	}, [maybeGenerateTitle]);
+
+	// Use Vercel AI SDK's useChat hook (v6 API)
+	// Uses activeChatId which is either from props or generated once
+	// NOTE: Dynamic values (companyId, model) are passed to sendMessage, NOT here
+	const { messages, error, sendMessage, status, regenerate, setMessages } =
+		useChat({
+			id: activeChatId, // Stable per chat - either from props or generated
+			initialMessages: dbMessages, // Load from DB if existing chat
+			transport,
+			experimental_throttle: 24, // Keep streaming smooth without over-rendering
+			onFinish: handleChatFinish,
+			onError: (err) => {
+				console.error("[AI Chat] Error from useChat:", err);
+				toast.error(err.message || "Failed to get AI response");
+			},
+		});
+
+	// Abort any in-flight request when unmounting or chatId changes
 	useEffect(() => {
-		fetchPendingActions();
-		const interval = setInterval(fetchPendingActions, 10000);
-		return () => clearInterval(interval);
-	}, [fetchPendingActions]);
-
-	// Handler for approving owner-required actions
-	const handleOwnerApprove = useCallback(
-		async (actionId: string) => {
-			const result = await approveAIAction({ actionId });
-			if (result.success) {
-				toast.success(
-					result.data?.executed
-						? "Action approved and executed!"
-						: "Action approved! Executing...",
-				);
-				// Refresh pending actions
-				fetchPendingActions();
-				return { success: true };
+		return () => {
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
 			}
-			return { success: false, error: result.error };
-		},
-		[fetchPendingActions],
-	);
-
-	// Handler for rejecting owner-required actions
-	const handleOwnerReject = useCallback(
-		async (actionId: string, reason?: string) => {
-			const result = await rejectAIAction({ actionId, reason });
-			if (result.success) {
-				toast.info("Action rejected");
-				fetchPendingActions();
-				return { success: true };
-			}
-			return { success: false, error: result.error };
-		},
-		[fetchPendingActions],
-	);
-
-	// Open approval dialog for a specific action
-	const handleViewActionDetails = useCallback((action: PendingAction) => {
-		setSelectedPendingAction(action);
-		setApprovalDialogOpen(true);
+		};
 	}, []);
 
-	// Refs for stable callback references - prevents useChat from re-initializing
-	const storeChatIdRef = useRef(storeChatId);
-	const addMessageRef = useRef(addMessage);
-	const fetchPendingActionsRef = useRef(fetchPendingActions);
-
-	// Keep refs updated
+	// Update messages when dbMessages changes (after loading from DB)
 	useEffect(() => {
-		storeChatIdRef.current = storeChatId;
-	}, [storeChatId]);
+		if (dbMessages.length > 0 && propChatId) {
+			setMessages(dbMessages);
+		}
+	}, [dbMessages, propChatId, setMessages]);
 
+	// Debug: Log messages state changes
 	useEffect(() => {
-		addMessageRef.current = addMessage;
-	}, [addMessage]);
-
-	useEffect(() => {
-		fetchPendingActionsRef.current = fetchPendingActions;
-	}, [fetchPendingActions]);
-
-	// Memoize body to prevent useChat re-initialization
-	// Uses stableChatId which never changes for this component instance
-	const chatBody = useMemo(
-		() => ({
-			companyId,
-			chatId: stableChatId,
-			model: selectedModel,
-		}),
-		[companyId, stableChatId, selectedModel],
-	);
-
-	// Memoize onFinish callback to prevent useChat re-initialization
-	const handleChatFinish = useCallback((message: AiMessage) => {
-		// Sync with chat store when message finishes
-		const currentStoreChatId = storeChatIdRef.current;
-		if (currentStoreChatId && message.content) {
-			addMessageRef.current(currentStoreChatId, {
-				id: message.id,
-				role: message.role as "user" | "assistant",
-				content: message.content,
-				timestamp: new Date(),
+		if (process.env.NODE_ENV === "development") {
+			console.log("[AI Chat] Messages updated:", {
+				count: messages.length,
+				messages: messages.map((m) => {
+					const textContent = getMessageTextContent(m);
+					return {
+						id: m.id,
+						role: m.role,
+						contentLength: textContent.length,
+						contentPreview: textContent.substring(0, 100),
+						hasParts: !!m.parts?.length,
+						partsCount: m.parts?.length || 0,
+					};
+				}),
+				status,
+				error: error?.message,
 			});
 		}
-
-		// Check for approval requests in tool results
-		const toolInvocations = (
-			message as AiMessage & { toolInvocations?: ToolInvocation[] }
-		).toolInvocations;
-		if (toolInvocations) {
-			// Check for basic approval requests
-			const approvalRequests = toolInvocations
-				.filter(
-					(inv) => inv.state === "result" && inv.toolName === "requestApproval",
-				)
-				.map((inv) => ({
-					...(inv.result as {
-						action: string;
-						reason: string;
-						details: string;
-					}),
-					toolCallId: inv.toolCallId,
-				}));
-
-			if (approvalRequests.length > 0) {
-				setPendingApprovals((prev) => [...prev, ...approvalRequests]);
-			}
-
-			// Check for owner-required approval results (destructive actions)
-			const ownerApprovalResults = toolInvocations.filter((inv) => {
-				if (inv.state !== "result") return false;
-				const result = inv.result as
-					| { requiresOwnerApproval?: boolean }
-					| undefined;
-				return result?.requiresOwnerApproval === true;
-			});
-
-			if (ownerApprovalResults.length > 0) {
-				// Refresh pending actions to show the new ones
-				fetchPendingActionsRef.current();
-			}
-		}
-	}, []); // Empty deps - uses refs for latest values
-
-	// Use Vercel AI SDK's useChat hook (v5 API)
-	// Uses stableChatId which NEVER changes for this component instance
-	// This prevents the hook from reinitializing on state changes
-	const { messages, error, sendMessage, setMessages, status, regenerate } =
-		useChat({
-			id: stableChatId, // Always stable - never undefined, never changes
-			api: "/api/ai/chat",
-			body: chatBody,
-			onFinish: handleChatFinish,
-		});
+	}, [messages, status, error]);
 
 	// Derive loading state from status (v5 API change)
 	const isLoading = status === "submitted" || status === "streaming";
 
-	// Handle approval/rejection of AI actions
-	const handleApproval = async (
-		approval: ApprovalRequest,
-		approved: boolean,
-	) => {
-		// Remove from pending
-		setPendingApprovals((prev) =>
-			prev.filter((a) => a.toolCallId !== approval.toolCallId),
-		);
-
-		// Send response to AI using v5 API
-		sendMessage({
-			text: approved
-				? `Yes, I approve: ${approval.action}`
-				: `No, do not proceed with: ${approval.action}`,
-		});
-	};
-
-	// NOTE: We no longer sync from Zustand store - useChat manages its own message state
-	// Messages are only persisted to Zustand when AI finishes (via handleChatFinish)
+	// NOTE: useChat manages its own message state
 
 	// Hide suggested actions once user starts chatting
 	useEffect(() => {
@@ -547,39 +510,80 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 		}
 	}, [messages.length]);
 
+	// Track latest assistant tool activity for UI feedback
+	const lastAssistantMessage = useMemo(
+		() => [...messages].reverse().find((m) => m.role === "assistant"),
+		[messages],
+	);
+	const activeToolInvocations =
+		(lastAssistantMessage as AiMessage & { toolInvocations?: ToolInvocation[] })
+			?.toolInvocations || [];
+	const hasActiveTools = activeToolInvocations.length > 0;
+	const runningToolInvocations = activeToolInvocations.filter(
+		(inv) => inv.state !== "result"
+	);
+
 	const onSubmit = useCallback(
 		async (
 			message: { text: string; files: any[] },
 			event: React.FormEvent<HTMLFormElement>,
 		) => {
-			if (!message.text?.trim()) return;
+			if (!message.text?.trim()) {
+				console.log("[AI Chat] Empty message, ignoring");
+				return;
+			}
 
 			// Require companyId for authenticated API calls
 			if (!companyId) {
+				console.error("[AI Chat] No companyId available");
 				toast.error("Please wait - loading company data...");
 				return;
 			}
 
-			// Add user message to store for persistence
-			const currentStoreChatId = storeChatIdRef.current;
-			if (currentStoreChatId) {
-				const userMessage = {
-					id: `msg-${Date.now()}`,
-					role: "user" as const,
-					content: message.text,
-					timestamp: new Date(),
-				};
-				addMessage(currentStoreChatId, userMessage);
+			// Track first user message for title generation
+			if (!firstUserMessageRef.current) {
+				firstUserMessageRef.current = message.text;
 			}
 
-			// Send to AI using v5 API - sendMessage instead of append
-			// Files are passed directly in the message object (not as options)
-			sendMessage({
-				text: message.text,
-				files: message.files?.length > 0 ? message.files : undefined,
+			// Create chat in database if this is a new chat
+			if (isNewChat) {
+				await createChatInDb();
+			}
+
+			// Abort any previous request and start a new controller
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+			abortControllerRef.current = new AbortController();
+
+			console.log("[AI Chat] Sending message:", {
+				text: message.text.substring(0, 50),
+				companyId,
+				chatId: activeChatId,
+				model: selectedModel,
+				hasFiles: message.files?.length > 0,
 			});
+
+			// Send to AI using v5 API
+			// Dynamic values (companyId, userId, model) are passed here, NOT in useChat config
+			// This prevents stale body data issues
+			sendMessage(
+				{
+					text: message.text,
+					files: message.files?.length > 0 ? message.files : undefined,
+				},
+				{
+					body: {
+						companyId,
+						userId,
+						chatId: activeChatId,
+						model: selectedModel,
+					},
+					abortSignal: abortControllerRef.current.signal,
+				},
+			);
 		},
-		[companyId, addMessage, sendMessage],
+		[companyId, userId, activeChatId, selectedModel, sendMessage, isNewChat, createChatInDb],
 	);
 
 	const handleSuggestedAction = useCallback(
@@ -668,47 +672,62 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 		);
 	};
 
-	// Render approval request UI
-	const renderApprovalRequest = (approval: ApprovalRequest) => (
-		<div
-			key={approval.toolCallId}
-			className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 p-3"
-		>
-			<p className="text-sm font-medium mb-1">Approval Required</p>
-			<p className="text-sm text-muted-foreground mb-2">{approval.action}</p>
-			<p className="text-xs text-muted-foreground mb-3">{approval.reason}</p>
-			<div className="flex gap-2">
-				<Button size="sm" onClick={() => handleApproval(approval, true)}>
-					Approve
-				</Button>
-				<Button
-					size="sm"
-					variant="outline"
-					onClick={() => handleApproval(approval, false)}
-				>
-					Reject
-				</Button>
-			</div>
-		</div>
-	);
+	// Render tool result details (web search, etc.) when available
+	const renderToolResult = (invocation: ToolInvocation) => {
+		if (invocation.state !== "result" || !invocation.result) return null;
+		const result = invocation.result as any;
+
+		const items = Array.isArray(result?.results) ? result.results : null;
+		if (items && items.length > 0) {
+			return (
+				<div className="mt-2 space-y-2 rounded-md border border-border/60 bg-muted/30 p-3 text-sm">
+					<div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+						<span>Tool result</span>
+						{result.searchType && (
+							<span className="uppercase tracking-wide">{result.searchType}</span>
+						)}
+					</div>
+					<ul className="space-y-2">
+						{items.slice(0, 5).map((item: any, idx: number) => (
+							<li key={idx} className="space-y-1">
+								<div className="font-medium leading-tight">{item.title}</div>
+								{item.snippet && (
+									<p className="text-xs text-muted-foreground leading-snug">
+										{item.snippet}
+									</p>
+								)}
+								{item.url && (
+									<a
+										className="text-xs text-primary hover:underline break-all"
+										href={item.url}
+										target="_blank"
+										rel="noreferrer"
+									>
+										{item.url}
+									</a>
+								)}
+							</li>
+						))}
+					</ul>
+				</div>
+			);
+		}
+
+		return (
+			<pre className="mt-2 overflow-x-auto rounded-md bg-muted p-3 text-xs">
+				{JSON.stringify(result, null, 2)}
+			</pre>
+		);
+	};
 
 	return (
-		<>
-			<OwnerActionApprovalDialog
-				pendingAction={selectedPendingAction}
-				isOpen={approvalDialogOpen}
-				onOpenChange={setApprovalDialogOpen}
-				onApprove={handleOwnerApprove}
-				onReject={handleOwnerReject}
-				isOwner={isOwner}
-			/>
-			<div className="flex h-full flex-col">
-				{/* Messages */}
-				<div className="flex-1 overflow-y-auto">
-					<div className="mx-auto max-w-3xl px-4" role="log">
+		<div className="flex h-full flex-col">
+			{/* Messages */}
+			<div className="flex-1 overflow-y-auto">
+				<div className="mx-auto max-w-3xl px-4" role="log">
 						<Conversation>
 							<ConversationContent>
-								{messages.length === 0 && !isLoading && (
+								{messages.length === 0 && !isLoading && !error && (
 									<ConversationEmptyState
 										icon={
 											<Image
@@ -720,11 +739,21 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 											/>
 										}
 										title="AI Business Manager"
-										description="Ask me anything about your business - customers, jobs, invoices, scheduling, and more."
+										description={companyId
+											? "Ask me anything about your business - customers, jobs, invoices, scheduling, and more."
+											: "Loading company data..."}
 									/>
 								)}
 
-								{messages.map((message) => {
+								{/* Error display */}
+								{error && (
+									<div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+										<p className="font-medium">Error</p>
+										<p className="mt-1">{error.message || "Failed to get AI response"}</p>
+									</div>
+								)}
+
+								{messages.map((message, messageIndex) => {
 									const toolInvocations = (
 										message as AiMessage & {
 											toolInvocations?: ToolInvocation[];
@@ -740,6 +769,14 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 											}>;
 										}
 									).experimental_attachments;
+
+									// Determine if this message is currently streaming
+									// It's streaming if: status is 'streaming', it's an assistant message, and it's the last message
+									const isLastMessage = messageIndex === messages.length - 1;
+									const isStreamingMessage =
+										status === "streaming" &&
+										message.role === "assistant" &&
+										isLastMessage;
 
 									return (
 										<Message key={message.id} from={message.role}>
@@ -778,9 +815,22 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 														</div>
 													)}
 
-												{message.content && (
-													<MessageResponse>{message.content}</MessageResponse>
-												)}
+												{(() => {
+													const textContent = getMessageTextContent(message);
+									return textContent ? (
+										<MessageResponse isStreaming={isStreamingMessage}>
+											{textContent}
+										</MessageResponse>
+									) : null;
+								})()}
+
+												{/* Tool result details */}
+												{message.role === "assistant" &&
+													toolInvocations?.map((inv) => (
+														<div key={`${inv.toolCallId}-result`}>
+															{renderToolResult(inv)}
+														</div>
+													))}
 
 												{/* Render artifacts if present for assistant messages */}
 												{message.role === "assistant" &&
@@ -864,63 +914,69 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 											</MessageContent>
 
 											{/* Message Toolbar with Actions */}
-											{message.content && (
-												<MessageToolbar className="opacity-0 group-hover:opacity-100 transition-opacity">
-													<MessageActions>
-														<MessageAction
-															tooltip="Copy"
-															onClick={() => handleCopyMessage(message.content)}
-														>
-															<Copy className="h-3.5 w-3.5" />
-														</MessageAction>
-
-														{message.role === "user" && (
+											{(() => {
+												const textContent = getMessageTextContent(message);
+												if (!textContent) return null;
+												return (
+													<MessageToolbar className="opacity-0 group-hover:opacity-100 transition-opacity">
+														<MessageActions>
 															<MessageAction
-																tooltip="Edit"
-																onClick={() =>
-																	handleEditMessage(message.id, message.content)
-																}
+																tooltip="Copy"
+																onClick={() => handleCopyMessage(textContent)}
 															>
-																<Pencil className="h-3.5 w-3.5" />
+																<Copy className="h-3.5 w-3.5" />
 															</MessageAction>
-														)}
 
-														{message.role === "assistant" && (
-															<>
+															{message.role === "user" && (
 																<MessageAction
-																	tooltip="Regenerate"
+																	tooltip="Edit"
 																	onClick={() =>
-																		handleRegenerateMessage(message.id)
+																		handleEditMessage(message.id, textContent)
 																	}
 																>
-																	<RefreshCw className="h-3.5 w-3.5" />
+																	<Pencil className="h-3.5 w-3.5" />
 																</MessageAction>
-																<MessageAction
-																	tooltip="Good response"
-																	onClick={() =>
-																		handleFeedback(message.id, "up")
-																	}
-																>
-																	<ThumbsUp className="h-3.5 w-3.5" />
-																</MessageAction>
-																<MessageAction
-																	tooltip="Bad response"
-																	onClick={() =>
-																		handleFeedback(message.id, "down")
-																	}
-																>
-																	<ThumbsDown className="h-3.5 w-3.5" />
-																</MessageAction>
-															</>
-														)}
-													</MessageActions>
-												</MessageToolbar>
-											)}
+															)}
+
+															{message.role === "assistant" && (
+																<>
+																	<MessageAction
+																		tooltip="Regenerate"
+																		onClick={() =>
+																			handleRegenerateMessage(message.id)
+																		}
+																	>
+																		<RefreshCw className="h-3.5 w-3.5" />
+																	</MessageAction>
+																	<MessageAction
+																		tooltip="Good response"
+																		onClick={() =>
+																			handleFeedback(message.id, "up")
+																		}
+																	>
+																		<ThumbsUp className="h-3.5 w-3.5" />
+																	</MessageAction>
+																	<MessageAction
+																		tooltip="Bad response"
+																		onClick={() =>
+																			handleFeedback(message.id, "down")
+																		}
+																	>
+																		<ThumbsDown className="h-3.5 w-3.5" />
+																	</MessageAction>
+																</>
+															)}
+														</MessageActions>
+													</MessageToolbar>
+												);
+											})()}
 										</Message>
 									);
 								})}
 
-								{isLoading && (
+								{/* Show typing indicator only when waiting for first chunk (submitted)
+								    Once streaming starts, the streaming cursor in MessageResponse handles visual feedback */}
+								{status === "submitted" && (
 									<Message from="assistant">
 										<MessageContent>
 											<Loader />
@@ -933,64 +989,82 @@ export function AiChatInterface({ companyId }: AiChatInterfaceProps) {
 					</div>
 				</div>
 
-				{/* Suggested Actions & Input */}
-				<div className="bg-background px-4 py-4">
-					<div className="mx-auto max-w-3xl flex flex-col gap-3">
-						{/* Owner-Required Pending Actions (Destructive) */}
-						{ownerPendingActions.length > 0 && (
-							<div className="space-y-2">
-								{ownerPendingActions.map((action) => (
-									<ActionApprovalBanner
-										key={action.id}
-										pendingAction={action}
-										onViewDetails={() => handleViewActionDetails(action)}
-									/>
-								))}
-							</div>
-						)}
-
-						{/* Basic Approval Requests */}
-						{pendingApprovals.length > 0 && (
-							<div className="space-y-2">
-								{pendingApprovals.map((approval) =>
-									renderApprovalRequest(approval),
-								)}
-							</div>
-						)}
-
-						{/* Suggested Actions */}
-						{showSuggestedActions && messages.length === 0 && (
-							<div
-								className="flex flex-wrap gap-2"
-								data-testid="suggested-actions"
-							>
-								{SUGGESTED_ACTIONS.map((action, idx) => {
-									const ActionIcon = action.icon;
-									return (
-										<button
-											key={idx}
-											className="inline-flex items-center gap-2 text-sm border border-border bg-background hover:bg-muted rounded-lg px-3 py-2 transition-colors"
-											onClick={() => handleSuggestedAction(action)}
-											type="button"
-										>
-											<ActionIcon className="h-4 w-4 text-muted-foreground" />
-											<span>{action.text}</span>
-										</button>
-									);
-								})}
-							</div>
-						)}
-
-						{/* Input */}
-						<ChatInputInner
-							onSubmit={onSubmit}
-							selectedModel={selectedModel}
-							setSelectedModel={setSelectedModel}
-							status={status}
-						/>
+			{/* Live tool activity (global) */}
+			{hasActiveTools && (
+				<div className="mx-auto mt-2 w-full max-w-3xl px-4">
+					<div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs text-muted-foreground">
+						<div className="flex items-center gap-2 font-medium text-foreground">
+							{runningToolInvocations.length > 0 ? (
+								<>
+									<Loader className="mr-1 h-3 w-3" />
+									<span>Working...</span>
+								</>
+							) : (
+								<span>Tools finished</span>
+							)}
+						</div>
+						<div className="mt-2 space-y-1">
+							{activeToolInvocations.map((inv) => (
+								<div
+									key={`activity-${inv.toolCallId}`}
+									className="flex items-center gap-2"
+								>
+									<span className="text-foreground">
+										{inv.toolName.replace(/([A-Z])/g, " $1").trim()}
+									</span>
+									<span className="rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wide">
+										{inv.state}
+									</span>
+									{inv.state === "call" && (
+										<span className="text-[10px] text-muted-foreground">
+											Executing tool…
+										</span>
+									)}
+									{inv.state === "result" && (
+										<span className="text-[10px] text-green-600">Done</span>
+									)}
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
+			)}
+
+			{/* Suggested Actions & Input */}
+			<div className="bg-background px-4 py-4">
+				<div className="mx-auto max-w-3xl flex flex-col gap-3">
+					{/* Suggested Actions */}
+					{showSuggestedActions && messages.length === 0 && (
+						<div
+							className="flex flex-wrap gap-2"
+							data-testid="suggested-actions"
+						>
+							{SUGGESTED_ACTIONS.map((action, idx) => {
+								const ActionIcon = action.icon;
+								return (
+									<button
+										key={idx}
+										className="inline-flex items-center gap-2 text-sm border border-border bg-background hover:bg-muted rounded-lg px-3 py-2 transition-colors"
+										onClick={() => handleSuggestedAction(action)}
+										type="button"
+									>
+										<ActionIcon className="h-4 w-4 text-muted-foreground" />
+										<span>{action.text}</span>
+									</button>
+								);
+							})}
+						</div>
+					)}
+
+					{/* Input */}
+					<ChatInputInner
+						onSubmit={onSubmit}
+						selectedModel={selectedModel}
+						setSelectedModel={setSelectedModel}
+						status={status}
+					/>
+				</div>
 			</div>
-		</>
+		</div>
 	);
 }

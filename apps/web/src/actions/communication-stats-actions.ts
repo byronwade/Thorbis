@@ -2,6 +2,33 @@
 
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyCommunicationCounts, type CommunicationCounts } from "@/lib/queries/communications";
+
+/**
+ * Get communication counts by type for sidebar badges
+ * Returns counts for all, email, sms, call, and voicemail
+ */
+export async function getCommunicationCountsAction(): Promise<{
+	success: boolean;
+	counts?: CommunicationCounts;
+	error?: string;
+}> {
+	try {
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			return { success: false, error: "No active company found" };
+		}
+
+		const counts = await getCompanyCommunicationCounts(companyId);
+		return { success: true, counts };
+	} catch (error) {
+		console.error("Error getting communication counts:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
 
 /**
  * Get comprehensive communication statistics

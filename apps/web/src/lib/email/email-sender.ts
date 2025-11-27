@@ -33,7 +33,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 import { recordDeliveryEvent } from "./deliverability-monitor";
 // =============================================================================
-// MULTI-PROVIDER SUPPORT (Resend primary, Postmark fallback)
+// MULTI-PROVIDER SUPPORT (SendGrid primary, Postmark fallback)
 // =============================================================================
 // Provider abstraction layer - handles automatic fallback when primary fails
 import { getProviderSetupInfo, sendEmailWithFallback } from "./email-provider";
@@ -58,7 +58,7 @@ import {
 	getCompanyActiveDomain,
 	incrementEmailCounter,
 } from "./rate-limiter";
-import { emailConfig, isResendConfigured, resend } from "./resend-client";
+import { sendgridConfig, isAdminSendGridConfigured } from "./sendgrid-client";
 
 // Attachment type for email
 type EmailAttachment = {
@@ -101,7 +101,7 @@ type SendEmailOptions = {
  * Features:
  * - Validates email addresses
  * - Renders React Email template to HTML
- * - Sends via Resend
+ * - Sends via SendGrid
  * - Logs to database
  * - Development mode logging
  * - Rate limiting per company/domain
@@ -132,7 +132,7 @@ export async function sendEmail({
 
 	try {
 		// In development, log email instead of sending
-		if (emailConfig.isDevelopment) {
+		if (sendgridConfig.isDevelopment) {
 			return {
 				success: true,
 				data: {
@@ -143,17 +143,17 @@ export async function sendEmail({
 		}
 
 		// Check if at least one email provider is configured
-		// We support Resend (primary) and Postmark (fallback)
+		// We support SendGrid (primary) and Postmark (fallback)
 		const providerInfo = getProviderSetupInfo();
 		if (providerInfo.status === "not_configured") {
 			return {
 				success: false,
 				error:
-					"Email service not configured. Please add RESEND_API_KEY or POSTMARK_API_KEY to environment variables.",
+					"Email service not configured. Please add SENDGRID_API_KEY or POSTMARK_API_KEY to environment variables.",
 			};
 		}
 		console.log(
-			`[EmailSender] Providers available: ${providerInfo.configuredProviders.join(", ")} (status: ${providerInfo.status})`,
+			`[EmailSender] Provider: ${providerInfo.provider} (status: ${providerInfo.status})`,
 		);
 
 		const supabase = await createClient();
@@ -306,13 +306,31 @@ export async function sendEmail({
 			}
 		}
 
-		// Determine from identity
-		let fromAddress = fromOverride || emailConfig.from;
+		// Determine from identity (always from database for multi-tenant)
+		let fromAddress = fromOverride;
 		if (companyId && supabase) {
 			const override = await getCompanyEmailIdentity(supabase, companyId);
 			if (override) {
 				fromAddress = override;
+			} else if (!fromAddress) {
+				// Fallback: construct from company domain if available
+				const { data: domain } = await supabase
+					.from("company_email_domains")
+					.select("domain_name, subdomain")
+					.eq("company_id", companyId)
+					.eq("status", "verified")
+					.eq("sending_enabled", true)
+					.order("is_platform_subdomain", { ascending: true })
+					.limit(1)
+					.maybeSingle();
+				if (domain) {
+					fromAddress = `notifications@${domain.subdomain}.${domain.domain_name}`;
+				}
 			}
+		}
+		// Final fallback only if no company context (should rarely happen)
+		if (!fromAddress) {
+			fromAddress = "noreply@thorbis.com";
 		}
 
 		// Render template to HTML
@@ -609,10 +627,10 @@ async function testEmailConfiguration(
 	try {
 		const validatedEmail = emailSendSchema.shape.to.parse(testEmailAddress);
 
-		if (!isResendConfigured()) {
+		if (!isAdminSendGridConfigured()) {
 			return {
 				success: false,
-				error: "Resend API key is not configured",
+				error: "SendGrid API key is not configured",
 			};
 		}
 

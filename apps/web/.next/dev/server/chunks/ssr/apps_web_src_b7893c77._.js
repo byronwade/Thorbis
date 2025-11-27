@@ -969,7 +969,7 @@ async function getLogoDataUrl() {
                         children: value
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 286,
+                        lineNumber: 298,
                         columnNumber: 5
                     }, this),
                     unit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -982,13 +982,13 @@ async function getLogoDataUrl() {
                         children: unit
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 298,
+                        lineNumber: 310,
                         columnNumber: 6
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 285,
+                lineNumber: 297,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1002,13 +1002,13 @@ async function getLogoDataUrl() {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 310,
+                lineNumber: 322,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 284,
+        lineNumber: 296,
         columnNumber: 3
     }, this);
 }
@@ -1035,14 +1035,14 @@ function HomepageTemplate({ logoDataUrl }) {
                 variant: "radial"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 349,
+                lineNumber: 361,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 350,
+                lineNumber: 362,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1058,7 +1058,7 @@ function HomepageTemplate({ logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 355,
+                        lineNumber: 375,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1090,7 +1090,7 @@ function HomepageTemplate({ logoDataUrl }) {
                                         children: homepage.headline
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 361,
+                                        lineNumber: 390,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1105,13 +1105,13 @@ function HomepageTemplate({ logoDataUrl }) {
                                         children: homepage.subheadline
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 373,
+                                        lineNumber: 402,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 360,
+                                lineNumber: 389,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1124,7 +1124,7 @@ function HomepageTemplate({ logoDataUrl }) {
                                 children: homepage.tagline
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 388,
+                                lineNumber: 417,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1150,7 +1150,7 @@ function HomepageTemplate({ logoDataUrl }) {
                                                 children: stat.value
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 403,
+                                                lineNumber: 435,
                                                 columnNumber: 9
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1164,24 +1164,24 @@ function HomepageTemplate({ logoDataUrl }) {
                                                 children: stat.label
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 413,
+                                                lineNumber: 445,
                                                 columnNumber: 9
                                             }, this)
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 402,
+                                        lineNumber: 431,
                                         columnNumber: 8
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 400,
+                                lineNumber: 429,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 358,
+                        lineNumber: 378,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1197,24 +1197,24 @@ function HomepageTemplate({ logoDataUrl }) {
                             children: "thorbis.com"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 431,
+                            lineNumber: 463,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 430,
+                        lineNumber: 462,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 353,
+                lineNumber: 365,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 336,
+        lineNumber: 348,
         columnNumber: 3
     }, this);
 }
@@ -1241,14 +1241,14 @@ function PricingTemplate({ logoDataUrl }) {
                 variant: "diagonal"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 460,
+                lineNumber: 498,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 461,
+                lineNumber: 502,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1264,7 +1264,7 @@ function PricingTemplate({ logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 464,
+                        lineNumber: 513,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1282,7 +1282,7 @@ function PricingTemplate({ logoDataUrl }) {
                                 children: "Annual Savings"
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 468,
+                                lineNumber: 526,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -1297,7 +1297,7 @@ function PricingTemplate({ logoDataUrl }) {
                                 children: pricing.headline
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 470,
+                                lineNumber: 528,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1318,7 +1318,7 @@ function PricingTemplate({ logoDataUrl }) {
                                         children: pricing.price
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 485,
+                                        lineNumber: 550,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1330,7 +1330,7 @@ function PricingTemplate({ logoDataUrl }) {
                                         children: pricing.period
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 495,
+                                        lineNumber: 560,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1343,13 +1343,13 @@ function PricingTemplate({ logoDataUrl }) {
                                         children: pricing.comparison
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 504,
+                                        lineNumber: 569,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 484,
+                                lineNumber: 542,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1377,25 +1377,25 @@ function PricingTemplate({ logoDataUrl }) {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 530,
+                                                lineNumber: 595,
                                                 columnNumber: 9
                                             }, this),
                                             feature
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 519,
+                                        lineNumber: 584,
                                         columnNumber: 8
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 517,
+                                lineNumber: 582,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 466,
+                        lineNumber: 515,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1411,24 +1411,24 @@ function PricingTemplate({ logoDataUrl }) {
                             children: "thorbis.com/pricing"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 545,
+                            lineNumber: 610,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 544,
+                        lineNumber: 609,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 463,
+                lineNumber: 504,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 447,
+        lineNumber: 485,
         columnNumber: 3
     }, this);
 }
@@ -1439,8 +1439,8 @@ function FeatureTemplate({ slug, logoDataUrl }) {
         logoDataUrl: logoDataUrl
     }, void 0, false, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 565,
-        columnNumber: 23
+        lineNumber: 637,
+        columnNumber: 10
     }, this);
     const [color1, color2] = feature.gradient;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1461,14 +1461,14 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                 variant: "split"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 583,
+                lineNumber: 655,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 584,
+                lineNumber: 659,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1484,7 +1484,7 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 587,
+                        lineNumber: 670,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1509,7 +1509,7 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                         children: "Feature"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 592,
+                                        lineNumber: 690,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -1524,7 +1524,7 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                         children: feature.title
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 594,
+                                        lineNumber: 692,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -1537,7 +1537,7 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                         children: feature.headline
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 607,
+                                        lineNumber: 705,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1560,7 +1560,7 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                                 children: "$200/mo"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 627,
+                                                lineNumber: 725,
                                                 columnNumber: 8
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1572,19 +1572,19 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                                 children: "All Features Included"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 639,
+                                                lineNumber: 737,
                                                 columnNumber: 8
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 619,
+                                        lineNumber: 717,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 591,
+                                lineNumber: 682,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1607,18 +1607,18 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                                     size: "large"
                                 }, void 0, false, {
                                     fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                    lineNumber: 665,
+                                    lineNumber: 763,
                                     columnNumber: 7
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 652,
+                                lineNumber: 750,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 589,
+                        lineNumber: 672,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1637,24 +1637,24 @@ function FeatureTemplate({ slug, logoDataUrl }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 676,
+                            lineNumber: 774,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 675,
+                        lineNumber: 773,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 586,
+                lineNumber: 661,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 570,
+        lineNumber: 642,
         columnNumber: 3
     }, this);
 }
@@ -1665,8 +1665,8 @@ function IndustryTemplate({ slug, logoDataUrl }) {
         logoDataUrl: logoDataUrl
     }, void 0, false, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 696,
-        columnNumber: 24
+        lineNumber: 802,
+        columnNumber: 4
     }, this);
     const [color1, color2] = industry.gradient;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1687,14 +1687,14 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                 variant: "radial"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 714,
+                lineNumber: 821,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 715,
+                lineNumber: 825,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1710,7 +1710,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 718,
+                        lineNumber: 836,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1728,7 +1728,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                 children: industry.title
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 721,
+                                lineNumber: 848,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -1743,7 +1743,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                 children: industry.headline
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 723,
+                                lineNumber: 850,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1756,7 +1756,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                 children: industry.painPoint
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 736,
+                                lineNumber: 863,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1786,7 +1786,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                                 children: industry.stat.value
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 759,
+                                                lineNumber: 886,
                                                 columnNumber: 8
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1799,13 +1799,13 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                                 children: industry.stat.label
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 769,
+                                                lineNumber: 896,
                                                 columnNumber: 8
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 749,
+                                        lineNumber: 876,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1826,7 +1826,7 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                                 children: "$200/mo"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 790,
+                                                lineNumber: 917,
                                                 columnNumber: 8
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1838,25 +1838,25 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                                                 children: "All Features"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 799,
+                                                lineNumber: 926,
                                                 columnNumber: 8
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 781,
+                                        lineNumber: 908,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 748,
+                                lineNumber: 875,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 720,
+                        lineNumber: 838,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1875,24 +1875,24 @@ function IndustryTemplate({ slug, logoDataUrl }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 813,
+                            lineNumber: 940,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 812,
+                        lineNumber: 939,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 717,
+                lineNumber: 827,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 701,
+        lineNumber: 808,
         columnNumber: 3
     }, this);
 }
@@ -1903,8 +1903,8 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
         logoDataUrl: logoDataUrl
     }, void 0, false, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 833,
-        columnNumber: 26
+        lineNumber: 967,
+        columnNumber: 10
     }, this);
     const [color1, color2] = competitor.gradient;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1925,7 +1925,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                 variant: "split"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 851,
+                lineNumber: 985,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1941,7 +1941,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 854,
+                        lineNumber: 999,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1970,7 +1970,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                         children: "Thorbis"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 859,
+                                        lineNumber: 1013,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1982,7 +1982,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                         children: "VS"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 868,
+                                        lineNumber: 1022,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1994,13 +1994,13 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                         children: competitor.name
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 877,
+                                        lineNumber: 1031,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 858,
+                                lineNumber: 1012,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2028,7 +2028,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                                 children: competitor.ourPrice
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 892,
+                                                lineNumber: 1048,
                                                 columnNumber: 8
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2040,13 +2040,13 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                                 children: "/month"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 903,
+                                                lineNumber: 1059,
                                                 columnNumber: 8
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 891,
+                                        lineNumber: 1045,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2069,7 +2069,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                                 children: competitor.theirPrice
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 916,
+                                                lineNumber: 1079,
                                                 columnNumber: 8
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2081,19 +2081,19 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                                 children: "/month"
                                             }, void 0, false, {
                                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                                lineNumber: 928,
+                                                lineNumber: 1091,
                                                 columnNumber: 8
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 915,
+                                        lineNumber: 1071,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 889,
+                                lineNumber: 1043,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2120,7 +2120,7 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 953,
+                                        lineNumber: 1116,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2132,13 +2132,13 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                         children: competitor.savingsPeriod
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 962,
+                                        lineNumber: 1125,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 941,
+                                lineNumber: 1104,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2151,13 +2151,13 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                                 children: competitor.headline
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 974,
+                                lineNumber: 1137,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 856,
+                        lineNumber: 1001,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2176,24 +2176,24 @@ function CompetitorTemplate({ slug, logoDataUrl }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 987,
+                            lineNumber: 1150,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 986,
+                        lineNumber: 1149,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 853,
+                lineNumber: 990,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 838,
+        lineNumber: 972,
         columnNumber: 3
     }, this);
 }
@@ -2218,14 +2218,14 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                 variant: "default"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1025,
+                lineNumber: 1194,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.015
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1026,
+                lineNumber: 1198,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2241,7 +2241,7 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1029,
+                        lineNumber: 1209,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2259,7 +2259,7 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                                 children: category || blog.defaultCategory
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1032,
+                                lineNumber: 1221,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -2275,7 +2275,7 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1034,
+                                lineNumber: 1223,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2295,7 +2295,7 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                                         children: "Thorbis Blog"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1049,
+                                        lineNumber: 1245,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2307,7 +2307,7 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1052,
+                                        lineNumber: 1254,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2319,19 +2319,19 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                                         children: "Field Service Insights"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1060,
+                                        lineNumber: 1262,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1048,
+                                lineNumber: 1237,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1031,
+                        lineNumber: 1211,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2347,24 +2347,24 @@ function BlogTemplate({ title, category, logoDataUrl }) {
                             children: "thorbis.com/blog"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 1067,
+                            lineNumber: 1275,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1066,
+                        lineNumber: 1274,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1028,
+                lineNumber: 1200,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 1012,
+        lineNumber: 1181,
         columnNumber: 3
     }, this);
 }
@@ -2389,14 +2389,14 @@ function KBTemplate({ title, category, logoDataUrl }) {
                 variant: "default"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1105,
+                lineNumber: 1319,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.015
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1106,
+                lineNumber: 1323,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2412,7 +2412,7 @@ function KBTemplate({ title, category, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1109,
+                        lineNumber: 1334,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2430,7 +2430,7 @@ function KBTemplate({ title, category, logoDataUrl }) {
                                 children: category || kb.defaultCategory
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1112,
+                                lineNumber: 1346,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -2446,7 +2446,7 @@ function KBTemplate({ title, category, logoDataUrl }) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1114,
+                                lineNumber: 1348,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2469,7 +2469,7 @@ function KBTemplate({ title, category, logoDataUrl }) {
                                         children: "Help Center"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1129,
+                                        lineNumber: 1370,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2481,19 +2481,19 @@ function KBTemplate({ title, category, logoDataUrl }) {
                                         children: "Step-by-step guides & tutorials"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1141,
+                                        lineNumber: 1382,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1128,
+                                lineNumber: 1362,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1111,
+                        lineNumber: 1336,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2509,24 +2509,24 @@ function KBTemplate({ title, category, logoDataUrl }) {
                             children: "thorbis.com/kb"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 1148,
+                            lineNumber: 1395,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1147,
+                        lineNumber: 1394,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1108,
+                lineNumber: 1325,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 1092,
+        lineNumber: 1306,
         columnNumber: 3
     }, this);
 }
@@ -2550,14 +2550,14 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                 variant: "default"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1185,
+                lineNumber: 1438,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1186,
+                lineNumber: 1442,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2573,7 +2573,7 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1189,
+                        lineNumber: 1453,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2599,7 +2599,7 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1192,
+                                lineNumber: 1465,
                                 columnNumber: 6
                             }, this),
                             subtitle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2613,7 +2613,7 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                                 children: subtitle
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1207,
+                                lineNumber: 1480,
                                 columnNumber: 7
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2636,7 +2636,7 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                                         children: "$200/mo"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1229,
+                                        lineNumber: 1502,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2648,19 +2648,19 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                                         children: "All Features Included"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1241,
+                                        lineNumber: 1514,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1221,
+                                lineNumber: 1494,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1191,
+                        lineNumber: 1455,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2676,24 +2676,24 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
                             children: "thorbis.com"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 1254,
+                            lineNumber: 1527,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1253,
+                        lineNumber: 1526,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1188,
+                lineNumber: 1444,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 1172,
+        lineNumber: 1425,
         columnNumber: 3
     }, this);
 }
@@ -2720,14 +2720,14 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                 variant: "radial"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1294,
+                lineNumber: 1573,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1295,
+                lineNumber: 1574,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2743,7 +2743,7 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1298,
+                        lineNumber: 1585,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2761,7 +2761,7 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                                 children: "Integration"
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1301,
+                                lineNumber: 1597,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -2776,7 +2776,7 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                                 children: name
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1303,
+                                lineNumber: 1599,
                                 columnNumber: 6
                             }, this),
                             description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2789,7 +2789,7 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                                 children: description
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1317,
+                                lineNumber: 1613,
                                 columnNumber: 7
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2812,7 +2812,7 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                                         children: "Connect in Minutes"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1330,
+                                        lineNumber: 1633,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2824,19 +2824,19 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                                         children: "No Code Required"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1342,
+                                        lineNumber: 1645,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1329,
+                                lineNumber: 1625,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1300,
+                        lineNumber: 1587,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2852,24 +2852,24 @@ function IntegrationTemplate({ name, description, logoDataUrl }) {
                             children: "thorbis.com/integrations"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 1349,
+                            lineNumber: 1658,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1348,
+                        lineNumber: 1657,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1297,
+                lineNumber: 1576,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 1281,
+        lineNumber: 1560,
         columnNumber: 3
     }, this);
 }
@@ -2895,14 +2895,14 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                 variant: "diagonal"
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1384,
+                lineNumber: 1699,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(GridPattern, {
                 opacity: 0.02
             }, void 0, false, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1385,
+                lineNumber: 1703,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2918,7 +2918,7 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                         logoDataUrl: logoDataUrl
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1388,
+                        lineNumber: 1714,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2936,7 +2936,7 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                                 children: "Free Tool"
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1391,
+                                lineNumber: 1726,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -2951,7 +2951,7 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1393,
+                                lineNumber: 1728,
                                 columnNumber: 6
                             }, this),
                             subtitle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2964,7 +2964,7 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                                 children: subtitle
                             }, void 0, false, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1407,
+                                lineNumber: 1742,
                                 columnNumber: 7
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2987,7 +2987,7 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                                         children: "Calculate Now"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1420,
+                                        lineNumber: 1762,
                                         columnNumber: 7
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2999,19 +2999,19 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                                         children: "100% Free, No Signup"
                                     }, void 0, false, {
                                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                        lineNumber: 1432,
+                                        lineNumber: 1774,
                                         columnNumber: 7
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                                lineNumber: 1419,
+                                lineNumber: 1754,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1390,
+                        lineNumber: 1716,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3027,24 +3027,24 @@ function CalculatorTemplate({ title, subtitle, logoDataUrl }) {
                             children: "thorbis.com/free-tools"
                         }, void 0, false, {
                             fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                            lineNumber: 1439,
+                            lineNumber: 1787,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                        lineNumber: 1438,
+                        lineNumber: 1786,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-                lineNumber: 1387,
+                lineNumber: 1705,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/apps/web/src/lib/og/og-templates.tsx",
-        lineNumber: 1371,
+        lineNumber: 1686,
         columnNumber: 3
     }, this);
 }
@@ -3086,9 +3086,9 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$og$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.4_@opentelemetry+api@1.9.0_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/og.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$og$2f$index$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/apps/web/src/lib/og/index.ts [app-rsc] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$og$2f$og$2d$templates$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/src/lib/og/og-templates.tsx [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$og$2f$og$2d$fonts$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/src/lib/og/og-fonts.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$og$2f$og$2d$config$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/src/lib/og/og-config.ts [app-rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$og$2f$og$2d$templates$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/apps/web/src/lib/og/og-templates.tsx [app-rsc] (ecmascript)");
 ;
 ;
 ;
@@ -3135,7 +3135,7 @@ async function __TURBOPACK__default__export__(props) {
         const data = {
             alt: imageMetadata.alt,
             type: imageMetadata.contentType || 'image/png',
-            url: imageUrl + (idParam ? '/' + idParam : '') + "?222100ff734f520f"
+            url: imageUrl + (idParam ? '/' + idParam : '') + "?117a0b4789797ffb"
         };
         const { size } = imageMetadata;
         if (size) {

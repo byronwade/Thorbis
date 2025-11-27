@@ -199,7 +199,7 @@ async function handleCheckoutSessionCompleted(
 	// Purchase phone number if one was selected during onboarding
 	if (phoneNumber) {
 		try {
-			const { purchasePhoneNumber } = await import("@/actions/telnyx");
+			const { purchasePhoneNumber } = await import("@/actions/twilio");
 			const purchaseResult = await purchasePhoneNumber({
 				phoneNumber,
 				companyId,

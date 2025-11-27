@@ -1106,8 +1106,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$zu
         callControlId: null,
         callSessionId: null,
         direction: "inbound",
-        telnyxCallState: "idle",
-        telnyxError: null,
+        twilioCallState: "idle",
+        twilioError: null,
         isScreenSharing: false,
         connectionQuality: "excellent",
         hasVirtualBackground: false,
@@ -1374,13 +1374,13 @@ const useUIStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modu
                 state.call.customerData = null;
                 state.call.customerId = null;
             }, false, "clearCustomerData"),
-        // Telnyx state actions
-        setTelnyxCallState: (telnyxState)=>set((state)=>{
-                state.call.telnyxCallState = telnyxState;
-            }, false, "setTelnyxCallState"),
-        setTelnyxError: (error)=>set((state)=>{
-                state.call.telnyxError = error;
-            }, false, "setTelnyxError"),
+        // Twilio state actions
+        setTwilioCallState: (twilioState)=>set((state)=>{
+                state.call.twilioCallState = twilioState;
+            }, false, "setTwilioCallState"),
+        setTwilioError: (error)=>set((state)=>{
+                state.call.twilioError = error;
+            }, false, "setTwilioError"),
         setCallMetadata: (metadata)=>set((state)=>{
                 state.call.callControlId = metadata.callControlId;
                 state.call.callSessionId = metadata.callSessionId;

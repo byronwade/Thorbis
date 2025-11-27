@@ -5,6 +5,7 @@
 
 import crypto from "crypto";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { openaiTracker } from "@/lib/analytics/external-api-tracker";
 
 export type MemoryType =
 	| "fact"
@@ -44,7 +45,7 @@ export interface MemorySearchResult {
  * Generate embeddings using OpenAI API (or other provider)
  * This is a placeholder - replace with actual embedding generation
  */
-async function generateEmbedding(text: string): Promise<number[]> {
+async function generateEmbedding(text: string, companyId?: string): Promise<number[]> {
 	// In production, call OpenAI or another embedding provider
 	// For now, we'll use a simple hash-based approach for testing
 	// This should be replaced with actual embedding generation
@@ -53,6 +54,10 @@ async function generateEmbedding(text: string): Promise<number[]> {
 	const openaiKey = process.env.OPENAI_API_KEY;
 
 	if (openaiKey) {
+		const startTime = Date.now();
+		let success = false;
+		let errorMessage: string | undefined;
+
 		try {
 			const response = await fetch("https://api.openai.com/v1/embeddings", {
 				method: "POST",
@@ -69,10 +74,33 @@ async function generateEmbedding(text: string): Promise<number[]> {
 
 			if (response.ok) {
 				const data = await response.json();
+				success = true;
+
+				// Track the API call
+				if (companyId) {
+					openaiTracker.track("embeddings", companyId, {
+						success: true,
+						responseTimeMs: Date.now() - startTime,
+						estimatedCostCents: Math.ceil((text.length / 1000) * 0.002), // ~$0.00002 per 1K tokens
+					}).catch(() => {});
+				}
+
 				return data.data[0].embedding;
+			} else {
+				errorMessage = `API returned ${response.status}`;
 			}
 		} catch (error) {
+			errorMessage = error instanceof Error ? error.message : "Unknown error";
 			console.error("Failed to generate OpenAI embedding:", error);
+		} finally {
+			// Track failed calls
+			if (!success && companyId) {
+				openaiTracker.track("embeddings", companyId, {
+					success: false,
+					responseTimeMs: Date.now() - startTime,
+					errorMessage,
+				}).catch(() => {});
+			}
 		}
 	}
 
@@ -106,7 +134,7 @@ export async function storeMemory(
 	const memoryId = crypto.randomUUID();
 
 	// Generate embedding for the content
-	const embedding = await generateEmbedding(memory.content);
+	const embedding = await generateEmbedding(memory.content, companyId);
 
 	// Calculate content hash for deduplication
 	const contentHash = crypto
@@ -206,7 +234,7 @@ export async function searchMemories(
 	const minSimilarity = options?.minSimilarity || 0.5;
 
 	// Generate embedding for the query
-	const queryEmbedding = await generateEmbedding(query);
+	const queryEmbedding = await generateEmbedding(query, companyId);
 
 	// Use Supabase's vector similarity search
 	// This requires a custom RPC function in Supabase

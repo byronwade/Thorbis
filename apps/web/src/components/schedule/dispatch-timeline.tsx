@@ -26,7 +26,9 @@ import {
 	ClipboardCheck,
 	Clock,
 	ExternalLink,
+	FileText,
 	HardHat,
+	Layers,
 	MapPin,
 	Phone,
 	Play,
@@ -56,6 +58,7 @@ import {
 import { toast } from "sonner";
 import {
 	arriveAppointment,
+	assignJobToTechnician,
 	completeAppointment,
 	dispatchAppointment,
 	updateAppointmentTimes,
@@ -64,6 +67,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
 	Tooltip,
 	TooltipContent,
@@ -92,16 +100,27 @@ import type {
 } from "./schedule-types";
 import { TeamAvatarGroup } from "./team-avatar-manager";
 import { UnassignedPanel } from "./unassigned-panel";
+import { JobWeatherIndicator } from "./weather-alert-banner";
 
 const HOUR_WIDTH = 80;
-const LANE_HEIGHT = 70; // More compact
+const BASE_LANE_HEIGHT = 70; // Minimum lane height
 const SIDEBAR_WIDTH = 220;
 const JOB_HEIGHT = 48; // Narrower job cards
 const JOB_STACK_OFFSET = 6;
 const STACK_GAP = 4;
-const BASE_CENTER_OFFSET = Math.max(STACK_GAP, (LANE_HEIGHT - JOB_HEIGHT) / 2);
+const BASE_CENTER_OFFSET = Math.max(STACK_GAP, (BASE_LANE_HEIGHT - JOB_HEIGHT) / 2);
 const SNAP_INTERVAL_MINUTES = 15;
 const LARGE_SNAP_MINUTES = 60;
+
+/**
+ * Calculate dynamic lane height based on maximum concurrent overlaps
+ * Each overlapping job gets full JOB_HEIGHT instead of shrinking
+ */
+function getLaneHeight(maxOverlaps: number): number {
+	if (maxOverlaps <= 1) return BASE_LANE_HEIGHT;
+	// Full height for each job + gaps between them + padding top/bottom
+	return STACK_GAP * 2 + JOB_HEIGHT * maxOverlaps + (maxOverlaps - 1) * 2;
+}
 
 // Auto-scroll configuration for smooth, fast edge scrolling during drag
 const AUTO_SCROLL_EDGE = 200; // Start scrolling 200px from edge
@@ -252,7 +271,9 @@ type JobWithPosition = {
 	left: number;
 	width: number;
 	top: number;
-	lane: number;
+	height: number; // Calculated height for side-by-side layout
+	column: number; // Which column within the overlap group (0-indexed)
+	totalColumns: number; // Total columns in this overlap group
 	hasOverlap: boolean;
 };
 
@@ -471,57 +492,643 @@ const TravelTimeIndicator = memo(function TravelTimeIndicator({
 	);
 });
 
+/**
+ * Detect overlapping jobs and arrange them vertically with dynamic lane height
+ * Each job maintains full JOB_HEIGHT - the lane expands to fit all overlapping jobs
+ * Returns both the positioned jobs AND the max columns (for calculating lane height)
+ */
 function detectOverlaps(
 	jobs: Array<{ job: Job; left: number; width: number }>,
-): JobWithPosition[] {
-	const positioned: JobWithPosition[] = [];
+	laneHeight?: number, // Optional - if not provided, uses BASE_LANE_HEIGHT
+): { jobs: JobWithPosition[]; maxColumns: number } {
+	if (jobs.length === 0) return { jobs: [], maxColumns: 1 };
 
-	// Sort by start time
-	const sorted = [...jobs].sort((a, b) => a.left - b.left);
+	// Sort by start time, then by duration (longer jobs first for better layout)
+	const sorted = [...jobs].sort((a, b) => {
+		if (a.left !== b.left) return a.left - b.left;
+		return b.width - a.width; // Longer jobs first
+	});
+
+	// Track positioned jobs with their column assignments
+	const positioned: Array<{
+		job: Job;
+		left: number;
+		width: number;
+		right: number;
+		column: number;
+		clusterGroup: number; // Jobs in same cluster share column space
+	}> = [];
+
+	let currentCluster = 0;
+	let clusterMaxRight = 0;
 
 	sorted.forEach(({ job, left, width }) => {
 		const right = left + width;
 
-		// Find all jobs this one overlaps with
-		const overlapping = positioned.filter((p) => {
-			const pRight = p.left + p.width;
-			return !(right <= p.left || left >= pRight);
-		});
-
-		if (overlapping.length > 0) {
-			overlapping.forEach((p) => {
-				if (!p.hasOverlap) {
-					p.hasOverlap = true;
-				}
-			});
+		// Check if this job starts a new cluster (no overlap with previous jobs)
+		if (left >= clusterMaxRight) {
+			currentCluster++;
+			clusterMaxRight = right;
+		} else {
+			// Extend cluster's right boundary
+			clusterMaxRight = Math.max(clusterMaxRight, right);
 		}
 
-		// Find the first available lane (row)
-		let lane = 0;
-		const usedLanes = new Set(overlapping.map((p) => p.lane));
-		while (usedLanes.has(lane)) {
-			lane++;
+		// Find all jobs in current cluster that this job overlaps with
+		const overlapping = positioned.filter((p) => {
+			return p.clusterGroup === currentCluster && !(right <= p.left || left >= p.right);
+		});
+
+		// Find the first available column
+		let column = 0;
+		const usedColumns = new Set(overlapping.map((p) => p.column));
+		while (usedColumns.has(column)) {
+			column++;
 		}
 
 		positioned.push({
 			job,
 			left,
 			width,
-			top: lane * (JOB_HEIGHT + STACK_GAP),
-			lane,
-			hasOverlap: overlapping.length > 0,
+			right,
+			column,
+			clusterGroup: currentCluster,
 		});
 	});
 
-	return positioned;
+	// Calculate total columns for each cluster and find maximum across all clusters
+	const clusterColumnCounts = new Map<number, number>();
+	let maxColumnsOverall = 1;
+	positioned.forEach((p) => {
+		const current = clusterColumnCounts.get(p.clusterGroup) || 0;
+		const newCount = Math.max(current, p.column + 1);
+		clusterColumnCounts.set(p.clusterGroup, newCount);
+		maxColumnsOverall = Math.max(maxColumnsOverall, newCount);
+	});
+
+	// Use provided lane height or calculate default
+	const effectiveLaneHeight = laneHeight ?? getLaneHeight(maxColumnsOverall);
+
+	// Calculate vertical center offset for non-overlapping jobs
+	const baseCenterOffset = Math.max(STACK_GAP, (effectiveLaneHeight - JOB_HEIGHT) / 2);
+
+	// Calculate final positions - each job gets full JOB_HEIGHT
+	const resultJobs = positioned.map((p) => {
+		const totalColumns = clusterColumnCounts.get(p.clusterGroup) || 1;
+		const hasOverlap = totalColumns > 1;
+
+		// All jobs get full JOB_HEIGHT - lane height expands to accommodate
+		const top = hasOverlap
+			? STACK_GAP + p.column * (JOB_HEIGHT + 2) // Stack vertically with 2px gap
+			: baseCenterOffset; // Center vertically when no overlap
+
+		return {
+			job: p.job,
+			left: p.left,
+			width: p.width,
+			top,
+			height: JOB_HEIGHT, // Always full height
+			column: p.column,
+			totalColumns,
+			hasOverlap,
+		};
+	});
+
+	return { jobs: resultJobs, maxColumns: maxColumnsOverall };
 }
 
+/**
+ * JobCardContent - Memoized presentational component for job cards
+ * PERFORMANCE: This component is separated from useDraggable to prevent re-renders during drag.
+ * During drag, only the DraggableJobWrapper re-renders (lightweight), while this expensive
+ * component stays memoized and skips re-rendering entirely.
+ */
+type JobCardContentProps = {
+	job: Job;
+	width: number;
+	hasOverlap: boolean;
+	isSelected: boolean;
+	isDragging: boolean;
+	isPending: boolean;
+	isResizing: boolean;
+	onSelect: () => void;
+	onHover: (isHovering: boolean) => void;
+	onResizeStart: (e: React.MouseEvent, direction: "start" | "end") => void;
+	onContextMenuChange: (open: boolean) => void;
+	onDispatch: (e: React.MouseEvent) => void;
+	onArrive: (e: React.MouseEvent) => void;
+	onComplete: (e: React.MouseEvent) => void;
+};
+
+const JobCardContent = memo(
+	function JobCardContent({
+		job,
+		width,
+		hasOverlap,
+		isSelected,
+		isDragging,
+		isPending,
+		isResizing,
+		onSelect,
+		onHover,
+		onResizeStart,
+		onContextMenuChange,
+		onDispatch,
+		onArrive,
+		onComplete,
+	}: JobCardContentProps) {
+		// Lazy tooltip state - only render tooltips when hovered for performance
+		const [showTooltips, setShowTooltips] = useState(false);
+
+		// Determine which quick action to show based on status
+		const quickAction = useMemo(() => {
+			if (!job.jobId || job.assignments.length === 0) return null;
+
+			switch (job.status) {
+				case "scheduled":
+					return {
+						icon: Send,
+						label: "Dispatch",
+						onClick: onDispatch,
+						className: "bg-blue-500 hover:bg-blue-600 text-white",
+					};
+				case "dispatched":
+					return {
+						icon: Car,
+						label: "Arrive",
+						onClick: onArrive,
+						className: "bg-sky-500 hover:bg-sky-600 text-white",
+					};
+				case "arrived":
+					return {
+						icon: Play,
+						label: "Start",
+						onClick: onComplete,
+						className: "bg-emerald-500 hover:bg-emerald-600 text-white",
+					};
+				case "in-progress":
+					return {
+						icon: Check,
+						label: "Done",
+						onClick: onComplete,
+						className: "bg-amber-500 hover:bg-amber-600 text-white",
+					};
+				default:
+					return null;
+			}
+		}, [job.status, job.jobId, job.assignments.length, onDispatch, onArrive, onComplete]);
+
+		const startTime =
+			job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+		const endTime =
+			job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+		const duration = Math.round(
+			(endTime.getTime() - startTime.getTime()) / (1000 * 60),
+		);
+
+		const borderColor = getJobTypeColor(job);
+
+		// Responsive breakpoints based on card width
+		const isCompact = width < 100; // Very short appointments (~1.25 hours)
+		const isMedium = width >= 100 && width < 160; // Medium appointments (1.25-2 hours)
+		const isWide = width >= 160; // Full layout (2+ hours)
+
+		const handleMouseEnter = useCallback(() => {
+			onHover(true);
+			setShowTooltips(true);
+		}, [onHover]);
+
+		const handleMouseLeave = useCallback(() => {
+			onHover(false);
+			setShowTooltips(false);
+		}, [onHover]);
+
+		return (
+			<>
+				{/* Left Resize Handle - wider hit area for easier grabbing */}
+				<div
+					className="absolute top-0 -left-1 h-full w-3 cursor-ew-resize"
+					onMouseDown={(e) => onResizeStart(e, "start")}
+					style={{ zIndex: 60 }}
+				>
+					{/* Visible indicator on hover */}
+					<div className="bg-primary absolute top-0 left-1 h-full w-1 rounded-l opacity-0 transition-opacity group-hover:opacity-100" />
+				</div>
+
+				<ScheduleJobContextMenu
+					job={job}
+					onOpenChange={onContextMenuChange}
+				>
+					{(() => {
+						const categoryConfig = getAppointmentCategoryConfig(job);
+						const typeConfig = getJobTypeConfig(job);
+						const TypeIcon = typeConfig.icon;
+						const CategoryIcon = categoryConfig.icon;
+
+						return (
+							<HoverCard openDelay={400} closeDelay={100}>
+								<HoverCardTrigger asChild>
+									<div
+										className={cn(
+											"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1 active:cursor-grabbing",
+											// Performance: Only transition shadow/ring, not all properties. Disable during drag.
+											!isDragging &&
+												"transition-[box-shadow,ring] duration-150 ease-out hover:shadow-sm",
+											borderColor,
+											categoryConfig.borderStyle,
+											job.isUnassigned && "!border-red-500",
+											isSelected && "ring-primary shadow-md ring-1",
+											isDragging &&
+												"shadow-2xl ring-2 ring-primary/50 scale-[1.02] opacity-90",
+											(job.status === "completed" ||
+												job.status === "closed") &&
+												"opacity-50",
+											// Side-by-side overlap: add subtle shadow on left for visual separation
+											hasOverlap && "shadow-sm",
+										)}
+										onClick={onSelect}
+										onMouseEnter={handleMouseEnter}
+										onMouseLeave={handleMouseLeave}
+									>
+								{/* Overlap indicator - shows when job overlaps with others */}
+								{hasOverlap && showTooltips && (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full border border-amber-500/50 bg-amber-500/20 shadow-sm dark:bg-amber-500/30">
+												<Layers className="size-2.5 text-amber-600 dark:text-amber-400" />
+											</div>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											Scheduled at same time as another job
+										</TooltipContent>
+									</Tooltip>
+								)}
+								{hasOverlap && !showTooltips && (
+									<div className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full border border-amber-500/50 bg-amber-500/20 shadow-sm dark:bg-amber-500/30">
+										<Layers className="size-2.5 text-amber-600 dark:text-amber-400" />
+									</div>
+								)}
+
+								{/* Recurring indicator - subtle */}
+								{job.recurrence && showTooltips && (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Repeat className="absolute -top-0.5 left-0.5 size-2.5 text-violet-500" />
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											Recurring job
+										</TooltipContent>
+									</Tooltip>
+								)}
+								{job.recurrence && !showTooltips && (
+									<Repeat className="absolute -top-0.5 left-0.5 size-2.5 text-violet-500" />
+								)}
+
+								{/* Appointment Category Indicator - hidden on compact */}
+								{!isCompact && (showTooltips ? (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div
+												className={cn(
+													"flex size-4 shrink-0 items-center justify-center rounded-sm",
+													categoryConfig.bgColor,
+												)}
+											>
+												<CategoryIcon
+													className={cn(
+														"size-2.5",
+														categoryConfig.textColor,
+													)}
+												/>
+											</div>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											{categoryConfig.label}
+										</TooltipContent>
+									</Tooltip>
+								) : (
+									<div
+										className={cn(
+											"flex size-4 shrink-0 items-center justify-center rounded-sm",
+											categoryConfig.bgColor,
+										)}
+									>
+										<CategoryIcon
+											className={cn(
+												"size-2.5",
+												categoryConfig.textColor,
+											)}
+										/>
+									</div>
+								))}
+
+								{/* Job Type Icon - hidden on compact */}
+								{!isCompact && (showTooltips ? (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<div
+												className={cn(
+													"flex size-5 shrink-0 items-center justify-center rounded",
+													typeConfig.bgColor,
+												)}
+											>
+												<TypeIcon
+													className={cn(
+														"size-3",
+														typeConfig.borderColor.replace(
+															"border-l-",
+															"text-",
+														),
+													)}
+												/>
+											</div>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											{typeConfig.label}
+										</TooltipContent>
+									</Tooltip>
+								) : (
+									<div
+										className={cn(
+											"flex size-5 shrink-0 items-center justify-center rounded",
+											typeConfig.bgColor,
+										)}
+									>
+										<TypeIcon
+											className={cn(
+												"size-3",
+												typeConfig.borderColor.replace(
+													"border-l-",
+													"text-",
+												),
+											)}
+										/>
+									</div>
+								))}
+
+								{/* Customer Name - Primary */}
+								<span className="text-foreground flex-1 truncate text-xs font-semibold">
+									{job.customer?.name || "Unknown Customer"}
+								</span>
+
+								{/* Team Avatars - hidden on compact, limited on medium */}
+								{!isCompact && (
+									<TeamAvatarGroup
+										assignments={job.assignments}
+										maxVisible={isMedium ? 1 : 2}
+										onRemove={(_techId) => {
+											// TODO: Implement remove team member
+										}}
+									/>
+								)}
+
+								{/* Quick Action Button - only on wide cards */}
+								{isWide && quickAction && showTooltips && (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<button
+												type="button"
+												onClick={quickAction.onClick}
+												disabled={isPending}
+												className={cn(
+													"flex size-6 items-center justify-center rounded-md opacity-0 transition-opacity duration-150 group-hover:opacity-100",
+													"focus:outline-none focus:ring-2 focus:ring-offset-1",
+													quickAction.className,
+													isPending && "cursor-wait opacity-50",
+												)}
+											>
+												{isPending ? (
+													<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+												) : (
+													<quickAction.icon className="size-3" />
+												)}
+											</button>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											{quickAction.label}
+										</TooltipContent>
+									</Tooltip>
+								)}
+								{isWide && quickAction && !showTooltips && (
+									<button
+										type="button"
+										onClick={quickAction.onClick}
+										disabled={isPending}
+										className={cn(
+											"flex size-6 items-center justify-center rounded-md opacity-0 transition-opacity duration-150 group-hover:opacity-100",
+											"focus:outline-none focus:ring-2 focus:ring-offset-1",
+											quickAction.className,
+											isPending && "cursor-wait opacity-50",
+										)}
+									>
+										{isPending ? (
+											<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+										) : (
+											<quickAction.icon className="size-3" />
+										)}
+									</button>
+								)}
+
+								{/* View Details Link - only on wide cards */}
+								{isWide && job.jobId && showTooltips && (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Link
+												href={`/dashboard/work/${job.jobId}`}
+												onClick={(e) => e.stopPropagation()}
+												className="flex size-6 items-center justify-center rounded-md bg-slate-100 opacity-0 transition-[opacity,background-color] duration-150 hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+											>
+												<ExternalLink className="size-3 text-slate-600 dark:text-slate-400" />
+											</Link>
+										</TooltipTrigger>
+										<TooltipContent side="top" className="text-xs">
+											View Details
+										</TooltipContent>
+									</Tooltip>
+								)}
+								{isWide && job.jobId && !showTooltips && (
+									<Link
+										href={`/dashboard/work/${job.jobId}`}
+										onClick={(e) => e.stopPropagation()}
+										className="flex size-6 items-center justify-center rounded-md bg-slate-100 opacity-0 transition-[opacity,background-color] duration-150 hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+									>
+										<ExternalLink className="size-3 text-slate-600 dark:text-slate-400" />
+									</Link>
+								)}
+
+									{/* Status dot - larger for better visibility */}
+								<div
+									className={cn(
+										"size-2 shrink-0 rounded-full",
+										job.status === "scheduled" && "bg-blue-500",
+										job.status === "dispatched" && "bg-sky-500",
+										job.status === "arrived" && "bg-emerald-500",
+										job.status === "in-progress" && "bg-amber-500",
+										(job.status === "closed" ||
+											job.status === "completed") &&
+											"bg-slate-400",
+										job.status === "cancelled" && "bg-slate-300",
+									)}
+								/>
+								</div>
+							</HoverCardTrigger>
+								<HoverCardContent
+									side="bottom"
+									align="start"
+									className="w-80 p-4 bg-popover border-2 border-border shadow-2xl shadow-black/50 ring-1 ring-white/10 dark:ring-white/5"
+								>
+									{/* Title & Status */}
+									<div className="flex items-start justify-between gap-3 mb-4">
+										<div className="flex-1 min-w-0">
+											<h3 className="font-semibold text-sm truncate">
+												{job.title || "Untitled Job"}
+											</h3>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												{typeConfig.label} · {categoryConfig.label}
+											</p>
+										</div>
+										<Badge
+											variant="outline"
+											className={cn(
+												"text-[10px] shrink-0",
+												job.status === "scheduled" && "border-blue-500/50 text-blue-500",
+												job.status === "dispatched" && "border-sky-500/50 text-sky-500",
+												job.status === "arrived" && "border-emerald-500/50 text-emerald-500",
+												job.status === "in-progress" && "border-amber-500/50 text-amber-500",
+												(job.status === "completed" || job.status === "closed") && "border-muted-foreground/50 text-muted-foreground",
+												job.status === "cancelled" && "border-red-500/50 text-red-500",
+											)}
+										>
+											{job.status.replace("-", " ")}
+										</Badge>
+									</div>
+
+									{/* Customer */}
+									<div className="flex items-center gap-3 mb-3">
+										<Avatar className="size-8">
+											<AvatarFallback className="text-xs">
+												{(job.customer?.name || "U").split(" ").map(n => n[0]).join("").slice(0, 2)}
+											</AvatarFallback>
+										</Avatar>
+										<div className="flex-1 min-w-0">
+											<p className="text-sm font-medium truncate">
+												{job.customer?.name || "Unknown Customer"}
+											</p>
+											{job.customer?.phone && (
+												<p className="text-xs text-muted-foreground">{job.customer.phone}</p>
+											)}
+										</div>
+									</div>
+
+									{/* Details */}
+									<div className="space-y-2 text-sm">
+										{/* Time */}
+										<div className="flex items-center gap-2 text-muted-foreground">
+											<Clock className="size-3.5 shrink-0" />
+											<span>
+												{format(startTime, "h:mm a")} – {format(endTime, "h:mm a")}
+												<span className="text-muted-foreground/60 ml-1">({duration}m)</span>
+											</span>
+										</div>
+
+										{/* Date */}
+										<div className="flex items-center gap-2 text-muted-foreground">
+											<Calendar className="size-3.5 shrink-0" />
+											<span>{format(startTime, "EEE, MMM d, yyyy")}</span>
+										</div>
+
+										{/* Location */}
+										{job.location?.address?.street && (
+											<div className="flex items-start gap-2 text-muted-foreground">
+												<MapPin className="size-3.5 shrink-0 mt-0.5" />
+												<span className="line-clamp-2">
+													{job.location.address.street}
+													{job.location.address.city && `, ${job.location.address.city}`}
+												</span>
+											</div>
+										)}
+
+										{/* Assigned */}
+										{job.assignments && job.assignments.length > 0 && (
+											<div className="flex items-center gap-2 text-muted-foreground">
+												<User className="size-3.5 shrink-0" />
+												<span className="truncate">
+													{job.assignments.map(a => a.technicianName || "Unknown").join(", ")}
+												</span>
+											</div>
+										)}
+									</div>
+
+									{/* Notes */}
+									{job.description && (
+										<p className="mt-3 pt-3 border-t text-xs text-muted-foreground line-clamp-2">
+											{job.description}
+										</p>
+									)}
+
+									{/* Footer */}
+									{job.jobId && (
+										<div className="mt-3 pt-3 border-t">
+											<Link
+												href={`/dashboard/work/${job.jobId}`}
+												className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+												onClick={(e) => e.stopPropagation()}
+											>
+												View job details
+												<ExternalLink className="size-3" />
+											</Link>
+										</div>
+									)}
+								</HoverCardContent>
+							</HoverCard>
+						);
+					})()}
+				</ScheduleJobContextMenu>
+
+				{/* Right Resize Handle - wider hit area for easier grabbing */}
+				<div
+					className="absolute top-0 -right-1 h-full w-3 cursor-ew-resize"
+					onMouseDown={(e) => onResizeStart(e, "end")}
+					style={{ zIndex: 60 }}
+				>
+					{/* Visible indicator on hover */}
+					<div className="bg-primary absolute top-0 right-1 h-full w-1 rounded-r opacity-0 transition-opacity group-hover:opacity-100" />
+				</div>
+			</>
+		);
+	},
+	(prev, next) => {
+		// PERFORMANCE: Strict comparison - only re-render if actual visible data changes
+		// This memo comparison is critical for drag performance
+		return (
+			prev.job.id === next.job.id &&
+			prev.job.status === next.job.status &&
+			prev.job.startTime === next.job.startTime &&
+			prev.job.endTime === next.job.endTime &&
+			prev.job.customer?.name === next.job.customer?.name &&
+			prev.job.assignments.length === next.job.assignments.length &&
+			prev.width === next.width &&
+			prev.hasOverlap === next.hasOverlap &&
+			prev.isSelected === next.isSelected &&
+			prev.isDragging === next.isDragging &&
+			prev.isPending === next.isPending &&
+			prev.isResizing === next.isResizing
+		);
+	},
+);
+
+/**
+ * DraggableJobWrapper - Lightweight wrapper that handles drag state
+ * PERFORMANCE: This component will re-render during drag (due to useDraggable),
+ * but it's lightweight. The expensive JobCardContent inside stays memoized.
+ */
 const JobCard = memo(
 	function JobCard({
 		job,
 		left,
 		width,
 		top,
+		height,
 		hasOverlap,
 		isSelected,
 		onSelect,
@@ -533,6 +1140,7 @@ const JobCard = memo(
 		left: number;
 		width: number;
 		top: number;
+		height: number;
 		hasOverlap: boolean;
 		isSelected: boolean;
 		onSelect: () => void;
@@ -603,507 +1211,106 @@ const JobCard = memo(
 			[job.id],
 		);
 
-		// Determine which quick action to show based on status
-		const getQuickAction = () => {
-			if (!job.jobId || job.assignments.length === 0) return null;
-
-			switch (job.status) {
-				case "scheduled":
-					return {
-						icon: Send,
-						label: "Dispatch",
-						onClick: handleDispatch,
-						className: "bg-blue-500 hover:bg-blue-600 text-white",
-					};
-				case "dispatched":
-					return {
-						icon: Car,
-						label: "Arrive",
-						onClick: handleArrive,
-						className: "bg-sky-500 hover:bg-sky-600 text-white",
-					};
-				case "arrived":
-					return {
-						icon: Play,
-						label: "Start",
-						onClick: handleComplete,
-						className: "bg-emerald-500 hover:bg-emerald-600 text-white",
-					};
-				case "in-progress":
-					return {
-						icon: Check,
-						label: "Done",
-						onClick: handleComplete,
-						className: "bg-amber-500 hover:bg-amber-600 text-white",
-					};
-				default:
-					return null;
-			}
-		};
-
-		const quickAction = getQuickAction();
-
-		const topOffset =
-			(top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top;
-
-		const style = {
+		// Calculate position style - this is the only thing the wrapper needs
+		// Note: `top` is already calculated with proper offsets in detectOverlaps()
+		const style = useMemo(() => ({
 			left: `${left}px`,
 			width: `${width}px`,
-			top: `${topOffset}px`,
-			height: `${JOB_HEIGHT}px`,
+			top: `${top}px`,
+			height: `${height}px`,
 			transform: CSS.Translate.toString(transform),
-			zIndex: isDragging ? 50 : isSelected ? 20 : 10 - top / JOB_STACK_OFFSET,
-		};
+			zIndex: isDragging ? 50 : isSelected ? 20 : hasOverlap ? 15 : 10,
+			// Opacity handled by CSS class (opacity-0 when isDragging)
+		}), [left, width, top, height, transform, isDragging, isSelected, hasOverlap]);
 
-		const startTime =
-			job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-		const endTime =
-			job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
-		const duration = Math.round(
-			(endTime.getTime() - startTime.getTime()) / (1000 * 60),
+		// Resize handler - passed to JobCardContent
+		const handleResizeStart = useCallback(
+			(e: React.MouseEvent, direction: "start" | "end") => {
+				e.stopPropagation();
+				setIsResizing(true);
+				onHover(true); // Keep hover state active during resize
+
+				const startX = e.clientX;
+				let totalDelta = 0;
+
+				const handleMouseMove = (moveEvent: MouseEvent) => {
+					const deltaX = moveEvent.clientX - startX;
+					const deltaMinutes = Math.round((deltaX / HOUR_WIDTH) * 60);
+
+					// Snap to 15-minute intervals
+					const snappedMinutes = Math.round(deltaMinutes / 15) * 15;
+
+					if (snappedMinutes !== totalDelta) {
+						totalDelta = snappedMinutes;
+						onResize(job.id, direction, snappedMinutes);
+					}
+				};
+
+				const handleMouseUp = () => {
+					setIsResizing(false);
+					onHover(false);
+					document.removeEventListener("mousemove", handleMouseMove);
+					document.removeEventListener("mouseup", handleMouseUp);
+
+					onResizeComplete(job.id, totalDelta !== 0);
+				};
+
+				document.addEventListener("mousemove", handleMouseMove);
+				document.addEventListener("mouseup", handleMouseUp);
+			},
+			[job.id, onHover, onResize, onResizeComplete],
 		);
 
-		const borderColor = getJobTypeColor(job);
+		const handleContextMenuChange = useCallback((open: boolean) => {
+			setIsContextMenuOpen(open);
+		}, []);
 
-		const handleResizeStart = (
-			e: React.MouseEvent,
-			direction: "start" | "end",
-		) => {
-			e.stopPropagation();
-			setIsResizing(true);
-			onHover(true); // Keep hover state active during resize
-
-			const startX = e.clientX;
-			let totalDelta = 0;
-
-			const handleMouseMove = (moveEvent: MouseEvent) => {
-				const deltaX = moveEvent.clientX - startX;
-				const deltaMinutes = Math.round((deltaX / HOUR_WIDTH) * 60);
-
-				// Snap to 15-minute intervals
-				const snappedMinutes = Math.round(deltaMinutes / 15) * 15;
-
-				if (snappedMinutes !== totalDelta) {
-					totalDelta = snappedMinutes;
-					onResize(job.id, direction, snappedMinutes);
-				}
-			};
-
-			const handleMouseUp = () => {
-				setIsResizing(false);
-				onHover(false);
-				document.removeEventListener("mousemove", handleMouseMove);
-				document.removeEventListener("mouseup", handleMouseUp);
-
-				onResizeComplete(job.id, totalDelta !== 0);
-			};
-
-			document.addEventListener("mousemove", handleMouseMove);
-			document.addEventListener("mouseup", handleMouseUp);
-		};
-
+		// PERFORMANCE: This wrapper is lightweight - only handles position and drag state
+		// The expensive JobCardContent inside stays memoized and won't re-render during drag movement
 		return (
 			<TooltipProvider>
-				<Tooltip
-					delayDuration={200}
-					open={isContextMenuOpen ? false : undefined}
+				<div
+					className={cn(
+						"job-card group absolute will-change-transform",
+						// Smooth position transitions when not dragging (for repositioning after drop)
+						!isDragging &&
+							"transition-[left,top,width] duration-200 ease-out",
+						// Hide original card when dragging (DragOverlay shows the dragged item)
+						isDragging && "opacity-0",
+					)}
+					ref={setNodeRef}
+					style={style}
+					{...attributes}
+					{...listeners}
 				>
-					<TooltipTrigger asChild>
-						<div
-							className={cn(
-								"group absolute",
-								// Smooth position transitions when not dragging (for repositioning after drop)
-								!isDragging &&
-									"transition-[left,top,width] duration-200 ease-out",
-							)}
-							ref={setNodeRef}
-							style={style}
-							{...attributes}
-							{...listeners}
-							onMouseEnter={() => onHover(true)}
-							onMouseLeave={() => onHover(false)}
-						>
-							{/* Left Resize Handle */}
-							<div
-								className="bg-primary absolute top-0 left-0 h-full w-1 cursor-ew-resize opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100"
-								onMouseDown={(e) => handleResizeStart(e, "start")}
-								style={{ zIndex: 60 }}
-							/>
-
-							<ScheduleJobContextMenu
-								job={job}
-								onOpenChange={setIsContextMenuOpen}
-							>
-								{(() => {
-									const categoryConfig = getAppointmentCategoryConfig(job);
-									return (
-										<div
-											className={cn(
-												"bg-card relative flex h-full cursor-grab items-center gap-2 rounded-md border px-2.5 py-1.5 active:cursor-grabbing",
-												// Performance: Only transition shadow/ring, not all properties. Disable during drag.
-												!isDragging &&
-													"transition-[box-shadow,ring] duration-150 ease-out hover:shadow-sm",
-												borderColor,
-												categoryConfig.borderStyle,
-												job.isUnassigned && "!border-red-500",
-												isSelected && "ring-primary shadow-md ring-1",
-												isDragging &&
-													"shadow-2xl ring-2 ring-primary/50 scale-[1.02] opacity-90",
-												(job.status === "completed" ||
-													job.status === "closed") &&
-													"opacity-50",
-											)}
-											onClick={onSelect}
-										>
-											{/* Overlap indicator - subtle dot */}
-											{hasOverlap && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<div className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500" />
-													</TooltipTrigger>
-													<TooltipContent side="top" className="text-xs">
-														Overlaps with another job
-													</TooltipContent>
-												</Tooltip>
-											)}
-
-											{/* Recurring indicator - subtle */}
-											{job.recurrence && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<Repeat className="absolute -top-0.5 left-0.5 size-2.5 text-violet-500" />
-													</TooltipTrigger>
-													<TooltipContent side="top" className="text-xs">
-														Recurring job
-													</TooltipContent>
-												</Tooltip>
-											)}
-
-											{/* Appointment Category Indicator */}
-											{(() => {
-												const CategoryIcon = categoryConfig.icon;
-												return (
-													<Tooltip>
-														<TooltipTrigger asChild>
-															<div
-																className={cn(
-																	"flex size-4 shrink-0 items-center justify-center rounded-sm",
-																	categoryConfig.bgColor,
-																)}
-															>
-																<CategoryIcon
-																	className={cn(
-																		"size-2.5",
-																		categoryConfig.textColor,
-																	)}
-																/>
-															</div>
-														</TooltipTrigger>
-														<TooltipContent side="top" className="text-xs">
-															{categoryConfig.label}
-														</TooltipContent>
-													</Tooltip>
-												);
-											})()}
-
-											{/* Job Type Icon */}
-											{(() => {
-												const typeConfig = getJobTypeConfig(job);
-												const TypeIcon = typeConfig.icon;
-												return (
-													<Tooltip>
-														<TooltipTrigger asChild>
-															<div
-																className={cn(
-																	"flex size-5 shrink-0 items-center justify-center rounded",
-																	typeConfig.bgColor,
-																)}
-															>
-																<TypeIcon
-																	className={cn(
-																		"size-3",
-																		typeConfig.borderColor.replace(
-																			"border-l-",
-																			"text-",
-																		),
-																	)}
-																/>
-															</div>
-														</TooltipTrigger>
-														<TooltipContent side="top" className="text-xs">
-															{typeConfig.label}
-														</TooltipContent>
-													</Tooltip>
-												);
-											})()}
-
-											{/* Customer Name - Primary */}
-											<span className="text-foreground flex-1 truncate text-xs font-semibold">
-												{job.customer?.name || "Unknown Customer"}
-											</span>
-
-											{/* Team Avatars */}
-											<TeamAvatarGroup
-												assignments={job.assignments}
-												maxVisible={3}
-												onAddMember={() => {
-													// TODO: Implement add team member
-												}}
-												onRemove={(_techId) => {
-													// TODO: Implement remove team member
-												}}
-											/>
-
-											{/* Quick Action Button - appears on hover */}
-											{quickAction && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<button
-															type="button"
-															onClick={quickAction.onClick}
-															disabled={isPending}
-															className={cn(
-																"flex size-6 items-center justify-center rounded-md opacity-0 transition-opacity duration-150 group-hover:opacity-100",
-																"focus:outline-none focus:ring-2 focus:ring-offset-1",
-																quickAction.className,
-																isPending && "cursor-wait opacity-50",
-															)}
-														>
-															{isPending ? (
-																<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
-															) : (
-																<quickAction.icon className="size-3" />
-															)}
-														</button>
-													</TooltipTrigger>
-													<TooltipContent side="top" className="text-xs">
-														{quickAction.label}
-													</TooltipContent>
-												</Tooltip>
-											)}
-
-											{/* View Details Link - appears on hover */}
-											{job.jobId && (
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<Link
-															href={`/dashboard/work/${job.jobId}`}
-															onClick={(e) => e.stopPropagation()}
-															className="flex size-6 items-center justify-center rounded-md bg-slate-100 opacity-0 transition-[opacity,background-color] duration-150 hover:bg-slate-200 group-hover:opacity-100 dark:bg-slate-800 dark:hover:bg-slate-700"
-														>
-															<ExternalLink className="size-3 text-slate-600 dark:text-slate-400" />
-														</Link>
-													</TooltipTrigger>
-													<TooltipContent side="top" className="text-xs">
-														View Details
-													</TooltipContent>
-												</Tooltip>
-											)}
-
-											{/* Status dot */}
-											<div
-												className={cn(
-													"size-1.5 shrink-0 rounded-full",
-													job.status === "scheduled" && "bg-blue-500",
-													job.status === "dispatched" && "bg-sky-500",
-													job.status === "arrived" && "bg-emerald-500",
-													job.status === "in-progress" && "bg-amber-500",
-													(job.status === "closed" ||
-														job.status === "completed") &&
-														"bg-slate-400",
-													job.status === "cancelled" && "bg-slate-300",
-												)}
-											/>
-										</div>
-									);
-								})()}
-							</ScheduleJobContextMenu>
-
-							{/* Right Resize Handle */}
-							<div
-								className="bg-primary absolute top-0 right-0 h-full w-1 cursor-ew-resize opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100"
-								onMouseDown={(e) => handleResizeStart(e, "end")}
-								style={{ zIndex: 60 }}
-							/>
-						</div>
-					</TooltipTrigger>
-					<TooltipContent
-						className="w-80 overflow-hidden rounded-lg border border-border bg-popover p-0 shadow-xl [&>svg]:hidden"
-						side="top"
-						sideOffset={8}
-					>
-						<div className="overflow-hidden text-popover-foreground">
-							{/* Header */}
-							<div className="border-b border-border px-4 py-3">
-								<div className="mb-2 flex items-center justify-between gap-2">
-									<h4 className="text-foreground text-base font-bold">
-										{job.customer?.name || "Unknown Customer"}
-									</h4>
-									<Badge className="text-[10px] capitalize" variant="outline">
-										{job.status}
-									</Badge>
-								</div>
-								<p className="text-muted-foreground mb-2 text-sm">
-									{job.title}
-								</p>
-								{/* Type badges row */}
-								<div className="flex flex-wrap items-center gap-1.5">
-									{/* Appointment Category Badge */}
-									{(() => {
-										const catConfig = getAppointmentCategoryConfig(job);
-										const CatIcon = catConfig.icon;
-										return (
-											<Badge
-												className={cn(
-													"gap-1 px-2 py-0.5 text-[10px]",
-													catConfig.bgColor,
-													catConfig.textColor,
-												)}
-												variant="outline"
-											>
-												<CatIcon className="size-2.5" />
-												{catConfig.label}
-											</Badge>
-										);
-									})()}
-									{/* Job Type Badge */}
-									{(() => {
-										const typeConfig = getJobTypeConfig(job);
-										const TypeIcon = typeConfig.icon;
-										return (
-											<Badge
-												className={cn(
-													"gap-1 px-2 py-0.5 text-[10px]",
-													typeConfig.bgColor,
-													typeConfig.borderColor.replace("border-l-", "text-"),
-												)}
-												variant="outline"
-											>
-												<TypeIcon className="size-2.5" />
-												{typeConfig.label}
-											</Badge>
-										);
-									})()}
-									{job.recurrence && (
-										<Badge
-											className="gap-0.5 bg-violet-100 px-1.5 py-0.5 text-[10px] text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
-											variant="outline"
-										>
-											<Repeat className="size-2.5" />
-											Recurring
-										</Badge>
-									)}
-									{job.priority === "urgent" && (
-										<Badge
-											className="gap-0.5 px-1.5 py-0.5 text-[10px]"
-											variant="destructive"
-										>
-											<AlertTriangle className="size-2.5" />
-											Urgent
-										</Badge>
-									)}
-								</div>
-							</div>
-
-							{/* Content */}
-							<div className="space-y-3 p-4">
-								{/* Time */}
-								<div className="flex items-center gap-2.5">
-									<Clock className="text-muted-foreground size-4" />
-									<div>
-										<p className="text-foreground text-sm font-medium">
-											{format(startTime, "h:mm a")} –{" "}
-											{format(endTime, "h:mm a")}
-										</p>
-										<p className="text-muted-foreground text-xs">
-											{format(startTime, "EEE, MMM d")} • {duration} min
-										</p>
-									</div>
-								</div>
-
-								{/* Location */}
-								{job.location?.address?.street && (
-									<div className="flex items-start gap-2.5">
-										<MapPin className="text-muted-foreground mt-0.5 size-4 shrink-0" />
-										<div className="min-w-0 flex-1">
-											<p className="text-foreground text-sm font-medium">
-												{job.location.address.street}
-											</p>
-											{job.location.address.city && (
-												<p className="text-muted-foreground text-xs">
-													{job.location.address.city},{" "}
-													{job.location.address.state}
-												</p>
-											)}
-										</div>
-									</div>
-								)}
-
-								{/* Contact */}
-								{job.customer?.phone && (
-									<div className="flex items-center gap-2.5">
-										<User className="text-muted-foreground size-4" />
-										<p className="text-foreground text-sm font-medium">
-											{job.customer.phone}
-										</p>
-									</div>
-								)}
-
-								{/* Team */}
-								{job.assignments.length > 0 && (
-									<div className="flex flex-wrap gap-1.5 border-t border-border pt-2">
-										{job.assignments.map((assignment, idx) => (
-											<div
-												className="bg-muted flex items-center gap-1 rounded-md px-2 py-1"
-												key={idx}
-											>
-												<div
-													className={cn(
-														"size-1.5 rounded-full",
-														assignment.status === "available" && "bg-green-500",
-														assignment.status === "on-job" && "bg-amber-500",
-														assignment.status === "on-break" && "bg-slate-400",
-													)}
-												/>
-												<span className="text-foreground text-xs font-medium">
-													{assignment.displayName}
-												</span>
-											</div>
-										))}
-									</div>
-								)}
-							</div>
-
-							{/* Action */}
-							{job.jobId && (
-								<div className="border-t border-border p-3">
-									<a
-										className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors"
-										href={`/dashboard/work/${job.jobId}`}
-										onClick={(e) => e.stopPropagation()}
-									>
-										View Details
-										<ChevronRight className="size-3.5" />
-									</a>
-								</div>
-							)}
-						</div>
-					</TooltipContent>
-				</Tooltip>
+					<JobCardContent
+						job={job}
+						width={width}
+						hasOverlap={hasOverlap}
+						isSelected={isSelected}
+						isDragging={isDragging}
+						isPending={isPending}
+						isResizing={isResizing}
+						onSelect={onSelect}
+						onHover={onHover}
+						onResizeStart={handleResizeStart}
+						onContextMenuChange={handleContextMenuChange}
+						onDispatch={handleDispatch}
+						onArrive={handleArrive}
+						onComplete={handleComplete}
+					/>
+				</div>
 			</TooltipProvider>
 		);
 	},
 	(prev, next) => {
-		// Performance: Custom comparison to avoid re-renders from callback references
-		// Only re-render if actual data or selection state changes
+		// PERFORMANCE: Only compare position props - content comparison is in JobCardContent
 		return (
 			prev.job.id === next.job.id &&
-			prev.job.status === next.job.status &&
-			prev.job.startTime === next.job.startTime &&
-			prev.job.endTime === next.job.endTime &&
 			prev.left === next.left &&
 			prev.width === next.width &&
 			prev.top === next.top &&
+			prev.height === next.height &&
 			prev.hasOverlap === next.hasOverlap &&
 			prev.isSelected === next.isSelected
 		);
@@ -1194,6 +1401,7 @@ const TechnicianLane = memo(
 		const [isDraggingToCreate, setIsDraggingToCreate] = useState(false);
 		const [dragStartX, setDragStartX] = useState(0);
 		const [dragCurrentX, setDragCurrentX] = useState(0);
+		const [dragStartY, setDragStartY] = useState(0);
 		// Store the lane rect when drag starts so we don't depend on ref in effects
 		const dragLaneRectRef = useRef<DOMRect | null>(null);
 		const laneRef = useRef<HTMLDivElement>(null);
@@ -1214,6 +1422,11 @@ const TechnicianLane = memo(
 		// Handle mouse down to start drag-to-create
 		const handleCanvasMouseDown = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
+				// Don't start drag-to-create if dnd-kit is already handling a drag
+				if (isDragActive) {
+					return;
+				}
+
 				// Only trigger on empty space (not on job cards or resize handles)
 				if ((e.target as HTMLElement).closest(".job-card")) {
 					return;
@@ -1224,18 +1437,27 @@ const TechnicianLane = memo(
 
 				const rect = e.currentTarget.getBoundingClientRect();
 				const startX = e.clientX - rect.left;
+				const startY = e.clientY - rect.top;
 
 				// Store the rect for use in global event handlers
 				dragLaneRectRef.current = rect;
 				setDragStartX(startX);
 				setDragCurrentX(startX);
+				setDragStartY(startY);
 				setIsDraggingToCreate(true);
 
 				// Prevent text selection during drag
 				e.preventDefault();
 			},
-			[],
+			[isDragActive],
 		);
+
+		// Cancel drag-to-create if dnd-kit drag starts (race condition safeguard)
+		useEffect(() => {
+			if (isDragActive && isDraggingToCreate) {
+				setIsDraggingToCreate(false);
+			}
+		}, [isDragActive, isDraggingToCreate]);
 
 		// Handle mouse move during drag-to-create
 		useEffect(() => {
@@ -1326,8 +1548,16 @@ const TechnicianLane = memo(
 			if (!isDraggingToCreate) return null;
 			const minX = Math.min(dragStartX, dragCurrentX);
 			const width = Math.abs(dragCurrentX - dragStartX);
-			return { left: minX, width };
-		}, [isDraggingToCreate, dragStartX, dragCurrentX]);
+
+			// Calculate which sub-row was clicked (for overlapping appointments)
+			const subRow = Math.max(
+				0,
+				Math.floor((dragStartY - STACK_GAP) / (JOB_HEIGHT + 2)),
+			);
+			const top = STACK_GAP + subRow * (JOB_HEIGHT + 2);
+
+			return { left: minX, width, top };
+		}, [isDraggingToCreate, dragStartX, dragCurrentX, dragStartY]);
 
 		// Calculate preview time labels
 		const dragTimeLabels = useMemo(() => {
@@ -1402,24 +1632,23 @@ const TechnicianLane = memo(
 								left: dragPreviewStyle.left,
 								width: dragPreviewStyle.width,
 								height: JOB_HEIGHT,
-								top: BASE_CENTER_OFFSET,
+								top: dragPreviewStyle.top,
 							}}
 						>
-							{/* Preview box with time badge inside */}
-							<div className="relative flex h-full w-full items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-500/40 shadow-lg">
-								{/* Time badge centered inside the box */}
-								{dragTimeLabels && (
-									<div className="flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-										<Clock className="h-3 w-3" />
-										<span>
-											{dragTimeLabels.start} - {dragTimeLabels.end}
-										</span>
-										<span className="text-blue-200">
-											({dragTimeLabels.duration})
-										</span>
-									</div>
-								)}
-							</div>
+							{/* Time badge positioned ABOVE the preview box */}
+							{dragTimeLabels && (
+								<div className="absolute -top-7 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white shadow-md">
+									<Clock className="h-3 w-3" />
+									<span>
+										{dragTimeLabels.start} - {dragTimeLabels.end}
+									</span>
+									<span className="text-blue-200">
+										({dragTimeLabels.duration})
+									</span>
+								</div>
+							)}
+							{/* Dotted preview box (empty inside) */}
+							<div className="h-full w-full rounded-lg border-2 border-dashed border-blue-400 bg-blue-500/40 shadow-lg" />
 						</div>
 					)}
 
@@ -1452,9 +1681,10 @@ const TechnicianLane = memo(
 						))}
 
 						{/* Job cards */}
-						{jobs.map(({ job, left, width, top, hasOverlap }) => (
+						{jobs.map(({ job, left, width, top, height: jobHeight, hasOverlap }) => (
 							<JobCard
 								hasOverlap={hasOverlap}
+								height={jobHeight}
 								isSelected={
 									isSelectionMode
 										? selectedJobIds.has(job.id)
@@ -1521,6 +1751,8 @@ export function DispatchTimeline() {
 	const [isSelectionMode, setIsSelectionMode] = useState(false);
 	const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
 	const [isBulkActionPending, startBulkTransition] = useTransition();
+	// Current time state - updates every minute for the time indicator
+	const [currentTime, setCurrentTime] = useState(() => new Date());
 	// Navigation for technician detail page
 	const router = useRouter();
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -1540,6 +1772,7 @@ export function DispatchTimeline() {
 		isLoadingUnassigned,
 		unassignedTotalCount,
 		loadMoreUnassignedJobs,
+		refresh,
 	} = useSchedule();
 	// Use individual selectors for better performance (prevents re-renders when unrelated state changes)
 	const currentDate = useScheduleViewStore((s) => s.currentDate);
@@ -1796,9 +2029,9 @@ export function DispatchTimeline() {
 	}, [dateObj, bufferStart]);
 
 	const currentTimePosition = useMemo(() => {
-		const now = new Date();
+		// Use currentTime state instead of new Date() so it updates every minute
 		// Check if current time is within the buffer range
-		if (now < timeRange.start || now > timeRange.end) {
+		if (currentTime < timeRange.start || currentTime > timeRange.end) {
 			return null;
 		}
 
@@ -1806,9 +2039,9 @@ export function DispatchTimeline() {
 		const totalMinutes =
 			(timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
 		const currentMinutes =
-			(now.getTime() - timeRange.start.getTime()) / (1000 * 60);
+			(currentTime.getTime() - timeRange.start.getTime()) / (1000 * 60);
 		return (currentMinutes / totalMinutes) * totalWidth;
-	}, [timeRange, totalWidth]);
+	}, [timeRange, totalWidth, currentTime]);
 
 	const technicianLanes = useMemo(() => {
 		const lanes = technicians.map((tech) => {
@@ -1838,23 +2071,23 @@ export function DispatchTimeline() {
 				const durationMinutes = endMinutes - startMinutes;
 
 				const left = (startMinutes / 60) * HOUR_WIDTH;
-				const width = Math.max(60, (durationMinutes / 60) * HOUR_WIDTH);
+				// Minimum 80px width for readability (was 60px which caused text truncation)
+				const width = Math.max(80, (durationMinutes / 60) * HOUR_WIDTH);
 
 				return { job, left, width };
 			});
 
-			const positionedJobs = detectOverlaps(jobPositions);
-			const maxLane = Math.max(0, ...positionedJobs.map((p) => p.lane));
-			// Calculate lane height to accommodate all stacked jobs
-			const laneHeight = Math.max(
-				LANE_HEIGHT,
-				(maxLane + 1) * (JOB_HEIGHT + STACK_GAP) + STACK_GAP * 2,
-			);
+			// Detect overlaps and get max columns for this technician
+			const { jobs: positionedJobs, maxColumns } = detectOverlaps(jobPositions);
+
+			// Calculate dynamic lane height based on max overlaps
+			// Lane expands to give each overlapping job full JOB_HEIGHT
+			const dynamicHeight = getLaneHeight(maxColumns);
 
 			return {
 				technician: tech,
 				jobs: positionedJobs,
-				height: laneHeight,
+				height: dynamicHeight,
 			};
 		});
 
@@ -2287,8 +2520,108 @@ export function DispatchTimeline() {
 			.find((j) => j.job.id === activeJobId)?.job;
 	}, [activeJobId, technicianLanes]);
 
+	// PERFORMANCE: Memoize drag overlay content to prevent recreation on every render
+	const dragOverlayContent = useMemo(() => {
+		if (!activeJob) return null;
+
+		const categoryConfig = getAppointmentCategoryConfig(activeJob);
+		const typeConfig = getJobTypeConfig(activeJob);
+		const TypeIcon = typeConfig.icon;
+		const CategoryIcon = categoryConfig.icon;
+		const borderColor = getJobTypeColor(activeJob);
+
+		return (
+			<div className="relative">
+				{/* Floating time preview badge - positioned below to avoid cutoff at top of timeline */}
+				{dragPreview && (
+					<div className="absolute -bottom-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs font-medium text-primary-foreground shadow-lg">
+						<Clock className="mr-1 inline-block size-3" />
+						{dragPreview.label}
+					</div>
+				)}
+				<div
+					className={cn(
+						"bg-card flex items-center gap-2 rounded-md border px-2.5 py-1.5 shadow-2xl ring-2 ring-primary scale-[1.02]",
+						borderColor,
+						categoryConfig.borderStyle,
+						activeJob.isUnassigned && "!border-red-500",
+					)}
+					style={{
+						height: `${JOB_HEIGHT}px`,
+						minWidth: "180px",
+						maxWidth: "300px",
+					}}
+				>
+					{/* Appointment Category Indicator */}
+					<div
+						className={cn(
+							"flex size-4 shrink-0 items-center justify-center rounded-sm",
+							categoryConfig.bgColor,
+						)}
+					>
+						<CategoryIcon
+							className={cn("size-2.5", categoryConfig.textColor)}
+						/>
+					</div>
+
+					{/* Job Type Icon */}
+					<div
+						className={cn(
+							"flex size-5 shrink-0 items-center justify-center rounded",
+							typeConfig.bgColor,
+						)}
+					>
+						<TypeIcon
+							className={cn(
+								"size-3",
+								typeConfig.borderColor.replace("border-l-", "text-"),
+							)}
+						/>
+					</div>
+
+					{/* Customer Name */}
+					<span className="text-foreground flex-1 truncate text-xs font-semibold">
+						{activeJob.customer?.name || "Unknown Customer"}
+					</span>
+
+					{/* Team Avatars */}
+					<TeamAvatarGroup
+						assignments={activeJob.assignments}
+						maxVisible={2}
+						onAddMember={() => {}}
+						onRemove={() => {}}
+					/>
+
+					{/* Status dot */}
+					<div
+						className={cn(
+							"size-1.5 shrink-0 rounded-full",
+							activeJob.status === "scheduled" && "bg-blue-500",
+							activeJob.status === "dispatched" && "bg-sky-500",
+							activeJob.status === "arrived" && "bg-emerald-500",
+							activeJob.status === "in-progress" && "bg-amber-500",
+							(activeJob.status === "closed" ||
+								activeJob.status === "completed") &&
+								"bg-slate-400",
+							activeJob.status === "cancelled" && "bg-slate-300",
+						)}
+					/>
+				</div>
+			</div>
+		);
+	}, [activeJob, dragPreview]);
+
 	useEffect(() => {
 		setMounted(true);
+	}, []);
+
+	// Update current time every minute for the time indicator
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			setCurrentTime(new Date());
+		}, 60000); // Update every minute
+
+		return () => clearInterval(intervalId);
 	}, []);
 
 	useEffect(() => {
@@ -2607,7 +2940,7 @@ export function DispatchTimeline() {
 																className={cn(
 																	"text-xs font-semibold",
 																	isApprentice
-																		? "bg-amber-100 text-amber-700"
+																		? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
 																		: "bg-primary/10 text-primary",
 																)}
 															>
@@ -2811,12 +3144,14 @@ export function DispatchTimeline() {
 														: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(var(--muted) / 0.3) 8px, hsl(var(--muted) / 0.3) 16px)",
 												}}
 											>
+												{/* 30-minute grid line (always visible) */}
+												<div className="absolute top-0 left-1/2 h-full w-px bg-border/40 dark:bg-border/30" />
 												{/* 15-minute snap guides (visible during drag) */}
 												{activeJobId && (
 													<>
-														<div className="bg-primary/20 absolute top-0 left-1/4 h-full w-px" />
-														<div className="bg-primary/30 absolute top-0 left-1/2 h-full w-px" />
-														<div className="bg-primary/20 absolute top-0 left-3/4 h-full w-px" />
+														<div className="bg-primary/30 absolute top-0 left-1/4 h-full w-px" />
+														<div className="bg-primary/50 absolute top-0 left-1/2 h-full w-px" />
+														<div className="bg-primary/30 absolute top-0 left-3/4 h-full w-px" />
 													</>
 												)}
 											</div>
@@ -2880,102 +3215,11 @@ export function DispatchTimeline() {
 				</div>
 			</div>
 
-			{/* Drag Overlay - Ghost Preview with smooth animation */}
-			<DragOverlay
-				dropAnimation={{
-					duration: 200,
-					easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
-				}}
-			>
-				{activeJob
-					? (() => {
-							const categoryConfig = getAppointmentCategoryConfig(activeJob);
-							const typeConfig = getJobTypeConfig(activeJob);
-							const TypeIcon = typeConfig.icon;
-							const CategoryIcon = categoryConfig.icon;
-							const borderColor = getJobTypeColor(activeJob);
-
-							return (
-								<div className="relative">
-									{/* Floating time preview badge */}
-									{dragPreview && (
-										<div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-primary px-2 py-1 text-xs font-medium text-primary-foreground shadow-lg">
-											<Clock className="mr-1 inline-block size-3" />
-											{dragPreview.label}
-										</div>
-									)}
-									<div
-										className={cn(
-											"bg-card flex items-center gap-2 rounded-md border px-2.5 py-1.5 shadow-2xl ring-2 ring-primary scale-[1.02]",
-											borderColor,
-											categoryConfig.borderStyle,
-											activeJob.isUnassigned && "!border-red-500",
-										)}
-										style={{
-											height: `${JOB_HEIGHT}px`,
-											minWidth: "180px",
-											maxWidth: "300px",
-										}}
-									>
-										{/* Appointment Category Indicator */}
-										<div
-											className={cn(
-												"flex size-4 shrink-0 items-center justify-center rounded-sm",
-												categoryConfig.bgColor,
-											)}
-										>
-											<CategoryIcon
-												className={cn("size-2.5", categoryConfig.textColor)}
-											/>
-										</div>
-
-										{/* Job Type Icon */}
-										<div
-											className={cn(
-												"flex size-5 shrink-0 items-center justify-center rounded",
-												typeConfig.bgColor,
-											)}
-										>
-											<TypeIcon
-												className={cn(
-													"size-3",
-													typeConfig.borderColor.replace("border-l-", "text-"),
-												)}
-											/>
-										</div>
-
-										{/* Customer Name */}
-										<span className="text-foreground flex-1 truncate text-xs font-semibold">
-											{activeJob.customer?.name || "Unknown Customer"}
-										</span>
-
-										{/* Team Avatars */}
-										<TeamAvatarGroup
-											assignments={activeJob.assignments}
-											maxVisible={2}
-											onAddMember={() => {}}
-											onRemove={() => {}}
-										/>
-
-										{/* Status dot */}
-										<div
-											className={cn(
-												"size-1.5 shrink-0 rounded-full",
-												activeJob.status === "scheduled" && "bg-blue-500",
-												activeJob.status === "dispatched" && "bg-sky-500",
-												activeJob.status === "arrived" && "bg-emerald-500",
-												activeJob.status === "in-progress" && "bg-amber-500",
-												(activeJob.status === "closed" ||
-													activeJob.status === "completed") &&
-													"bg-slate-400",
-												activeJob.status === "cancelled" && "bg-slate-300",
-											)}
-										/>
-									</div>
-								</div>
-							);
-						})()
-					: null}
+			{/* Drag Overlay - Ghost Preview */}
+			{/* PERFORMANCE: Using memoized dragOverlayContent to prevent recreation on every render */}
+			{/* dropAnimation=null makes overlay disappear instantly on drop, preventing "ghost returns to origin" issue */}
+			<DragOverlay dropAnimation={null}>
+				{dragOverlayContent}
 			</DragOverlay>
 
 			{/* Command Menu */}

@@ -1,17 +1,17 @@
 /**
  * AI Agent Tools - Comprehensive tool definitions for the AI Manager
- * Integrates with database, Resend, Telnyx, and financial systems
+ * Integrates with database, SendGrid, Twilio, and financial systems
  */
 
-import { tool } from "ai";
-import { z } from "zod";
 import {
 	searchAllEntities,
 	searchCustomersFullText,
 	searchJobsFullText,
 } from "@/lib/search/full-text-search";
 import { googleCustomSearchService } from "@/lib/services/google-custom-search-service";
-import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { createServiceSupabaseClient } from "@stratos/database";
+import { jsonSchema, tool } from "ai";
+import { z } from "zod";
 
 // Tool categories for permission checking
 export type ToolCategory =
@@ -31,10 +31,20 @@ export type ToolCategory =
 // UNIVERSAL DATABASE ACCESS TOOLS
 // ============================================================================
 
+// AI SDK 6: parameters -> inputSchema
 export const listDatabaseTablesTool = tool({
 	description:
 		"List all available database tables and their purposes. Use this to understand what data is available.",
-	parameters: z.object({}),
+	inputSchema: jsonSchema<{ verbose?: boolean }>({
+		type: "object",
+		properties: {
+			verbose: {
+				type: "boolean",
+				description: "Return detailed output if true",
+			},
+		},
+		required: [],
+	}),
 	execute: async () => {
 		return {
 			success: true,
@@ -118,7 +128,7 @@ export const listDatabaseTablesTool = tool({
 export const queryDatabaseTool = tool({
 	description:
 		"Query any database table to retrieve records. Use this for flexible data access when specific tools don't cover your needs.",
-	parameters: z.object({
+	inputSchema: z.object({
 		table: z
 			.string()
 			.describe("Table name to query (e.g., 'customers', 'jobs', 'invoices')"),
@@ -161,9 +171,9 @@ export const queryDatabaseTool = tool({
 			})
 			.optional()
 			.describe("Sort order"),
-		limit: z.number().optional().default(50).describe("Max records to return"),
+		limit: z.coerce.number().optional().default(50).describe("Max records to return"),
 		offset: z
-			.number()
+			.coerce.number()
 			.optional()
 			.default(0)
 			.describe("Records to skip for pagination"),
@@ -272,9 +282,9 @@ export const queryDatabaseTool = tool({
 export const getRecordByIdTool = tool({
 	description:
 		"Get a specific record by its ID from any table. Use when you need full details of a known record.",
-	parameters: z.object({
+	inputSchema: z.object({
 		table: z.string().describe("Table name"),
-		id: z.string().uuid().describe("Record UUID"),
+		id: z.string().describe("Record UUID"),
 		select: z.string().optional().default("*").describe("Columns to select"),
 	}),
 	execute: async (
@@ -326,15 +336,15 @@ export const getRecordByIdTool = tool({
 export const getRelatedRecordsTool = tool({
 	description:
 		"Get records related to a specific entity (e.g., all jobs for a customer, all invoices for a job).",
-	parameters: z.object({
+	inputSchema: z.object({
 		parentTable: z.string().describe("Parent table (e.g., 'customers')"),
-		parentId: z.string().uuid().describe("Parent record ID"),
+		parentId: z.string().describe("Parent record ID"),
 		childTable: z.string().describe("Related table to query (e.g., 'jobs')"),
 		foreignKey: z
 			.string()
 			.describe("Foreign key column in child table (e.g., 'customer_id')"),
 		select: z.string().optional().default("*"),
-		limit: z.number().optional().default(50),
+		limit: z.coerce.number().optional().default(50),
 	}),
 	execute: async (
 		{ parentTable, parentId, childTable, foreignKey, select, limit },
@@ -363,7 +373,9 @@ export const getRelatedRecordsTool = tool({
 export const getCompanyOverviewTool = tool({
 	description:
 		"Get a comprehensive overview of the entire company including counts and summaries from all major tables.",
-	parameters: z.object({}),
+	inputSchema: z.object({
+		verbose: z.boolean().optional().describe("Return detailed output if true"),
+	}),
 	execute: async (_params, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
 
@@ -502,11 +514,11 @@ export const getCompanyOverviewTool = tool({
 export const searchAllEntitesTool = tool({
 	description:
 		"Search across multiple tables simultaneously using full-text search with relevance ranking. Use for broad searches when you don't know which entity type contains the information.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe("Search term - supports multi-word queries and typo tolerance"),
-		limit: z.number().optional().default(10).describe("Results per table"),
+		limit: z.coerce.number().optional().default(10).describe("Results per table"),
 	}),
 	execute: async ({ query, limit }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -544,7 +556,7 @@ export const searchAllEntitesTool = tool({
 export const searchCustomersTool = tool({
 	description:
 		"Search for customers by name, email, phone, or address using full-text search with relevance ranking. Supports multi-word queries and typo tolerance.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe("Search query - can be name, email, phone, or address"),
@@ -572,8 +584,8 @@ export const searchCustomersTool = tool({
 export const getCustomerDetailsTool = tool({
 	description:
 		"Get detailed information about a specific customer including their jobs, invoices, and communication history",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("The UUID of the customer"),
+	inputSchema: z.object({
+		customerId: z.string().describe("The UUID of the customer"),
 	}),
 	execute: async ({ customerId }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -616,10 +628,10 @@ export const getCustomerDetailsTool = tool({
 export const createCustomerTool = tool({
 	description:
 		"Create a new customer in the system. Use this when a new customer contacts the business.",
-	parameters: z.object({
+	inputSchema: z.object({
 		firstName: z.string().describe("Customer's first name"),
 		lastName: z.string().describe("Customer's last name"),
-		email: z.string().email().describe("Customer's email address"),
+		email: z.string().describe("Customer's email address"),
 		phone: z.string().describe("Customer's phone number"),
 		address: z.string().optional().describe("Street address"),
 		city: z.string().optional().describe("City"),
@@ -662,13 +674,13 @@ export const createCustomerTool = tool({
 
 export const updateCustomerTool = tool({
 	description: "Update customer information",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("Customer ID to update"),
+	inputSchema: z.object({
+		customerId: z.string().describe("Customer ID to update"),
 		updates: z
 			.object({
 				firstName: z.string().optional(),
 				lastName: z.string().optional(),
-				email: z.string().email().optional(),
+				email: z.string().optional(),
 				phone: z.string().optional(),
 				address: z.string().optional(),
 				city: z.string().optional(),
@@ -720,13 +732,13 @@ export const updateCustomerTool = tool({
 export const searchTeamMembersTool = tool({
 	description:
 		"Search for team members by name, role, or department. Use this to find employees to assign or contact.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional().describe("Search query - name or email"),
 		role: z
 			.string()
 			.optional()
 			.describe("Filter by role (technician, admin, manager, etc.)"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, role, limit },
@@ -758,8 +770,8 @@ export const searchTeamMembersTool = tool({
 export const getTeamMemberDetailsTool = tool({
 	description:
 		"Get detailed information about a team member including their schedule and performance",
-	parameters: z.object({
-		teamMemberId: z.string().uuid().describe("The team member's ID"),
+	inputSchema: z.object({
+		teamMemberId: z.string().describe("The team member's ID"),
 	}),
 	execute: async ({ teamMemberId }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -793,8 +805,8 @@ export const getTeamMemberDetailsTool = tool({
 export const sendTeamEmailTool = tool({
 	description:
 		"Send an email to a team member for internal communication, assignments, or updates.",
-	parameters: z.object({
-		teamMemberId: z.string().uuid().describe("Team member ID to send email to"),
+	inputSchema: z.object({
+		teamMemberId: z.string().describe("Team member ID to send email to"),
 		subject: z.string().describe("Email subject"),
 		body: z.string().describe("Email body (HTML supported)"),
 	}),
@@ -815,22 +827,19 @@ export const sendTeamEmailTool = tool({
 		if (!member?.email)
 			return { success: false, error: "Team member email not found" };
 
-		const { resend } = await import("@/lib/email/resend-client");
-		if (!resend)
-			return { success: false, error: "Email service not configured" };
-
-		const { data, error } = await resend.emails.send({
-			from: process.env.RESEND_FROM_EMAIL || "noreply@thorbis.com",
+		const { sendSendGridEmail } = await import("@/lib/email/sendgrid-client");
+		const result = await sendSendGridEmail({
+			companyId,
 			to: member.email,
 			subject,
 			html: body,
 		});
 
-		if (error) return { success: false, error: error.message };
+		if (!result.success) return { success: false, error: result.error };
 
 		return {
 			success: true,
-			messageId: data?.id,
+			messageId: result.messageId,
 			message: `Email sent to ${member.first_name} ${member.last_name}`,
 		};
 	},
@@ -839,8 +848,8 @@ export const sendTeamEmailTool = tool({
 export const sendTeamSmsTool = tool({
 	description:
 		"Send an SMS to a team member for urgent updates or assignments.",
-	parameters: z.object({
-		teamMemberId: z.string().uuid().describe("Team member ID"),
+	inputSchema: z.object({
+		teamMemberId: z.string().describe("Team member ID"),
 		message: z.string().max(160).describe("SMS message (max 160 chars)"),
 	}),
 	execute: async (
@@ -869,18 +878,18 @@ export const sendTeamSmsTool = tool({
 		if (!phoneNumber)
 			return { success: false, error: "No company phone configured" };
 
-		const { sendSMS } = await import("@/lib/telnyx/messaging");
-		const result = await sendSMS({
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
 			from: phoneNumber.phone_number,
 			to: member.phone,
-			text: message,
+			body: message,
 		});
 
 		if (!result.success) return { success: false, error: result.error };
 
 		return {
 			success: true,
-			messageId: result.messageId,
+			messageId: result.messageSid,
 			message: `SMS sent to ${member.first_name} ${member.last_name}`,
 		};
 	},
@@ -892,13 +901,13 @@ export const sendTeamSmsTool = tool({
 
 export const searchVendorsTool = tool({
 	description: "Search for vendors/suppliers by name, category, or status",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional().describe("Search query - name or contact"),
 		category: z
 			.string()
 			.optional()
 			.describe("Vendor category (supplies, equipment, parts, etc.)"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, category, limit },
@@ -928,8 +937,8 @@ export const searchVendorsTool = tool({
 export const getVendorDetailsTool = tool({
 	description:
 		"Get detailed information about a vendor including purchase history",
-	parameters: z.object({
-		vendorId: z.string().uuid().describe("Vendor ID"),
+	inputSchema: z.object({
+		vendorId: z.string().describe("Vendor ID"),
 	}),
 	execute: async ({ vendorId }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -963,8 +972,8 @@ export const getVendorDetailsTool = tool({
 export const sendVendorEmailTool = tool({
 	description:
 		"Send an email to a vendor for orders, inquiries, or communication.",
-	parameters: z.object({
-		vendorId: z.string().uuid().describe("Vendor ID"),
+	inputSchema: z.object({
+		vendorId: z.string().describe("Vendor ID"),
 		subject: z.string().describe("Email subject"),
 		body: z.string().describe("Email body"),
 	}),
@@ -984,22 +993,19 @@ export const sendVendorEmailTool = tool({
 		if (!vendor?.email)
 			return { success: false, error: "Vendor email not found" };
 
-		const { resend } = await import("@/lib/email/resend-client");
-		if (!resend)
-			return { success: false, error: "Email service not configured" };
-
-		const { data, error } = await resend.emails.send({
-			from: process.env.RESEND_FROM_EMAIL || "noreply@thorbis.com",
+		const { sendSendGridEmail } = await import("@/lib/email/sendgrid-client");
+		const result = await sendSendGridEmail({
+			companyId,
 			to: vendor.email,
 			subject,
 			html: body,
 		});
 
-		if (error) return { success: false, error: error.message };
+		if (!result.success) return { success: false, error: result.error };
 
 		return {
 			success: true,
-			messageId: data?.id,
+			messageId: result.messageId,
 			message: `Email sent to ${vendor.name}`,
 		};
 	},
@@ -1007,8 +1013,8 @@ export const sendVendorEmailTool = tool({
 
 export const sendVendorSmsTool = tool({
 	description: "Send an SMS to a vendor contact for urgent communication.",
-	parameters: z.object({
-		vendorId: z.string().uuid().describe("Vendor ID"),
+	inputSchema: z.object({
+		vendorId: z.string().describe("Vendor ID"),
 		message: z.string().max(160).describe("SMS message"),
 	}),
 	execute: async (
@@ -1037,18 +1043,18 @@ export const sendVendorSmsTool = tool({
 		if (!phoneNumber)
 			return { success: false, error: "No company phone configured" };
 
-		const { sendSMS } = await import("@/lib/telnyx/messaging");
-		const result = await sendSMS({
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
 			from: phoneNumber.phone_number,
 			to: vendor.phone,
-			text: message,
+			body: message,
 		});
 
 		if (!result.success) return { success: false, error: result.error };
 
 		return {
 			success: true,
-			messageId: result.messageId,
+			messageId: result.messageSid,
 			message: `SMS sent to ${vendor.name}`,
 		};
 	},
@@ -1060,14 +1066,14 @@ export const sendVendorSmsTool = tool({
 
 export const searchPropertiesTool = tool({
 	description: "Search for service properties by address, customer, or type",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional().describe("Address or property name search"),
-		customerId: z.string().uuid().optional().describe("Filter by customer"),
+		customerId: z.string().optional().describe("Filter by customer"),
 		propertyType: z
 			.string()
 			.optional()
 			.describe("Property type (residential, commercial, etc.)"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, customerId, propertyType, limit },
@@ -1099,8 +1105,8 @@ export const searchPropertiesTool = tool({
 export const getPropertyDetailsTool = tool({
 	description:
 		"Get detailed property information including equipment and service history",
-	parameters: z.object({
-		propertyId: z.string().uuid().describe("Property ID"),
+	inputSchema: z.object({
+		propertyId: z.string().describe("Property ID"),
 	}),
 	execute: async ({ propertyId }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -1141,17 +1147,17 @@ export const getPropertyDetailsTool = tool({
 
 export const searchEquipmentTool = tool({
 	description: "Search for equipment/assets by type, customer, or model",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.optional()
 			.describe("Equipment name, model, or serial number"),
-		customerId: z.string().uuid().optional(),
+		customerId: z.string().optional(),
 		equipmentType: z
 			.string()
 			.optional()
 			.describe("Equipment type (HVAC, plumbing, electrical, etc.)"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, customerId, equipmentType, limit },
@@ -1181,7 +1187,7 @@ export const searchEquipmentTool = tool({
 
 export const getMaintenanceDueTool = tool({
 	description: "Get equipment that is due or overdue for maintenance service",
-	parameters: z.object({
+	inputSchema: z.object({
 		daysAhead: z
 			.number()
 			.optional()
@@ -1226,7 +1232,7 @@ export const getMaintenanceDueTool = tool({
 export const searchJobsTool = tool({
 	description:
 		"Search for jobs by title, job number, description, or status using full-text search with relevance ranking. Supports multi-word queries and typo tolerance.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.optional()
@@ -1234,8 +1240,8 @@ export const searchJobsTool = tool({
 		status: z
 			.enum(["pending", "scheduled", "in_progress", "completed", "cancelled"])
 			.optional(),
-		customerId: z.string().uuid().optional(),
-		limit: z.number().optional().default(10),
+		customerId: z.string().optional(),
+		limit: z.coerce.number().optional().default(10),
 	}),
 	execute: async (
 		{ query, status, customerId, limit },
@@ -1279,17 +1285,16 @@ export const searchJobsTool = tool({
 export const createAppointmentTool = tool({
 	description:
 		"Schedule a new appointment for a customer. Use this to book service calls or consultations.",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("Customer to schedule for"),
+	inputSchema: z.object({
+		customerId: z.string().describe("Customer to schedule for"),
 		propertyId: z
 			.string()
-			.uuid()
-			.describe("Property where service will be performed"),
+			.describe("Property UUID where service will be performed"),
 		title: z.string().describe("Appointment title/description"),
 		startTime: z
 			.string()
 			.describe("Start time in ISO format (YYYY-MM-DDTHH:mm:ss)"),
-		duration: z.number().describe("Duration in minutes"),
+		duration: z.coerce.number().describe("Duration in minutes"),
 		type: z
 			.enum(["service", "consultation", "estimate", "follow_up"])
 			.default("service"),
@@ -1332,9 +1337,9 @@ export const createAppointmentTool = tool({
 export const getAvailableSlotsTool = tool({
 	description:
 		"Find available appointment slots for scheduling. Returns available time windows.",
-	parameters: z.object({
+	inputSchema: z.object({
 		date: z.string().describe("Date to check (YYYY-MM-DD)"),
-		duration: z.number().default(60).describe("Required duration in minutes"),
+		duration: z.coerce.number().default(60).describe("Required duration in minutes"),
 	}),
 	execute: async ({ date, duration }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -1382,13 +1387,13 @@ export const getAvailableSlotsTool = tool({
 
 export const searchInvoicesTool = tool({
 	description: "Search for invoices by number, customer, or status",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional(),
 		status: z
 			.enum(["draft", "sent", "viewed", "paid", "overdue", "cancelled"])
 			.optional(),
-		customerId: z.string().uuid().optional(),
-		limit: z.number().optional().default(10),
+		customerId: z.string().optional(),
+		limit: z.coerce.number().optional().default(10),
 	}),
 	execute: async (
 		{ query, status, customerId, limit },
@@ -1418,15 +1423,15 @@ export const searchInvoicesTool = tool({
 
 export const createInvoiceTool = tool({
 	description: "Create a new invoice for a customer",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("Customer to invoice"),
+	inputSchema: z.object({
+		customerId: z.string().describe("Customer to invoice"),
 		title: z.string().describe("Invoice title/description"),
 		lineItems: z
 			.array(
 				z.object({
 					description: z.string(),
-					quantity: z.number(),
-					unitPrice: z.number().describe("Price in cents"),
+					quantity: z.coerce.number(),
+					unitPrice: z.coerce.number().describe("Price in cents"),
 				}),
 			)
 			.describe("Line items for the invoice"),
@@ -1480,7 +1485,7 @@ export const createInvoiceTool = tool({
 export const getFinancialSummaryTool = tool({
 	description:
 		"Get a financial summary including revenue, outstanding balances, and trends. Use this to provide business advice.",
-	parameters: z.object({
+	inputSchema: z.object({
 		period: z
 			.enum(["today", "week", "month", "quarter", "year"])
 			.default("month"),
@@ -1561,7 +1566,9 @@ export const getFinancialSummaryTool = tool({
 export const getVirtualBucketsTool = tool({
 	description:
 		"Get virtual financial buckets for the company. These are savings goals and fund allocations.",
-	parameters: z.object({}),
+	inputSchema: z.object({
+		verbose: z.boolean().optional().describe("Return detailed output if true"),
+	}),
 	execute: async (_params, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
 		const { data, error } = await supabase
@@ -1578,9 +1585,9 @@ export const getVirtualBucketsTool = tool({
 export const transferToBucketTool = tool({
 	description:
 		"Transfer funds to a virtual bucket for savings goals. This is for financial planning.",
-	parameters: z.object({
-		bucketId: z.string().uuid().describe("Target bucket ID"),
-		amount: z.number().describe("Amount to transfer in cents"),
+	inputSchema: z.object({
+		bucketId: z.string().describe("Target bucket ID"),
+		amount: z.coerce.number().describe("Amount to transfer in cents"),
 		note: z.string().optional().describe("Note for the transfer"),
 	}),
 	execute: async (
@@ -1626,32 +1633,31 @@ export const transferToBucketTool = tool({
 export const sendEmailTool = tool({
 	description:
 		"Send an email to a customer. Use this for follow-ups, reminders, or responding to inquiries.",
-	parameters: z.object({
-		to: z.string().email().describe("Recipient email address"),
+	inputSchema: z.object({
+		to: z.string().describe("Recipient email address"),
 		subject: z.string().describe("Email subject line"),
 		body: z.string().describe("Email body content (HTML supported)"),
 		customerId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Associated customer ID for tracking"),
+			.describe("Associated customer UUID for tracking"),
 	}),
 	execute: async (params, { companyId }: { companyId: string }) => {
-		// Import Resend dynamically to avoid issues
-		const { resend } = await import("@/lib/email/resend-client");
+		// Import SendGrid dynamically to avoid issues
+		const { sendSendGridEmail } = await import("@/lib/email/sendgrid-client");
 
-		if (!resend) {
+		if (!sendSendGridEmail) {
 			return { success: false, error: "Email service not configured" };
 		}
 
-		const { data, error } = await resend.emails.send({
-			from: process.env.RESEND_FROM_EMAIL || "noreply@thorbis.com",
+		const result = await sendSendGridEmail({
+			companyId,
 			to: params.to,
 			subject: params.subject,
 			html: params.body,
 		});
 
-		if (error) return { success: false, error: error.message };
+		if (!result.success) return { success: false, error: result.error };
 
 		// Log communication
 		const supabase = createServiceSupabaseClient();
@@ -1680,20 +1686,20 @@ export const sendEmailTool = tool({
 export const sendSmsTool = tool({
 	description:
 		"Send an SMS text message to a customer. Use for appointment reminders or quick updates.",
-	parameters: z.object({
+	inputSchema: z.object({
 		to: z.string().describe("Phone number (format: +1XXXXXXXXXX)"),
 		message: z
 			.string()
 			.max(160)
 			.describe("Message content (max 160 characters)"),
-		customerId: z.string().uuid().optional().describe("Associated customer ID"),
+		customerId: z.string().optional().describe("Associated customer ID"),
 	}),
 	execute: async (params, { companyId }: { companyId: string }) => {
 		// Get company phone number
 		const supabase = createServiceSupabaseClient();
 		const { data: phoneNumber } = await supabase
 			.from("phone_numbers")
-			.select("phone_number, telnyx_connection_id")
+			.select("phone_number, twilio_phone_sid")
 			.eq("company_id", companyId)
 			.eq("is_primary", true)
 			.single();
@@ -1705,9 +1711,9 @@ export const sendSmsTool = tool({
 			};
 		}
 
-		// Send via Telnyx
-		const { sendSMS } = await import("@/lib/telnyx/messaging");
-		const result = await sendSMS({
+		// Send via Twilio
+		const { sendSms } = await import("@/lib/twilio/messaging");
+		const result = await sendSms({
 			from: phoneNumber.phone_number,
 			to: params.to,
 			text: params.message,
@@ -1725,12 +1731,12 @@ export const sendSmsTool = tool({
 			body: params.message,
 			status: "sent",
 			sent_at: new Date().toISOString(),
-			telnyx_message_id: result.messageId,
+			twilio_message_sid: result.messageSid,
 		});
 
 		return {
 			success: true,
-			messageId: result.messageId,
+			messageId: result.messageSid,
 			message: `SMS sent to ${params.to}`,
 		};
 	},
@@ -1739,9 +1745,9 @@ export const sendSmsTool = tool({
 export const initiateCallTool = tool({
 	description:
 		"Initiate a phone call to a customer. The call will be connected through the business phone system.",
-	parameters: z.object({
+	inputSchema: z.object({
 		to: z.string().describe("Phone number to call (format: +1XXXXXXXXXX)"),
-		customerId: z.string().uuid().optional().describe("Associated customer ID"),
+		customerId: z.string().optional().describe("Associated customer ID"),
 		reason: z.string().optional().describe("Reason for the call (for logging)"),
 	}),
 	execute: async (params, { companyId }: { companyId: string }) => {
@@ -1750,7 +1756,7 @@ export const initiateCallTool = tool({
 		// Get company phone configuration
 		const { data: phoneNumber } = await supabase
 			.from("phone_numbers")
-			.select("phone_number, telnyx_connection_id")
+			.select("phone_number, twilio_phone_sid")
 			.eq("company_id", companyId)
 			.eq("is_primary", true)
 			.single();
@@ -1760,9 +1766,9 @@ export const initiateCallTool = tool({
 		}
 
 		// Initiate call via Telnyx
-		const { initiateCall } = await import("@/lib/telnyx/calls");
+		const { initiateCall } = await import("@/lib/twilio/calls");
 		const result = await initiateCall({
-			connectionId: phoneNumber.telnyx_connection_id,
+			connectionId: phoneNumber.twilio_phone_sid,
 			from: phoneNumber.phone_number,
 			to: params.to,
 		});
@@ -1793,10 +1799,10 @@ export const initiateCallTool = tool({
 export const getCommunicationHistoryTool = tool({
 	description:
 		"Get communication history with a customer (calls, texts, emails)",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("Customer ID to get history for"),
+	inputSchema: z.object({
+		customerId: z.string().describe("Customer ID to get history for"),
 		type: z.enum(["all", "email", "sms", "call"]).optional().default("all"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ customerId, type, limit },
@@ -1827,7 +1833,9 @@ export const getCommunicationHistoryTool = tool({
 export const getDashboardMetricsTool = tool({
 	description:
 		"Get key business metrics for the dashboard. Use this to provide business insights and recommendations.",
-	parameters: z.object({}),
+	inputSchema: z.object({
+		verbose: z.boolean().optional().describe("Return detailed output if true"),
+	}),
 	execute: async (_params, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
 		const now = new Date();
@@ -1879,7 +1887,9 @@ export const getDashboardMetricsTool = tool({
 export const getProactiveInsightsTool = tool({
 	description:
 		"Get proactive business insights and recommendations. Use this to help owners make decisions.",
-	parameters: z.object({}),
+	inputSchema: z.object({
+		verbose: z.boolean().optional().describe("Return detailed output if true"),
+	}),
 	execute: async (_params, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
 
@@ -1979,11 +1989,11 @@ export const getProactiveInsightsTool = tool({
 export const scheduleReminderTool = tool({
 	description:
 		"Schedule a reminder email or SMS to be sent at a specific time. Use for appointment reminders, payment reminders, or follow-ups.",
-	parameters: z.object({
+	inputSchema: z.object({
 		recipientType: z
 			.enum(["customer", "team_member", "vendor"])
 			.describe("Type of recipient"),
-		recipientId: z.string().uuid().describe("ID of the recipient"),
+		recipientId: z.string().describe("ID of the recipient"),
 		channel: z.enum(["email", "sms", "both"]).describe("Communication channel"),
 		subject: z
 			.string()
@@ -1994,7 +2004,7 @@ export const scheduleReminderTool = tool({
 		relatedTo: z
 			.object({
 				type: z.enum(["job", "invoice", "appointment", "estimate"]).optional(),
-				id: z.string().uuid().optional(),
+				id: z.string().optional(),
 			})
 			.optional()
 			.describe("Related entity"),
@@ -2085,8 +2095,8 @@ export const scheduleReminderTool = tool({
 
 export const cancelReminderTool = tool({
 	description: "Cancel a scheduled reminder",
-	parameters: z.object({
-		reminderId: z.string().uuid().describe("ID of the reminder to cancel"),
+	inputSchema: z.object({
+		reminderId: z.string().describe("ID of the reminder to cancel"),
 	}),
 	execute: async ({ reminderId }, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
@@ -2104,13 +2114,13 @@ export const cancelReminderTool = tool({
 
 export const getScheduledRemindersTool = tool({
 	description: "Get list of scheduled reminders for a customer, job, or entity",
-	parameters: z.object({
+	inputSchema: z.object({
 		recipientType: z.enum(["customer", "team_member", "vendor"]).optional(),
-		recipientId: z.string().uuid().optional(),
+		recipientId: z.string().optional(),
 		relatedType: z
 			.enum(["job", "invoice", "appointment", "estimate"])
 			.optional(),
-		relatedId: z.string().uuid().optional(),
+		relatedId: z.string().optional(),
 		status: z
 			.enum(["scheduled", "sent", "cancelled", "failed"])
 			.optional()
@@ -2145,11 +2155,11 @@ export const getScheduledRemindersTool = tool({
 export const sendImmediateNotificationTool = tool({
 	description:
 		"Send an immediate notification to a customer, team member, or vendor. Use for urgent updates.",
-	parameters: z.object({
+	inputSchema: z.object({
 		recipientType: z
 			.enum(["customer", "team_member", "vendor"])
 			.describe("Type of recipient"),
-		recipientId: z.string().uuid().describe("ID of the recipient"),
+		recipientId: z.string().describe("ID of the recipient"),
 		channel: z.enum(["email", "sms", "both"]).describe("Communication channel"),
 		subject: z.string().optional().describe("Email subject"),
 		message: z.string().describe("Message content"),
@@ -2207,17 +2217,15 @@ export const sendImmediateNotificationTool = tool({
 			(params.channel === "email" || params.channel === "both") &&
 			recipientEmail
 		) {
-			const { resend } = await import("@/lib/email/resend-client");
-			if (resend) {
-				const { data, error } = await resend.emails.send({
-					from: process.env.RESEND_FROM_EMAIL || "noreply@thorbis.com",
+			const { sendSendGridEmail } = await import("@/lib/email/sendgrid-client");
+			if (sendSendGridEmail) {
+				const result = await sendSendGridEmail({
+					companyId,
 					to: recipientEmail,
 					subject: params.subject || "Notification",
 					html: params.message,
 				});
-				results.email = error
-					? { success: false, error: error.message }
-					: { success: true, messageId: data?.id };
+				results.email = result;
 			}
 		}
 
@@ -2233,14 +2241,15 @@ export const sendImmediateNotificationTool = tool({
 				.eq("is_primary", true)
 				.single();
 			if (phoneNumber) {
-				const { sendSMS } = await import("@/lib/telnyx/messaging");
-				const result = await sendSMS({
+				const { sendSms } = await import("@/lib/twilio/messaging");
+				const result = await sendSms({
+					companyId,
 					from: phoneNumber.phone_number,
 					to: recipientPhone,
-					text: params.message.slice(0, 160),
+					body: params.message.slice(0, 160),
 				});
 				results.sms = result.success
-					? { success: true, messageId: result.messageId }
+					? { success: true, messageId: result.messageSid }
 					: { success: false, error: result.error };
 			}
 		}
@@ -2260,17 +2269,16 @@ export const sendImmediateNotificationTool = tool({
 export const getJobCostingReportTool = tool({
 	description:
 		"Get detailed job costing report including labor, materials, and profit margins",
-	parameters: z.object({
+	inputSchema: z.object({
 		jobId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Specific job ID, or omit for summary"),
+			.describe("Specific job UUID, or omit for summary"),
 		period: z
 			.enum(["week", "month", "quarter", "year"])
 			.optional()
 			.default("month"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ jobId, period, limit },
@@ -2367,12 +2375,12 @@ export const getJobCostingReportTool = tool({
 export const getRevenueBreakdownTool = tool({
 	description:
 		"Get revenue breakdown by customer, service type, or time period",
-	parameters: z.object({
+	inputSchema: z.object({
 		groupBy: z
 			.enum(["customer", "service_type", "month", "week"])
 			.default("month"),
 		period: z.enum(["month", "quarter", "year"]).default("quarter"),
-		limit: z.number().optional().default(20),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ groupBy, period, limit },
@@ -2452,7 +2460,9 @@ export const getRevenueBreakdownTool = tool({
 export const getARAgingReportTool = tool({
 	description:
 		"Get accounts receivable aging report showing outstanding invoices by age (30/60/90+ days)",
-	parameters: z.object({}),
+	inputSchema: z.object({
+		verbose: z.boolean().optional().describe("Return detailed output if true"),
+	}),
 	execute: async (_params, { companyId }: { companyId: string }) => {
 		const supabase = createServiceSupabaseClient();
 		const now = new Date();
@@ -2522,12 +2532,11 @@ export const getARAgingReportTool = tool({
 export const getTeamPerformanceReportTool = tool({
 	description:
 		"Get team member performance metrics including jobs completed, revenue generated, and ratings",
-	parameters: z.object({
+	inputSchema: z.object({
 		teamMemberId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Specific team member, or omit for all"),
+			.describe("Specific team member UUID, or omit for all"),
 		period: z.enum(["week", "month", "quarter", "year"]).default("month"),
 	}),
 	execute: async (
@@ -2620,13 +2629,12 @@ export const getTeamPerformanceReportTool = tool({
 export const getCustomerLifetimeValueTool = tool({
 	description:
 		"Get customer lifetime value (CLV) analysis showing total revenue and engagement per customer",
-	parameters: z.object({
+	inputSchema: z.object({
 		customerId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Specific customer, or omit for top customers"),
-		limit: z.number().optional().default(20),
+			.describe("Specific customer UUID, or omit for top customers"),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ customerId, limit },
@@ -2715,13 +2723,13 @@ export const getCustomerLifetimeValueTool = tool({
 
 export const searchEstimatesTool = tool({
 	description: "Search for estimates by customer, status, or amount",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional(),
 		status: z
 			.enum(["draft", "sent", "viewed", "approved", "rejected", "expired"])
 			.optional(),
-		customerId: z.string().uuid().optional(),
-		limit: z.number().optional().default(20),
+		customerId: z.string().optional(),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, status, customerId, limit },
@@ -2751,13 +2759,13 @@ export const searchEstimatesTool = tool({
 
 export const searchContractsTool = tool({
 	description: "Search for contracts by customer, status, or type",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().optional(),
 		status: z
 			.enum(["draft", "sent", "active", "expired", "cancelled"])
 			.optional(),
-		customerId: z.string().uuid().optional(),
-		limit: z.number().optional().default(20),
+		customerId: z.string().optional(),
+		limit: z.coerce.number().optional().default(20),
 	}),
 	execute: async (
 		{ query, status, customerId, limit },
@@ -2967,7 +2975,7 @@ export interface DestructiveToolMetadata {
 export const storeMemoryTool = tool({
 	description:
 		"Store a fact, preference, or important information about an entity (customer, job, property, etc.) for future reference. Use this to remember important details that should persist across conversations.",
-	parameters: z.object({
+	inputSchema: z.object({
 		content: z.string().describe("The fact or information to remember"),
 		memoryType: z
 			.enum([
@@ -2992,7 +3000,7 @@ export const storeMemoryTool = tool({
 			])
 			.optional()
 			.describe("Type of entity this memory relates to"),
-		entityId: z.string().uuid().optional().describe("ID of the related entity"),
+		entityId: z.string().optional().describe("ID of the related entity"),
 		importance: z
 			.enum(["low", "medium", "high"])
 			.default("medium")
@@ -3035,7 +3043,7 @@ export const storeMemoryTool = tool({
 export const searchMemoriesTool = tool({
 	description:
 		"Search through stored memories using natural language. Use this to recall facts, preferences, or context about customers, jobs, or other entities.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe(
@@ -3055,9 +3063,8 @@ export const searchMemoriesTool = tool({
 			.describe("Filter to specific entity type"),
 		entityId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Filter to specific entity"),
+			.describe("Filter to specific entity UUID"),
 		memoryTypes: z
 			.array(
 				z.enum([
@@ -3072,7 +3079,7 @@ export const searchMemoriesTool = tool({
 			)
 			.optional()
 			.describe("Filter by memory types"),
-		limit: z.number().optional().default(5).describe("Max memories to return"),
+		limit: z.coerce.number().optional().default(5).describe("Max memories to return"),
 	}),
 	execute: async (
 		{ query, entityType, entityId, memoryTypes, limit },
@@ -3116,7 +3123,7 @@ export const searchMemoriesTool = tool({
 export const getEntityMemoriesTool = tool({
 	description:
 		"Retrieve all stored memories about a specific entity (customer, job, property, etc.). Use this before interacting with a customer or job to get full context.",
-	parameters: z.object({
+	inputSchema: z.object({
 		entityType: z
 			.enum([
 				"customer",
@@ -3128,7 +3135,7 @@ export const getEntityMemoriesTool = tool({
 				"team_member",
 			])
 			.describe("Type of entity"),
-		entityId: z.string().uuid().describe("Entity ID"),
+		entityId: z.string().describe("Entity ID"),
 		memoryTypes: z
 			.array(
 				z.enum([
@@ -3143,7 +3150,7 @@ export const getEntityMemoriesTool = tool({
 			)
 			.optional()
 			.describe("Filter by memory types"),
-		limit: z.number().optional().default(20).describe("Max memories to return"),
+		limit: z.coerce.number().optional().default(20).describe("Max memories to return"),
 	}),
 	execute: async (
 		{ entityType, entityId, memoryTypes, limit },
@@ -3192,7 +3199,7 @@ export const getEntityMemoriesTool = tool({
 export const recallContextTool = tool({
 	description:
 		"Automatically recall relevant memories and context based on what's being discussed. Use this at the start of conversations or when switching topics to get background information.",
-	parameters: z.object({
+	inputSchema: z.object({
 		topic: z
 			.string()
 			.describe(
@@ -3201,9 +3208,8 @@ export const recallContextTool = tool({
 		customerName: z.string().optional().describe("Customer name if known"),
 		jobId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Job ID if discussing a specific job"),
+			.describe("Job UUID if discussing a specific job"),
 	}),
 	execute: async (
 		{ topic, customerName, jobId },
@@ -3304,7 +3310,7 @@ export const recallContextTool = tool({
 export const searchCommunicationsFullTextTool = tool({
 	description:
 		"Search across all customer communications (calls, emails, SMS) to find specific conversations, topics, or issues discussed. Great for finding 'what did the customer say about...'",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe(
@@ -3317,15 +3323,14 @@ export const searchCommunicationsFullTextTool = tool({
 			.describe("Filter by communication channel"),
 		customerId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Filter to specific customer"),
+			.describe("Filter to specific customer UUID"),
 		direction: z
 			.enum(["inbound", "outbound", "all"])
 			.optional()
 			.default("all")
 			.describe("Filter by direction"),
-		limit: z.number().optional().default(10).describe("Max results"),
+		limit: z.coerce.number().optional().default(10).describe("Max results"),
 	}),
 	execute: async (
 		{ query, channel, customerId, direction, limit },
@@ -3389,11 +3394,10 @@ export const searchCommunicationsFullTextTool = tool({
 export const getCallTranscriptTool = tool({
 	description:
 		"Get the full transcript of a phone call along with extracted insights. Use when you need to review what was discussed in a specific call.",
-	parameters: z.object({
+	inputSchema: z.object({
 		communicationId: z
 			.string()
-			.uuid()
-			.describe("The communication ID of the call"),
+			.describe("The communication UUID of the call"),
 	}),
 	execute: async (
 		{ communicationId },
@@ -3445,16 +3449,15 @@ export const getCallTranscriptTool = tool({
 export const searchVoicemailTranscriptsTool = tool({
 	description:
 		"Search through voicemail transcriptions to find messages about specific topics or from specific customers.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.optional()
 			.describe("Search query for transcription content"),
 		customerId: z
 			.string()
-			.uuid()
 			.optional()
-			.describe("Filter to specific customer"),
+			.describe("Filter to specific customer UUID"),
 		urgentOnly: z
 			.boolean()
 			.optional()
@@ -3465,7 +3468,7 @@ export const searchVoicemailTranscriptsTool = tool({
 			.optional()
 			.default(false)
 			.describe("Only show unread voicemails"),
-		limit: z.number().optional().default(10).describe("Max results"),
+		limit: z.coerce.number().optional().default(10).describe("Max results"),
 	}),
 	execute: async (
 		{ query, customerId, urgentOnly, unreadOnly, limit },
@@ -3528,8 +3531,8 @@ export const searchVoicemailTranscriptsTool = tool({
 export const getCustomerCommunicationHistoryTool = tool({
 	description:
 		"Get the complete communication history for a customer including calls, emails, SMS, and voicemails. Use this to understand the full context of a customer relationship.",
-	parameters: z.object({
-		customerId: z.string().uuid().describe("Customer UUID"),
+	inputSchema: z.object({
+		customerId: z.string().describe("Customer UUID"),
 		days: z
 			.number()
 			.optional()
@@ -3618,8 +3621,8 @@ export const getCustomerCommunicationHistoryTool = tool({
 export const extractCommunicationInsightsTool = tool({
 	description:
 		"Analyze a communication (call, email, SMS) and extract key insights like customer preferences, issues, sentiment. Automatically stores insights in memory for future reference.",
-	parameters: z.object({
-		communicationId: z.string().uuid().describe("Communication ID to analyze"),
+	inputSchema: z.object({
+		communicationId: z.string().describe("Communication ID to analyze"),
 		insightTypes: z
 			.array(
 				z.enum(["preference", "issue", "sentiment", "action_item", "feedback"]),
@@ -3748,7 +3751,7 @@ export const getWeatherForLocationTool = tool({
 - Informing customers about weather delays
 
 Returns forecast periods, temperature, wind, precipitation chances, and any severe weather alerts.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		lat: z.number().describe("Latitude of the location"),
 		lon: z.number().describe("Longitude of the location"),
 		includeHourly: z
@@ -3797,7 +3800,7 @@ export const checkWeatherForJobTool = tool({
 - Wind conditions
 
 Returns a clear recommendation on whether to proceed with outdoor work.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		lat: z.number().describe("Latitude of the job location"),
 		lon: z.number().describe("Longitude of the job location"),
 		jobType: z
@@ -3857,7 +3860,7 @@ export const getWeatherAlertsTool = tool({
 - Batch checking multiple job sites
 
 Returns only alert information (faster than full weather data).`,
-	parameters: z.object({
+	inputSchema: z.object({
 		lat: z.number().describe("Latitude"),
 		lon: z.number().describe("Longitude"),
 	}),
@@ -3901,7 +3904,7 @@ Useful for:
 - Estimating arrival times
 - Routing around incidents
 - Notifying customers of delays`,
-	parameters: z.object({
+	inputSchema: z.object({
 		destinationLat: z.number().describe("Latitude of the destination/job site"),
 		destinationLon: z
 			.number()
@@ -3966,7 +3969,7 @@ export const geocodeAddressTool = tool({
 - Getting standardized/formatted address
 
 Returns coordinates and Google's formatted version of the address.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		address: z.string().describe("Street address (e.g., '123 Main St')"),
 		city: z.string().describe("City name"),
 		state: z.string().describe("State (e.g., 'CA' or 'California')"),
@@ -4021,7 +4024,7 @@ Combines:
 - Weather alerts
 - Traffic conditions (if shop coordinates provided)
 - Work suitability assessment`,
-	parameters: z.object({
+	inputSchema: z.object({
 		propertyLat: z.number().describe("Latitude of the property"),
 		propertyLon: z.number().describe("Longitude of the property"),
 		shopLat: z
@@ -4249,7 +4252,7 @@ export const searchBuildingCodesTool = tool({
 - Roofing
 
 Use this to help technicians understand code requirements before starting work.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		tradeType: z
 			.enum(["plumbing", "electrical", "hvac", "general", "roofing"])
 			.describe("The trade or type of work"),
@@ -4309,7 +4312,7 @@ Returns:
 - Type of permit needed
 - Common exceptions
 - Inspection requirements`,
-	parameters: z.object({
+	inputSchema: z.object({
 		workType: z
 			.string()
 			.describe(
@@ -4464,7 +4467,7 @@ export const getCodeComplianceChecklistTool = tool({
 	description: `Generate a code compliance and safety checklist for a specific type of job. Helps technicians ensure they're meeting code requirements during installation or repair.
 
 Returns a checklist of items to verify for code compliance.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		jobType: z
 			.string()
 			.describe(
@@ -4639,7 +4642,7 @@ export const analyzeRecentCommunicationsTool = tool({
 - Emergency situations or urgent needs
 
 Use this for periodic learning runs to build customer knowledge.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company ID"),
 		daysBack: z
 			.number()
@@ -4815,7 +4818,7 @@ export const learnFromCompletedJobsTool = tool({
 - Seasonal job patterns
 
 Helps improve scheduling and resource allocation.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company ID"),
 		daysBack: z.number().optional().default(30).describe("Days to look back"),
 		jobType: z.string().optional().describe("Filter by job type"),
@@ -4981,7 +4984,7 @@ export const buildCustomerProfileTool = tool({
 - Stored memories and notes
 
 Use this to prepare for customer interactions or to understand customer value.`,
-	parameters: z.object({
+	inputSchema: z.object({
 		customerId: z.string().describe("Customer UUID"),
 		companyId: z.string().describe("Company ID"),
 	}),
@@ -5162,7 +5165,7 @@ Use this to prepare for customer interactions or to understand customer value.`,
 export const getRouteTool = tool({
 	description:
 		"Calculate optimal driving route between locations with distance and duration",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		waypoints: z
 			.array(
@@ -5298,7 +5301,7 @@ export const getRouteTool = tool({
 export const findNearbySuppliersTool = tool({
 	description:
 		"Find nearby supply stores for parts (plumbing, electrical, HVAC, hardware)",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		location: z.object({
 			lat: z.number().describe("Latitude"),
@@ -5362,7 +5365,7 @@ export const findNearbySuppliersTool = tool({
  */
 export const searchInventoryTool = tool({
 	description: "Search company inventory for parts by name, SKU, or category",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		query: z.string().describe("Search query"),
 		category: z.string().optional(),
@@ -5403,7 +5406,7 @@ export const searchInventoryTool = tool({
  */
 export const checkPartsAvailabilityTool = tool({
 	description: "Check if required parts are available in inventory for a job",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		parts: z.array(
 			z.object({
@@ -5526,10 +5529,10 @@ export const checkPartsAvailabilityTool = tool({
  */
 export const getLowStockAlertsTool = tool({
 	description: "Get inventory items at or below reorder point",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		category: z.string().optional(),
-		limit: z.number().optional().default(50).describe("Max items to return"),
+		limit: z.coerce.number().optional().default(50).describe("Max items to return"),
 	}),
 	execute: async ({ companyId, category, limit }) => {
 		const supabase = await createClient();
@@ -5585,7 +5588,7 @@ export const getLowStockAlertsTool = tool({
  */
 export const getPropertyEquipmentTool = tool({
 	description: "Get list of equipment installed at a customer's property",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		propertyId: z.string().optional(),
 		customerId: z.string().optional(),
@@ -5653,10 +5656,10 @@ export const getPropertyEquipmentTool = tool({
  */
 export const getEquipmentServiceHistoryTool = tool({
 	description: "Get service history for a specific piece of equipment",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		equipmentId: z.string().describe("Equipment UUID"),
-		limit: z.number().optional().default(10),
+		limit: z.coerce.number().optional().default(10),
 	}),
 	execute: async ({ companyId, equipmentId, limit }) => {
 		const supabase = await createClient();
@@ -5697,7 +5700,7 @@ export const getEquipmentServiceHistoryTool = tool({
  */
 export const checkEquipmentWarrantyTool = tool({
 	description: "Check warranty status for equipment",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		equipmentId: z.string().describe("Equipment UUID"),
 	}),
@@ -5760,7 +5763,7 @@ export const checkEquipmentWarrantyTool = tool({
 export const findTechniciansBySkillsTool = tool({
 	description:
 		"Find available technicians with specific skills or certifications",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		skills: z.array(z.string()).optional(),
 		certifications: z.array(z.string()).optional(),
@@ -5859,7 +5862,7 @@ export const findTechniciansBySkillsTool = tool({
  */
 export const getTechnicianWorkloadTool = tool({
 	description: "Get a technician's current workload and schedule",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		technicianId: z.string().describe("Technician membership UUID"),
 		startDate: z.string(),
@@ -5928,7 +5931,7 @@ export const getTechnicianWorkloadTool = tool({
  */
 export const searchPriceBookTool = tool({
 	description: "Search price book for services, parts, and flat-rate pricing",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		query: z.string(),
 		category: z.string().optional(),
@@ -5966,7 +5969,7 @@ export const searchPriceBookTool = tool({
  */
 export const calculateEstimateTool = tool({
 	description: "Calculate an estimate total from price book items",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		items: z.array(
 			z.object({
@@ -6044,7 +6047,7 @@ export const calculateEstimateTool = tool({
 export const suggestTechnicianForJobTool = tool({
 	description:
 		"Suggest the best technician for a job based on skills, location, and availability",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		jobType: z.string(),
 		requiredSkills: z.array(z.string()).optional(),
@@ -6144,7 +6147,7 @@ export const suggestTechnicianForJobTool = tool({
 export const optimizeJobOrderTool = tool({
 	description:
 		"Optimize the order of jobs for a technician to minimize travel time",
-	parameters: z.object({
+	inputSchema: z.object({
 		companyId: z.string().describe("Company UUID"),
 		technicianId: z.string(),
 		date: z.string(),
@@ -6238,7 +6241,7 @@ export const optimizeJobOrderTool = tool({
 export const webSearchTool = tool({
 	description:
 		"Search the web for information. Use this to find answers to questions, research topics, look up current events, regulations, industry news, competitor information, or any general knowledge questions.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe("The search query - be specific and include relevant keywords"),
@@ -6295,7 +6298,7 @@ export const webSearchTool = tool({
 export const webSearchNewsTool = tool({
 	description:
 		"Search for recent news articles. Use this for industry news, current events, company updates, regulation changes, or any time-sensitive information.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe("The news search query - include topic and relevant keywords"),
@@ -6351,7 +6354,7 @@ export const webSearchNewsTool = tool({
 export const webSearchTechnicalTool = tool({
 	description:
 		"Search for technical documentation, guides, tutorials, and code examples. Use this when looking for how to do something technical, API documentation, troubleshooting guides, or code references.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z
 			.string()
 			.describe(
@@ -6405,7 +6408,7 @@ export const webSearchTechnicalTool = tool({
 export const webSearchSiteTool = tool({
 	description:
 		"Search within a specific website. Use this to find information on a particular site like manufacturer documentation, government sites, or specific company websites.",
-	parameters: z.object({
+	inputSchema: z.object({
 		query: z.string().describe("The search query"),
 		site: z
 			.string()

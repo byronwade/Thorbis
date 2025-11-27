@@ -56,6 +56,8 @@ import { CustomerAlertBanner } from "./customer-alert-banner";
 import { CustomerStatsBar } from "./customer-stats-bar";
 import { PreviousCallSummary } from "./previous-call-summary";
 import { QuickActionsPanel } from "./quick-actions-panel";
+import { RecentCommunications } from "./recent-communications";
+import { SmsQuickRepliesBar } from "./sms-quick-replies-bar";
 
 type CustomerSidebarProps = {
 	customerData: CustomerCallData | null;
@@ -67,6 +69,8 @@ type CustomerSidebarProps = {
 	onSendEmail?: () => void;
 	onTakePayment?: () => void;
 	onAddNote?: () => void;
+	// SMS Quick Reply handler (for actually sending SMS)
+	onSendSmsMessage?: (message: string, phoneNumber: string) => Promise<void>;
 	// Previous call data
 	previousCall?: {
 		id: string;
@@ -91,6 +95,7 @@ export function CustomerSidebar({
 	onSendEmail,
 	onTakePayment,
 	onAddNote,
+	onSendSmsMessage,
 	previousCall,
 }: CustomerSidebarProps) {
 	// TODO: Fetch CSR reminders from user settings/company settings
@@ -104,6 +109,10 @@ export function CustomerSidebar({
 		customerData?.invoices
 			.filter((inv) => inv.status === "unpaid" || inv.status === "overdue")
 			.reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0;
+
+	// Check if any invoices are overdue
+	const hasOverdueInvoices =
+		customerData?.invoices.some((inv) => inv.status === "overdue") || false;
 
 	// Get last visit date from appointments or jobs
 	const lastVisitDate =
@@ -151,6 +160,7 @@ export function CustomerSidebar({
 		appointments,
 		properties,
 		equipment,
+		recentCommunications,
 	} = customerData;
 
 	// Format currency
@@ -782,12 +792,14 @@ export function CustomerSidebar({
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Sticky Stats Bar - Always visible */}
+			{/* Sticky Stats Bar - Always visible with Status Indicator */}
 			{customer && stats && (
 				<CustomerStatsBar
 					stats={stats}
 					openBalance={openBalance}
 					lastVisitDate={lastVisitDate}
+					hasOverdueInvoices={hasOverdueInvoices}
+					showStatusIndicator={true}
 				/>
 			)}
 
@@ -821,6 +833,36 @@ export function CustomerSidebar({
 							layout="grid"
 						/>
 					</section>
+
+					{/* SMS Quick Replies - Fast SMS during calls */}
+					{customer?.phone && (
+						<section className="border-border/60 bg-card overflow-hidden rounded-xl border p-4 shadow-sm">
+							<SmsQuickRepliesBar
+								customerPhone={customer.phone}
+								customerFirstName={customer.first_name || undefined}
+								customerName={
+									customer.first_name && customer.last_name
+										? `${customer.first_name} ${customer.last_name}`
+										: customer.first_name || undefined
+								}
+								companyName={customer.company_name || undefined}
+								onSendSms={onSendSmsMessage}
+								disabled={!onSendSmsMessage}
+							/>
+						</section>
+					)}
+
+					{/* Recent Communications - Call context */}
+					{recentCommunications && recentCommunications.length > 0 && (
+						<section className="border-border/60 bg-card overflow-hidden rounded-xl border p-4 shadow-sm">
+							<RecentCommunications
+								communications={recentCommunications}
+								customerId={customer?.id}
+								maxItems={3}
+								showViewAll={true}
+							/>
+						</section>
+					)}
 
 					{/* CSR Reminders - Condensed */}
 					{csrReminders.length > 0 && (

@@ -10,7 +10,7 @@
 
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
-import { VoicemailSettings } from "@/components/telnyx/voicemail-settings";
+import { VoicemailSettings } from "@/components/telephony/voicemail-settings";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {

@@ -33,7 +33,7 @@ export const PHONE_PORTING_FEE = 15.0;
 
 /**
  * New phone number setup fee (per number)
- * One-time charge when contractor gets a new phone number from Telnyx
+ * One-time charge when contractor gets a new phone number from Twilio
  */
 export const PHONE_NEW_NUMBER_SETUP_FEE = 5.0;
 
@@ -49,7 +49,7 @@ export const BASE_PLATFORM_FEE = 200.0;
 
 /**
  * New phone number monthly fee (per number)
- * Recurring charge for each phone number provisioned through Telnyx
+ * Recurring charge for each phone number provisioned through Twilio
  */
 export const PHONE_NEW_NUMBER_MONTHLY_FEE = 2.0;
 

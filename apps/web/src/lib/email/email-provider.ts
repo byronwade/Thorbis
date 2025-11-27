@@ -1,33 +1,26 @@
 /**
- * Email Provider Abstraction Layer
+ * Email Provider - SendGrid Only
  *
- * This module provides a unified interface for sending emails through multiple
- * providers (Resend and Postmark) with automatic fallback support.
+ * Single-provider email implementation using SendGrid (Twilio ecosystem).
+ * No fallback providers - SendGrid is the only email provider.
  *
  * Architecture:
  * ┌─────────────────────────────────────────────────────────────────┐
  * │                    Email Provider Layer                         │
  * ├─────────────────────────────────────────────────────────────────┤
- * │  1. Try Primary Provider (Resend)                               │
- * │     ├─ Success → Return result, log to monitor                  │
- * │     └─ Failure → Try Fallback                                   │
- * │  2. Try Fallback Provider (Postmark)                            │
- * │     ├─ Success → Return result, log to monitor                  │
- * │     └─ Failure → Return error with both provider failures       │
+ * │  1. Check company email provider preference                     │
+ * │     ├─ Disabled → Return error                                  │
+ * │     ├─ Gmail (if configured) → Send via Gmail                   │
+ * │     └─ Managed (SendGrid) → Send via SendGrid                   │
+ * │  2. Return result with tracking information                     │
  * └─────────────────────────────────────────────────────────────────┘
- *
- * Features:
- * - Automatic fallback when primary provider fails
- * - Health monitoring for both providers
- * - Unified response format
- * - Comprehensive logging for debugging
- * - Provider-agnostic interface for email operations
  *
  * Usage:
  * ```typescript
- * import { sendEmailWithFallback } from "@/lib/email/email-provider";
+ * import { sendEmailWithProvider } from "@/lib/email/email-provider";
  *
- * const result = await sendEmailWithFallback({
+ * const result = await sendEmailWithProvider({
+ *   companyId: "company-123",
  *   to: "user@example.com",
  *   subject: "Welcome!",
  *   html: "<h1>Hello</h1>",
@@ -36,7 +29,6 @@
  */
 
 import {
-	type CompanyEmailProvider,
 	checkCompanyGmailHealth,
 	type GmailSendResult,
 	getCompanyEmailProvider,
@@ -45,13 +37,11 @@ import {
 	sendCompanyGmailEmail,
 } from "./gmail-client";
 import {
-	checkPostmarkHealth,
-	isPostmarkConfigured,
-	type PostmarkResponse,
-	postmarkConfig,
-	sendPostmarkEmail,
-} from "./postmark-client";
-import { emailConfig, isResendConfigured, resend } from "./resend-client";
+	isAdminSendGridConfigured,
+	isCompanySendGridConfigured,
+	sendSendGridEmail,
+	sendgridConfig,
+} from "./sendgrid-client";
 
 // =============================================================================
 // TYPES
@@ -59,16 +49,14 @@ import { emailConfig, isResendConfigured, resend } from "./resend-client";
 
 /**
  * Supported email providers
- * - resend: Primary managed provider (high deliverability, company branding)
- * - postmark: Fallback managed provider (automatic failover)
+ * - sendgrid: Primary managed provider (Twilio ecosystem)
  * - gmail: User's personal Gmail account (requires OAuth connection)
  */
-export type EmailProvider = "resend" | "postmark" | "gmail";
+export type EmailProvider = "sendgrid" | "gmail";
 
 /**
  * Email send options - provider-agnostic interface
  */
-/** Attachment type for email */
 export interface EmailAttachment {
 	filename: string;
 	content: string; // Base64 encoded content
@@ -92,8 +80,8 @@ export interface EmailSendOptions {
 	tags?: Record<string, string>;
 	/** Communication ID for internal tracking */
 	communicationId?: string;
-	/** Company ID - required for checking company email provider preference */
-	companyId?: string;
+	/** Company ID - required for multi-tenant setup */
+	companyId: string;
 	/** CC recipients */
 	cc?: string | string[];
 	/** BCC recipients */
@@ -103,27 +91,19 @@ export interface EmailSendOptions {
 }
 
 /**
- * Result of sending an email through the provider layer
+ * Result of sending an email
  */
 export interface EmailProviderResult {
 	/** Whether the email was sent successfully */
 	success: boolean;
-	/** The provider that successfully sent the email */
+	/** The provider that sent the email */
 	provider?: EmailProvider;
 	/** Message ID from the provider */
 	messageId?: string;
 	/** Error message if failed */
 	error?: string;
-	/** Whether fallback was used */
-	usedFallback?: boolean;
-	/** Detailed results from each provider attempt */
-	attempts: Array<{
-		provider: EmailProvider;
-		success: boolean;
-		messageId?: string;
-		error?: string;
-		latencyMs: number;
-	}>;
+	/** Latency in milliseconds */
+	latencyMs?: number;
 }
 
 /**
@@ -137,34 +117,18 @@ export interface ProviderHealthStatus {
 	error?: string;
 }
 
-/**
- * Combined health status for all providers
- */
-export interface AllProvidersHealth {
-	primary: ProviderHealthStatus | null;
-	fallback: ProviderHealthStatus | null;
-	recommendedProvider: EmailProvider | null;
-}
-
 // =============================================================================
 // CONFIGURATION
 // =============================================================================
 
 /**
  * Provider configuration
- * Determines which provider is primary and which is fallback
  */
 export const providerConfig = {
-	/** Primary provider - tried first */
-	primary: "resend" as EmailProvider,
-	/** Fallback provider - used if primary fails */
-	fallback: "postmark" as EmailProvider,
-	/** Enable automatic fallback on failure */
-	enableFallback: true,
-	/** Log all provider operations for monitoring */
+	/** Primary provider - SendGrid (Twilio ecosystem) */
+	primary: "sendgrid" as EmailProvider,
+	/** Enable logging for debugging */
 	enableLogging: true,
-	/** Retry count before falling back (0 = immediate fallback) */
-	primaryRetries: 0,
 };
 
 // =============================================================================
@@ -172,60 +136,23 @@ export const providerConfig = {
 // =============================================================================
 
 /**
- * Check if a specific provider is configured and available
- *
- * @param provider - Provider to check
- * @returns Whether the provider is available
+ * Check if SendGrid is configured
  */
-export function isProviderConfigured(provider: EmailProvider): boolean {
-	switch (provider) {
-		case "resend":
-			return isResendConfigured();
-		case "postmark":
-			return isPostmarkConfigured();
-		default:
-			return false;
-	}
+export function isProviderConfigured(): boolean {
+	return isAdminSendGridConfigured();
 }
 
 /**
- * Get list of all configured providers
- *
- * @returns Array of configured provider names
+ * Get list of configured providers
  */
 export function getConfiguredProviders(): EmailProvider[] {
 	const providers: EmailProvider[] = [];
 
-	if (isResendConfigured()) {
-		providers.push("resend");
-	}
-
-	if (isPostmarkConfigured()) {
-		providers.push("postmark");
+	if (isAdminSendGridConfigured()) {
+		providers.push("sendgrid");
 	}
 
 	return providers;
-}
-
-/**
- * Get the best available provider
- * Returns primary if configured, otherwise fallback
- *
- * @returns Best available provider or null if none configured
- */
-export function getBestAvailableProvider(): EmailProvider | null {
-	if (isProviderConfigured(providerConfig.primary)) {
-		return providerConfig.primary;
-	}
-
-	if (
-		providerConfig.enableFallback &&
-		isProviderConfigured(providerConfig.fallback)
-	) {
-		return providerConfig.fallback;
-	}
-
-	return null;
 }
 
 // =============================================================================
@@ -233,111 +160,43 @@ export function getBestAvailableProvider(): EmailProvider | null {
 // =============================================================================
 
 /**
- * Send email via Resend
- *
- * @param options - Email options
- * @returns Send result
+ * Send email via SendGrid
  */
-async function sendViaResend(
+async function sendViaSendGrid(
 	options: EmailSendOptions,
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-	if (!isResendConfigured() || !resend) {
-		return { success: false, error: "Resend is not configured" };
+	if (!isAdminSendGridConfigured()) {
+		return { success: false, error: "SendGrid is not configured" };
 	}
 
 	try {
-		// Build tags array for Resend
-		const tags: Array<{ name: string; value: string }> = [];
-		if (options.tags) {
-			for (const [name, value] of Object.entries(options.tags)) {
-				tags.push({ name, value });
-			}
-		}
-		if (options.communicationId) {
-			tags.push({ name: "communication_id", value: options.communicationId });
-		}
-
-		// Send via Resend
-		const { data, error } = await resend.emails.send({
-			from: options.from || emailConfig.from,
+		const result = await sendSendGridEmail({
+			companyId: options.companyId,
 			to: options.to,
 			subject: options.subject,
 			html: options.html,
 			text: options.text,
+			from: options.from, // From address is handled by sendSendGridEmail from database
 			replyTo: options.replyTo,
-			tags: tags.length > 0 ? tags : undefined,
+			tags: options.tags,
+			attachments: options.attachments?.map(att => ({
+				filename: att.filename,
+				content: att.content,
+				type: att.contentType,
+			})),
 		});
 
-		if (error) {
-			return { success: false, error: error.message || "Resend send failed" };
-		}
-
-		return { success: true, messageId: data?.id };
+		return result;
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Resend send failed",
-		};
-	}
-}
-
-/**
- * Send email via Postmark
- *
- * @param options - Email options
- * @returns Send result
- */
-async function sendViaPostmark(
-	options: EmailSendOptions,
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
-	if (!isPostmarkConfigured()) {
-		return { success: false, error: "Postmark is not configured" };
-	}
-
-	try {
-		// Convert tags to Postmark metadata format
-		const metadata: Record<string, string> = { ...options.tags };
-		if (options.communicationId) {
-			metadata.communication_id = options.communicationId;
-		}
-		if (options.companyId) {
-			metadata.company_id = options.companyId;
-		}
-
-		// Determine tag (Postmark only supports one tag per email)
-		const tag = options.tags?.template || options.tags?.type || "transactional";
-
-		// Send via Postmark
-		const result = await sendPostmarkEmail({
-			to: options.to,
-			subject: options.subject,
-			html: options.html,
-			text: options.text,
-			from: options.from || postmarkConfig.from,
-			replyTo: options.replyTo,
-			tag,
-			metadata,
-		});
-
-		if (!result.success) {
-			return { success: false, error: result.error };
-		}
-
-		return { success: true, messageId: result.data.MessageID };
-	} catch (error) {
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Postmark send failed",
+			error: error instanceof Error ? error.message : "SendGrid send failed",
 		};
 	}
 }
 
 /**
  * Send email via Gmail (company's connected Gmail account)
- *
- * @param companyId - Company ID with connected Gmail
- * @param options - Email options
- * @returns Send result
  */
 async function sendViaGmail(
 	companyId: string,
@@ -369,13 +228,9 @@ async function sendViaGmail(
 
 /**
  * Check if Gmail is available for a company
- *
- * @param companyId - Company ID to check
- * @returns Whether Gmail is available and configured
  */
 async function isCompanyGmailAvailable(companyId: string): Promise<boolean> {
 	try {
-		// Check if Gmail integration is enabled globally
 		if (!(await isGmailIntegrationEnabled())) {
 			return false;
 		}
@@ -388,43 +243,20 @@ async function isCompanyGmailAvailable(companyId: string): Promise<boolean> {
 }
 
 /**
- * Send email with automatic fallback
- *
- * This is the main function for sending emails. It:
- * 1. Checks company's email provider preference (managed vs gmail vs disabled)
- * 2. If disabled, returns error immediately
- * 3. If Gmail preferred and available, sends via Gmail
- * 4. Otherwise, tries the primary provider (Resend)
- * 5. If primary fails and fallback is enabled, tries Postmark
- * 6. Returns detailed results including all attempts
+ * Send email using the appropriate provider
  *
  * Provider Selection Logic (Multi-Tenant):
- * - If company preference = "disabled" → Return error (company has email disabled)
- * - If company preference = "gmail" AND valid Gmail tokens exist → Gmail
- * - If company preference = "managed" OR Gmail unavailable → Resend → Postmark
+ * - If company preference = "disabled" → Return error
+ * - If company preference = "gmail" AND valid Gmail tokens → Gmail
+ * - Otherwise → SendGrid
  *
- * @param options - Email send options
- * @returns Result with success status and attempt details
- *
- * @example
- * const result = await sendEmailWithFallback({
- *   to: "user@example.com",
- *   subject: "Welcome!",
- *   html: "<h1>Hello</h1>",
- *   tags: { template: "welcome" },
- *   companyId: "company-123", // Required for multi-tenant provider selection
- * });
- *
- * if (result.success) {
- *   console.log(`Sent via ${result.provider}, ID: ${result.messageId}`);
- * } else {
- *   console.error(`Failed: ${result.error}`);
- * }
+ * @param options - Email send options (companyId required)
+ * @returns Result with success status
  */
 export async function sendEmailWithFallback(
 	options: EmailSendOptions,
 ): Promise<EmailProviderResult> {
-	const attempts: EmailProviderResult["attempts"] = [];
+	const startTime = Date.now();
 	const recipient = Array.isArray(options.to)
 		? options.to.join(", ")
 		: options.to;
@@ -439,255 +271,142 @@ export async function sendEmailWithFallback(
 	// ==========================================================================
 	// COMPANY EMAIL PROVIDER CHECK (Multi-Tenant)
 	// ==========================================================================
-	// Each company (tenant) can choose:
-	// - 'managed': Use our Resend/Postmark providers
-	// - 'gmail': Use their connected Gmail account
-	// - 'disabled': Email is disabled for this company
-	if (options.companyId) {
-		const companyPreference = await getCompanyEmailProvider(options.companyId);
+	const companyPreference = await getCompanyEmailProvider(options.companyId);
 
-		// Handle disabled - company has turned off email
-		if (companyPreference === "disabled") {
+	// Handle disabled - company has turned off email
+	if (companyPreference === "disabled") {
+		if (providerConfig.enableLogging) {
+			console.log(
+				`[EmailProvider] Company ${options.companyId} has email disabled`,
+			);
+		}
+
+		return {
+			success: false,
+			error: "Email is disabled for this company",
+		};
+	}
+
+	// Handle Gmail preference
+	if (companyPreference === "gmail") {
+		const gmailAvailable = await isCompanyGmailAvailable(options.companyId);
+
+		if (gmailAvailable) {
 			if (providerConfig.enableLogging) {
 				console.log(
-					`[EmailProvider] Company ${options.companyId} has email disabled`,
+					`[EmailProvider] Company ${options.companyId} prefers Gmail, attempting Gmail send...`,
 				);
 			}
 
-			return {
-				success: false,
-				error: "Email is disabled for this company",
-				usedFallback: false,
-				attempts: [],
-			};
-		}
+			const result = await sendViaGmail(options.companyId, options);
+			const latencyMs = Date.now() - startTime;
 
-		// Handle Gmail preference
-		if (companyPreference === "gmail") {
-			const gmailAvailable = await isCompanyGmailAvailable(options.companyId);
-
-			if (gmailAvailable) {
-				const startTime = Date.now();
-
+			if (result.success) {
 				if (providerConfig.enableLogging) {
 					console.log(
-						`[EmailProvider] Company ${options.companyId} prefers Gmail, attempting Gmail send...`,
+						`[EmailProvider] ✓ Gmail send succeeded in ${latencyMs}ms, messageId: ${result.messageId}`,
 					);
 				}
 
-				const result = await sendViaGmail(options.companyId, options);
-				const latencyMs = Date.now() - startTime;
-
-				attempts.push({
+				return {
+					success: true,
 					provider: "gmail",
-					success: result.success,
 					messageId: result.messageId,
-					error: result.error,
 					latencyMs,
-				});
-
-				if (result.success) {
-					if (providerConfig.enableLogging) {
-						console.log(
-							`[EmailProvider] ✓ Gmail send succeeded in ${latencyMs}ms, messageId: ${result.messageId}`,
-						);
-					}
-
-					return {
-						success: true,
-						provider: "gmail",
-						messageId: result.messageId,
-						usedFallback: false,
-						attempts,
-					};
-				}
-
-				// Gmail failed - fall through to managed providers
-				if (providerConfig.enableLogging) {
-					console.warn(
-						`[EmailProvider] ✗ Gmail send failed in ${latencyMs}ms: ${result.error}`,
-					);
-					console.log("[EmailProvider] Falling back to managed providers...");
-				}
-			} else {
-				if (providerConfig.enableLogging) {
-					console.log(
-						`[EmailProvider] Company ${options.companyId} prefers Gmail but no valid tokens, using managed providers`,
-					);
-				}
+				};
 			}
-		}
-	}
 
-	// ==========================================================================
-	// MANAGED PROVIDERS: Primary (Resend) → Fallback (Postmark)
-	// ==========================================================================
-
-	// ==========================================================================
-	// ATTEMPT 1: Primary Provider (Resend)
-	// ==========================================================================
-	if (isProviderConfigured(providerConfig.primary)) {
-		const startTime = Date.now();
-
-		if (providerConfig.enableLogging) {
-			console.log(
-				`[EmailProvider] Trying primary provider: ${providerConfig.primary}`,
-			);
-		}
-
-		const result =
-			providerConfig.primary === "resend"
-				? await sendViaResend(options)
-				: await sendViaPostmark(options);
-
-		const latencyMs = Date.now() - startTime;
-
-		attempts.push({
-			provider: providerConfig.primary,
-			success: result.success,
-			messageId: result.messageId,
-			error: result.error,
-			latencyMs,
-		});
-
-		// If primary succeeded, return immediately
-		if (result.success) {
+			// Gmail failed - fall through to SendGrid
+			if (providerConfig.enableLogging) {
+				console.warn(
+					`[EmailProvider] ✗ Gmail send failed in ${latencyMs}ms: ${result.error}`,
+				);
+				console.log("[EmailProvider] Falling back to SendGrid...");
+			}
+		} else {
 			if (providerConfig.enableLogging) {
 				console.log(
-					`[EmailProvider] ✓ Primary provider succeeded in ${latencyMs}ms, messageId: ${result.messageId}`,
+					`[EmailProvider] Company ${options.companyId} prefers Gmail but no valid tokens, using SendGrid`,
 				);
 			}
-
-			return {
-				success: true,
-				provider: providerConfig.primary,
-				messageId: result.messageId,
-				usedFallback: false,
-				attempts,
-			};
-		}
-
-		// Primary failed
-		if (providerConfig.enableLogging) {
-			console.warn(
-				`[EmailProvider] ✗ Primary provider failed in ${latencyMs}ms: ${result.error}`,
-			);
-		}
-	} else {
-		if (providerConfig.enableLogging) {
-			console.warn(
-				`[EmailProvider] Primary provider (${providerConfig.primary}) not configured`,
-			);
 		}
 	}
 
 	// ==========================================================================
-	// ATTEMPT 2: Fallback Provider (Postmark)
+	// SENDGRID (Primary Provider)
 	// ==========================================================================
-	if (
-		providerConfig.enableFallback &&
-		isProviderConfigured(providerConfig.fallback)
-	) {
-		const startTime = Date.now();
-
-		if (providerConfig.enableLogging) {
-			console.log(
-				`[EmailProvider] Trying fallback provider: ${providerConfig.fallback}`,
-			);
-		}
-
-		const result =
-			providerConfig.fallback === "postmark"
-				? await sendViaPostmark(options)
-				: await sendViaResend(options);
-
-		const latencyMs = Date.now() - startTime;
-
-		attempts.push({
-			provider: providerConfig.fallback,
-			success: result.success,
-			messageId: result.messageId,
-			error: result.error,
-			latencyMs,
-		});
-
-		// If fallback succeeded, return
-		if (result.success) {
-			if (providerConfig.enableLogging) {
-				console.log(
-					`[EmailProvider] ✓ Fallback provider succeeded in ${latencyMs}ms, messageId: ${result.messageId}`,
-				);
-			}
-
-			return {
-				success: true,
-				provider: providerConfig.fallback,
-				messageId: result.messageId,
-				usedFallback: true,
-				attempts,
-			};
-		}
-
-		// Fallback also failed
-		if (providerConfig.enableLogging) {
-			console.error(
-				`[EmailProvider] ✗ Fallback provider also failed in ${latencyMs}ms: ${result.error}`,
-			);
-		}
-	} else if (providerConfig.enableFallback) {
-		if (providerConfig.enableLogging) {
-			console.warn(
-				`[EmailProvider] Fallback provider (${providerConfig.fallback}) not configured`,
-			);
-		}
+	if (!isProviderConfigured()) {
+		return {
+			success: false,
+			error: "SendGrid is not configured",
+			latencyMs: Date.now() - startTime,
+		};
 	}
-
-	// ==========================================================================
-	// ALL PROVIDERS FAILED
-	// ==========================================================================
-	const errors = attempts.map((a) => `${a.provider}: ${a.error}`).join("; ");
 
 	if (providerConfig.enableLogging) {
-		console.error(`[EmailProvider] ✗ All providers failed: ${errors}`);
+		console.log(`[EmailProvider] Sending via SendGrid`);
+	}
+
+	const result = await sendViaSendGrid(options);
+	const latencyMs = Date.now() - startTime;
+
+	if (result.success) {
+		if (providerConfig.enableLogging) {
+			console.log(
+				`[EmailProvider] ✓ SendGrid send succeeded in ${latencyMs}ms, messageId: ${result.messageId}`,
+			);
+		}
+
+		return {
+			success: true,
+			provider: "sendgrid",
+			messageId: result.messageId,
+			latencyMs,
+		};
+	}
+
+	if (providerConfig.enableLogging) {
+		console.error(
+			`[EmailProvider] ✗ SendGrid send failed in ${latencyMs}ms: ${result.error}`,
+		);
 	}
 
 	return {
 		success: false,
-		error: `All email providers failed. ${errors}`,
-		usedFallback: attempts.length > 1,
-		attempts,
+		error: result.error || "Failed to send email",
+		latencyMs,
 	};
 }
+
+// Alias for backward compatibility
+export const sendEmailWithProvider = sendEmailWithFallback;
 
 // =============================================================================
 // HEALTH CHECKS
 // =============================================================================
 
 /**
- * Check health of Resend provider
- *
- * @returns Health status
+ * Check health of SendGrid provider
  */
-async function checkResendHealth(): Promise<ProviderHealthStatus> {
+export async function checkSendGridHealth(): Promise<ProviderHealthStatus> {
 	const startTime = Date.now();
 
-	if (!isResendConfigured() || !resend) {
+	if (!isAdminSendGridConfigured()) {
 		return {
-			provider: "resend",
+			provider: "sendgrid",
 			healthy: false,
 			latencyMs: 0,
 			lastChecked: new Date(),
-			error: "Resend is not configured",
+			error: "SendGrid is not configured",
 		};
 	}
 
 	try {
-		// Resend doesn't have a dedicated health endpoint
-		// We'll list domains as a health check (lightweight operation)
-		const response = await fetch("https://api.resend.com/domains", {
+		// SendGrid API health check via scopes endpoint
+		const response = await fetch("https://api.sendgrid.com/v3/scopes", {
 			method: "GET",
 			headers: {
-				Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+				Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
 				"Content-Type": "application/json",
 			},
 		});
@@ -696,10 +415,10 @@ async function checkResendHealth(): Promise<ProviderHealthStatus> {
 
 		if (response.ok) {
 			console.log(
-				`[EmailProvider] Resend health check passed in ${latencyMs}ms`,
+				`[EmailProvider] SendGrid health check passed in ${latencyMs}ms`,
 			);
 			return {
-				provider: "resend",
+				provider: "sendgrid",
 				healthy: true,
 				latencyMs,
 				lastChecked: new Date(),
@@ -707,9 +426,9 @@ async function checkResendHealth(): Promise<ProviderHealthStatus> {
 		}
 
 		const error = await response.text();
-		console.error(`[EmailProvider] Resend health check failed: ${error}`);
+		console.error(`[EmailProvider] SendGrid health check failed: ${error}`);
 		return {
-			provider: "resend",
+			provider: "sendgrid",
 			healthy: false,
 			latencyMs,
 			lastChecked: new Date(),
@@ -720,9 +439,9 @@ async function checkResendHealth(): Promise<ProviderHealthStatus> {
 		const errorMessage =
 			error instanceof Error ? error.message : "Unknown error";
 
-		console.error(`[EmailProvider] Resend health check error: ${errorMessage}`);
+		console.error(`[EmailProvider] SendGrid health check error: ${errorMessage}`);
 		return {
-			provider: "resend",
+			provider: "sendgrid",
 			healthy: false,
 			latencyMs,
 			lastChecked: new Date(),
@@ -733,47 +452,27 @@ async function checkResendHealth(): Promise<ProviderHealthStatus> {
 
 /**
  * Check health of all configured providers
- *
- * @returns Health status for all providers
  */
-export async function checkAllProvidersHealth(): Promise<AllProvidersHealth> {
-	console.log("[EmailProvider] Checking health of all providers...");
+export async function checkAllProvidersHealth(): Promise<{
+	sendgrid: ProviderHealthStatus | null;
+	recommendedProvider: EmailProvider | null;
+}> {
+	console.log("[EmailProvider] Checking SendGrid health...");
 
-	const results: AllProvidersHealth = {
-		primary: null,
-		fallback: null,
-		recommendedProvider: null,
-	};
+	const sendgridHealth = isProviderConfigured()
+		? await checkSendGridHealth()
+		: null;
 
-	// Check primary (Resend)
-	if (isProviderConfigured("resend")) {
-		results.primary = await checkResendHealth();
-	}
-
-	// Check fallback (Postmark)
-	if (isProviderConfigured("postmark")) {
-		const postmarkHealth = await checkPostmarkHealth();
-		results.fallback = {
-			provider: "postmark",
-			healthy: postmarkHealth.healthy,
-			latencyMs: postmarkHealth.latencyMs,
-			lastChecked: new Date(),
-			error: postmarkHealth.error,
-		};
-	}
-
-	// Determine recommended provider based on health
-	if (results.primary?.healthy) {
-		results.recommendedProvider = "resend";
-	} else if (results.fallback?.healthy) {
-		results.recommendedProvider = "postmark";
-	}
+	const recommendedProvider = sendgridHealth?.healthy ? "sendgrid" : null;
 
 	console.log(
-		`[EmailProvider] Health check complete. Primary: ${results.primary?.healthy ? "healthy" : "unhealthy"}, Fallback: ${results.fallback?.healthy ? "healthy" : "unhealthy"}, Recommended: ${results.recommendedProvider || "none"}`,
+		`[EmailProvider] Health check complete. SendGrid: ${sendgridHealth?.healthy ? "healthy" : "unhealthy"}`,
 	);
 
-	return results;
+	return {
+		sendgrid: sendgridHealth,
+		recommendedProvider,
+	};
 }
 
 // =============================================================================
@@ -782,52 +481,23 @@ export async function checkAllProvidersHealth(): Promise<AllProvidersHealth> {
 
 /**
  * Get display information about the email provider setup
- *
- * @returns Provider setup summary
  */
 export function getProviderSetupInfo(): {
-	primaryConfigured: boolean;
-	fallbackConfigured: boolean;
-	fallbackEnabled: boolean;
-	configuredProviders: EmailProvider[];
-	status:
-		| "fully_configured"
-		| "primary_only"
-		| "fallback_only"
-		| "not_configured";
+	configured: boolean;
+	provider: EmailProvider;
+	status: "configured" | "not_configured";
 } {
-	const primaryConfigured = isProviderConfigured(providerConfig.primary);
-	const fallbackConfigured = isProviderConfigured(providerConfig.fallback);
-	const configuredProviders = getConfiguredProviders();
-
-	let status:
-		| "fully_configured"
-		| "primary_only"
-		| "fallback_only"
-		| "not_configured";
-
-	if (primaryConfigured && fallbackConfigured) {
-		status = "fully_configured";
-	} else if (primaryConfigured) {
-		status = "primary_only";
-	} else if (fallbackConfigured) {
-		status = "fallback_only";
-	} else {
-		status = "not_configured";
-	}
+	const configured = isProviderConfigured();
 
 	return {
-		primaryConfigured,
-		fallbackConfigured,
-		fallbackEnabled: providerConfig.enableFallback,
-		configuredProviders,
-		status,
+		configured,
+		provider: "sendgrid",
+		status: configured ? "configured" : "not_configured",
 	};
 }
 
 /**
  * Log a summary of the current provider configuration
- * Useful for debugging and startup diagnostics
  */
 export function logProviderConfiguration(): void {
 	const info = getProviderSetupInfo();
@@ -836,15 +506,8 @@ export function logProviderConfiguration(): void {
 	console.log("[EmailProvider] Configuration Summary");
 	console.log("=".repeat(60));
 	console.log(
-		`Primary Provider: ${providerConfig.primary} (${info.primaryConfigured ? "✓ configured" : "✗ not configured"})`,
+		`Provider: SendGrid (${info.configured ? "✓ configured" : "✗ not configured"})`,
 	);
-	console.log(
-		`Fallback Provider: ${providerConfig.fallback} (${info.fallbackConfigured ? "✓ configured" : "✗ not configured"})`,
-	);
-	console.log(`Fallback Enabled: ${info.fallbackEnabled ? "Yes" : "No"}`);
 	console.log(`Status: ${info.status}`);
-	console.log(
-		`Configured Providers: ${info.configuredProviders.join(", ") || "none"}`,
-	);
 	console.log("=".repeat(60));
 }

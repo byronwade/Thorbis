@@ -20,11 +20,7 @@
 import { revalidatePath } from "next/cache";
 import { start as startWorkflow } from "workflow/api";
 import { z } from "zod";
-import {
-	createResendDomainWithValidation,
-	createInboundRoute as createResendInboundRoute,
-	generatePlatformSubdomain,
-} from "@/lib/email/resend-domains";
+import { generatePlatformSubdomain } from "@/lib/email/domain-validation";
 import {
 	DEFAULT_TRIAL_LENGTH_DAYS,
 	ensureCompanyTrialStatus,
@@ -35,13 +31,12 @@ import {
 	createServiceSupabaseClient,
 	type ServiceSupabaseClient,
 } from "@/lib/supabase/service-client";
-import { formatPhoneNumber } from "@/lib/telnyx/messaging";
-import { initiatePorting } from "@/lib/telnyx/numbers";
+import { formatPhoneNumber, initiatePorting } from "@/lib/twilio/numbers";
 import type { Json } from "@/types/supabase";
 import { companyTrialWorkflow } from "@/workflows/company-trial";
 import { ensureMessagingBranding } from "./messaging-branding";
 import { updateNotificationSettings } from "./settings/communications";
-import { purchasePhoneNumber } from "./telnyx";
+import { purchasePhoneNumber } from "./twilio";
 
 const onboardingSchema = z.object({
 	orgName: z.string().min(2, "Organization name must be at least 2 characters"),
@@ -402,7 +397,7 @@ async function autoConfigureEmailInfrastructure(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
 	companySlug: string,
-	website?: string | null,
+	_website?: string | null,
 ) {
 	// Check if domain already exists for this company
 	const { data: existingDomain } = await serviceSupabase
@@ -417,38 +412,8 @@ async function autoConfigureEmailInfrastructure(
 	}
 
 	try {
-		// Try to register custom domain from website if provided
-		const domain = extractDomainFromUrl(website);
-		if (domain) {
-			// Get count of existing domains for validation
-			const { count } = await serviceSupabase
-				.from("company_email_domains")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId);
-
-			const result = await createResendDomainWithValidation({
-				domain,
-				currentDomainCount: count || 0,
-				companySlug,
-			});
-
-			if (result.success) {
-				await serviceSupabase.from("company_email_domains").insert({
-					company_id: companyId,
-					domain_name: result.data.name,
-					status: result.data.status || "pending",
-					resend_domain_id: result.data.id,
-					dns_records: result.data.records || [],
-					is_platform_subdomain: false,
-					sending_enabled: result.data.status === "verified",
-					reputation_score: 100,
-					last_synced_at: new Date().toISOString(),
-				});
-				return; // Successfully registered custom domain
-			}
-		}
-
-		// Fallback to platform subdomain (e.g., company-slug.mail.stratos.app)
+		// Create platform subdomain (e.g., company-slug.mail.stratos.app)
+		// Custom domains can be configured later in settings
 		const platformDomain = generatePlatformSubdomain(companySlug);
 
 		await serviceSupabase.from("company_email_domains").insert({
@@ -461,63 +426,8 @@ async function autoConfigureEmailInfrastructure(
 			last_synced_at: new Date().toISOString(),
 		});
 	} catch (_error) {
-		// Error setting up domain, try platform subdomain as fallback
-		try {
-			const platformDomain = generatePlatformSubdomain(companySlug);
-
-			await serviceSupabase.from("company_email_domains").insert({
-				company_id: companyId,
-				domain_name: platformDomain,
-				status: "verified",
-				is_platform_subdomain: true,
-				sending_enabled: true,
-				reputation_score: 100,
-				last_synced_at: new Date().toISOString(),
-			});
-		} catch (_fallbackError) {
-			// Unable to set up any email domain
-		}
-	}
-
-	// Set up inbound email route
-	const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
-	if (!inboundDomain) {
-		return;
-	}
-
-	const { data: existingRoute } = await serviceSupabase
-		.from("communication_email_inbound_routes")
-		.select("id")
-		.eq("company_id", companyId)
-		.maybeSingle();
-
-	if (existingRoute) {
-		return;
-	}
-
-	const routeAddress = `company-${companyId.slice(0, 8)}@${inboundDomain}`;
-	const destinationUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"}/api/webhooks/resend`;
-
-	try {
-		const result = await createResendInboundRoute({
-			name: `Company ${companyId}`,
-			recipients: [routeAddress],
-			url: destinationUrl,
-		});
-
-		if (result.success) {
-			await serviceSupabase.from("communication_email_inbound_routes").insert({
-				company_id: companyId,
-				route_address: routeAddress,
-				resend_route_id: result.data.id,
-				signing_secret: result.data.secret || null,
-				status: result.data.status || "pending",
-				destination_url: destinationUrl,
-				last_synced_at: new Date().toISOString(),
-			});
-		}
-	} catch (_error) {
-		// Ignore inbound route setup errors during onboarding
+		// Unable to set up email domain - can be configured later in settings
+		console.warn(`[Onboarding] Failed to configure email domain for company ${companyId}`);
 	}
 }
 
@@ -1216,8 +1126,8 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 					account_pin: accountPin,
 					porting_type: "standard",
 					status: "submitted",
-					telnyx_order_id: result.portingOrderId || null,
-					telnyx_status: (result.data as any)?.status || null,
+					twilio_order_id: result.portingOrderId || null,
+					twilio_status: (result.data as any)?.status || null,
 					service_address: {
 						address_line_1: addressLine1,
 						city,

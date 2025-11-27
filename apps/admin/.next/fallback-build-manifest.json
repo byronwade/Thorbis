@@ -1,12 +1,12 @@
 {
-	"pages": {
-		"/_app": []
-	},
-	"devFiles": [],
-	"polyfillFiles": [],
-	"lowPriorityFiles": [
-		"static/2q2upIN9hX-kGZDKZJjqr/_ssgManifest.js",
-		"static/2q2upIN9hX-kGZDKZJjqr/_buildManifest.js"
-	],
-	"rootMainFiles": []
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [
+    "static/Tr38_bjfaZYfXKLT5htnh/_ssgManifest.js",
+    "static/Tr38_bjfaZYfXKLT5htnh/_buildManifest.js"
+  ],
+  "rootMainFiles": []
 }

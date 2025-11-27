@@ -224,8 +224,23 @@ export async function getEmailInfrastructure(): Promise<
 // SMS SETTINGS
 // ============================================================================
 
+const quickRepliesConfigSchema = z.object({
+	greeting_enabled: z.boolean().default(false),
+	greeting_message: z.string().default("Hi! Thanks for reaching out to {{company_name}}. How can we help you today?"),
+	after_hours_enabled: z.boolean().default(false),
+	after_hours_message: z.string().default("Thanks for your message! We're currently closed but will respond first thing in the morning. For emergencies, call {{emergency_phone}}."),
+	appointment_reminder_enabled: z.boolean().default(false),
+	appointment_reminder_hours_before: z.number().default(24),
+	appointment_reminder_message: z.string().default("Reminder: You have an appointment with {{company_name}} tomorrow at {{appointment_time}}. Reply YES to confirm or call us to reschedule."),
+	job_complete_enabled: z.boolean().default(false),
+	job_complete_message: z.string().default("Your service has been completed! Thank you for choosing {{company_name}}. Please let us know if you have any questions."),
+	review_request_enabled: z.boolean().default(false),
+	review_request_delay_hours: z.number().default(24),
+	review_request_message: z.string().default("Thank you for choosing {{company_name}}! We'd love to hear about your experience. Please leave us a review: {{review_link}}"),
+});
+
 const smsSettingsSchema = z.object({
-	provider: z.enum(["telnyx", "twilio", "other"]).default("telnyx"),
+	provider: z.enum(["twilio", "other"]).default("twilio"),
 	providerApiKey: z.string().optional(),
 	senderNumber: z.string().optional(),
 	autoReplyEnabled: z.boolean().default(false),
@@ -233,6 +248,8 @@ const smsSettingsSchema = z.object({
 	optOutMessage: z.string().default("Reply STOP to unsubscribe"),
 	includeOptOut: z.boolean().default(true),
 	consentRequired: z.boolean().default(true),
+	quickRepliesEnabled: z.boolean().default(false),
+	quickRepliesConfig: quickRepliesConfigSchema.optional(),
 });
 
 export async function updateSmsSettings(
@@ -254,8 +271,19 @@ export async function updateSmsSettings(
 
 		const companyId = await getCompanyId(supabase, user.id);
 
+		// Parse quick replies config from JSON string
+		let quickRepliesConfig = undefined;
+		const quickRepliesConfigStr = formData.get("quickRepliesConfig") as string;
+		if (quickRepliesConfigStr) {
+			try {
+				quickRepliesConfig = JSON.parse(quickRepliesConfigStr);
+			} catch (_e) {
+				// Invalid JSON, use undefined
+			}
+		}
+
 		const data = smsSettingsSchema.parse({
-			provider: formData.get("provider") || "telnyx",
+			provider: formData.get("provider") || "twilio",
 			providerApiKey: formData.get("providerApiKey") || undefined,
 			senderNumber: formData.get("senderNumber") || undefined,
 			autoReplyEnabled: formData.get("autoReplyEnabled") === "true",
@@ -264,6 +292,8 @@ export async function updateSmsSettings(
 				formData.get("optOutMessage") || "Reply STOP to unsubscribe",
 			includeOptOut: formData.get("includeOptOut") !== "false",
 			consentRequired: formData.get("consentRequired") !== "false",
+			quickRepliesEnabled: formData.get("quickRepliesEnabled") === "true",
+			quickRepliesConfig,
 		});
 
 		// Encrypt API key if provided
@@ -281,6 +311,8 @@ export async function updateSmsSettings(
 			opt_out_message: data.optOutMessage,
 			include_opt_out: data.includeOptOut,
 			consent_required: data.consentRequired,
+			quick_replies_enabled: data.quickRepliesEnabled,
+			quick_replies_config: data.quickRepliesConfig,
 		});
 
 		if (error) {

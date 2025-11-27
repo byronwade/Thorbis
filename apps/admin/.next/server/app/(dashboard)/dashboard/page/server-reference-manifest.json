@@ -1,4 +1,20 @@
 {
-	"node": {},
-	"edge": {}
+  "node": {
+    "0069b4f9d5f05d617f7f07d73ab56f7f40cdf86d35": {
+      "workers": {
+        "app/(dashboard)/dashboard/page": {
+          "moduleId": 82362,
+          "async": false,
+          "exportedName": "createServiceSupabaseClient",
+          "filename": "packages/database/src/service-client.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/page": "rsc"
+      },
+      "exportedName": "createServiceSupabaseClient",
+      "filename": "packages/database/src/service-client.ts"
+    }
+  },
+  "edge": {}
 }

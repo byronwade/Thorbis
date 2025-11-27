@@ -46,7 +46,7 @@ export function ChannelHealth() {
 	const [channels, setChannels] = useState<ChannelStatus[]>([
 		{
 			channel: "email",
-			name: "Email (Resend)",
+			name: "Email (SendGrid)",
 			icon: <Mail className="h-5 w-5" />,
 			status: "operational",
 			apiStatus: "connected",
@@ -62,7 +62,7 @@ export function ChannelHealth() {
 		},
 		{
 			channel: "sms",
-			name: "SMS (Telnyx)",
+			name: "SMS (Twilio)",
 			icon: <MessageSquare className="h-5 w-5" />,
 			status: "degraded",
 			apiStatus: "connected",

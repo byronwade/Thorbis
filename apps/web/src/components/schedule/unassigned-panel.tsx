@@ -17,6 +17,7 @@ import {
 	ClipboardCheck,
 	Clock,
 	HardHat,
+	Loader2,
 	MapPin,
 	Phone,
 	Search,
@@ -375,6 +376,7 @@ export function UnassignedPanel({
 	const rawJobs = Array.isArray(unassignedJobs) ? unassignedJobs : [];
 	const activeJob = rawJobs.find((job) => job.id === activeJobId);
 	const [searchValue, setSearchValue] = useState(searchQuery ?? "");
+	const [isSearchPending, setIsSearchPending] = useState(false);
 	const lastSentSearch = useRef(searchQuery ?? "");
 	const trimmedSearch = searchValue.trim();
 
@@ -387,12 +389,17 @@ export function UnassignedPanel({
 		if (!onSearchChange) {
 			return;
 		}
+		// Show pending indicator if search has changed
+		const hasPendingSearch = trimmedSearch !== (lastSentSearch.current ?? "");
+		setIsSearchPending(hasPendingSearch);
+
 		const handler = setTimeout(() => {
 			if (trimmedSearch === (lastSentSearch.current ?? "")) {
 				return;
 			}
 			lastSentSearch.current = trimmedSearch;
 			onSearchChange(trimmedSearch);
+			setIsSearchPending(false);
 		}, 400);
 		return () => clearTimeout(handler);
 	}, [trimmedSearch, onSearchChange]);
@@ -443,7 +450,11 @@ export function UnassignedPanel({
 
 							<div className="border-b px-3 py-2">
 								<div className="relative">
-									<Search className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2" />
+									{isSearchPending ? (
+										<Loader2 className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2 animate-spin" />
+									) : (
+										<Search className="text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2" />
+									)}
 									<Input
 										className="pl-8 text-sm"
 										placeholder="Search..."

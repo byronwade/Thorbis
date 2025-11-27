@@ -118,7 +118,7 @@ export interface OnboardingData {
 	phoneNumber: string;
 	smsEnabled: boolean;
 
-	// Number Porting (Telnyx)
+	// Number Porting (Twilio)
 	portingStatus: string;
 	portingCarrier: string;
 	portingAccountNumber: string;
@@ -135,7 +135,7 @@ export interface OnboardingData {
 		| null;
 	customDomain: string;
 	dnsVerified: boolean;
-	resendDomainId: string | null; // Resend domain ID for verification tracking
+	sendgridDomainId: string | null; // SendGrid domain ID for verification tracking
 
 	// Notifications
 	notifications: NotificationPreference[];
@@ -508,7 +508,7 @@ const initialData: OnboardingData = {
 	emailSetupType: null,
 	customDomain: "",
 	dnsVerified: false,
-	resendDomainId: null,
+	sendgridDomainId: null,
 
 	notifications: DEFAULT_NOTIFICATIONS,
 	quietHoursEnabled: false,

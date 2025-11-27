@@ -16,11 +16,22 @@ import type { Database } from "./types";
  */
 export async function createServiceSupabaseClient() {
 	// Prefer pooler URL for Transaction Mode (better performance)
+	// WEB_SUPABASE_URL allows admin app to connect to web database for cross-app queries
 	const supabaseUrl =
-		process.env.SUPABASE_POOLER_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-	const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+		process.env.SUPABASE_POOLER_URL ||
+		process.env.WEB_SUPABASE_URL ||
+		process.env.NEXT_PUBLIC_SUPABASE_URL;
+	// Support multiple env var names for flexibility across apps
+	const serviceRoleKey =
+		process.env.SUPABASE_SERVICE_ROLE_KEY ||
+		process.env.WEB_SUPABASE_SERVICE_ROLE_KEY ||
+		process.env.ADMIN_SUPABASE_SERVICE_ROLE_KEY;
 
 	if (!supabaseUrl || !serviceRoleKey) {
+		console.error("[Service Client] Missing env vars:", {
+			hasUrl: !!supabaseUrl,
+			hasKey: !!serviceRoleKey,
+		});
 		return null;
 	}
 

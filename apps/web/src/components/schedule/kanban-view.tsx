@@ -67,16 +67,16 @@ type ScheduleKanbanItem = KanbanItemBase & {
 const SCHEDULE_STATUS_COLUMNS: Array<{
 	id: ScheduleStatus | "unassigned";
 	name: string;
-	accentColor: string;
+	bgClass: string;
 }> = [
-	{ id: "unassigned", name: "Unscheduled", accentColor: "#EF4444" }, // Red
-	{ id: "scheduled", name: "Scheduled", accentColor: "#3B82F6" }, // Blue
-	{ id: "dispatched", name: "Dispatched", accentColor: "#0EA5E9" }, // Sky
-	{ id: "arrived", name: "Arrived", accentColor: "#34D399" }, // Emerald
-	{ id: "in-progress", name: "In Progress", accentColor: "#F59E0B" }, // Amber
-	{ id: "closed", name: "Closed", accentColor: "#10B981" }, // Green
-	{ id: "completed", name: "Completed", accentColor: "#059669" }, // Emerald-600
-	{ id: "cancelled", name: "Cancelled", accentColor: "#94A3B8" }, // Slate
+	{ id: "unassigned", name: "Unscheduled", bgClass: "bg-red-500" },
+	{ id: "scheduled", name: "Scheduled", bgClass: "bg-blue-500" },
+	{ id: "dispatched", name: "Dispatched", bgClass: "bg-sky-500" },
+	{ id: "arrived", name: "Arrived", bgClass: "bg-emerald-400" },
+	{ id: "in-progress", name: "In Progress", bgClass: "bg-amber-500" },
+	{ id: "closed", name: "Closed", bgClass: "bg-green-500" },
+	{ id: "completed", name: "Completed", bgClass: "bg-emerald-600" },
+	{ id: "cancelled", name: "Cancelled", bgClass: "bg-slate-400" },
 ];
 
 const COLUMN_LABEL = new Map(

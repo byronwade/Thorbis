@@ -1,8 +1,8 @@
 /**
- * SMS Dialog - Internal SMS composer using Telnyx
+ * SMS Dialog - Internal SMS composer using Twilio
  *
  * Features:
- * - Send SMS messages via Telnyx
+ * - Send SMS messages via Twilio
  * - Character counter
  * - Creates communication records
  * - Shows send status
@@ -12,7 +12,7 @@
 
 import { MessageSquare, Send } from "lucide-react";
 import { useState, useTransition } from "react";
-import { sendTextMessage } from "@/actions/telnyx";
+import { sendTextMessage } from "@/actions/twilio";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

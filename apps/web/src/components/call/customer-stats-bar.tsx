@@ -33,11 +33,14 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { CustomerStats } from "@/types/call";
+import { CustomerStatusIndicator } from "./customer-status-indicator";
 
 type CustomerStatsBarProps = {
 	stats: CustomerStats;
 	openBalance?: number;
 	lastVisitDate?: string | null;
+	hasOverdueInvoices?: boolean;
+	showStatusIndicator?: boolean;
 	className?: string;
 };
 
@@ -61,6 +64,8 @@ export function CustomerStatsBar({
 	stats,
 	openBalance = 0,
 	lastVisitDate,
+	hasOverdueInvoices = false,
+	showStatusIndicator = true,
 	className,
 }: CustomerStatsBarProps) {
 	// Format currency
@@ -119,6 +124,16 @@ export function CustomerStatsBar({
 					className,
 				)}
 			>
+				{/* Customer Status Indicator - VIP/Payment/Service badges */}
+				{showStatusIndicator && (
+					<div className="flex items-center justify-center gap-2 border-b px-3 py-2">
+						<CustomerStatusIndicator
+							stats={stats}
+							openBalance={openBalance}
+							hasOverdueInvoices={hasOverdueInvoices}
+						/>
+					</div>
+				)}
 				<div className="grid grid-cols-5 divide-x">
 					{/* Revenue */}
 					<Tooltip>

@@ -11,8 +11,8 @@
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
-import { BusinessHoursEditor } from "@/components/telnyx/business-hours-editor";
-import { CallRoutingRulesList } from "@/components/telnyx/call-routing-rules-list";
+import { BusinessHoursEditor } from "@/components/telephony/business-hours-editor";
+import { CallRoutingRulesList } from "@/components/telephony/call-routing-rules-list";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

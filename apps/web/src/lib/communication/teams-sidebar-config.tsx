@@ -42,8 +42,7 @@ export const teamsSidebarConfig: CommunicationSidebarConfig = {
 		label: "New channel",
 		icon: Plus,
 		onClick: () => {
-			// TODO: Implement new channel action
-			console.log("New channel clicked");
+			// TODO: Implement new channel creation modal
 		},
 	},
 };

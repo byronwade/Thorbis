@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { ServiceAgreementDetailToolbarActions } from "@/components/work/service-agreements/service-agreement-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Service Agreements Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/service-agreements/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function ServiceAgreementsDetailLayout({
 	children,
@@ -37,8 +38,7 @@ export default function ServiceAgreementsDetailLayout({
 					label="Service Agreements"
 				/>
 			),
-			// TODO: Create ServiceAgreementDetailToolbar component
-			// actions: <ServiceAgreementDetailToolbar />,
+			actions: <ServiceAgreementDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

@@ -1,21 +1,28 @@
 {
   "node": {
-    "00766f34e56ac3204b9f1d6cb3f1a089b53a0cc891": {
+    "0069b4f9d5f05d617f7f07d73ab56f7f40cdf86d35": {
       "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
+        "app/(dashboard)/dashboard/page": {
+          "moduleId": 82362,
           "async": false,
-          "exportedName": "getWaitlistEmailsForCampaign",
-          "filename": "apps/admin/src/actions/waitlist.ts"
+          "exportedName": "createServiceSupabaseClient",
+          "filename": "packages/database/src/service-client.ts"
+        },
+        "app/dashboard/view-as/[companyId]/work/jobs/page": {
+          "moduleId": 23194,
+          "async": false,
+          "exportedName": "createServiceSupabaseClient",
+          "filename": "packages/database/src/service-client.ts"
         }
       },
       "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
+        "app/(dashboard)/dashboard/page": "rsc",
+        "app/dashboard/view-as/[companyId]/work/jobs/page": "rsc"
       },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "getWaitlistEmailsForCampaign"
+      "filename": "packages/database/src/service-client.ts",
+      "exportedName": "createServiceSupabaseClient"
     },
-    "0087a564c77649e05cd630ae364cacf188b9cecfeb": {
+    "00220a408add4b2d68c326a5361b8492a5ac042be9": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -30,7 +37,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "exportWaitlistSubscribers"
     },
-    "00be6eda3bb71efa7f0796ee773ad36ca42f83a5a3": {
+    "00274bc21f7401435f4ff3426028d028ce3d6aecd1": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -45,7 +52,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "getWaitlistCampaignReadyCount"
     },
-    "00f518512cfa2fdb5fb613b4a8aa7154bdcb41f2bb": {
+    "009e52ee6563804aee7bcdb1f1b867287c0523b019": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -60,7 +67,22 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "getWaitlistStats"
     },
-    "4003b4c09cec643f626321dade8506445d215ac874": {
+    "00b8062af8bf6091cf3fb0e63e99aa907af4362733": {
+      "workers": {
+        "app/(dashboard)/dashboard/marketing/page": {
+          "moduleId": 97773,
+          "async": false,
+          "exportedName": "getWaitlistEmailsForCampaign",
+          "filename": "apps/admin/src/actions/waitlist.ts"
+        }
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/marketing/page": "rsc"
+      },
+      "filename": "apps/admin/src/actions/waitlist.ts",
+      "exportedName": "getWaitlistEmailsForCampaign"
+    },
+    "40386f410a1adf639230952fc1bf21cd88328a8c00": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -75,7 +97,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "importWaitlistSubscribers"
     },
-    "40d8a80b8f01b7847483b47313f90730235434d559": {
+    "40889fa818e0f7021f9846d3f328f9a24a2919bb26": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -90,7 +112,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "removeWaitlistSubscriber"
     },
-    "60ac91a19fa9c4f92442d53704cb36b033d250b562": {
+    "60ce8d8cbdf855be6ff9dafb4b5f15b205f19ed4c2": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -105,7 +127,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "updateWaitlistSubscriber"
     },
-    "70d14f4493786e8ca258503b8ddac6a1dfbd2733df": {
+    "70d902069264973812273e943c6c974062064b83c6": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -120,7 +142,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "getWaitlistSubscribers"
     },
-    "7cce20548fc8b435a91f94f968097b85ab56be7eb1": {
+    "7c5db37dccf6038a6aaa49b92d108c96653cdfae7d": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
           "moduleId": 97773,
@@ -135,7 +157,7 @@
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "addWaitlistSubscriber"
     },
-    "400403bb450c59f3dc1281ec17ff5b405bf16f0803": {
+    "40258905938530fcaaa6c784215a0af2e117525e15": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
           "moduleId": 98692,
@@ -150,7 +172,7 @@
       "filename": "apps/admin/src/actions/campaigns.ts",
       "exportedName": "createCampaign"
     },
-    "406d12cccc4bf8889af742b3bed928745802a14be8": {
+    "405237084f20421a77a390c37538f97ae561efb671": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
           "moduleId": 98692,
@@ -165,7 +187,7 @@
       "filename": "apps/admin/src/actions/campaigns.ts",
       "exportedName": "sendCampaign"
     },
-    "60ebdc09048a2877f279f11960034ee53b27f6c669": {
+    "603c1099f42d7fe11c54fe611b3e9cb7940af4926b": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/campaigns/new/page": {
           "moduleId": 98692,
@@ -180,7 +202,7 @@
       "filename": "apps/admin/src/actions/campaigns.ts",
       "exportedName": "scheduleCampaign"
     },
-    "606de25abb4916d6566917712865287e7e8ed54596": {
+    "603b56562ac905a59ad611c9c26163970265203d60": {
       "workers": {
         "app/dashboard/view-as/[companyId]/page": {
           "moduleId": 97588,
@@ -258,7 +280,7 @@
       "filename": "apps/admin/src/actions/support-sessions.ts",
       "exportedName": "endSupportSession"
     },
-    "70308fc60dfcb49fd561d9a392f26c24551b9c6866": {
+    "706573facb6d3d9a5a4a93be96af7cc10b01674f7a": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -287,7 +309,7 @@
       "filename": "apps/admin/src/actions/admin-jobs.ts",
       "exportedName": "updateJobStatus"
     },
-    "7052f8dec38dce6649b4ee6bd9f05700897e3994bf": {
+    "70313e32929dd54f4bde93f6cb838669ddedcb3d82": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -316,7 +338,7 @@
       "filename": "apps/admin/src/actions/admin-jobs.ts",
       "exportedName": "reassignJob"
     },
-    "780d7d56e146e1315e18c192297602d414cd6fe88d": {
+    "7859a9646c7f3be7bb4a92a9b4fc161b1bae9e5a62": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -345,7 +367,7 @@
       "filename": "apps/admin/src/actions/admin-jobs.ts",
       "exportedName": "updateJobSchedule"
     },
-    "7007a7aba2c01fa9dbbb982e8ea92d4910f911eebc": {
+    "706afc929bd09ee621a65e81531d18139b0609d20a": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -374,7 +396,7 @@
       "filename": "apps/admin/src/actions/admin-jobs.ts",
       "exportedName": "updateJobPriority"
     },
-    "706fa5806b4bf1e5b56f4db7f15dfc5751ae255236": {
+    "70dc1ca351b7a32ead1c62c3aa87ad77522378e420": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -403,7 +425,7 @@
       "filename": "apps/admin/src/actions/admin-jobs.ts",
       "exportedName": "addJobNote"
     },
-    "70fbd1f9ac343a4c166050bc6c4b40bb6b336ca0d2": {
+    "70c2eb54b6f410fd5d20e2279b1e767acc56fac674": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -432,7 +454,7 @@
       "filename": "apps/admin/src/actions/admin-payments.ts",
       "exportedName": "issuePaymentRefund"
     },
-    "60a706a70455858be9c82a77305063b6d1eed07dff": {
+    "6059eaec1ac21cd6f9ad2890cf40676973fb78379e": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -461,7 +483,7 @@
       "filename": "apps/admin/src/actions/admin-payments.ts",
       "exportedName": "retryFailedPayment"
     },
-    "604ba7c8ceb3f38f69351b42e003ce361bd4aff32e": {
+    "60959e02af572f9739a1ce45753bb7014819d85695": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -490,7 +512,7 @@
       "filename": "apps/admin/src/actions/admin-payments.ts",
       "exportedName": "markPaymentCompleted"
     },
-    "70a2125785f2696d0ea0b6b232963ae1e13de52dbf": {
+    "70d999140c54489f8ab5f8dfe3697dd25e899809bb": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -519,7 +541,7 @@
       "filename": "apps/admin/src/actions/admin-payments.ts",
       "exportedName": "updatePaymentMethod"
     },
-    "60fa9aadc6ce789db856586be848e2c2a32ffbf675": {
+    "6070fa5e4296da2e6896faa0d57b8567d73f11b681": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -548,7 +570,7 @@
       "filename": "apps/admin/src/actions/admin-team.ts",
       "exportedName": "resetTeamMemberPassword"
     },
-    "70b2f0a88c0954b754c6d35a9e723f23ec7b60c40b": {
+    "7049d1469c6c66326eefce4aedcbe0769adb1ca483": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -577,7 +599,7 @@
       "filename": "apps/admin/src/actions/admin-team.ts",
       "exportedName": "changeTeamMemberRole"
     },
-    "70e7f47dcf6462d7b37910597f0b083f9a26a3c169": {
+    "70d63ce953cb58bab09fc6decf1d72432a48a5c3fd": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -606,7 +628,7 @@
       "filename": "apps/admin/src/actions/admin-team.ts",
       "exportedName": "updateTeamMemberStatus"
     },
-    "708c208337de72c42f382ad5b4adddd96868c8e47e": {
+    "70b33b4db5177009fd2aca47e81922dd597dfd73d5": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -635,7 +657,7 @@
       "filename": "apps/admin/src/actions/admin-team.ts",
       "exportedName": "updateTeamMemberEmail"
     },
-    "70d877135ed5dd3d33af38b109675ddc54f5071df6": {
+    "70011e89a27332af3f21c9840737547e1e76af090f": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -664,7 +686,7 @@
       "filename": "apps/admin/src/actions/admin-invoices.ts",
       "exportedName": "updateInvoiceStatus"
     },
-    "60f8fb1a8dfbca2e62ac9552dc62c206e58f647a15": {
+    "60f689bdbae4c8c4c0214b03bcda312112badb96b4": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -693,7 +715,7 @@
       "filename": "apps/admin/src/actions/admin-invoices.ts",
       "exportedName": "voidInvoice"
     },
-    "7090f90e20c6adea37ad38112d34e4c3ff9b62443e": {
+    "708c498faeda8813bc53e1f8bc67509ce1929478c7": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -722,7 +744,7 @@
       "filename": "apps/admin/src/actions/admin-invoices.ts",
       "exportedName": "updateInvoiceDueDate"
     },
-    "601a68a9482eb2d735b42c7c47deb7923d5a3a607e": {
+    "60d22fd78c43e37b9bb0eedee7ecf798e5b8b1b5d3": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/invoices/page": {
           "moduleId": 59004,
@@ -751,22 +773,7 @@
       "filename": "apps/admin/src/actions/admin-invoices.ts",
       "exportedName": "sendInvoiceReminder"
     },
-    "0078b6630ab025760060e5225cccd016357bd38634": {
-      "workers": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": {
-          "moduleId": 23194,
-          "async": false,
-          "exportedName": "createServiceSupabaseClient",
-          "filename": "packages/database/src/service-client.ts"
-        }
-      },
-      "layer": {
-        "app/dashboard/view-as/[companyId]/work/jobs/page": "rsc"
-      },
-      "filename": "packages/database/src/service-client.ts",
-      "exportedName": "createServiceSupabaseClient"
-    },
-    "4073741f8d5165cde33f9bd8765661c8e98e179f73": {
+    "408ecb123f7995f32e84948487666d95f3647b2129": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -781,7 +788,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "createJob"
     },
-    "60410a3c6506dcb88ddc84bf127ad32c1023e58f72": {
+    "60b23a92e91b818b8ce8f89d81472eedfe79aa109e": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -796,7 +803,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "updateJob"
     },
-    "60f3e92f077be66f8533cad226db39d2b31488ca27": {
+    "60ad0b12b422f52046284fa606d5b9e06447b23397": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -811,7 +818,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "updateJobStatus"
     },
-    "402eac9110449153e2510cefbb222449819a8af5f8": {
+    "40097981372befb56c2c834f3908dd4238dc89a5a8": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -826,7 +833,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "startJob"
     },
-    "401bc60867923283e1071b204b0b3c12895d309710": {
+    "40886329bc879bafd00ed60fc61c553c977dc17dc5": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -841,7 +848,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "completeJob"
     },
-    "40eb8a6cb5135ee9d78e3504e39e000fe8aef5aa9f": {
+    "40c03e5ccac05eb5bd7e997c2a39fa41b53cbb23d7": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -856,7 +863,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "archiveJob"
     },
-    "707950a933db270d03854314e88de0950735103335": {
+    "7007828eb3eb738efd467e39d4c0e10c6df47d31f2": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -871,7 +878,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "assignCustomerToJob"
     },
-    "406e69aefe045dda5450a830ee7fa5c6d80582db35": {
+    "40040dfa37192ca75b184c0ade7293dc1f5b3f1ef9": {
       "workers": {
         "app/dashboard/view-as/[companyId]/work/jobs/page": {
           "moduleId": 23194,
@@ -886,7 +893,7 @@
       "filename": "apps/web/src/actions/jobs.ts",
       "exportedName": "removeCustomerFromJob"
     },
-    "4008f596c5f8f4d07dbef3af107f19a034d20c8f7a": {
+    "40b9d6da91ee0b411dd6f7214d61fd329a4a79be39": {
       "workers": {
         "app/login/page": {
           "moduleId": 40873,
@@ -903,5 +910,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "yziDKFKGxBQBT6WeuriCkyFXtlRnsJMDpo0bsTfL57w="
+  "encryptionKey": "o+4Z0mG9pvv8BJ7cicxxx9gi6b8gVaTU8wL6t1d0Dnc="
 }

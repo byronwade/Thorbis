@@ -11,10 +11,11 @@ import {
 	HelpCircle,
 	Keyboard,
 	LayoutGrid,
-	Map,
+	Map as MapIcon,
 	Palette,
 	Phone,
 	Repeat,
+	Route,
 	Settings2,
 	Wrench,
 	Zap,
@@ -35,9 +36,12 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSchedule } from "@/hooks/use-schedule";
 import type { TimelineViewMode } from "@/lib/stores/schedule-view-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
+import { RouteOptimizationSheet } from "./route-optimization-panel";
+import type { Job, Technician } from "./schedule-types";
 
 const jobTypeLegend = [
 	{
@@ -132,10 +136,23 @@ export function ScheduleToolbarActions() {
 	const [mounted, setMounted] = useState(false);
 	const pathname = usePathname();
 	const router = useRouter();
-	const { goToToday, navigatePrevious, navigateNext, viewMode, setViewMode } =
+	const { goToToday, navigatePrevious, navigateNext, viewMode, setViewMode, currentDate } =
 		useScheduleViewStore();
+	const { jobs, technicians } = useSchedule();
 
 	const isMapView = pathname === "/dashboard/schedule/dispatch-map";
+
+	// Group jobs by technician for route optimization
+	const jobsByTechnician = new Map<string, Job[]>();
+	for (const job of jobs.values()) {
+		for (const assignment of job.assignments) {
+			if (assignment.technicianId) {
+				const existing = jobsByTechnician.get(assignment.technicianId) || [];
+				existing.push(job);
+				jobsByTechnician.set(assignment.technicianId, existing);
+			}
+		}
+	}
 
 	// Sync viewMode with pathname
 	useEffect(() => {
@@ -184,6 +201,15 @@ export function ScheduleToolbarActions() {
 				</Button>
 			)}
 
+			{/* Route Optimization - Only show in day/timeline view */}
+			{!isMapView && viewMode === "day" && (
+				<RouteOptimizationSheet
+					technicians={technicians}
+					jobsByTechnician={jobsByTechnician}
+					selectedDate={currentDate}
+				/>
+			)}
+
 			<TooltipProvider>
 				{/* View Mode Toggle Group */}
 				<ToggleGroup
@@ -229,7 +255,7 @@ export function ScheduleToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<ToggleGroupItem aria-label="Map view" value="map">
-								<Map className="size-4" />
+								<MapIcon className="size-4" />
 							</ToggleGroupItem>
 						</TooltipTrigger>
 						<TooltipContent>

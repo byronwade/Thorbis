@@ -1,7 +1,2 @@
-[00:00:01.326] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-[00:00:01.464] Server  LOG      ✓ Ready in 1162ms
-[00:10:19.995] Server  LOG      ○ Compiling / ...
-[00:10:28.044] Server  WARN    [ADMIN_AUTH] [WARN] LOGIN_FAILURE email=b***e@thorbis.com ip=::1 success=false details={"reason":"Invalid password"}
-[00:33:17.979] Server  LOG     [ADMIN_AUTH] [INFO] LOGIN_SUCCESS email=b***e@thorbis.com ip=::1 success=true
-[00:33:32.949] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:34:29.767] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:01.354] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:01.525] Server  LOG      ✓ Ready in 1247ms

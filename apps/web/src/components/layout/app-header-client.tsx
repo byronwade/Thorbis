@@ -4,16 +4,18 @@ import { GalleryVerticalEnd, HelpCircle, Tv } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getTotalUnreadCountAction } from "@/actions/email-actions";
 import { PendingActionsIndicator } from "@/components/ai/pending-actions-indicator";
 import { useDialerShortcut } from "@/hooks/use-dialer-shortcut";
 import type { UserProfile } from "@/lib/auth/user-data";
+import type { WeatherData } from "@/lib/services/weather-service";
 import { HelpDropdown } from "./help-dropdown";
 import { NotificationsDropdown } from "./notifications-dropdown";
 import { PhoneDropdown } from "./phone-dropdown";
 import { QuickAddDropdown } from "./quick-add-dropdown";
 import { UserMenu } from "./user-menu";
+import { WeatherDropdown } from "./weather-dropdown";
 
 /**
  * AppHeaderClient - Client Component (Minimal Interactivity Only)
@@ -49,6 +51,7 @@ type AppHeaderClientProps = {
 	hasPayrixAccount?: boolean;
 	payrixStatus?: string | null;
 	subHeader?: React.ReactNode;
+	initialWeather?: WeatherData | null;
 };
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
@@ -237,12 +240,12 @@ export function AppHeaderClient({
 	userProfile,
 	companies,
 	activeCompanyId,
-	customers = [],
 	companyPhones = [],
 	hasPhoneNumbers = false,
 	hasPayrixAccount = false,
 	payrixStatus = null,
 	subHeader: _subHeader, // Ignore the server-passed subHeader
+	initialWeather,
 }: AppHeaderClientProps) {
 	const pathname = usePathname();
 
@@ -361,6 +364,9 @@ export function AppHeaderClient({
 							companyId={activeCompanyId || ""}
 							companyPhones={companyPhones}
 						/>
+
+						{/* Weather */}
+						<WeatherDropdown initialWeather={initialWeather} />
 
 						{/* TV Display */}
 						<Link href="/dashboard/tv" title="TV Display">

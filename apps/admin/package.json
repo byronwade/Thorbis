@@ -37,15 +37,15 @@
 		"resend": "^6.3.0",
 		"sonner": "^2.0.3",
 		"tailwind-merge": "^3.3.1",
-		"zustand": "^5.0.5"
+		"zustand": "^5.0.5",
+		"typescript": "^5.9.3",
+		"@tailwindcss/postcss": "^4.1.17",
+		"postcss": "^8.4.49",
+		"tailwindcss": "^4.1.16"
 	},
 	"devDependencies": {
-		"@tailwindcss/postcss": "^4.1.17",
 		"@types/node": "^20.19.24",
 		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.2",
-		"postcss": "^8.4.49",
-		"tailwindcss": "^4.1.16",
-		"typescript": "^5.9.3"
+		"@types/react-dom": "19.2.2"
 	}
 }

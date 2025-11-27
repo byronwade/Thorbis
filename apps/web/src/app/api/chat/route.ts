@@ -1,4 +1,4 @@
-import { streamText, tool } from "ai";
+import { convertToModelMessages, streamText, tool } from "ai";
 import { z } from "zod";
 import { createAIProvider } from "@/lib/ai";
 
@@ -46,26 +46,21 @@ const createDocumentTool = tool({
 
 export async function POST(request: Request) {
 	try {
-		const { messages, model = "gpt-4o" } = await request.json();
+		const { messages, model = "llama-3.3-70b-versatile" } = await request.json();
 
-		// Determine provider based on model
-		let provider: "openai" | "anthropic" | "google" = "openai";
-		if (model.includes("claude")) {
-			provider = "anthropic";
-		} else if (model.includes("gemini")) {
-			provider = "google";
-		}
-
-		// Create AI provider
+		// Create Groq AI provider (free tier)
 		const aiModel = createAIProvider({
-			provider,
+			provider: "groq",
 			model,
 		});
+
+		// AI SDK v5: Convert UIMessage[] (from client) to ModelMessage[] (for streamText)
+		const modelMessages = convertToModelMessages(messages);
 
 		// Stream the response with tools
 		const result = await streamText({
 			model: aiModel,
-			messages,
+			messages: modelMessages,
 			tools: {
 				getWeather: weatherTool,
 				createDocument: createDocumentTool,
@@ -73,7 +68,8 @@ export async function POST(request: Request) {
 			temperature: 0.7,
 		});
 
-		return result.toTextStreamResponse();
+		// AI SDK v5: Use toUIMessageStreamResponse for full-featured streaming with tools
+		return result.toUIMessageStreamResponse();
 	} catch (error) {
 		return new Response(
 			JSON.stringify({

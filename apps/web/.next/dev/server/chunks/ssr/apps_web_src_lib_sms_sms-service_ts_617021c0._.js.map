@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/byronwade/Stratos/apps/web/src/lib/sms/sms-service.ts"],"sourcesContent":["/**\n * SMS Service - Stub\n *\n * Placeholder for SMS conversation service.\n * TODO: Implement actual SMS service when needed.\n */\n\nimport type { Database } from \"@stratos/database/types\";\n\ntype CompanySms = Database[\"public\"][\"Tables\"][\"company_sms\"][\"Row\"];\n\n/**\n * Get SMS conversation for a phone number\n */\nexport async function getSmsConversation(\n\t_companyId: string,\n\t_phoneNumber: string\n): Promise<CompanySms[]> {\n\tconsole.warn(\"SMS service not configured - returning empty conversation\");\n\treturn [];\n}\n"],"names":[],"mappings":"AAAA;;;;;CAKC;;;;AASM,eAAe,mBACrB,UAAkB,EAClB,YAAoB;IAEpB,QAAQ,IAAI,CAAC;IACb,OAAO,EAAE;AACV"}}]
-}

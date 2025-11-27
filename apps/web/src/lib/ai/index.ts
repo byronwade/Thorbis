@@ -66,7 +66,7 @@ export {
 } from "./audit-trail";
 // Core AI Configuration
 export type { AIConfig, AIProvider } from "./config";
-export { createAIProvider } from "./config";
+export { AVAILABLE_MODELS, createAIProvider, isVertexAIAvailable } from "./config";
 // Feedback Service - User feedback and RLHF
 export {
 	exportCorrectionsForTraining,

@@ -37,7 +37,7 @@ export type CompanySms = {
 	snoozed_until: string | null;
 	category: string | null;
 	tags: string[] | null;
-	telnyx_message_id: string | null;
+	twilio_message_sid: string | null;
 };
 
 export type GetCompanySmsInput = {
@@ -103,7 +103,7 @@ export async function getCompanySms(
 			snoozed_until,
 			category,
 			tags,
-			telnyx_message_id
+			twilio_message_sid
 		`,
 			{ count: "exact" },
 		)
@@ -247,7 +247,7 @@ export async function getSmsById(
 			snoozed_until,
 			category,
 			tags,
-			telnyx_message_id
+			twilio_message_sid
 		`,
 		)
 		.eq("id", smsId)
@@ -274,7 +274,6 @@ export async function markSmsAsRead(
 	const supabase = await createClient();
 
 	if (!supabase) {
-		console.error("❌ markSmsAsRead: Missing supabase");
 		return false;
 	}
 
@@ -288,17 +287,10 @@ export async function markSmsAsRead(
 		.select("id, read_at")
 		.single();
 
-	if (error) {
-		console.error("❌ markSmsAsRead error:", error);
+	if (error || !data) {
 		return false;
 	}
 
-	if (!data) {
-		console.error("❌ markSmsAsRead: No data returned");
-		return false;
-	}
-
-	console.log("✅ markSmsAsRead success:", { smsId, read_at: data.read_at });
 	return true;
 }
 
@@ -354,7 +346,7 @@ export async function getSmsConversation(
 			snoozed_until,
 			category,
 			tags,
-			telnyx_message_id
+			twilio_message_sid
 		`,
 		)
 		.eq("company_id", companyId)
@@ -417,12 +409,8 @@ export async function markSmsConversationAsRead(
 		.select("id, read_at");
 
 	if (error) {
-		console.error("❌ markSmsConversationAsRead error:", error);
 		return false;
 	}
 
-	console.log(
-		`✅ markSmsConversationAsRead success: Marked ${data?.length || 0} messages as read`,
-	);
 	return true;
 }

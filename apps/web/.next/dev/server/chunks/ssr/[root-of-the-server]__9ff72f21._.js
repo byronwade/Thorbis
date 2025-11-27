@@ -752,7 +752,6 @@ async function fetchPropertiesByIds(supabase, propertyIds) {
             (data ?? []).forEach((property)=>map.set(property.id, property));
         } catch (chunkError) {
             console.error(`[Schedule] Failed to fetch properties chunk ${i / chunkSize + 1}:`, chunkError);
-            continue;
         }
     }
     return map;
@@ -1130,6 +1129,8 @@ async function fetchAdditionalUnscheduledJobs({ supabase, companyId, limit = DEF
  * - Schedule data streams in (200-500ms)
  *
  * Performance: 8-20x faster than traditional SSR
+ *
+ * Note: Weather is now displayed in the app header globally
  */ __turbopack_context__.s([
     "default",
     ()=>SchedulePage
@@ -1184,7 +1185,7 @@ async function ScheduleData() {
             hasCompanies: (companies ?? []).length > 0
         }, void 0, false, {
             fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-            lineNumber: 56,
+            lineNumber: 58,
             columnNumber: 4
         }, this);
     }
@@ -1195,6 +1196,7 @@ async function ScheduleData() {
             start: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$subDays$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["subDays"])(now, 7),
             end: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$addDays$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["addDays"])(now, 30)
         };
+        // Fetch schedule data
         const { jobs, technicians } = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$apps$2f$web$2f$src$2f$lib$2f$schedule$2d$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["fetchScheduleData"])({
             supabase,
             companyId,
@@ -1220,7 +1222,7 @@ async function ScheduleData() {
         initialData: initialData
     }, void 0, false, {
         fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-        lineNumber: 101,
+        lineNumber: 104,
         columnNumber: 3
     }, this);
 }
@@ -1235,7 +1237,7 @@ function ScheduleSkeleton() {
                     className: "border-primary/20 border-t-primary size-12 animate-spin rounded-full border-4"
                 }, void 0, false, {
                     fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-                    lineNumber: 113,
+                    lineNumber: 116,
                     columnNumber: 5
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1243,18 +1245,18 @@ function ScheduleSkeleton() {
                     children: "Loading schedule..."
                 }, void 0, false, {
                     fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-                    lineNumber: 114,
+                    lineNumber: 117,
                     columnNumber: 5
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-            lineNumber: 112,
+            lineNumber: 115,
             columnNumber: 4
         }, this)
     }, void 0, false, {
         fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-        lineNumber: 111,
+        lineNumber: 114,
         columnNumber: 3
     }, this);
 }
@@ -1262,17 +1264,17 @@ function SchedulePage() {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Suspense"], {
         fallback: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(ScheduleSkeleton, {}, void 0, false, {
             fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-            lineNumber: 122,
+            lineNumber: 125,
             columnNumber: 23
         }, void 0),
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(ScheduleData, {}, void 0, false, {
             fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-            lineNumber: 123,
+            lineNumber: 126,
             columnNumber: 4
         }, this)
     }, void 0, false, {
         fileName: "[project]/apps/web/src/app/(dashboard)/dashboard/schedule/page.tsx",
-        lineNumber: 122,
+        lineNumber: 125,
         columnNumber: 3
     }, this);
 }

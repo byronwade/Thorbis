@@ -18,7 +18,7 @@ import { z } from "zod";
 export const customerCardSchema = z.object({
 	id: z.string(),
 	name: z.string(),
-	email: z.string().email().optional(),
+	email: z.string().optional(),
 	phone: z.string().optional(),
 	address: z.string().optional(),
 	totalJobs: z.number().default(0),

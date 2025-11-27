@@ -1,1 +1,0 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,656817,e=>{"use strict";e.s([],7525),e.i(7525);var c=e.i(552038),r=(0,c.createServerReference)("40e6b5cf58080ef28c0bf188d5d0cab7dd8ed747b4",c.callServer,void 0,c.findSourceMapURL,"bulkArchiveInvoices");e.s(["bulkArchiveInvoices",()=>r],656817)}]);

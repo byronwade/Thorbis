@@ -46,7 +46,19 @@ import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 export function createSupabaseMemoryProvider(
 	companyId: string,
 ): MemoryProvider {
-	const supabase = createServiceSupabaseClient();
+	// Note: We need to await the client inside each method since the provider
+	// interface doesn't support async factory functions
+	let supabaseClient: Awaited<ReturnType<typeof createServiceSupabaseClient>> | null = null;
+
+	const getClient = async () => {
+		if (!supabaseClient) {
+			supabaseClient = await createServiceSupabaseClient();
+		}
+		if (!supabaseClient) {
+			throw new Error("Failed to create Supabase client - missing env vars");
+		}
+		return supabaseClient;
+	};
 
 	return {
 		/**
@@ -58,6 +70,7 @@ export function createSupabaseMemoryProvider(
 			scope: MemoryScope;
 		}): Promise<WorkingMemory | null> {
 			const { chatId, userId, scope } = params;
+			const supabase = await getClient();
 
 			// Query ai_memory table for working memory content
 			let query = supabase
@@ -97,6 +110,7 @@ export function createSupabaseMemoryProvider(
 			content: string;
 		}): Promise<void> {
 			const { chatId, userId, scope, content } = params;
+			const supabase = await getClient();
 
 			// Check if working memory exists
 			let existingQuery = supabase
@@ -144,6 +158,7 @@ export function createSupabaseMemoryProvider(
 		 */
 		async saveMessage(message: ConversationMessage): Promise<void> {
 			const { chatId, userId, role, content, timestamp } = message;
+			const supabase = await getClient();
 
 			// Convert content to parts format expected by messages_v2
 			const parts =
@@ -170,6 +185,7 @@ export function createSupabaseMemoryProvider(
 			limit?: number;
 		}): Promise<T[]> {
 			const { chatId, limit = 20 } = params;
+			const supabase = await getClient();
 
 			const { data, error } = await supabase
 				.from("messages_v2")
@@ -198,6 +214,7 @@ export function createSupabaseMemoryProvider(
 		async saveChat(chat: ChatSession): Promise<void> {
 			const { chatId, userId, title, createdAt, updatedAt, messageCount } =
 				chat;
+			const supabase = await getClient();
 
 			// Check if chat exists
 			const { data: existing } = await supabase
@@ -235,6 +252,7 @@ export function createSupabaseMemoryProvider(
 			limit?: number;
 		}): Promise<ChatSession[]> {
 			const { userId, search, limit = 50 } = params;
+			const supabase = await getClient();
 
 			let query = supabase
 				.from("chats")
@@ -291,6 +309,8 @@ export function createSupabaseMemoryProvider(
 		 * Get a specific chat session
 		 */
 		async getChat(chatId: string): Promise<ChatSession | null> {
+			const supabase = await getClient();
+
 			const { data, error } = await supabase
 				.from("chats")
 				.select("id, user_id, title, created_at")
@@ -322,6 +342,7 @@ export function createSupabaseMemoryProvider(
 		 * Update chat title
 		 */
 		async updateChatTitle(chatId: string, title: string): Promise<void> {
+			const supabase = await getClient();
 			await supabase.from("chats").update({ title }).eq("id", chatId);
 		},
 
@@ -329,6 +350,8 @@ export function createSupabaseMemoryProvider(
 		 * Delete a chat session and its messages
 		 */
 		async deleteChat(chatId: string): Promise<void> {
+			const supabase = await getClient();
+
 			// Delete messages first (foreign key constraint)
 			await supabase.from("messages_v2").delete().eq("chat_id", chatId);
 

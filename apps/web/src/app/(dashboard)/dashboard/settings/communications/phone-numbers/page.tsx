@@ -14,8 +14,8 @@ import { AppToolbar } from "@/components/layout/app-toolbar";
 import {
 	type PhoneNumberRecord,
 	PhoneNumbersList,
-} from "@/components/telnyx/phone-numbers-list";
-import { PhoneNumbersToolbar } from "@/components/telnyx/phone-numbers-toolbar";
+} from "@/components/telephony/phone-numbers-list";
+import { PhoneNumbersToolbar } from "@/components/telephony/phone-numbers-toolbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireActiveCompany } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";

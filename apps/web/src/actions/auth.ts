@@ -12,7 +12,7 @@ import {
 	createEmailVerificationToken,
 	verifyAndConsumeToken,
 } from "@/lib/auth/tokens";
-import { emailConfig } from "@/lib/email/resend-client";
+import { sendgridConfig } from "@/lib/email/sendgrid-client";
 import { clearCSRFToken } from "@/lib/security/csrf";
 import {
 	authRateLimiter,
@@ -48,12 +48,12 @@ const AVATAR_SIZE_LIMIT_MB = 5;
 const MAX_AVATAR_FILE_SIZE = AVATAR_SIZE_LIMIT_MB * BYTES_PER_MEGABYTE;
 
 /**
- * Authentication Server Actions - Supabase Auth + Resend Email Integration
+ * Authentication Server Actions - Supabase Auth + SendGrid Email Integration
  *
  * Performance optimizations:
  * - Server Actions for secure authentication
  * - Supabase Auth handles password hashing and session management
- * - Custom emails via Resend with branded templates
+ * - Custom emails via SendGrid with branded templates
  * - Zod validation for input sanitization
  * - Proper error handling with user-friendly messages
  */
@@ -344,7 +344,7 @@ const registerSupabaseUser = async ({
 					phone: normalizedPhone,
 					companyName: companyName ?? null,
 				},
-				emailRedirectTo: `${emailConfig.siteUrl}/auth/callback`,
+				emailRedirectTo: `${sendgridConfig.siteUrl}/auth/callback`,
 			},
 		}),
 	);
@@ -448,7 +448,7 @@ const handlePostSignUpEmails = async ({
 			CONFIRMATION_TOKEN_TTL_HOURS,
 		);
 
-		const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
+		const verificationUrl = `${sendgridConfig.siteUrl}/auth/verify-email?token=${token}`;
 		const verificationResult = await sendEmailVerification(email, {
 			name,
 			verificationUrl,
@@ -474,7 +474,7 @@ const handlePostSignUpEmails = async ({
 
 	const emailResult = await sendWelcomeEmail(email, {
 		name,
-		loginUrl: `${emailConfig.siteUrl}/dashboard/welcome`,
+		loginUrl: `${sendgridConfig.siteUrl}/dashboard/welcome`,
 	});
 
 	if (!emailResult.success) {
@@ -746,14 +746,14 @@ type AuthActionResult = {
 };
 
 /**
- * Sign Up - Create new user account with Supabase Auth + Custom Resend Email
+ * Sign Up - Create new user account with Supabase Auth + Custom SendGrid Email
  *
  * Features:
  * - Email/password authentication
- * - Custom welcome email via Resend with branded template
+ * - Custom welcome email via SendGrid with branded template
  * - Creates user profile in users table via database trigger
  * - Validates input with Zod
- * - Disables Supabase's built-in emails (using custom Resend templates instead)
+ * - Disables Supabase's built-in emails (using custom SendGrid templates instead)
  */
 export async function signUp(formData: FormData): Promise<AuthActionResult> {
 	try {
@@ -1137,10 +1137,10 @@ export async function signInWithOAuth(
 }
 
 /**
- * Forgot Password - Send custom password reset email via Resend
+ * Forgot Password - Send custom password reset email via SendGrid
  *
  * Features:
- * - Sends custom branded password reset email via Resend
+ * - Sends custom branded password reset email via SendGrid
  * - Secure token generation via Supabase
  * - Custom email template with security information
  */
@@ -1188,7 +1188,7 @@ async function forgotPassword(formData: FormData): Promise<AuthActionResult> {
 		// Generate password reset token via Supabase
 		const { error: resetPasswordError } = await withSupabaseRateLimitRetry(() =>
 			supabase.auth.resetPasswordForEmail(validatedData.email, {
-				redirectTo: `${emailConfig.siteUrl}/auth/reset-password`,
+				redirectTo: `${sendgridConfig.siteUrl}/auth/reset-password`,
 			}),
 		);
 
@@ -1200,20 +1200,20 @@ async function forgotPassword(formData: FormData): Promise<AuthActionResult> {
 		}
 
 		// Note: Supabase will send its own email with the reset link.
-		// To use custom Resend email instead, you need to:
+		// To use custom SendGrid email instead, you need to:
 		// 1. Disable Supabase's password reset email in the dashboard
 		// 2. Generate your own secure token
 		// 3. Send custom email with that token
 		// For now, we're using Supabase's reset flow but you can customize this
 
-		// TODO: Replace with custom token generation + Resend email
+		// TODO: Replace with custom token generation + SendGrid email
 		// For full custom implementation, see the commented code below:
 		/*
     const resetToken = generateSecureToken(); // Implement your own token generation
     await storeResetToken(validatedData.email, resetToken); // Store in your database
 
     await sendPasswordReset(validatedData.email, {
-      resetUrl: `${emailConfig.siteUrl}/auth/reset-password?token=${resetToken}`,
+      resetUrl: `${sendgridConfig.siteUrl}/auth/reset-password?token=${resetToken}`,
       expiresInMinutes: 60,
     });
     */
@@ -1249,7 +1249,7 @@ async function forgotPassword(formData: FormData): Promise<AuthActionResult> {
  * - Updates user password
  * - Validates password strength
  * - Invalidates reset token after use
- * - Sends custom password changed confirmation via Resend
+ * - Sends custom password changed confirmation via SendGrid
  */
 async function resetPassword(formData: FormData): Promise<AuthActionResult> {
 	try {
@@ -1298,7 +1298,7 @@ async function resetPassword(formData: FormData): Promise<AuthActionResult> {
 			};
 		}
 
-		// Send password changed confirmation email via Resend
+		// Send password changed confirmation email via SendGrid
 		if (user?.email) {
 			const emailResult = await sendPasswordChanged(user.email, {
 				name: user.user_metadata?.name || "User",
@@ -1437,7 +1437,7 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 			// Send welcome email after successful verification
 			const welcomeResult = await sendWelcomeEmail(tokenRecord.email, {
 				name: getMetadataString(tokenRecord.metadata, "name") || "User",
-				loginUrl: `${emailConfig.siteUrl}/login`,
+				loginUrl: `${sendgridConfig.siteUrl}/login`,
 			});
 
 			if (!welcomeResult.success) {
@@ -1511,7 +1511,7 @@ async function resendVerificationEmail(
 		);
 
 		// Send verification email
-		const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
+		const verificationUrl = `${sendgridConfig.siteUrl}/auth/verify-email?token=${token}`;
 
 		const emailResult = await sendEmailVerification(email, {
 			name: userData.full_name || "User",

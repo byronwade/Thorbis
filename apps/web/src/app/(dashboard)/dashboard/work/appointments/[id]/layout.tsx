@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { AppointmentDetailToolbarActions } from "@/components/work/appointments/appointment-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Appointments Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/appointments/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function AppointmentsDetailLayout({
 	children,
@@ -37,8 +38,7 @@ export default function AppointmentsDetailLayout({
 					label="Appointments"
 				/>
 			),
-			// TODO: Create AppointmentDetailToolbar component
-			// actions: <AppointmentDetailToolbar />,
+			actions: <AppointmentDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

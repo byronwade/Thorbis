@@ -592,8 +592,8 @@ export const NOTIFICATION_REGISTRY: NotificationDefinition[] = [
 	// ========================================
 	{
 		id: "system-verification-submitted",
-		name: "Telnyx Verification Submitted",
-		description: "Confirm 10DLC verification submission to Telnyx",
+		name: "Twilio Verification Submitted",
+		description: "Confirm 10DLC verification submission to Twilio",
 		category: "system",
 		priority: "medium",
 		channels: {

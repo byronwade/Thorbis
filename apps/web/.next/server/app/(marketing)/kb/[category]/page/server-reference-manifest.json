@@ -1,6 +1,6 @@
 {
   "node": {
-    "001f005176797ef23488068124fb9a744915a477de": {
+    "007f6ab33dab55fcd65110391bb9985547ca9d3bec": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -15,7 +15,7 @@
       "exportedName": "getCurrentUserRole",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "406f6624261c6dd1a908026fa1408a3f6d507b6e7d": {
+    "40389aae21f1d21bd0b45e4ebad980b6ef81b08fcf": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -30,7 +30,7 @@
       "exportedName": "canDeleteTeamMember",
       "filename": "apps/web/src/actions/roles.ts"
     },
-    "00c1e90eff34225b6dd95f5f2f2a91828868b9fcfb": {
+    "0075353ce921d86257a15ccf34f3dcc2d59c4ac082": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -45,7 +45,7 @@
       "exportedName": "getKBCategories",
       "filename": "apps/web/src/actions/kb.ts"
     },
-    "404ca2dce3a3b5558a45a363300d09bf2965522750": {
+    "400c26dbd25908ad06377ae467b92dc692c77664dc": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -60,22 +60,7 @@
       "exportedName": "submitKBFeedback",
       "filename": "apps/web/src/actions/kb.ts"
     },
-    "4070bed0ecc25d050b4520c0f696340ebb01e5390b": {
-      "workers": {
-        "app/(marketing)/kb/[category]/page": {
-          "moduleId": 136645,
-          "async": false,
-          "exportedName": "getKBArticles",
-          "filename": "apps/web/src/actions/kb.ts"
-        }
-      },
-      "layer": {
-        "app/(marketing)/kb/[category]/page": "rsc"
-      },
-      "exportedName": "getKBArticles",
-      "filename": "apps/web/src/actions/kb.ts"
-    },
-    "40f0ec73569584e2e98c0966c6b8ceab6dc0c1f682": {
+    "40b2b298833a0a37a0a508ca972f6584ce99ceafe7": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -90,22 +75,22 @@
       "exportedName": "incrementArticleViews",
       "filename": "apps/web/src/actions/kb.ts"
     },
-    "60301b0c2049c37f7b265049269699f6d4a7a33d92": {
+    "40c2104f4f5172f52340f4b4eccb3026a39e58c7a0": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
           "async": false,
-          "exportedName": "searchKBArticles",
+          "exportedName": "getKBArticles",
           "filename": "apps/web/src/actions/kb.ts"
         }
       },
       "layer": {
         "app/(marketing)/kb/[category]/page": "rsc"
       },
-      "exportedName": "searchKBArticles",
+      "exportedName": "getKBArticles",
       "filename": "apps/web/src/actions/kb.ts"
     },
-    "605a67c4b75156644201622753ea0654e68cee60ae": {
+    "60440036b4715202d52d1e91b23484bb5cb13672dc": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,
@@ -120,7 +105,22 @@
       "exportedName": "getKBRelatedArticles",
       "filename": "apps/web/src/actions/kb.ts"
     },
-    "60e4942793029c05824ec40bb94739dc0c0daa1438": {
+    "605544f49ff3cf58bb226f60c90ac046c0573731a9": {
+      "workers": {
+        "app/(marketing)/kb/[category]/page": {
+          "moduleId": 136645,
+          "async": false,
+          "exportedName": "searchKBArticles",
+          "filename": "apps/web/src/actions/kb.ts"
+        }
+      },
+      "layer": {
+        "app/(marketing)/kb/[category]/page": "rsc"
+      },
+      "exportedName": "searchKBArticles",
+      "filename": "apps/web/src/actions/kb.ts"
+    },
+    "60a74dcdd4f731e988d05aa4b5ed81e827ebf9296c": {
       "workers": {
         "app/(marketing)/kb/[category]/page": {
           "moduleId": 136645,

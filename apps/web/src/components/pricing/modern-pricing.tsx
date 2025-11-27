@@ -37,12 +37,12 @@ import { PricingBackground } from "./pricing-background";
  * PRICING - REAL PROVIDER COSTS + 200% MARKUP (3x)
  *
  * Base Provider Costs:
- * - Resend Email: $0.0001/email
- * - Telnyx SMS: $0.008/message (avg of $0.004 inbound + $0.0079 outbound)
- * - Telnyx Voice Inbound: $0.004/minute
- * - Telnyx Voice Outbound: $0.01/minute
+ * - SendGrid Email: $0.0001/email
+ * - Twilio SMS: $0.0079/message outbound
+ * - Twilio Voice Inbound: $0.0085/minute
+ * - Twilio Voice Outbound: $0.013/minute
  * - Anthropic Claude Sonnet 3.5: ~$0.05/conversation (5k input + 3k output tokens)
- * - Telnyx Voice + STT + Claude + TTS: $0.06/minute
+ * - Twilio Voice + STT + Claude + TTS: $0.06/minute
  * - Supabase Storage: $0.09/GB bandwidth
  * - Vercel Functions: ~$3/month typical usage
  *
@@ -55,7 +55,7 @@ const PRICING_ITEMS = [
 		name: "Emails",
 		description: "Send invoices, estimates, and customer notifications",
 		unit: "per email",
-		ourCost: 0.0003, // Resend $0.0001 × 3
+		ourCost: 0.0003, // SendGrid $0.0001 × 3
 		defaultValue: 500,
 		maxValue: 20000,
 		step: 500,
@@ -65,7 +65,7 @@ const PRICING_ITEMS = [
 		name: "Text Messages",
 		description: "Appointment reminders, job updates, and confirmations",
 		unit: "per text",
-		ourCost: 0.024, // Telnyx $0.008 × 3
+		ourCost: 0.024, // Twilio $0.0079 × 3
 		defaultValue: 200,
 		maxValue: 30000,
 		step: 500,
@@ -75,7 +75,7 @@ const PRICING_ITEMS = [
 		name: "Incoming Calls",
 		description: "When customers call your business",
 		unit: "per minute",
-		ourCost: 0.012, // Telnyx $0.004/min × 3
+		ourCost: 0.026, // Twilio $0.0085/min × 3
 		defaultValue: 100,
 		maxValue: 10000,
 		step: 100,
@@ -85,7 +85,7 @@ const PRICING_ITEMS = [
 		name: "Outgoing Calls",
 		description: "When you call customers for follow-ups",
 		unit: "per minute",
-		ourCost: 0.03, // Telnyx $0.01/min × 3
+		ourCost: 0.039, // Twilio $0.013/min × 3
 		defaultValue: 50,
 		maxValue: 10000,
 		step: 100,
@@ -105,7 +105,7 @@ const PRICING_ITEMS = [
 		name: "AI Phone Answering",
 		description: "AI answers calls, books appointments, takes messages",
 		unit: "per minute",
-		ourCost: 0.18, // Telnyx Voice + STT + Claude + TTS $0.06/min × 3
+		ourCost: 0.18, // Twilio Voice + STT + Claude + TTS $0.06/min × 3
 		defaultValue: 50,
 		maxValue: 5000,
 		step: 50,

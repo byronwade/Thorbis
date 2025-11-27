@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { PurchaseOrderDetailToolbarActions } from "@/components/work/purchase-orders/purchase-order-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Purchase Orders Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/purchase-orders/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function PurchaseOrdersDetailLayout({
 	children,
@@ -37,8 +38,7 @@ export default function PurchaseOrdersDetailLayout({
 					label="Purchase Orders"
 				/>
 			),
-			// TODO: Create PurchaseOrderDetailToolbar component
-			// actions: <PurchaseOrderDetailToolbar />,
+			actions: <PurchaseOrderDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

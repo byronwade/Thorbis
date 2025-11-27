@@ -14,6 +14,7 @@
  */
 
 import Stripe from "stripe";
+import { stripeTracker } from "@/lib/analytics/external-api-tracker";
 
 /**
  * Initialize Stripe server client
@@ -102,6 +103,9 @@ async function createCheckoutSession({
 		return null;
 	}
 
+	const startTime = Date.now();
+	let success = false;
+
 	try {
 		const basePriceId = process.env.STRIPE_PRICE_ID_BASE_PLAN;
 		const additionalOrgPriceId = process.env.STRIPE_PRICE_ID_ADDITIONAL_ORG;
@@ -144,9 +148,23 @@ async function createCheckoutSession({
 			},
 		});
 
+		success = true;
 		return session.url;
-	} catch (_error) {
+	} catch (error) {
+		// Track failed call
+		stripeTracker.track("checkout.sessions.create", companyId, {
+			success: false,
+			responseTimeMs: Date.now() - startTime,
+			errorMessage: error instanceof Error ? error.message : "Unknown error",
+		}).catch(() => {});
 		return null;
+	} finally {
+		if (success) {
+			stripeTracker.track("checkout.sessions.create", companyId, {
+				success: true,
+				responseTimeMs: Date.now() - startTime,
+			}).catch(() => {});
+		}
 	}
 }
 

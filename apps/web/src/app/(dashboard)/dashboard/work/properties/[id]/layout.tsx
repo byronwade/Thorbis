@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { PropertyDetailToolbarActions } from "@/components/properties/property-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Properties Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/properties/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function PropertiesDetailLayout({
 	children,
@@ -37,8 +38,7 @@ export default function PropertiesDetailLayout({
 					label="Properties"
 				/>
 			),
-			// TODO: Create PropertyDetailToolbar component
-			// actions: <PropertyDetailToolbar />,
+			actions: <PropertyDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

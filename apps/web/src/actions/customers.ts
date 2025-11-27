@@ -15,6 +15,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { getCompanyPlatformReplyTo } from "@/lib/email/company-domain-sender";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import {
@@ -1019,6 +1020,12 @@ async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
 		const siteUrl = requireSiteUrl();
 		const portalUrl = `${siteUrl}/portal/setup?token=${inviteToken}`;
 
+		// Get company support email from database
+		const companyId = await getActiveCompanyId();
+		const supportEmail = companyId
+			? await getCompanyPlatformReplyTo(companyId)
+			: null;
+
 		const emailResult = await sendEmail({
 			to: customer.email,
 			subject: "You've been invited to your Customer Portal",
@@ -1026,10 +1033,11 @@ async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
 				customerName: customer.display_name,
 				portalUrl,
 				expiresInHours: 168, // 7 days
-				supportEmail: process.env.RESEND_FROM_EMAIL || "support@thorbis.com",
+				supportEmail: supportEmail || "support@thorbis.com",
 				supportPhone: "(555) 123-4567",
 			}),
 			templateType: EmailTemplate.PORTAL_INVITATION,
+			companyId,
 		});
 
 		if (!emailResult.success) {

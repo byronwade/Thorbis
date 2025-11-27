@@ -796,6 +796,91 @@ async function convertEstimateToJob(
 }
 
 /**
+ * Update estimate status
+ *
+ * Generic status update function for estimates. Handles transitions between:
+ * - draft → sent (via send action)
+ * - sent → viewed (auto when customer views)
+ * - viewed/sent → accepted/rejected (customer action)
+ * - any → expired (system action)
+ */
+export async function updateEstimateStatus(
+	estimateId: string,
+	newStatus: string,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await requireEstimateCompanyId(supabase, user.id);
+
+		// Validate status value
+		const validStatuses = ["draft", "sent", "viewed", "accepted", "rejected", "expired"];
+		if (!validStatuses.includes(newStatus)) {
+			throw new ActionError(
+				"Invalid estimate status",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
+		}
+
+		// Verify estimate belongs to company
+		const { data: estimate } = await supabase
+			.from("estimates")
+			.select("company_id, status, valid_until")
+			.eq("id", estimateId)
+			.single();
+
+		assertExists(estimate, "Estimate");
+
+		if (estimate.company_id !== companyId) {
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("estimate"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
+		}
+
+		// Build update object with appropriate timestamps
+		const updateData: Record<string, unknown> = { status: newStatus };
+
+		if (newStatus === "sent" && estimate.status === "draft") {
+			updateData.sent_at = new Date().toISOString();
+		} else if (newStatus === "viewed" && !estimate.status.includes("viewed")) {
+			updateData.viewed_at = new Date().toISOString();
+		} else if (newStatus === "accepted") {
+			updateData.accepted_at = new Date().toISOString();
+		} else if (newStatus === "rejected") {
+			updateData.rejected_at = new Date().toISOString();
+		}
+
+		const { error: updateError } = await supabase
+			.from("estimates")
+			.update(updateData)
+			.eq("id", estimateId);
+
+		if (updateError) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update estimate status"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		revalidatePath("/dashboard/work/estimates");
+		revalidatePath(`/dashboard/work/estimates/${estimateId}`);
+	});
+}
+
+/**
  * Archive estimate (soft delete)
  *
  * Replaces deleteEstimate - now archives instead of permanently deleting.

@@ -60,6 +60,26 @@ type Vendor = {
 	phone?: string | null;
 };
 
+// Search result types that match API response structure
+type CustomerSearchResult = {
+	id: string;
+	display_name?: string | null;
+	first_name?: string | null;
+	last_name?: string | null;
+	email?: string | null;
+	phone?: string | null;
+	primary_phone?: string | null;
+	company_name?: string | null;
+};
+
+type VendorSearchResult = {
+	id: string;
+	name: string;
+	display_name?: string | null;
+	email?: string | null;
+	phone?: string | null;
+};
+
 type RecipientOption =
 	| { type: "customer"; data: Customer }
 	| { type: "vendor"; data: Vendor }
@@ -116,7 +136,7 @@ export function RecipientSelector({
 
 					// Handle ActionResult structure: { success: boolean, data?: T, error?: string }
 					// Also handle direct array returns (for backward compatibility)
-					let customerArray: any[] = [];
+					let customerArray: CustomerSearchResult[] = [];
 
 					if (customersResult.success && customersResult.data) {
 						customerArray = Array.isArray(customersResult.data)
@@ -124,7 +144,7 @@ export function RecipientSelector({
 							: [customersResult.data];
 					} else if (Array.isArray(customersResult)) {
 						// Handle case where result is directly an array
-						customerArray = customersResult;
+						customerArray = customersResult as CustomerSearchResult[];
 					} else if (customersResult.error) {
 						console.warn("Customer search failed:", customersResult.error);
 						setCustomers([]);
@@ -133,7 +153,7 @@ export function RecipientSelector({
 
 					if (customerArray.length > 0) {
 						// Map to Customer type - handle different data structures
-						const customerData = customerArray.map((c: any) => ({
+						const customerData = customerArray.map((c) => ({
 							id: c.id,
 							display_name:
 								c.display_name ||
@@ -161,7 +181,7 @@ export function RecipientSelector({
 
 						if (vendorArray.length > 0) {
 							// Map to Vendor type
-							const vendorData = vendorArray.map((v: any) => ({
+							const vendorData = (vendorArray as VendorSearchResult[]).map((v) => ({
 								id: v.id,
 								name: v.name,
 								display_name: v.display_name || v.name,

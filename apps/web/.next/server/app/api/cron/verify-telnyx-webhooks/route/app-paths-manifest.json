@@ -1,3 +1,0 @@
-{
-  "/api/cron/verify-telnyx-webhooks/route": "app/api/cron/verify-telnyx-webhooks/route.js"
-}

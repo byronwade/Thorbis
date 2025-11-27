@@ -153,8 +153,6 @@ function InputGroupTextarea({
 			data-slot="input-group-control"
 			className={cn(
 				"flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",
-				// Override base textarea min-height for better control
-				"!min-h-0",
 				className,
 			)}
 			{...props}

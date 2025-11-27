@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 import { SectionLayout } from "@/components/layout/section-layout";
+import { MaintenancePlanDetailToolbarActions } from "@/components/work/maintenance-plans/maintenance-plan-detail-toolbar-actions";
 import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
 
 /**
  * Maintenance Plans Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/maintenance-plans/[id]
- * Shows detail page with back button, no sidebars
+ * Shows detail page with back button, toolbar actions, no sidebars
  *
- * Performance: Pure server component, no client JS needed
+ * Performance: Pure server component with client toolbar actions
  */
 export default function MaintenancePlansDetailLayout({
 	children,
@@ -37,8 +38,7 @@ export default function MaintenancePlansDetailLayout({
 					label="Maintenance Plans"
 				/>
 			),
-			// TODO: Create MaintenancePlanDetailToolbar component
-			// actions: <MaintenancePlanDetailToolbar />,
+			actions: <MaintenancePlanDetailToolbarActions />,
 		},
 		sidebar: {
 			show: false,

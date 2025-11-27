@@ -651,3 +651,117 @@ async function trackContractView(
 		return { success: false, error: "Failed to track contract view" };
 	}
 }
+
+/**
+ * Update contract status
+ * Allows users to change contract status with business rules validation
+ */
+export async function updateContractStatus(
+	contractId: string,
+	newStatus: string,
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new Error("Supabase client not configured");
+		}
+
+		const { companyId } = await getAuthenticatedUser();
+
+		// Validate status
+		const validStatuses = [
+			"draft",
+			"sent",
+			"viewed",
+			"signed",
+			"active",
+			"expired",
+			"cancelled",
+		];
+		if (!validStatuses.includes(newStatus)) {
+			return { success: false, error: `Invalid status: ${newStatus}` };
+		}
+
+		// Fetch current contract
+		const { data: contract, error: fetchError } = await supabase
+			.from("contracts")
+			.select("id, status, company_id, signed_at")
+			.eq("id", contractId)
+			.eq("company_id", companyId)
+			.is("deleted_at", null)
+			.single();
+
+		if (fetchError || !contract) {
+			return { success: false, error: "Contract not found" };
+		}
+
+		// Business rules for status transitions
+		const currentStatus = contract.status;
+
+		// Can't change status of signed/active contracts without specific permissions
+		if (
+			(currentStatus === "signed" || currentStatus === "active") &&
+			newStatus !== "expired" &&
+			newStatus !== "cancelled"
+		) {
+			return {
+				success: false,
+				error: "Cannot modify a signed or active contract",
+			};
+		}
+
+		// Can't go back from signed to draft/sent
+		if (
+			currentStatus === "signed" &&
+			(newStatus === "draft" || newStatus === "sent" || newStatus === "viewed")
+		) {
+			return {
+				success: false,
+				error: "Cannot revert a signed contract to an earlier status",
+			};
+		}
+
+		// Build update object
+		const updateData: Record<string, unknown> = {
+			status: newStatus,
+			updated_at: new Date().toISOString(),
+		};
+
+		// Add timestamps for specific status changes
+		if (newStatus === "sent" && currentStatus === "draft") {
+			updateData.sent_at = new Date().toISOString();
+		}
+		if (newStatus === "viewed" && !contract.signed_at) {
+			updateData.viewed_at = new Date().toISOString();
+		}
+		if (newStatus === "signed") {
+			updateData.signed_at = new Date().toISOString();
+		}
+		if (newStatus === "cancelled") {
+			updateData.cancelled_at = new Date().toISOString();
+		}
+
+		// Update contract
+		const { error: updateError } = await supabase
+			.from("contracts")
+			.update(updateData)
+			.eq("id", contractId)
+			.eq("company_id", companyId);
+
+		if (updateError) {
+			reportContractIssue("Error updating contract status", updateError);
+			throw new Error("Failed to update contract status");
+		}
+
+		revalidatePath("/dashboard/work/contracts");
+		revalidatePath(`/dashboard/work/contracts/${contractId}`);
+		return { success: true };
+	} catch (error) {
+		console.error("Update contract status error:", error);
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "Failed to update contract status",
+		};
+	}
+}

@@ -59,7 +59,7 @@ export function TransferCallModal({
 		setIsTransferring(true);
 
 		try {
-			// TODO: Implement actual call transfer via Telnyx API
+			// TODO: Implement actual call transfer via Twilio API
 			// For now, simulate a transfer
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 

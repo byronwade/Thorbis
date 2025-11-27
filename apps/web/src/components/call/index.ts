@@ -51,6 +51,10 @@ export { CustomerAlertBanner } from "./customer-alert-banner";
 export { CustomerSidebar } from "./customer-sidebar";
 export { CustomerStatsBar } from "./customer-stats-bar";
 export {
+	CustomerStatusDot,
+	CustomerStatusIndicator,
+} from "./customer-status-indicator";
+export {
 	ExtractedInfoBadge,
 	ExtractedInfoPanel,
 } from "./extracted-info-panel";
@@ -64,6 +68,10 @@ export {
 	QuickActionsBar,
 	QuickActionsPanel,
 } from "./quick-actions-panel";
+export {
+	LastCommunicationBadge,
+	RecentCommunications,
+} from "./recent-communications";
 export { ScheduleTimeline } from "./schedule-timeline";
 export {
 	getSentimentLevel,
@@ -72,3 +80,12 @@ export {
 	SentimentIndicator,
 } from "./sentiment-indicator";
 export { FloatingNotes, SmartCallNotes } from "./smart-call-notes";
+export {
+	CALL_QUICK_REPLIES,
+	InlineQuickReplies,
+	SmsQuickRepliesBar,
+} from "./sms-quick-replies-bar";
+export type {
+	QuickReplyTemplate,
+	TemplateContext,
+} from "./sms-quick-replies-bar";

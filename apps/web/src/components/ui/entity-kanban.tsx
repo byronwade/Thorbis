@@ -41,7 +41,8 @@ export type EntityKanbanProps<TEntity, TStatus extends string> = {
 	columns: Array<{
 		id: TStatus;
 		name: string;
-		accentColor: string;
+		accentColor?: string;
+		bgClass?: string; // Tailwind class for dark mode support (e.g., "bg-blue-500")
 	}>;
 
 	/** Map entity to kanban item */
@@ -134,12 +135,13 @@ export function EntityKanban<TEntity, TStatus extends string>({
 		return meta;
 	}, [columns, items, getColumnMeta]);
 
-	const kanbanColumns: KanbanColumn[] = useMemo(
+	const kanbanColumns: (KanbanColumn & { bgClass?: string })[] = useMemo(
 		() =>
 			columns.map((col) => ({
 				id: col.id,
 				name: col.name,
 				accentColor: col.accentColor,
+				bgClass: col.bgClass,
 			})),
 		[columns],
 	);
@@ -177,8 +179,10 @@ export function EntityKanban<TEntity, TStatus extends string>({
 							<div className="flex items-center gap-2">
 								<span
 									aria-hidden="true"
-									className="h-2.5 w-2.5 rounded-full"
-									style={{ backgroundColor: column.accentColor }}
+									className={`h-2.5 w-2.5 rounded-full ${column.bgClass || ""}`}
+									style={
+										column.bgClass ? undefined : { backgroundColor: column.accentColor }
+									}
 								/>
 								<span className="text-foreground text-sm font-semibold">
 									{column.name}

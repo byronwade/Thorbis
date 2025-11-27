@@ -45,6 +45,13 @@ type ChannelMessage = CompanySms & {
 	} | null;
 };
 
+// Type for message attachments stored in provider_metadata
+type MessageAttachment = {
+	type?: string;
+	url?: string;
+	filename?: string;
+};
+
 const DEFAULT_CHANNELS = [
 	{ id: "general", name: "General", type: "public" as const },
 	{ id: "sales", name: "Sales", type: "public" as const },
@@ -431,8 +438,8 @@ export function TeamsPageClient({
 																msg.body ? "" : "",
 															)}
 														>
-															{msg.provider_metadata.attachments.map(
-																(att: any, attIdx: number) => {
+															{(msg.provider_metadata.attachments as MessageAttachment[]).map(
+																(att, attIdx) => {
 																	const isImage =
 																		att.type === "image" ||
 																		(att.url &&

@@ -142,14 +142,14 @@ const VideoConferenceView = dynamic(
 	},
 );
 
-import { startCallRecording, stopCallRecording } from "@/actions/telnyx";
+import { startCallRecording, stopCallRecording } from "@/actions/twilio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { useCrossTabSync } from "@/hooks/use-cross-tab-sync";
 import { useDraggablePosition } from "@/hooks/use-draggable-position";
 import { usePopOutDrag } from "@/hooks/use-pop-out-drag";
 import { useResizableMulti } from "@/hooks/use-resizable-multi";
-import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
+import { useTwilioVoice } from "@/hooks/use-twilio-voice";
 import { useUIStore } from "@/lib/stores";
 import {
 	type CardType,
@@ -157,9 +157,9 @@ import {
 } from "@/lib/stores/call-preferences-store";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 import {
-	fetchWebRTCCredentialsOnce,
-	resetWebRTCCredentialsCache,
-} from "@/lib/telnyx/web-credentials-client";
+	fetchVoiceCredentialsOnce,
+	resetVoiceCredentialsCache,
+} from "@/lib/twilio/voice-credentials-client";
 import { cn } from "@/lib/utils";
 
 type CallDisposition =
@@ -1713,32 +1713,32 @@ const ActiveCallView = memo(function ActiveCallView({
 
 // Main Export Component
 export function IncomingCallNotification() {
-	// WebRTC credentials and state
-	const [webrtcCredentials, setWebrtcCredentials] = useState<{
-		username: string;
-		password: string;
+	// Voice SDK credentials and state
+	const [voiceCredentials, setVoiceCredentials] = useState<{
+		accessToken: string;
+		identity: string;
 	} | null>(null);
 	const [_isLoadingCredentials, setIsLoadingCredentials] = useState(true);
 
-	// Fetch WebRTC credentials on mount (shared cache across components)
+	// Fetch Voice credentials on mount (shared cache across components)
 	useEffect(() => {
 		let cancelled = false;
 
-		fetchWebRTCCredentialsOnce()
+		fetchVoiceCredentialsOnce()
 			.then((result) => {
 				if (cancelled) {
 					return;
 				}
 				if (result.success && result.credential) {
-					setWebrtcCredentials({
-						username: result.credential.username,
-						password: result.credential.password,
+					setVoiceCredentials({
+						accessToken: result.credential.accessToken,
+						identity: result.credential.identity,
 					});
 				}
 			})
 			.catch(() => {
 				if (!cancelled) {
-					resetWebRTCCredentialsCache();
+					resetVoiceCredentialsCache();
 				}
 			})
 			.finally(() => {
@@ -1752,14 +1752,12 @@ export function IncomingCallNotification() {
 		};
 	}, []);
 
-	// PERFORMANCE: Don't auto-connect WebRTC on every page load
-	// This was hitting Telnyx 5-connection limit causing 2-8s timeouts!
-	// WebRTC will connect ONLY when there's an actual incoming call or user initiates call
-	const webrtc = useTelnyxWebRTC({
-		username: webrtcCredentials?.username || "",
-		password: webrtcCredentials?.password || "",
+	// PERFORMANCE: Don't auto-connect Voice SDK on every page load
+	// This avoids unnecessary connection overhead and resource usage
+	// Voice SDK will connect ONLY when there's an actual incoming call or user initiates call
+	const webrtc = useTwilioVoice({
+		accessToken: voiceCredentials?.accessToken || "",
 		autoConnect: false, // CHANGED: Don't connect until actually needed
-		disabled: !webrtcCredentials, // Don't even initialize hook without credentials
 		debug: process.env.NODE_ENV === "development",
 		onIncomingCall: (_call) => {
 			// The incoming call UI will show based on currentCall state
@@ -1779,7 +1777,7 @@ export function IncomingCallNotification() {
 	const [showTransferModal, setShowTransferModal] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
 
-	// Map WebRTC call state to UI format (real Telnyx calls only)
+	// Map WebRTC call state to UI format (real Twilio calls only)
 	const call = webrtc.currentCall
 		? {
 				status:
@@ -2035,7 +2033,7 @@ export function IncomingCallNotification() {
 
 	// Wrapped handlers that use WebRTC and broadcast to other tabs
 	const handleAnswerCall = async () => {
-		// Real Telnyx call handling only
+		// Real Twilio call handling only
 		try {
 			await webrtc.answerCall();
 			sync.broadcastCallAnswered();
@@ -2057,7 +2055,7 @@ export function IncomingCallNotification() {
 	};
 
 	const handleEndCall = async () => {
-		// Real Telnyx call handling only
+		// Real Twilio call handling only
 		if (!webrtc.currentCall) {
 			clearTranscript();
 			setIsRecording(false);
@@ -2086,7 +2084,7 @@ export function IncomingCallNotification() {
 	};
 
 	const handleToggleMute = async () => {
-		// Real Telnyx call handling only
+		// Real Twilio call handling only
 		try {
 			if (call.isMuted) {
 				await webrtc.unmuteCall();
@@ -2099,7 +2097,7 @@ export function IncomingCallNotification() {
 	};
 
 	const handleToggleHold = async () => {
-		// Real Telnyx call handling only
+		// Real Twilio call handling only
 		try {
 			if (call.isOnHold) {
 				await webrtc.unholdCall();

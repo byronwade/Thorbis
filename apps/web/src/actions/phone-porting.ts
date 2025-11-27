@@ -10,7 +10,7 @@ import {
 	createPortingOrder,
 	getPortingOrderStatus,
 	type PortingOrderRequest,
-} from "@/lib/telnyx/porting";
+} from "@/lib/twilio/porting";
 
 export async function submitPortingOrder(data: {
 	companyId: string;
@@ -35,7 +35,7 @@ export async function submitPortingOrder(data: {
 	validationErrors?: Record<string, string[]>;
 }> {
 	try {
-		// Create porting order with Telnyx
+		// Create porting order with Twilio
 		const result = await createPortingOrder({
 			phoneNumbers: data.phoneNumbers,
 			currentCarrierName: data.currentCarrierName,
@@ -64,7 +64,7 @@ export async function submitPortingOrder(data: {
 		const supabase = createServiceSupabaseClient();
 		const { error: dbError } = await supabase.from("porting_orders").insert({
 			company_id: data.companyId,
-			telnyx_porting_order_id: result.data.id,
+			twilio_porting_order_id: result.data.id,
 			phone_numbers: result.data.phoneNumbers,
 			current_carrier: result.data.currentCarrierName,
 			status: result.data.status,

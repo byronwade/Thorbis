@@ -12,7 +12,7 @@
 
 "use server";
 
-import { emailConfig } from "@/lib/email/resend-client";
+import { sendgridConfig as emailConfig } from "@/lib/email/sendgrid-client";
 import { createClient } from "@/lib/supabase/server";
 
 export type PaymentToken = {

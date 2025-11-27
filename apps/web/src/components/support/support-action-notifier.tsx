@@ -54,7 +54,8 @@ export function SupportActionNotifier() {
 					.from("team_members")
 					.select("company_id")
 					.eq("user_id", user.id)
-					.single();
+					.limit(1)
+					.maybeSingle();
 				if (!teamMember) return;
 
 				// Get active sessions for this company

@@ -1,4 +1,4 @@
 {
-  "/(dashboard)/dashboard/ai/page": "app/(dashboard)/dashboard/ai/page.js",
-  "/(dashboard)/dashboard/schedule/page": "app/(dashboard)/dashboard/schedule/page.js"
+  "/(dashboard)/dashboard/ai/[chatId]/page": "app/(dashboard)/dashboard/ai/[chatId]/page.js",
+  "/api/ai/chat/route": "app/api/ai/chat/route.js"
 }

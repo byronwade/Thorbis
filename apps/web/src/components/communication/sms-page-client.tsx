@@ -35,6 +35,14 @@ import type {
 	GetSmsResult,
 	SmsTemplateContext,
 } from "@/actions/sms-actions";
+
+// Type for message attachments stored in provider_metadata
+type MessageAttachment = {
+	type?: string;
+	url?: string;
+	filename?: string;
+};
+
 import {
 	getCompanyContextAction,
 	getSmsAction,
@@ -43,7 +51,7 @@ import {
 	markSmsAsReadAction,
 	markSmsConversationAsReadAction,
 } from "@/actions/sms-actions";
-import { sendTextMessage } from "@/actions/telnyx";
+import { sendTextMessage } from "@/actions/twilio";
 import { SmsMessageInput } from "@/components/communication/sms-message-input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -499,7 +507,7 @@ export function SmsPageClient({
 				}
 
 				// Send MMS with attachments
-				const { sendMMSMessage } = await import("@/actions/telnyx");
+				const { sendMMSMessage } = await import("@/actions/twilio");
 				const result = await sendMMSMessage({
 					to: phoneNumber,
 					from: "", // Will use default from company settings
@@ -962,8 +970,8 @@ export function SmsPageClient({
 																				msg.body ? "" : "",
 																			)}
 																		>
-																			{msg.provider_metadata.attachments.map(
-																				(att: any, attIdx: number) => {
+																			{(msg.provider_metadata.attachments as MessageAttachment[]).map(
+																				(att, attIdx) => {
 																					const isImage =
 																						att.type === "image" ||
 																						(att.url &&

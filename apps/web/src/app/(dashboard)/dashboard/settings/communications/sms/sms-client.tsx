@@ -2,9 +2,16 @@
 
 import {
 	AlertTriangle,
+	Bell,
+	CheckCircle2,
+	Clock,
 	HelpCircle,
+	MessageSquare,
+	Moon,
 	Phone,
 	Settings as SettingsIcon,
+	Star,
+	Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
@@ -43,8 +50,10 @@ import {
 } from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
 import {
+	DEFAULT_QUICK_REPLIES_CONFIG,
 	DEFAULT_SMS_SETTINGS,
 	mapSmsSettings,
+	type QuickRepliesConfig,
 	type SmsSettingsState,
 } from "./sms-config";
 
@@ -78,6 +87,14 @@ function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 			formData.append("optOutMessage", state.optOutMessage);
 			formData.append("includeOptOut", state.includeOptOut.toString());
 			formData.append("consentRequired", state.consentRequired.toString());
+			formData.append(
+				"quickRepliesEnabled",
+				state.quickRepliesEnabled.toString(),
+			);
+			formData.append(
+				"quickRepliesConfig",
+				JSON.stringify(state.quickRepliesConfig),
+			);
 			return formData;
 		},
 	});
@@ -89,6 +106,17 @@ function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 	const handleCancel = useCallback(() => {
 		void reload();
 	}, [reload]);
+
+	// Helper to update nested quick replies config
+	const updateQuickReplyConfig = useCallback(
+		<K extends keyof QuickRepliesConfig>(key: K, value: QuickRepliesConfig[K]) => {
+			updateSetting("quickRepliesConfig", {
+				...settings.quickRepliesConfig,
+				[key]: value,
+			});
+		},
+		[settings.quickRepliesConfig, updateSetting],
+	);
 
 	return (
 		<TooltipProvider>
@@ -167,7 +195,7 @@ function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 									value={settings.senderNumber}
 								/>
 								<p className="text-muted-foreground text-xs">
-									Must match an active Telnyx or Twilio number.
+									Must match an active Twilio number.
 								</p>
 							</StandardFormField>
 							<div className="space-y-4">
@@ -183,7 +211,6 @@ function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 										}
 										value={settings.provider}
 									>
-										<option value="telnyx">Telnyx</option>
 										<option value="twilio">Twilio</option>
 										<option value="other">Other</option>
 									</select>
@@ -324,6 +351,328 @@ function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 								}
 							/>
 						</div>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle className="flex items-center gap-2">
+							<Zap className="size-4" />
+							Automated Quick Replies
+						</CardTitle>
+						<CardDescription>
+							Automatically send predefined messages based on triggers. These
+							run without CSR intervention.
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="flex items-center justify-between rounded-lg border p-3">
+							<div>
+								<p className="text-sm font-medium">
+									Enable automated quick replies
+								</p>
+								<p className="text-muted-foreground text-xs">
+									Turn on automatic SMS responses for common scenarios.
+								</p>
+							</div>
+							<Switch
+								checked={settings.quickRepliesEnabled}
+								onCheckedChange={(checked) =>
+									updateSetting("quickRepliesEnabled", checked)
+								}
+							/>
+						</div>
+
+						{settings.quickRepliesEnabled && (
+							<>
+								<Separator />
+
+								{/* Greeting Auto-Reply */}
+								<div className="space-y-3 rounded-lg border p-4">
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<MessageSquare className="text-muted-foreground size-4" />
+											<div>
+												<p className="text-sm font-medium">
+													New conversation greeting
+												</p>
+												<p className="text-muted-foreground text-xs">
+													Send when a customer texts for the first time.
+												</p>
+											</div>
+										</div>
+										<Switch
+											checked={
+												settings.quickRepliesConfig.greeting_enabled
+											}
+											onCheckedChange={(checked) =>
+												updateQuickReplyConfig("greeting_enabled", checked)
+											}
+										/>
+									</div>
+									{settings.quickRepliesConfig.greeting_enabled && (
+										<Textarea
+											className="min-h-[80px] resize-none"
+											onChange={(event) =>
+												updateQuickReplyConfig(
+													"greeting_message",
+													event.target.value,
+												)
+											}
+											placeholder="Hi! Thanks for reaching out..."
+											value={settings.quickRepliesConfig.greeting_message}
+										/>
+									)}
+								</div>
+
+								{/* After Hours Auto-Reply */}
+								<div className="space-y-3 rounded-lg border p-4">
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<Moon className="text-muted-foreground size-4" />
+											<div>
+												<p className="text-sm font-medium">After hours reply</p>
+												<p className="text-muted-foreground text-xs">
+													Send when messages arrive outside business hours.
+												</p>
+											</div>
+										</div>
+										<Switch
+											checked={
+												settings.quickRepliesConfig.after_hours_enabled
+											}
+											onCheckedChange={(checked) =>
+												updateQuickReplyConfig("after_hours_enabled", checked)
+											}
+										/>
+									</div>
+									{settings.quickRepliesConfig.after_hours_enabled && (
+										<Textarea
+											className="min-h-[80px] resize-none"
+											onChange={(event) =>
+												updateQuickReplyConfig(
+													"after_hours_message",
+													event.target.value,
+												)
+											}
+											placeholder="Thanks for your message! We're currently closed..."
+											value={settings.quickRepliesConfig.after_hours_message}
+										/>
+									)}
+								</div>
+
+								{/* Appointment Reminder */}
+								<div className="space-y-3 rounded-lg border p-4">
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<Bell className="text-muted-foreground size-4" />
+											<div>
+												<p className="text-sm font-medium">
+													Appointment reminder
+												</p>
+												<p className="text-muted-foreground text-xs">
+													Automatically remind customers before appointments.
+												</p>
+											</div>
+										</div>
+										<Switch
+											checked={
+												settings.quickRepliesConfig
+													.appointment_reminder_enabled
+											}
+											onCheckedChange={(checked) =>
+												updateQuickReplyConfig(
+													"appointment_reminder_enabled",
+													checked,
+												)
+											}
+										/>
+									</div>
+									{settings.quickRepliesConfig
+										.appointment_reminder_enabled && (
+										<>
+											<div className="flex items-center gap-2">
+												<Clock className="text-muted-foreground size-3" />
+												<Label className="text-xs">Hours before</Label>
+												<Input
+													className="w-20"
+													min={1}
+													max={72}
+													onChange={(event) =>
+														updateQuickReplyConfig(
+															"appointment_reminder_hours_before",
+															Number.parseInt(event.target.value) || 24,
+														)
+													}
+													type="number"
+													value={
+														settings.quickRepliesConfig
+															.appointment_reminder_hours_before
+													}
+												/>
+											</div>
+											<Textarea
+												className="min-h-[80px] resize-none"
+												onChange={(event) =>
+													updateQuickReplyConfig(
+														"appointment_reminder_message",
+														event.target.value,
+													)
+												}
+												placeholder="Reminder: You have an appointment..."
+												value={
+													settings.quickRepliesConfig
+														.appointment_reminder_message
+												}
+											/>
+										</>
+									)}
+								</div>
+
+								{/* Job Complete Notification */}
+								<div className="space-y-3 rounded-lg border p-4">
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<CheckCircle2 className="text-muted-foreground size-4" />
+											<div>
+												<p className="text-sm font-medium">
+													Job complete notification
+												</p>
+												<p className="text-muted-foreground text-xs">
+													Send when a job is marked as complete.
+												</p>
+											</div>
+										</div>
+										<Switch
+											checked={
+												settings.quickRepliesConfig.job_complete_enabled
+											}
+											onCheckedChange={(checked) =>
+												updateQuickReplyConfig("job_complete_enabled", checked)
+											}
+										/>
+									</div>
+									{settings.quickRepliesConfig.job_complete_enabled && (
+										<Textarea
+											className="min-h-[80px] resize-none"
+											onChange={(event) =>
+												updateQuickReplyConfig(
+													"job_complete_message",
+													event.target.value,
+												)
+											}
+											placeholder="Your service has been completed..."
+											value={settings.quickRepliesConfig.job_complete_message}
+										/>
+									)}
+								</div>
+
+								{/* Review Request */}
+								<div className="space-y-3 rounded-lg border p-4">
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<Star className="text-muted-foreground size-4" />
+											<div>
+												<p className="text-sm font-medium">Review request</p>
+												<p className="text-muted-foreground text-xs">
+													Ask for a review after job completion.
+												</p>
+											</div>
+										</div>
+										<Switch
+											checked={
+												settings.quickRepliesConfig.review_request_enabled
+											}
+											onCheckedChange={(checked) =>
+												updateQuickReplyConfig(
+													"review_request_enabled",
+													checked,
+												)
+											}
+										/>
+									</div>
+									{settings.quickRepliesConfig.review_request_enabled && (
+										<>
+											<div className="flex items-center gap-2">
+												<Clock className="text-muted-foreground size-3" />
+												<Label className="text-xs">
+													Hours after job complete
+												</Label>
+												<Input
+													className="w-20"
+													min={1}
+													max={168}
+													onChange={(event) =>
+														updateQuickReplyConfig(
+															"review_request_delay_hours",
+															Number.parseInt(event.target.value) || 24,
+														)
+													}
+													type="number"
+													value={
+														settings.quickRepliesConfig
+															.review_request_delay_hours
+													}
+												/>
+											</div>
+											<Textarea
+												className="min-h-[80px] resize-none"
+												onChange={(event) =>
+													updateQuickReplyConfig(
+														"review_request_message",
+														event.target.value,
+													)
+												}
+												placeholder="Thank you for choosing us! Please leave a review..."
+												value={
+													settings.quickRepliesConfig.review_request_message
+												}
+											/>
+										</>
+									)}
+								</div>
+
+								{/* Template Variables Help */}
+								<div className="bg-muted/50 rounded-lg p-3">
+									<div className="flex items-center gap-2 mb-2">
+										<HelpCircle className="text-muted-foreground size-3" />
+										<p className="text-xs font-medium">Available variables</p>
+									</div>
+									<div className="text-muted-foreground grid grid-cols-2 gap-1 text-xs">
+										<span>
+											<code className="bg-muted rounded px-1">
+												{"{{company_name}}"}
+											</code>{" "}
+											- Your company
+										</span>
+										<span>
+											<code className="bg-muted rounded px-1">
+												{"{{customer_name}}"}
+											</code>{" "}
+											- Customer name
+										</span>
+										<span>
+											<code className="bg-muted rounded px-1">
+												{"{{appointment_time}}"}
+											</code>{" "}
+											- Scheduled time
+										</span>
+										<span>
+											<code className="bg-muted rounded px-1">
+												{"{{emergency_phone}}"}
+											</code>{" "}
+											- Emergency line
+										</span>
+										<span>
+											<code className="bg-muted rounded px-1">
+												{"{{review_link}}"}
+											</code>{" "}
+											- Review page URL
+										</span>
+									</div>
+								</div>
+							</>
+						)}
 					</CardContent>
 				</Card>
 

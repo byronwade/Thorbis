@@ -1,20 +1,20 @@
 {
-	"node": {
-		"606de25abb4916d6566917712865287e7e8ed54596": {
-			"workers": {
-				"app/dashboard/view-as/[companyId]/work/equipment/page": {
-					"moduleId": 63561,
-					"async": false,
-					"exportedName": "endSupportSession",
-					"filename": "apps/admin/src/actions/support-sessions.ts"
-				}
-			},
-			"layer": {
-				"app/dashboard/view-as/[companyId]/work/equipment/page": "action-browser"
-			},
-			"exportedName": "endSupportSession",
-			"filename": "apps/admin/src/actions/support-sessions.ts"
-		}
-	},
-	"edge": {}
+  "node": {
+    "603b56562ac905a59ad611c9c26163970265203d60": {
+      "workers": {
+        "app/dashboard/view-as/[companyId]/work/equipment/page": {
+          "moduleId": 63561,
+          "async": false,
+          "exportedName": "endSupportSession",
+          "filename": "apps/admin/src/actions/support-sessions.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/view-as/[companyId]/work/equipment/page": "action-browser"
+      },
+      "exportedName": "endSupportSession",
+      "filename": "apps/admin/src/actions/support-sessions.ts"
+    }
+  },
+  "edge": {}
 }

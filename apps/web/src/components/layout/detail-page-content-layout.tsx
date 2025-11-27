@@ -106,7 +106,20 @@ export function DetailPageContentLayout({
 	enableReordering = true,
 }: DetailPageContentLayoutProps) {
 	// Build standard sections based on provided data and visibility settings
+	// Order: Related Items → Activity Log → Notes → Attachments
 	const standardSections: UnifiedAccordionSection[] = [];
+
+	// Add Related Items section FIRST (if enabled and has data)
+	// This ensures related entities are prominently displayed for easy navigation
+	if (showStandardSections.relatedItems !== false && relatedItems.length > 0) {
+		standardSections.push({
+			id: "related-items",
+			title: "Related Items",
+			icon: <LinkIcon className="size-4" />,
+			count: relatedItems.length,
+			content: <RelatedItemsSection relatedItems={relatedItems} />,
+		});
+	}
 
 	// Add Activity Log section if enabled
 	if (showStandardSections.activities !== false) {
@@ -138,17 +151,6 @@ export function DetailPageContentLayout({
 			icon: <Paperclip className="size-4" />,
 			count: attachments.length,
 			content: <AttachmentsSection attachments={attachments} />,
-		});
-	}
-
-	// Add Related Items section if enabled and has data
-	if (showStandardSections.relatedItems !== false && relatedItems.length > 0) {
-		standardSections.push({
-			id: "related-items",
-			title: "Related Items",
-			icon: <LinkIcon className="size-4" />,
-			count: relatedItems.length,
-			content: <RelatedItemsSection relatedItems={relatedItems} />,
 		});
 	}
 

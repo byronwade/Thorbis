@@ -199,6 +199,207 @@
 	}
 }
 
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dark .dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Dialog Content */
+.dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 672px;
+  width: calc(100% - 32px);
+  display: grid;
+  gap: 16px;
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.dark .dialog-content {
+  background-color: #0a0a0a;
+  border-color: hsl(var(--border) / 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+  transition: opacity 150ms;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.dialog-close-button:hover {
+  opacity: 1;
+}
+
+/* Sheet Overlay */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dark .sheet-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Sheet Content */
+.sheet-content {
+  position: fixed;
+  z-index: 9999;
+  background-color: hsl(var(--background));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.sheet-content[data-side="right"] {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 75%;
+  max-width: 24rem;
+  border-left: 1px solid hsl(var(--border) / 0.5);
+}
+
+.sheet-content[data-side="left"] {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 75%;
+  max-width: 24rem;
+  border-right: 1px solid hsl(var(--border) / 0.5);
+}
+
+.sheet-content[data-side="top"] {
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+
+.sheet-content[data-side="bottom"] {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid hsl(var(--border) / 0.5);
+}
+
+.sheet-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+  transition: opacity 150ms;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sheet-close-button:hover {
+  opacity: 1;
+}
+
+/* Popover Content */
+.popover-content {
+  z-index: 50;
+  width: 18rem;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  outline: none;
+}
+
+/* Dropdown Menu Content */
+.dropdown-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-dropdown-menu-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Select Content */
+.select-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-select-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Context Menu Content */
+.context-menu-content {
+  z-index: 50;
+  min-width: 8rem;
+  max-height: var(--radix-context-menu-content-available-height);
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Hover Card Content */
+.hover-card-content {
+  z-index: 50;
+  width: 16rem;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border-radius: 0.375rem;
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  outline: none;
+}
+
 @layer utilities {
 	/* Hairline borders for retina displays */
 	@supports (border-width: 0.5px) {

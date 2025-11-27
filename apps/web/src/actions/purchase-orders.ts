@@ -306,7 +306,7 @@ async function createPurchaseOrder(
 /**
  * Update purchase order status
  */
-async function updatePurchaseOrderStatus(
+export async function updatePurchaseOrderStatus(
 	poId: string,
 	status: string,
 	_notes?: string,
@@ -683,5 +683,83 @@ async function unlinkPurchaseOrderFromJob(
 			revalidatePath(`/dashboard/work/${previousJobId}`);
 		}
 		revalidatePath("/dashboard/work/purchase-orders");
+	});
+}
+
+/**
+ * Restore an archived purchase order
+ * Reverses the soft delete by clearing deleted_at
+ */
+export async function restorePurchaseOrder(
+	poId: string,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const activeCompanyId = await getActiveCompanyId();
+
+		if (!activeCompanyId) {
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify the PO exists and is archived
+		const { data: po, error: fetchError } = await supabase
+			.from("purchase_orders")
+			.select("id, status, deleted_at, company_id")
+			.eq("id", poId)
+			.not("deleted_at", "is", null)
+			.single();
+
+		if (fetchError || !po) {
+			throw new ActionError(
+				"Archived purchase order not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		if (po.company_id !== activeCompanyId) {
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("purchase order"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Restore the purchase order
+		const { error: updateError } = await supabase
+			.from("purchase_orders")
+			.update({
+				deleted_at: null,
+				status: po.status === "archived" ? "draft" : po.status,
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", poId);
+
+		if (updateError) {
+			throw new ActionError(
+				`Failed to restore purchase order: ${updateError.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/purchase-orders");
+		revalidatePath(`/dashboard/work/purchase-orders/${poId}`);
+		revalidatePath("/dashboard/work/archive");
 	});
 }

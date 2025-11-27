@@ -7,7 +7,7 @@
  * - Top toolbar with call controls and customer info
  * - Left panel: Live transcript with AI analysis (35%)
  * - Right panel: Customer sidebar with collapsibles (65%)
- * - Real Telnyx integration
+ * - Real Twilio integration
  * - Real customer data from database
  * - AI-powered auto-fill from transcript
  * - No mock data, no separate forms
@@ -19,7 +19,7 @@
  * for new customers, with real-time AI auto-fill from the transcript.
  */
 
-import type { Call as TelnyxCall } from "@telnyx/webrtc";
+import type { WebRTCCall } from "@/hooks/use-twilio-voice";
 import { AlertCircle, CalendarDays, MessageSquare } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
@@ -40,7 +40,7 @@ import { SkipLink } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { useCallQuality } from "@/hooks/use-call-quality";
 import { useCallShortcuts } from "@/hooks/use-call-shortcuts";
-import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
+import { useTwilioVoice } from "@/hooks/use-twilio-voice";
 import { useUIStore } from "@/lib/stores";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 import {
@@ -73,22 +73,21 @@ function CallWindowContent() {
 		endVideo,
 		setCustomerData,
 		setCallMetadata,
-		setTelnyxCallState,
+		setTwilioCallState,
 	} = useUIStore();
 
 	const { clearTranscript } = useTranscriptStore();
 
 	// WebRTC hook for accessing the actual call object
-	const webrtc = useTelnyxWebRTC({
-		username: process.env.NEXT_PUBLIC_TELNYX_SIP_USERNAME || "",
-		password: process.env.NEXT_PUBLIC_TELNYX_SIP_PASSWORD || "",
+	const webrtc = useTwilioVoice({
+		accessToken: process.env.NEXT_PUBLIC_TWILIO_ACCESS_TOKEN || "",
 		autoConnect: false,
 	});
 
 	// Real-time call quality monitoring
 	const { quality: connectionQuality, metrics: qualityMetrics } =
 		useCallQuality({
-			call: webrtc.currentCall as TelnyxCall | null,
+			call: webrtc.currentCall as WebRTCCall | null,
 			updateInterval: 2000, // Update every 2 seconds
 		});
 

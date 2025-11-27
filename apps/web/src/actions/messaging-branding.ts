@@ -5,11 +5,11 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
 	attachNumberToCampaign,
-	createTenDlcBrand,
-	createTenDlcCampaign,
+	registerTenDlcBrand as createTenDlcBrand,
+	registerTenDlcCampaign as createTenDlcCampaign,
 	getTenDlcBrand,
 	getTenDlcCampaign,
-} from "@/lib/telnyx/ten-dlc";
+} from "@/lib/twilio/ten-dlc";
 import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseJsClient<Database>;
@@ -21,8 +21,8 @@ type OwnerContactRow = {
 };
 
 const DEFAULT_MESSAGING_PROFILE_ID =
-	process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
-	process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
+	process.env.TWILIO_DEFAULT_MESSAGING_SERVICE_SID ||
+	process.env.NEXT_PUBLIC_TWILIO_MESSAGING_SERVICE_SID ||
 	"";
 
 const NANP_WITH_COUNTRY_DIGITS = 11;
@@ -136,7 +136,7 @@ async function upsertCampaignRecord(
 	return inserted?.id ?? null;
 }
 
-// Telnyx onboarding requires multiple guarded steps
+// Twilio onboarding requires multiple guarded steps
 export async function ensureMessagingBranding(
 	companyId: string,
 	options?: { supabase?: TypedSupabaseClient | null },
@@ -182,8 +182,8 @@ export async function ensureMessagingBranding(
 		.eq("company_id", companyId)
 		.maybeSingle();
 
-	if (brandRow?.telnyx_brand_id) {
-		const brandStatus = await getTenDlcBrand(brandRow.telnyx_brand_id);
+	if (brandRow?.twilio_brand_id) {
+		const brandStatus = await getTenDlcBrand(brandRow.twilio_brand_id);
 		if (brandStatus.success && brandStatus.data) {
 			await supabase
 				.from("messaging_brands")
@@ -195,7 +195,7 @@ export async function ensureMessagingBranding(
 		}
 	}
 
-	if (!brandRow?.telnyx_brand_id) {
+	if (!brandRow?.twilio_brand_id) {
 		const brandPayload = {
 			customer_reference: companyId,
 			brand_name: company.legal_name || company.name,
@@ -236,7 +236,7 @@ export async function ensureMessagingBranding(
 
 		await upsertBrandRecord(supabase, {
 			company_id: companyId,
-			telnyx_brand_id: brandResult.data.id,
+			twilio_brand_id: brandResult.data.id,
 			status: "submitted",
 			legal_name: brandPayload.brand_name,
 			doing_business_as: company.doing_business_as || company.name,
@@ -257,7 +257,7 @@ export async function ensureMessagingBranding(
 	return { success: true };
 }
 
-// Linking campaigns touches several Telnyx APIs sequentially
+// Linking campaigns touches several Twilio APIs sequentially
 export async function ensureMessagingCampaign(
 	companyId: string,
 	phoneNumber: { id: string; e164: string },
@@ -274,7 +274,7 @@ export async function ensureMessagingCampaign(
 		.eq("company_id", companyId)
 		.maybeSingle();
 
-	if (!brand?.telnyx_brand_id) {
+	if (!brand?.twilio_brand_id) {
 		const brandResult = await ensureMessagingBranding(companyId, {
 			supabase,
 		});
@@ -293,9 +293,9 @@ export async function ensureMessagingCampaign(
 		.eq("usecase", usecase)
 		.maybeSingle();
 
-	if (campaignRow?.telnyx_campaign_id) {
+	if (campaignRow?.twilio_campaign_id) {
 		const campaignStatus = await getTenDlcCampaign(
-			campaignRow.telnyx_campaign_id,
+			campaignRow.twilio_campaign_id,
 		);
 		if (campaignStatus.success && campaignStatus.data) {
 			await supabase
@@ -309,13 +309,13 @@ export async function ensureMessagingCampaign(
 	}
 
 	let campaignId = campaignRow?.id ?? null;
-	let telnyxCampaignId = campaignRow?.telnyx_campaign_id ?? null;
+	let twilioCampaignId = campaignRow?.twilio_campaign_id ?? null;
 
-	if (!campaignRow?.telnyx_campaign_id) {
+	if (!campaignRow?.twilio_campaign_id) {
 		if (!DEFAULT_MESSAGING_PROFILE_ID) {
 			return {
 				success: false,
-				error: "TELNYX_DEFAULT_MESSAGING_PROFILE_ID not configured",
+				error: "TWILIO_DEFAULT_MESSAGING_SERVICE_SID not configured",
 			};
 		}
 
@@ -325,7 +325,7 @@ export async function ensureMessagingCampaign(
 		} confirming your upcoming appointment. Reply HELP for assistance or STOP to opt out.`;
 
 		const campaignPayload = {
-			brand_id: brand.telnyx_brand_id,
+			brandId: brand.twilio_brand_id,
 			campaign_alias: `${companyId}-customer-care`,
 			usecase,
 			description,
@@ -358,19 +358,19 @@ export async function ensureMessagingCampaign(
 		campaignId =
 			(await upsertCampaignRecord(supabase, {
 				messaging_brand_id: brand.id,
-				telnyx_campaign_id: campaignResult.data.id,
+				twilio_campaign_id: campaignResult.data.id,
 				status: "submitted",
 				usecase,
 				description,
-				sample_messages: campaignPayload.sample_messages,
+				sample_messages: campaignPayload.sampleMessages,
 				messaging_profile_id: DEFAULT_MESSAGING_PROFILE_ID,
 			})) ||
 			campaignRow?.id ||
 			null;
-		telnyxCampaignId = campaignResult.data.id;
+		twilioCampaignId = campaignResult.data.id;
 	}
 
-	if (!(campaignId && telnyxCampaignId)) {
+	if (!(campaignId && twilioCampaignId)) {
 		return {
 			success: false,
 			error: "Campaign not ready",
@@ -384,9 +384,9 @@ export async function ensureMessagingCampaign(
 		.eq("phone_number_id", phoneNumber.id)
 		.maybeSingle();
 
-	if (!linkRecord?.telnyx_relationship_id) {
+	if (!linkRecord?.twilio_relationship_id) {
 		const attachResult = await attachNumberToCampaign(
-			telnyxCampaignId,
+			twilioCampaignId,
 			phoneNumber.e164,
 		);
 		if (!(attachResult.success && attachResult.data)) {
@@ -400,7 +400,7 @@ export async function ensureMessagingCampaign(
 			await supabase
 				.from("messaging_campaign_phone_numbers")
 				.update({
-					telnyx_relationship_id: attachResult.data.id,
+					twilio_relationship_id: attachResult.data.id,
 					status: "submitted",
 				})
 				.eq("id", linkRecord.id);
@@ -408,7 +408,7 @@ export async function ensureMessagingCampaign(
 			await supabase.from("messaging_campaign_phone_numbers").insert({
 				messaging_campaign_id: campaignId,
 				phone_number_id: phoneNumber.id,
-				telnyx_relationship_id: attachResult.data.id,
+				twilio_relationship_id: attachResult.data.id,
 				status: "submitted",
 			});
 		}
@@ -417,9 +417,9 @@ export async function ensureMessagingCampaign(
 	await supabase
 		.from("phone_numbers")
 		.update({
-			telnyx_messaging_profile_id: DEFAULT_MESSAGING_PROFILE_ID,
+			twilio_messaging_service_sid: DEFAULT_MESSAGING_PROFILE_ID,
 			metadata: {
-				ten_dlc_campaign_id: telnyxCampaignId,
+				ten_dlc_campaign_id: twilioCampaignId,
 			},
 		})
 		.eq("id", phoneNumber.id);

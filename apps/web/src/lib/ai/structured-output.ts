@@ -5,13 +5,13 @@
  * For generating insights, reports, and structured data from AI
  */
 
-import { google } from "@ai-sdk/google";
+import { createGroq } from "@ai-sdk/groq";
 import { generateObject, streamObject } from "ai";
 import { z } from "zod";
 
-// Google Gemini models for structured output generation
-const geminiFlash = google("gemini-2.0-flash-exp");
-const geminiPro = google("gemini-1.5-pro");
+// Create Groq client for structured output generation
+const groq = createGroq();
+const groqModel = groq("llama-3.3-70b-versatile");
 
 /**
  * Insight schemas for different types of AI-generated insights
@@ -175,7 +175,7 @@ export async function generateCustomerInsights(customerData: {
 	recentInteractions?: string[];
 }): Promise<CustomerInsights> {
 	const { object } = await generateObject({
-		model: geminiFlash, // Use faster model for insights
+		model: groqModel,
 		schema: customerInsightsSchema,
 		prompt: `Analyze this customer and provide insights:
 Customer: ${customerData.name}
@@ -217,7 +217,7 @@ export async function streamJobAnalysis(jobDescription: {
 	urgency?: "low" | "normal" | "high" | "emergency";
 }) {
 	return streamObject({
-		model: geminiPro,
+		model: groqModel,
 		schema: jobAnalysisSchema,
 		prompt: `Analyze this job request and provide detailed analysis:
 
@@ -259,7 +259,7 @@ export async function generateScheduleOptimization(scheduleData: {
 	}>;
 }): Promise<ScheduleOptimization> {
 	const { object } = await generateObject({
-		model: geminiFlash,
+		model: groqModel,
 		schema: scheduleOptimizationSchema,
 		prompt: `Optimize this schedule for ${scheduleData.date}:
 
@@ -299,7 +299,7 @@ export async function generateFinancialSummary(financialData: {
 	topServices?: Array<{ name: string; revenue: number; count: number }>;
 }): Promise<FinancialSummary> {
 	const { object } = await generateObject({
-		model: geminiFlash,
+		model: groqModel,
 		schema: financialSummarySchema,
 		prompt: `Analyze this financial data and provide summary:
 
@@ -334,7 +334,7 @@ export async function generateEmailDraft(context: {
 	additionalContext?: string;
 }): Promise<EmailDraft> {
 	const { object } = await generateObject({
-		model: geminiFlash,
+		model: groqModel,
 		schema: emailDraftSchema,
 		prompt: `Draft an email for:
 
@@ -362,7 +362,7 @@ export async function streamResponseSuggestions(message: {
 	conversationHistory?: string[];
 }) {
 	return streamObject({
-		model: geminiFlash,
+		model: groqModel,
 		schema: responseSuggestionsSchema,
 		prompt: `Generate response suggestions for this message:
 

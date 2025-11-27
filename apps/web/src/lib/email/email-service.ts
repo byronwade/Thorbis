@@ -366,7 +366,7 @@ export async function getEmailById(
 		)
 		.eq("id", emailId)
 		.eq("company_id", companyId)
-		.eq("channel", "resend")
+		.in("channel", ["sendgrid", "resend"]) // SendGrid is primary, resend for legacy data
 		.eq("type", "email")
 		.single();
 
@@ -506,7 +506,7 @@ export async function getEmailStats(): Promise<{
 		.from("communications")
 		.select("*", { count: "exact", head: true })
 		.eq("company_id", companyId)
-		.eq("channel", "resend")
+		.in("channel", ["sendgrid", "resend"]) // SendGrid is primary, resend for legacy data
 		.eq("type", "email")
 		.is("deleted_at", null);
 
@@ -515,7 +515,7 @@ export async function getEmailStats(): Promise<{
 		.from("communications")
 		.select("*", { count: "exact", head: true })
 		.eq("company_id", companyId)
-		.eq("channel", "resend")
+		.in("channel", ["sendgrid", "resend"]) // SendGrid is primary, resend for legacy data
 		.eq("type", "email")
 		.eq("direction", "outbound")
 		.is("deleted_at", null);
@@ -525,7 +525,7 @@ export async function getEmailStats(): Promise<{
 		.from("communications")
 		.select("*", { count: "exact", head: true })
 		.eq("company_id", companyId)
-		.eq("channel", "resend")
+		.in("channel", ["sendgrid", "resend"]) // SendGrid is primary, resend for legacy data
 		.eq("type", "email")
 		.eq("direction", "inbound")
 		.is("deleted_at", null);
@@ -535,7 +535,7 @@ export async function getEmailStats(): Promise<{
 		.from("communications")
 		.select("*", { count: "exact", head: true })
 		.eq("company_id", companyId)
-		.eq("channel", "resend")
+		.in("channel", ["sendgrid", "resend"]) // SendGrid is primary, resend for legacy data
 		.eq("type", "email")
 		.eq("direction", "inbound")
 		.is("read_at", null)

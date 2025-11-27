@@ -159,7 +159,7 @@ export async function getSmsConversationAction(phoneNumber: string): Promise<{
 	"use server";
 
 	try {
-		const { getSmsConversation } = await import("@/lib/sms/sms-service");
+		const { getSmsConversation } = await import("@/lib/communication/sms-service");
 		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 
 		const companyId = await getActiveCompanyId();
