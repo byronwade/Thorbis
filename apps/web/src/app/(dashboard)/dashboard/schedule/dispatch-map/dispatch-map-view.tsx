@@ -125,6 +125,15 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type {
+	DispatchMapAppointment,
+	DispatchMapCustomer,
+	DispatchMapData,
+	DispatchMapGPSLocation,
+	DispatchMapJob,
+	DispatchMapProperty,
+	DispatchMapTechnician,
+} from "@/lib/dispatch-map-data";
 import {
 	type Route as GoogleRoute,
 	googleRoutesService,
@@ -201,80 +210,13 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 // Types
 // ============================================================================
 
-type Technician = {
-	id: string;
-	name: string;
-	email?: string;
-	phone?: string;
-	avatar?: string;
-	role: string;
-	status: string;
-};
-
-type GPSLocation = {
-	id: string;
-	technician_id: string;
-	lat: number;
-	lng: number;
-	accuracy?: number;
-	heading?: number;
-	speed?: number;
-	battery_level?: number;
-	status?: string;
-	updated_at: string;
-	company_id: string;
-};
-
-type Customer = {
-	id: string;
-	display_name: string;
-	phone?: string;
-	address?: string;
-	city?: string;
-	state?: string;
-	zip_code?: string;
-	lat?: number;
-	lon?: number;
-};
-
-type Property = {
-	id: string;
-	address?: string;
-	city?: string;
-	state?: string;
-	zip_code?: string;
-	lat?: number;
-	lon?: number;
-};
-
-type Job = {
-	id: string;
-	title: string;
-	job_type?: string;
-	priority?: string;
-	status: string;
-	total_amount?: number;
-	customer?: Customer;
-	property?: Property;
-};
-
-type Appointment = {
-	id: string;
-	scheduled_start: string;
-	scheduled_end?: string;
-	status: string;
-	assigned_technician_ids?: string[];
-	job?: Job;
-};
-
-type DispatchMapViewProps = {
-	technicians: Technician[];
-	gpsLocations: GPSLocation[];
-	appointments: Appointment[];
-	unassignedJobs: Job[];
-	companyId: string;
-	defaultCenter?: { address: string };
-};
+type Technician = DispatchMapTechnician;
+type GPSLocation = DispatchMapGPSLocation;
+type Customer = DispatchMapCustomer;
+type Property = DispatchMapProperty;
+type Job = DispatchMapJob;
+type Appointment = DispatchMapAppointment;
+type DispatchMapViewProps = DispatchMapData;
 
 type TechnicianWithLocation = Technician & {
 	gpsLocation?: GPSLocation;
@@ -873,11 +815,11 @@ function DispatchMapViewInner({
 				apt.assigned_technician_ids?.includes(tech.id),
 			);
 
-			// Sort by scheduled start
+			// Sort by start time
 			techAppointments.sort(
 				(a, b) =>
-					new Date(a.scheduled_start).getTime() -
-					new Date(b.scheduled_start).getTime(),
+					new Date(a.start_time).getTime() -
+					new Date(b.start_time).getTime(),
 			);
 
 			// Find current job (in-progress) and next job

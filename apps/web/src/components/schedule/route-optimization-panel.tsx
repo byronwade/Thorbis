@@ -26,7 +26,8 @@ import {
 	Truck,
 	Zap,
 } from "lucide-react";
-import { memo, useCallback, useState, useTransition } from "react";
+import { format } from "date-fns";
+import { memo, useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
 	applyOptimizedRoute,
@@ -115,6 +116,40 @@ function formatDuration(seconds: number): string {
 function formatDistance(meters: number): string {
 	const miles = meters / 1609.344;
 	return `${miles.toFixed(1)} mi`;
+}
+
+// ============================================================================
+// Normalizers to tolerate non-Map inputs
+// ============================================================================
+
+type TechnicianMapLike =
+	| Map<string, Technician>
+	| Technician[]
+	| Record<string, Technician>
+	| null
+	| undefined;
+
+type JobsByTechMapLike =
+	| Map<string, Job[]>
+	| Record<string, Job[]>
+	| null
+	| undefined;
+
+function normalizeTechnicians(input: TechnicianMapLike): Map<string, Technician> {
+	if (input instanceof Map) return input;
+	if (Array.isArray(input)) return new Map(input.map((t) => [t.id, t]));
+	if (input && typeof input === "object") {
+		return new Map(Object.values(input).map((t) => [t.id, t]));
+	}
+	return new Map();
+}
+
+function normalizeJobsByTech(input: JobsByTechMapLike): Map<string, Job[]> {
+	if (input instanceof Map) return input;
+	if (input && typeof input === "object" && !Array.isArray(input)) {
+		return new Map(Object.entries(input));
+	}
+	return new Map();
 }
 
 // ============================================================================
@@ -320,18 +355,27 @@ const TechnicianOptimizationCard = memo(function TechnicianOptimizationCard({
 // ============================================================================
 
 type RouteOptimizationPanelProps = {
-	technicians: Map<string, Technician>;
-	jobsByTechnician: Map<string, Job[]>;
+	technicians: TechnicianMapLike;
+	jobsByTechnician: JobsByTechMapLike;
 	selectedDate: Date;
 	className?: string;
 };
 
-export function RouteOptimizationPanel({
+function RouteOptimizationPanel({
 	technicians,
 	jobsByTechnician,
 	selectedDate,
 	className,
 }: RouteOptimizationPanelProps) {
+	const technicianMap = useMemo(
+		() => normalizeTechnicians(technicians),
+		[technicians],
+	);
+	const jobsByTechMap = useMemo(
+		() => normalizeJobsByTech(jobsByTechnician),
+		[jobsByTechnician],
+	);
+
 	const [isPending, startTransition] = useTransition();
 	const [optimizingTechId, setOptimizingTechId] = useState<string | null>(null);
 	const [applyingTechId, setApplyingTechId] = useState<string | null>(null);
@@ -340,10 +384,10 @@ export function RouteOptimizationPanel({
 	);
 
 	// Filter technicians with 2+ jobs
-	const techsWithJobs = Array.from(technicians.values())
+	const techsWithJobs = Array.from(technicianMap.values())
 		.map((tech) => ({
 			tech,
-			jobs: jobsByTechnician.get(tech.id) || [],
+			jobs: jobsByTechMap.get(tech.id) || [],
 		}))
 		.filter(({ jobs }) => jobs.length > 0)
 		.sort((a, b) => b.jobs.length - a.jobs.length);
@@ -353,6 +397,14 @@ export function RouteOptimizationPanel({
 		(acc, r) => acc + r.savings.timeSeconds,
 		0,
 	);
+	const totalJobsForDay = useMemo(() => {
+		let count = 0;
+		for (const [, jobs] of jobsByTechMap) {
+			count += jobs.length;
+		}
+		return count;
+	}, [jobsByTechMap]);
+	const dateLabel = format(selectedDate, "EEE, MMM d");
 
 	// Optimize single technician route
 	const handleOptimizeTechnician = useCallback(
@@ -378,7 +430,7 @@ export function RouteOptimizationPanel({
 					const result = await optimizeTechnicianRoute(techId, jobInputs);
 
 					if (result.success && result.data) {
-						const tech = technicians.get(techId);
+						const tech = technicianMap.get(techId);
 						setResults((prev) => {
 							const newMap = new Map(prev);
 							newMap.set(techId, {
@@ -414,7 +466,7 @@ export function RouteOptimizationPanel({
 				}
 			});
 		},
-		[technicians],
+		[technicianMap],
 	);
 
 	// Apply optimized route
@@ -467,51 +519,95 @@ export function RouteOptimizationPanel({
 	}, [techsToOptimize, results, handleOptimizeTechnician]);
 
 	return (
-		<div className={cn("flex flex-col gap-4", className)}>
-			{/* Header */}
-			<div className="space-y-2">
-				<div className="flex items-center gap-2">
-					<Route className="text-primary h-5 w-5" />
-					<h3 className="text-lg font-semibold">Route Optimization</h3>
-				</div>
-				<p className="text-muted-foreground text-sm">
-					Optimize technician routes to minimize travel time and fuel costs
-				</p>
-			</div>
-
-			{/* Summary */}
-			{totalPotentialSavings > 0 && (
-				<Card className="border-green-500/30 bg-green-500/5">
-					<CardContent className="flex items-center justify-between p-4">
-						<div className="flex items-center gap-3">
-							<div className="rounded-full bg-green-500/20 p-2">
-								<Zap className="h-5 w-5 text-green-600" />
+		<div className={cn("flex flex-col gap-5", className)}>
+			{/* Hero / Summary */}
+			<div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-background to-background p-5 shadow-sm">
+				<div className="pointer-events-none absolute inset-0 opacity-70 [background:radial-gradient(circle_at_12%_20%,hsl(var(--primary)/0.08),transparent_35%),radial-gradient(circle_at_85%_15%,hsl(var(--success)/0.08),transparent_28%)]" />
+				<div className="relative flex flex-wrap items-start gap-3">
+					<div className="flex items-start gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+							<Sparkles className="h-5 w-5" />
+						</div>
+						<div className="space-y-1">
+							<div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+								Route AI
 							</div>
-							<div>
-								<div className="font-semibold text-green-700 dark:text-green-400">
-									{formatDuration(totalPotentialSavings)} potential savings
-								</div>
-								<div className="text-muted-foreground text-sm">
-									Across {results.size} technician
-									{results.size !== 1 ? "s" : ""}
-								</div>
+							<div className="text-lg font-semibold leading-tight">
+								Keep trucks on the shortest paths
+							</div>
+							<p className="text-muted-foreground text-sm">
+								We look at your {dateLabel} schedule to cut windshield time and fuel burn.
+							</p>
+						</div>
+					</div>
+					<div className="ml-auto flex flex-wrap items-center gap-2">
+						<Badge variant="secondary" className="bg-muted text-xs">
+							{dateLabel}
+						</Badge>
+						{totalPotentialSavings > 0 && (
+							<Button
+								variant="default"
+								size="sm"
+								className="gap-1.5"
+								onClick={() => {
+									for (const [techId] of results) {
+										handleApplyRoute(techId);
+									}
+								}}
+								disabled={isPending}
+							>
+								Apply all
+								<Check className="h-4 w-4" />
+							</Button>
+						)}
+					</div>
+				</div>
+
+				<div className="relative mt-4 grid gap-3 sm:grid-cols-3">
+					<div className="rounded-xl border bg-background/70 p-3 shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.1)] dark:shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.3)]">
+						<div className="flex items-center justify-between text-xs font-semibold uppercase text-muted-foreground">
+							Ready to optimize
+							<Route className="h-4 w-4 text-primary" />
+						</div>
+						<div className="mt-2 flex items-baseline gap-2">
+							<div className="text-2xl font-semibold">
+								{techsToOptimize.length}
+							</div>
+							<div className="text-muted-foreground text-sm">
+								tech{techsToOptimize.length === 1 ? "" : "s"} with 2+ stops
 							</div>
 						</div>
-						<Button
-							onClick={() => {
-								for (const [techId] of results) {
-									handleApplyRoute(techId);
-								}
-							}}
-							disabled={isPending}
-							className="gap-2"
-						>
-							Apply All
-							<Check className="h-4 w-4" />
-						</Button>
-					</CardContent>
-				</Card>
-			)}
+					</div>
+					<div className="rounded-xl border bg-background/70 p-3 shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.1)] dark:shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.3)]">
+						<div className="flex items-center justify-between text-xs font-semibold uppercase text-muted-foreground">
+							Stops today
+							<Truck className="h-4 w-4 text-primary" />
+						</div>
+						<div className="mt-2 flex items-baseline gap-2">
+							<div className="text-2xl font-semibold">{totalJobsForDay}</div>
+							<div className="text-muted-foreground text-sm">appointments</div>
+						</div>
+					</div>
+					<div className="rounded-xl border bg-background/70 p-3 shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.1)] dark:shadow-[0_10px_30px_-20px_hsl(var(--foreground)/0.3)]">
+						<div className="flex items-center justify-between text-xs font-semibold uppercase text-muted-foreground">
+							Potential savings
+							<TrendingUp className="h-4 w-4 text-primary" />
+						</div>
+						<div className="mt-2 flex items-baseline gap-2">
+							<div className="text-2xl font-semibold">
+								{totalPotentialSavings > 0
+									? formatDuration(totalPotentialSavings)
+									: "Run analysis"}
+							</div>
+							<div className="text-muted-foreground text-sm">
+								{results.size > 0
+									? `Across ${results.size} tech${results.size === 1 ? "" : "s"}`
+									: "Calculates drive + distance"}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			{/* Optimize All Button */}
 			{techsToOptimize.length > 0 && results.size < techsToOptimize.length && (
@@ -558,16 +654,27 @@ export function RouteOptimizationPanel({
 			</div>
 
 			{/* Info */}
-			<div className="text-muted-foreground rounded-lg border border-dashed p-3 text-xs">
-				<div className="flex items-start gap-2">
-					<MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-					<div>
-						<p className="font-medium">How it works</p>
-						<p className="mt-1">
-							Route optimization uses the Google Distance Matrix API to
-							calculate the most efficient order for technician visits, reducing
-							travel time and fuel costs while keeping your team on schedule.
-						</p>
+			<div className="relative overflow-hidden rounded-xl border border-dashed bg-muted/30 p-4 text-xs text-muted-foreground">
+				<div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(circle_at_10%_20%,hsl(var(--primary)/0.08),transparent_35%)]" />
+				<div className="relative flex flex-col gap-2">
+					<div className="flex items-start gap-2">
+						<MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+						<div>
+							<p className="font-semibold text-foreground">How it works</p>
+							<p className="mt-1">
+								We calculate the most efficient stop order with Google Distance Matrix, respecting time windows and live drive times.
+							</p>
+						</div>
+					</div>
+					<div className="grid gap-2 sm:grid-cols-2">
+						<div className="flex items-center gap-2 rounded-lg border bg-background/70 px-3 py-2">
+							<Clock className="h-4 w-4 text-primary" />
+							<span>Best when a tech has 2+ jobs and clear time windows</span>
+						</div>
+						<div className="flex items-center gap-2 rounded-lg border bg-background/70 px-3 py-2">
+							<ArrowRight className="h-4 w-4 text-primary" />
+							<span>Apply to reorder jobs on the board instantly</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -580,8 +687,8 @@ export function RouteOptimizationPanel({
 // ============================================================================
 
 type RouteOptimizationSheetProps = {
-	technicians: Map<string, Technician>;
-	jobsByTechnician: Map<string, Job[]>;
+	technicians: TechnicianMapLike;
+	jobsByTechnician: JobsByTechMapLike;
 	selectedDate: Date;
 	trigger?: React.ReactNode;
 };
@@ -594,19 +701,30 @@ export function RouteOptimizationSheet({
 }: RouteOptimizationSheetProps) {
 	const [open, setOpen] = useState(false);
 
-	const techsWithMultipleJobs = Array.from(technicians.values()).filter(
+	const technicianMap = useMemo(
+		() => normalizeTechnicians(technicians),
+		[technicians],
+	);
+	const jobsByTechMap = useMemo(
+		() => normalizeJobsByTech(jobsByTechnician),
+		[jobsByTechnician],
+	);
+
+	const techsWithMultipleJobs = Array.from(technicianMap.values()).filter(
 		(tech) => {
-			const jobs = jobsByTechnician.get(tech.id) || [];
+			const jobs = jobsByTechMap.get(tech.id) || [];
 			return jobs.length >= 2;
 		},
 	).length;
 
 	return (
 		<Sheet open={open} onOpenChange={setOpen}>
-			<SheetTrigger asChild>
-				{trigger || (
-					<Tooltip>
-						<TooltipTrigger asChild>
+			{trigger ? (
+				<SheetTrigger asChild>{trigger}</SheetTrigger>
+			) : (
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<SheetTrigger asChild>
 							<Button
 								variant="outline"
 								size="sm"
@@ -624,27 +742,29 @@ export function RouteOptimizationSheet({
 									</Badge>
 								)}
 							</Button>
-						</TooltipTrigger>
-						<TooltipContent>
-							{techsWithMultipleJobs > 0
-								? `Optimize routes for ${techsWithMultipleJobs} technician${techsWithMultipleJobs !== 1 ? "s" : ""}`
-								: "Need technicians with 2+ jobs to optimize"}
-						</TooltipContent>
-					</Tooltip>
-				)}
-			</SheetTrigger>
-			<SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+						</SheetTrigger>
+					</TooltipTrigger>
+					<TooltipContent>
+						{techsWithMultipleJobs > 0
+							? `Optimize routes for ${techsWithMultipleJobs} technician${techsWithMultipleJobs !== 1 ? "s" : ""}`
+							: "Need technicians with 2+ jobs to optimize"}
+					</TooltipContent>
+				</Tooltip>
+			)}
+			<SheetContent className="w-full overflow-y-auto border-l bg-background/95 sm:max-w-2xl">
 				<SheetHeader className="sr-only">
 					<SheetTitle>Route Optimization</SheetTitle>
 					<SheetDescription>
 						Optimize technician routes to minimize travel time
 					</SheetDescription>
 				</SheetHeader>
-				<RouteOptimizationPanel
-					technicians={technicians}
-					jobsByTechnician={jobsByTechnician}
-					selectedDate={selectedDate}
-				/>
+				<div className="space-y-5 p-5">
+					<RouteOptimizationPanel
+						technicians={technicianMap}
+						jobsByTechnician={jobsByTechMap}
+						selectedDate={selectedDate}
+					/>
+				</div>
 			</SheetContent>
 		</Sheet>
 	);

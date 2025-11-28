@@ -544,7 +544,7 @@ export async function handleFinancingWebhook(
 /**
  * Get offer status
  */
-export async function getFinancingOfferStatus(
+async function getFinancingOfferStatus(
 	offerId: string,
 ): Promise<FinancingOffer | null> {
 	const supabase = await createClient();
@@ -562,7 +562,7 @@ export async function getFinancingOfferStatus(
 /**
  * Get all offers for a company
  */
-export async function getCompanyFinancingOffers(
+async function getCompanyFinancingOffers(
 	companyId: string,
 	options: {
 		status?: FinancingStatus;
@@ -598,7 +598,7 @@ export async function getCompanyFinancingOffers(
 /**
  * Cancel a pending offer
  */
-export async function cancelFinancingOffer(
+async function cancelFinancingOffer(
 	offerId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	const supabase = await createClient();

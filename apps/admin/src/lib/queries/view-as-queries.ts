@@ -8,12 +8,12 @@
 import { createWebClient } from "@/lib/supabase/web-client";
 import { getImpersonatedCompanyId } from "@/lib/admin-context";
 
-export const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 50;
 
 /**
  * Generic query function for fetching paginated data
  */
-export async function getViewAsPageData<T>(
+async function getViewAsPageData<T>(
 	table: string,
 	selectQuery: string,
 	page: number = 1,
@@ -288,7 +288,7 @@ export async function getViewAsMaterials(
 /**
  * Get purchase orders for the impersonated company
  */
-export async function getViewAsPurchaseOrders(
+async function getViewAsPurchaseOrders(
 	page: number = 1,
 	pageSize: number = ITEMS_PER_PAGE,
 ) {
@@ -313,7 +313,7 @@ export async function getViewAsPurchaseOrders(
 /**
  * Get maintenance plans for the impersonated company
  */
-export async function getViewAsMaintenancePlans(
+async function getViewAsMaintenancePlans(
 	page: number = 1,
 	pageSize: number = ITEMS_PER_PAGE,
 ) {
@@ -338,7 +338,7 @@ export async function getViewAsMaintenancePlans(
 /**
  * Get service agreements for the impersonated company
  */
-export async function getViewAsServiceAgreements(
+async function getViewAsServiceAgreements(
 	page: number = 1,
 	pageSize: number = ITEMS_PER_PAGE,
 ) {

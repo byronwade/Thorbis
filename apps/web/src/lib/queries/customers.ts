@@ -1,8 +1,9 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 
-export const CUSTOMERS_PAGE_SIZE = 50;
+export const CUSTOMERS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const CUSTOMER_SELECT = `
   id,
@@ -138,7 +139,7 @@ export type CustomerSummaryStats = {
  * Uses optimized RPC with LATERAL joins for fast metric computation.
  * Wrapped with cache() for request-level deduplication (not page-level caching).
  */
-export const getCustomerStats = cache(
+const getCustomerStats = cache(
 	async (): Promise<CustomerSummaryStats | null> => {
 		// Note: cache() provides request-level deduplication - works fine with cookies()
 		// "use cache" directive would NOT work here due to cookies() usage

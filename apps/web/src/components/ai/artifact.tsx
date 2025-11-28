@@ -40,7 +40,7 @@ export const ArtifactHeader = ({
 
 export type ArtifactCloseProps = ComponentProps<typeof Button>;
 
-export const ArtifactClose = ({
+const ArtifactClose = ({
 	className,
 	children,
 	size = "sm",

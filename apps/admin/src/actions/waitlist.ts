@@ -158,7 +158,7 @@ export async function getWaitlistStats(): Promise<ActionResult<WaitlistStats>> {
 /**
  * Get paginated list of waitlist subscribers from Resend
  */
-export async function getWaitlistSubscribers(
+async function getWaitlistSubscribers(
 	page: number = 1,
 	pageSize: number = 50,
 	search?: string
@@ -234,7 +234,7 @@ export async function getWaitlistSubscribers(
 /**
  * Add a new subscriber to the waitlist via Resend
  */
-export async function addWaitlistSubscriber(
+async function addWaitlistSubscriber(
 	email: string,
 	firstName?: string,
 	lastName?: string,
@@ -286,7 +286,7 @@ export async function addWaitlistSubscriber(
 /**
  * Remove a subscriber from the waitlist via Resend
  */
-export async function removeWaitlistSubscriber(
+async function removeWaitlistSubscriber(
 	contactId: string
 ): Promise<ActionResult> {
 	try {
@@ -320,7 +320,7 @@ export async function removeWaitlistSubscriber(
 /**
  * Update subscriber details via Resend
  */
-export async function updateWaitlistSubscriber(
+async function updateWaitlistSubscriber(
 	contactId: string,
 	updates: {
 		firstName?: string;
@@ -362,7 +362,7 @@ export async function updateWaitlistSubscriber(
 /**
  * Import subscribers from CSV via Resend batch API
  */
-export async function importWaitlistSubscribers(
+async function importWaitlistSubscribers(
 	subscribers: { email: string; firstName?: string; lastName?: string }[]
 ): Promise<ActionResult<{ imported: number; skipped: number; errors: string[] }>> {
 	try {
@@ -437,7 +437,7 @@ export async function importWaitlistSubscribers(
 /**
  * Export waitlist subscribers as CSV
  */
-export async function exportWaitlistSubscribers(): Promise<
+async function exportWaitlistSubscribers(): Promise<
 	ActionResult<{ csvContent: string; filename: string }>
 > {
 	try {
@@ -492,7 +492,7 @@ export async function exportWaitlistSubscribers(): Promise<
  * Get waitlist campaign ready count
  * Returns count of subscribers who can receive emails (not unsubscribed)
  */
-export async function getWaitlistCampaignReadyCount(): Promise<ActionResult<number>> {
+async function getWaitlistCampaignReadyCount(): Promise<ActionResult<number>> {
 	try {
 		const audienceId = await getWaitlistAudienceId();
 
@@ -520,7 +520,7 @@ export async function getWaitlistCampaignReadyCount(): Promise<ActionResult<numb
  * Get waitlist emails for campaign sending
  * Returns list of emails that can receive campaign
  */
-export async function getWaitlistEmailsForCampaign(): Promise<
+async function getWaitlistEmailsForCampaign(): Promise<
 	ActionResult<{ email: string; firstName?: string; lastName?: string }[]>
 > {
 	try {

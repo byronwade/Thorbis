@@ -284,7 +284,7 @@ type KeyboardShortcutsButtonProps = {
 	className?: string;
 };
 
-export function KeyboardShortcutsButton({
+function KeyboardShortcutsButton({
 	onClick,
 	className,
 }: KeyboardShortcutsButtonProps) {

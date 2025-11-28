@@ -497,7 +497,7 @@ export async function fetchEmailContentAction(
  * This function was used for Resend inbound routes, which have been removed.
  * Inbound email is now handled via SendGrid Inbound Parse or similar.
  */
-export async function syncInboundRoutesToResendAction(): Promise<{
+async function syncInboundRoutesToResendAction(): Promise<{
 	success: boolean;
 	synced: number;
 	errors: string[];
@@ -558,7 +558,7 @@ export async function archiveEmailAction(
 /**
  * Bulk archive multiple emails by their IDs
  */
-export async function bulkArchiveEmailsAction(emailIds: string[]): Promise<{
+async function bulkArchiveEmailsAction(emailIds: string[]): Promise<{
 	success: boolean;
 	archived: number;
 	error?: string;
@@ -968,7 +968,7 @@ export async function toggleSpamEmailAction(emailId: string): Promise<{
  * Snooze an email until a specific time
  * The email will reappear in inbox after the snooze time
  */
-export async function snoozeEmailAction(
+async function snoozeEmailAction(
 	emailId: string,
 	snoozeUntil: string | null,
 ): Promise<{
@@ -1017,7 +1017,7 @@ export async function snoozeEmailAction(
 /**
  * Unsnooze an email (remove snooze time)
  */
-export async function unsnoozeEmailAction(emailId: string): Promise<{
+async function unsnoozeEmailAction(emailId: string): Promise<{
 	success: boolean;
 	error?: string;
 }> {
@@ -1027,7 +1027,7 @@ export async function unsnoozeEmailAction(emailId: string): Promise<{
 /**
  * Bulk mark emails as read or unread
  */
-export async function bulkMarkReadUnreadAction(
+async function bulkMarkReadUnreadAction(
 	emailIds: string[],
 	markAsRead: boolean,
 ): Promise<{
@@ -1086,7 +1086,7 @@ export async function bulkMarkReadUnreadAction(
 /**
  * Bulk toggle star on emails
  */
-export async function bulkStarEmailsAction(
+async function bulkStarEmailsAction(
 	emailIds: string[],
 	addStar: boolean,
 ): Promise<{
@@ -1237,7 +1237,7 @@ export async function bulkDeleteEmailsAction(emailIds: string[]): Promise<{
 /**
  * Bulk move emails to spam
  */
-export async function bulkMoveToSpamAction(emailIds: string[]): Promise<{
+async function bulkMoveToSpamAction(emailIds: string[]): Promise<{
 	success: boolean;
 	moved: number;
 	error?: string;
@@ -1456,7 +1456,7 @@ export async function saveDraftAction(input: SaveDraftInput): Promise<{
 /**
  * Get a draft by ID
  */
-export async function getDraftAction(draftId: string): Promise<{
+async function getDraftAction(draftId: string): Promise<{
 	success: boolean;
 	draft?: {
 		id: string;

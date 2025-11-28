@@ -67,7 +67,7 @@ export async function recordDeliveryEvent(
 /**
  * Process Resend webhook events for deliverability tracking
  */
-export async function processResendWebhookEvent(webhookData: {
+async function processResendWebhookEvent(webhookData: {
 	type: string;
 	data: {
 		email_id?: string;
@@ -129,7 +129,7 @@ export async function processResendWebhookEvent(webhookData: {
 /**
  * Get domain health status
  */
-export async function getDomainHealth(
+async function getDomainHealth(
 	domainId: string,
 ): Promise<DomainHealth | null> {
 	const supabase = await createServiceSupabaseClient();
@@ -195,7 +195,7 @@ export async function getDomainHealth(
 /**
  * Get all domains health for a company
  */
-export async function getCompanyDomainsHealth(
+async function getCompanyDomainsHealth(
 	companyId: string,
 ): Promise<DomainHealth[]> {
 	const supabase = await createServiceSupabaseClient();
@@ -261,7 +261,7 @@ export async function getCompanyDomainsHealth(
 /**
  * Run health check on all domains and update status
  */
-export async function runHealthCheckForAllDomains(): Promise<{
+async function runHealthCheckForAllDomains(): Promise<{
 	checked: number;
 	suspended: number;
 	warnings: number;
@@ -337,7 +337,7 @@ export async function runHealthCheckForAllDomains(): Promise<{
 /**
  * Generate deliverability report for a domain
  */
-export async function generateDeliverabilityReport(domainId: string): Promise<{
+async function generateDeliverabilityReport(domainId: string): Promise<{
 	domain: string;
 	period: { start: string; end: string };
 	metrics: {

@@ -82,26 +82,41 @@ export function EmptyStateMobile({
 	return (
 		<div
 			className={cn(
-				"flex flex-col items-center justify-center gap-4 px-6 py-12 text-center",
+				"flex flex-col items-center justify-center gap-5 px-6 py-12 text-center",
 				className,
 			)}
 		>
-			{/* Icon */}
-			<div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-				<Icon className="h-8 w-8 text-muted-foreground" />
+			{/* Icon illustration */}
+			<div className="relative">
+				{/* Decorative ring */}
+				<div className="absolute inset-0 -m-2 rounded-full border border-dashed border-primary/10" />
+
+				{/* Main icon container */}
+				<div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-muted via-muted to-muted/80 shadow-sm ring-1 ring-border/50">
+					<Icon className="h-7 w-7 text-muted-foreground/80" />
+
+					{/* Decorative accent */}
+					<div className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border/50">
+						<div className="h-2 w-2 rounded-full bg-primary/40" />
+					</div>
+				</div>
 			</div>
 
-			{/* Title */}
-			<div className="space-y-2">
-				<h3 className="text-lg font-semibold">{config.title}</h3>
-				<p className="text-sm text-muted-foreground max-w-sm">
+			{/* Title and description */}
+			<div className="space-y-1.5">
+				<h3 className="text-base font-semibold text-foreground/90">{config.title}</h3>
+				<p className="text-sm text-muted-foreground/80 max-w-[280px] leading-relaxed">
 					{config.description}
 				</p>
 			</div>
 
 			{/* Action button (if provided) */}
 			{onAction && (
-				<Button className="mt-2" onClick={onAction}>
+				<Button
+					className="mt-1 shadow-sm"
+					onClick={onAction}
+					size="sm"
+				>
 					{finalActionLabel}
 				</Button>
 			)}

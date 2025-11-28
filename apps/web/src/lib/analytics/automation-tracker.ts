@@ -102,7 +102,7 @@ export function calculateAutomationCost(executions: number): {
 /**
  * Track an automation/function execution
  */
-export async function trackAutomationExecution(
+async function trackAutomationExecution(
 	params: AutomationExecutionParams,
 ): Promise<void> {
 	try {
@@ -217,7 +217,7 @@ async function updateMonthlyAggregate(
 /**
  * Batch track multiple executions (more efficient for high-volume)
  */
-export async function trackAutomationExecutionsBatch(
+async function trackAutomationExecutionsBatch(
 	executions: AutomationExecutionParams[],
 ): Promise<void> {
 	try {
@@ -259,7 +259,7 @@ export async function trackAutomationExecutionsBatch(
 /**
  * Get automation usage summary for a month
  */
-export async function getAutomationUsage(
+async function getAutomationUsage(
 	companyId: string,
 	monthYear?: string, // Format: "2024-11", defaults to current month
 ): Promise<AutomationUsageSummary> {
@@ -361,7 +361,7 @@ export async function getAutomationUsage(
 /**
  * Get automation usage trend over multiple months
  */
-export async function getAutomationUsageTrend(
+async function getAutomationUsageTrend(
 	companyId: string,
 	months: number = 6,
 ): Promise<
@@ -399,7 +399,7 @@ export async function getAutomationUsageTrend(
 /**
  * Get top functions by execution count
  */
-export async function getTopFunctions(
+async function getTopFunctions(
 	companyId: string,
 	monthYear?: string,
 	limit: number = 10,
@@ -507,7 +507,7 @@ function createEmptySummary(
 /**
  * Wrap a function to automatically track its execution
  */
-export function withAutomationTracking<T>(
+function withAutomationTracking<T>(
 	companyId: string,
 	functionName: string,
 	executionType: AutomationExecutionType,
@@ -545,7 +545,7 @@ export function withAutomationTracking<T>(
 // Exports
 // ============================================
 
-export default {
+default {
 	trackAutomationExecution,
 	trackAutomationExecutionsBatch,
 	getAutomationUsage,

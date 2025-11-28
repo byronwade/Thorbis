@@ -46,20 +46,12 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// Map action to endpoint name for tracking
-		const endpointMap: Record<string, string> = {
-			zone: "flood_zone",
-			panel: "map_panel",
-			community: "community_info",
-			bfe: "base_flood_elevation",
-			report: "flood_report",
-			"property-data": "property_data",
-			"equipment-compliance": "equipment_compliance",
-			"estimate-considerations": "estimate_considerations",
-			"insurance-discount": "insurance_discount",
-		};
+		// Use centralized endpoint mapping
+		if (!isValidAction("fema_flood", action)) {
+			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+		}
 
-		const endpoint = endpointMap[action];
+		const endpoint = getEndpointName("fema_flood", action);
 		if (!endpoint) {
 			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 		}

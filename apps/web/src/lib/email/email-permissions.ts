@@ -101,7 +101,7 @@ export type TeamMemberRole =
  *   // Show support emails
  * }
  */
-export async function hasEmailPermission(
+async function hasEmailPermission(
 	teamMemberId: string,
 	category: EmailCategory,
 	action: PermissionAction,
@@ -141,7 +141,7 @@ export async function hasEmailPermission(
  * @param action - Permission action (read, send, assign)
  * @returns Promise<boolean> - True if has "all" permission
  */
-export async function hasAllCategoryPermission(
+async function hasAllCategoryPermission(
 	teamMemberId: string,
 	action: PermissionAction,
 ): Promise<boolean> {
@@ -456,7 +456,7 @@ export const getTeamMemberPermissions = cache(
  * @param granted - Whether permission is granted
  * @returns Promise<{success: boolean, error?: string}>
  */
-export async function updatePermissionAction(
+async function updatePermissionAction(
 	teamMemberId: string,
 	category: EmailCategory,
 	action: PermissionAction,
@@ -503,7 +503,7 @@ export async function updatePermissionAction(
  * @param communication - Communication record
  * @returns EmailCategory - Determined category
  */
-export function determineEmailCategory(communication: {
+function determineEmailCategory(communication: {
 	subject?: string;
 	body?: string;
 	from?: string;
@@ -562,7 +562,7 @@ export function determineEmailCategory(communication: {
  * @param isPersonal - Whether from personal mailbox
  * @returns VisibilityScope - Suggested scope
  */
-export function getDefaultVisibilityScope(
+function getDefaultVisibilityScope(
 	category: EmailCategory,
 	isPersonal: boolean,
 ): VisibilityScope {

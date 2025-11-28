@@ -27,6 +27,8 @@
 			"@stratos/database/*": ["../../packages/database/src/*"],
 			"@stratos/auth": ["../../packages/auth/src"],
 			"@stratos/auth/*": ["../../packages/auth/src/*"],
+			"@stratos/config": ["../../packages/config/src"],
+			"@stratos/config/*": ["../../packages/config/src/*"],
 			"@stratos/shared": ["../../packages/shared/src"],
 			"@stratos/shared/*": ["../../packages/shared/src/*"]
 		},
@@ -41,7 +43,8 @@
 		"../../packages/ui/src/**/*.ts",
 		"../../packages/ui/src/**/*.tsx",
 		"../../packages/database/src/**/*.ts",
-		"../../packages/auth/src/**/*.ts"
+		"../../packages/auth/src/**/*.ts",
+		"../../packages/config/src/**/*.ts"
 	],
 	"exclude": ["node_modules", ".next", "dist", "build"]
 }

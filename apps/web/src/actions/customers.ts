@@ -27,6 +27,7 @@ import {
 	type ActionResult,
 	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { geocodeAddressSilent } from "@/lib/services/geocoding";
@@ -127,23 +128,7 @@ async function createCustomer(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 		const { contacts, properties, tags } =
 			parseCustomerContactsPropertiesAndTags(formData);
 		const primaryContact = getPrimaryContactOrThrow(contacts);
@@ -151,7 +136,7 @@ async function createCustomer(
 
 		await assertCustomerEmailNotDuplicate(
 			supabase,
-			teamMember.company_id,
+			companyId,
 			primaryContact.email,
 		);
 
@@ -170,7 +155,7 @@ async function createCustomer(
 			await geocodePrimaryPropertyIfAvailable(primaryProperty);
 
 		const customer = await insertCustomerRecord(supabase, {
-			companyId: teamMember.company_id,
+			companyId,
 			customerType,
 			primaryContact,
 			companyNameValue: companyName,
@@ -186,7 +171,7 @@ async function createCustomer(
 
 		await insertAdditionalPropertiesIfAny(
 			supabase,
-			teamMember.company_id,
+			companyId,
 			customer.id,
 			properties,
 		);
@@ -223,27 +208,6 @@ type ParsedCustomerFormCollections = {
 	properties: ParsedCustomerProperty[];
 	tags?: string[];
 };
-
-async function requireCustomerCompanyMembership(
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string,
-) {
-	const { data: teamMember } = await supabase
-		.from("company_memberships")
-		.select("company_id")
-		.eq("user_id", userId)
-		.single();
-
-	if (!teamMember?.company_id) {
-		throw new ActionError(
-			"You must be part of a company",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
-		);
-	}
-
-	return teamMember;
-}
 
 function parseCustomerContactsPropertiesAndTags(
 	formData: FormData,
@@ -585,23 +549,7 @@ async function updateCustomer(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -613,7 +561,7 @@ async function updateCustomer(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -668,7 +616,7 @@ async function updateCustomer(
 			const { data: existingEmail } = await supabase
 				.from("customers")
 				.select("id")
-				.eq("company_id", teamMember.company_id)
+				.eq("company_id", companyId)
 				.eq("email", data.email)
 				.neq("id", customerId)
 				.is("deleted_at", null)
@@ -742,23 +690,7 @@ export async function deleteCustomer(
 	customerId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -770,7 +702,7 @@ export async function deleteCustomer(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -791,7 +723,7 @@ export async function deleteCustomer(
 			.from("customers")
 			.update({
 				deleted_at: new Date().toISOString(),
-				deleted_by: user.id,
+				deleted_by: userId,
 				status: "archived",
 			})
 			.eq("id", customerId);
@@ -819,23 +751,7 @@ async function updateCustomerStatus(
 	status: "active" | "inactive" | "archived" | "blocked",
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -847,7 +763,7 @@ async function updateCustomerStatus(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -881,23 +797,7 @@ async function updateCommunicationPreferences(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -909,7 +809,7 @@ async function updateCommunicationPreferences(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -952,23 +852,7 @@ async function updateCommunicationPreferences(
  */
 async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -980,7 +864,7 @@ async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1021,7 +905,6 @@ async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
 		const portalUrl = `${siteUrl}/portal/setup?token=${inviteToken}`;
 
 		// Get company support email from database
-		const companyId = await getActiveCompanyId();
 		const supportEmail = companyId
 			? await getCompanyPlatformReplyTo(companyId)
 			: null;
@@ -1056,23 +939,7 @@ async function revokePortalAccess(
 	customerId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const teamMember = await requireCustomerCompanyMembership(
-			supabase,
-			user.id,
-		);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -1084,7 +951,7 @@ async function revokePortalAccess(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				"Customer not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1169,45 +1036,7 @@ export async function searchCustomers(
 	options?: { limit?: number; offset?: number },
 ): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Use the active company ID helper (same as getAllCustomers)
-		const activeCompanyId = await getActiveCompanyId();
-		if (!activeCompanyId) {
-			throw new ActionError(
-				"No active company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
-
-		// Verify user has access to the active company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("company_id", activeCompanyId)
-			.eq("status", "active")
-			.maybeSingle();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You don't have access to this company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Use full-text search with ranking for best matches
 		// Searches across: first_name, last_name, display_name, email, phone,
@@ -1219,7 +1048,7 @@ export async function searchCustomers(
 
 		const customers = await searchCustomersFullText(
 			supabase,
-			activeCompanyId,
+			companyId,
 			searchTerm,
 			{
 				limit: options?.limit || DEFAULT_SEARCH_LIMIT,
@@ -1236,37 +1065,12 @@ export async function searchCustomers(
  */
 async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const { data: customers, error } = await supabase
 			.from("customers")
 			.select("*")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.order("total_revenue", { ascending: false })
@@ -1296,37 +1100,12 @@ async function getCustomersWithBalance(): Promise<
 	ActionResult<CustomerWithBalance[]>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const { data: customers, error } = await supabase
 			.from("customers")
 			.select("*")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.is("deleted_at", null)
 			.gt("outstanding_balance", 0)
 			.order("outstanding_balance", { ascending: false })
@@ -1401,27 +1180,7 @@ export async function getCustomersForDialer(): Promise<
 	>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const activeCompanyId = await getActiveCompanyId();
-		if (!activeCompanyId) {
-			throw new ActionError(
-				"No active company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Single lightweight query - no joins, no enrichment
 		const { data: customers, error } = await supabase
@@ -1429,7 +1188,7 @@ export async function getCustomersForDialer(): Promise<
 			.select(
 				"id, first_name, last_name, display_name, email, phone, secondary_phone, company_name, address, address2, city, state, zip_code",
 			)
-			.eq("company_id", activeCompanyId)
+			.eq("company_id", companyId)
 			.is("deleted_at", null)
 			.order("display_name", { ascending: true });
 
@@ -1457,52 +1216,12 @@ export async function getCustomersForDialer(): Promise<
  */
 async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get active company ID (from cookie or first available)
-		const activeCompanyId = await getActiveCompanyId();
-
-		const FORBIDDEN_STATUS_CODE = 403;
-		if (!activeCompanyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				FORBIDDEN_STATUS_CODE,
-			);
-		}
-
-		// Verify user has access to the active company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.eq("company_id", activeCompanyId)
-			.eq("status", "active")
-			.maybeSingle();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You don't have access to this company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				FORBIDDEN_STATUS_CODE,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const { data: customers, error } = await supabase
 			.from("customers")
 			.select("*")
-			.eq("company_id", activeCompanyId)
+			.eq("company_id", companyId)
 			.is("deleted_at", null)
 			.order("display_name", { ascending: true });
 
@@ -1523,7 +1242,7 @@ async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
 		const { data: enrichedData, error: enrichError } = await supabase.rpc(
 			"get_enriched_customers_rpc",
 			{
-				p_company_id: activeCompanyId,
+				p_company_id: companyId,
 			},
 		);
 
@@ -1557,32 +1276,7 @@ async function updateCustomerPageContent(
 	pageContent: Record<string, unknown>,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -1594,7 +1288,7 @@ async function updateCustomerPageContent(
 
 		assertExists(customer, "Customer");
 
-		if (customer.company_id !== teamMember.company_id) {
+		if (customer.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("customer"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1607,7 +1301,7 @@ async function updateCustomerPageContent(
 			.from("customers")
 			.update({
 				page_content: pageContent,
-				content_updated_by: user.id,
+				content_updated_by: userId,
 			})
 			.eq("id", customerId);
 

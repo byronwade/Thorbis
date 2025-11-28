@@ -300,7 +300,7 @@ export function PendingActionsIndicator({
  * Simple badge indicator for use in navigation items
  * Uses shared cache with PendingActionsIndicator to prevent duplicate polling
  */
-export function PendingActionsBadge({ className }: { className?: string }) {
+function PendingActionsBadge({ className }: { className?: string }) {
 	const [count, setCount] = useState(0);
 	const [isOwner, setIsOwner] = useState(false);
 	const isMountedRef = useRef(true);

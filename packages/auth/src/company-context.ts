@@ -72,7 +72,26 @@ export const getActiveCompanyId = cache(async (): Promise<string | null> => {
 		}
 	}
 
-	// No fallback: return null so callers can decide how to handle missing company
+	// Fallback: get user's first company and set it as active
+	const companies = await getUserCompanies();
+	const firstCompany = companies[0];
+	if (firstCompany) {
+		// Set the cookie for future requests
+		try {
+			cookieStore.set(ACTIVE_COMPANY_COOKIE, firstCompany.id, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax",
+				maxAge: 60 * 60 * 24 * 30, // 30 days
+				path: "/",
+			});
+		} catch {
+			// Cookie setting may fail during prerendering - that's ok
+		}
+		return firstCompany.id;
+	}
+
+	// User has no companies
 	return null;
 });
 

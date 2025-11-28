@@ -20,7 +20,6 @@ import {
 	Wrench,
 	Zap,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,13 +133,11 @@ const keyboardShortcuts = [
 
 export function ScheduleToolbarActions() {
 	const [mounted, setMounted] = useState(false);
-	const pathname = usePathname();
-	const router = useRouter();
 	const { goToToday, navigatePrevious, navigateNext, viewMode, setViewMode, currentDate } =
 		useScheduleViewStore();
 	const { jobs, technicians } = useSchedule();
 
-	const isMapView = pathname === "/dashboard/schedule/dispatch-map";
+	const isMapView = viewMode === "map";
 
 	// Group jobs by technician for route optimization
 	const jobsByTechnician = new Map<string, Job[]>();
@@ -154,15 +151,6 @@ export function ScheduleToolbarActions() {
 		}
 	}
 
-	// Sync viewMode with pathname
-	useEffect(() => {
-		if (isMapView && viewMode !== "map") {
-			setViewMode("map");
-		} else if (!isMapView && viewMode === "map") {
-			setViewMode("day");
-		}
-	}, [isMapView, viewMode, setViewMode]);
-
 	useEffect(() => {
 		setMounted(true);
 	}, []);
@@ -170,16 +158,7 @@ export function ScheduleToolbarActions() {
 	// Handle view mode change with navigation for map
 	const handleViewModeChange = (value: string) => {
 		if (!value) return;
-
-		if (value === "map") {
-			setViewMode("map");
-			router.push("/dashboard/schedule/dispatch-map");
-		} else {
-			if (isMapView) {
-				router.push("/dashboard/schedule");
-			}
-			setViewMode(value as TimelineViewMode);
-		}
+		setViewMode(value as TimelineViewMode);
 	};
 
 	if (!mounted) {

@@ -19,7 +19,7 @@ import {
 } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
-	assertAuthenticated,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
@@ -29,35 +29,15 @@ type SupabaseServerClient = Exclude<
 	null
 >;
 
-const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
-	const supabase = await createClient();
-	if (!supabase) {
-		throw new ActionError(
-			"Database connection failed",
-			ERROR_CODES.DB_CONNECTION_ERROR,
-		);
-	}
-	return supabase as SupabaseServerClient;
-};
+import { ARCHIVE_LIMITS, PERMANENT_DELETE_BUFFER_DAYS, DATE_RANGE_DEFAULTS, MILLISECONDS_IN_DAY } from "@stratos/shared/constants";
 
 const HTTP_STATUS = {
 	forbidden: 403,
 } as const;
 
-const ARCHIVE_LIMIT = {
-	min: 1,
-	max: 100,
-	default: 50,
-} as const;
-
-const MILLISECONDS_IN_DAY = 86_400_000;
-const PERMANENT_DELETE_BUFFER_DAYS = 90;
-
-const DATE_RANGE_TO_DAYS = {
-	"7days": 7,
-	"30days": 30,
-	"90days": 90,
-} as const;
+// Use centralized constants
+const ARCHIVE_LIMIT = ARCHIVE_LIMITS;
+const DATE_RANGE_TO_DAYS = DATE_RANGE_DEFAULTS;
 
 type LimitedDateRange = keyof typeof DATE_RANGE_TO_DAYS;
 type DateRangeFilter = LimitedDateRange | "all";
@@ -164,32 +144,7 @@ async function getArchivedItems(
 	options: z.infer<typeof getArchivedItemsSchema>,
 ): Promise<ActionResult<ArchivedItem[]>> {
 	return await withErrorHandling(async () => {
-		const supabase = await getSupabaseServerClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const validated = getArchivedItemsSchema.parse(options);
 		const dateFilterIso = computeDateFilterIso(validated.dateRange);
@@ -200,7 +155,7 @@ async function getArchivedItems(
 				configs.map((config) =>
 					fetchArchivedEntities({
 						supabase,
-						companyId: teamMember.company_id,
+						companyId,
 						config,
 						limit: validated.limit,
 						deletedBy: validated.deletedBy,
@@ -414,32 +369,7 @@ async function getArchiveStats(): Promise<
 	ActionResult<Record<ArchivableEntityType, number>>
 > {
 	return await withErrorHandling(async () => {
-		const supabase = await getSupabaseServerClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// PERFORMANCE OPTIMIZED: Pattern #8 Fix - Single RPC instead of 8 COUNT queries
 		// BEFORE: 8 COUNT queries (1 per entity type)
@@ -449,7 +379,7 @@ async function getArchiveStats(): Promise<
 		const { data: counts, error: countsError } = await supabase.rpc(
 			"count_all_archived",
 			{
-				p_company_id: teamMember.company_id,
+				p_company_id: companyId,
 			},
 		);
 
@@ -488,32 +418,7 @@ async function bulkRestore(
 	entityType: ArchivableEntityType,
 ): Promise<ActionResult<{ restored: number; failed: number }>> {
 	return await withErrorHandling(async () => {
-		const supabase = await getSupabaseServerClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Map entity type to table name
 		const tableMap: Record<ArchivableEntityType, string> = {
@@ -539,7 +444,7 @@ async function bulkRestore(
 				permanent_delete_scheduled_at: null,
 			})
 			.in("id", itemIds)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.not("deleted_at", "is", null); // Only restore actually archived items
 
 		if (error) {
@@ -568,32 +473,7 @@ export async function bulkArchive(
 	entityType: ArchivableEntityType,
 ): Promise<ActionResult<{ archived: number; failed: number }>> {
 	return await withErrorHandling(async () => {
-		const supabase = await getSupabaseServerClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		if (!itemIds || itemIds.length === 0) {
 			throw new ActionError("No items provided", ERROR_CODES.VALIDATION_FAILED);
@@ -624,12 +504,12 @@ export async function bulkArchive(
 			.from(tableName)
 			.update({
 				deleted_at: new Date().toISOString(),
-				deleted_by: user.id,
+				deleted_by: userId,
 				archived_at: new Date().toISOString(),
 				permanent_delete_scheduled_at: permanentDeleteDate.toISOString(),
 			})
 			.in("id", itemIds)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.is("deleted_at", null); // Only archive non-archived items
 
 		if (error) {

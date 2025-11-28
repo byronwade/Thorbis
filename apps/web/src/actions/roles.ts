@@ -9,7 +9,6 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
 	getUserRole,
 	hasPermission,
@@ -18,8 +17,7 @@ import {
 	type Permission,
 	type UserRole,
 } from "@/lib/auth/permissions";
-import { withErrorHandling } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
+import { requireCompanyMembership, withErrorHandling } from "@/lib/errors/with-error-handling";
 
 // ============================================================================
 // Validation Schemas
@@ -62,24 +60,9 @@ const updatePermissionsSchema = z.object({
  */
 export async function getCurrentUserRole() {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
-
-		const role = await getUserRole(supabase, user.id, companyId);
+		const role = await getUserRole(supabase, userId, companyId);
 
 		return role;
 	});
@@ -101,26 +84,11 @@ export async function getCurrentUserRole() {
  */
 async function checkPermission(permission: Permission) {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const hasPerm = await hasPermission(
 			supabase,
-			user.id,
+			userId,
 			permission,
 			companyId,
 		);
@@ -145,24 +113,9 @@ async function checkPermission(permission: Permission) {
  */
 async function checkRole(role: UserRole) {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
-
-		const hasRoleResult = await hasRole(supabase, user.id, role, companyId);
+		const hasRoleResult = await hasRole(supabase, userId, role, companyId);
 
 		return hasRoleResult;
 	});
@@ -175,24 +128,9 @@ async function checkRole(role: UserRole) {
  */
 async function checkIsOwner() {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
-
-		const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+		const isOwner = await isCompanyOwner(supabase, userId, companyId);
 
 		return isOwner;
 	});
@@ -223,27 +161,12 @@ async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
 		// Validate input
 		const validated = updateRoleSchema.parse(input);
 
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Check permission - only owners and admins can change roles
 		const canManageRoles =
-			(await isCompanyOwner(supabase, user.id, companyId)) ||
-			(await hasRole(supabase, user.id, "admin", companyId));
+			(await isCompanyOwner(supabase, userId, companyId)) ||
+			(await hasRole(supabase, userId, "admin", companyId));
 
 		if (!canManageRoles) {
 			throw new Error("Only owners and admins can change roles");
@@ -277,7 +200,7 @@ async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
 		// Log role change
 		await supabase.from("role_change_log").insert({
 			team_member_id: validated.teamMemberId,
-			changed_by: user.id,
+			changed_by: userId,
 			old_role: currentMember.role,
 			new_role: validated.newRole,
 			reason: validated.reason,
@@ -315,27 +238,12 @@ async function updateTeamMemberPermissions(
 		// Validate input
 		const validated = updatePermissionsSchema.parse(input);
 
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Check permission
 		const canManagePermissions =
-			(await isCompanyOwner(supabase, user.id, companyId)) ||
-			(await hasRole(supabase, user.id, "admin", companyId));
+			(await isCompanyOwner(supabase, userId, companyId)) ||
+			(await hasRole(supabase, userId, "admin", companyId));
 
 		if (!canManagePermissions) {
 			throw new Error("Only owners and admins can change permissions");
@@ -368,15 +276,7 @@ async function updateTeamMemberPermissions(
  */
 async function getTeamMembersWithRoles() {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const { data, error } = await supabase
 			.from("company_memberships")
@@ -430,32 +330,22 @@ async function transferOwnership(input: {
 	userAgent?: string;
 }) {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify user is current owner
-		const isOwner = await isCompanyOwner(supabase, user.id, companyId);
+		const isOwner = await isCompanyOwner(supabase, userId, companyId);
 		if (!isOwner) {
 			throw new Error("Only the current owner can transfer ownership");
 		}
 
+		// Get user email for password verification
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
 		// Verify password
 		const { error: signInError } = await supabase.auth.signInWithPassword({
-			email: user.email || "",
+			email: user?.email || "",
 			password: input.password,
 		});
 
@@ -468,7 +358,7 @@ async function transferOwnership(input: {
 			"transfer_company_ownership",
 			{
 				p_company_id: companyId,
-				p_current_owner_id: user.id,
+				p_current_owner_id: userId,
 				p_new_owner_id: input.newOwnerId,
 				p_reason: input.reason,
 				p_ip_address: input.ipAddress,
@@ -496,27 +386,12 @@ async function transferOwnership(input: {
  */
 async function getOwnershipTransferHistory() {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new Error("Not authenticated");
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Only owners and admins can view transfer history
 		const canView =
-			(await isCompanyOwner(supabase, user.id, companyId)) ||
-			(await hasRole(supabase, user.id, "admin", companyId));
+			(await isCompanyOwner(supabase, userId, companyId)) ||
+			(await hasRole(supabase, userId, "admin", companyId));
 
 		if (!canView) {
 			throw new Error("Only owners and admins can view transfer history");
@@ -552,15 +427,7 @@ async function getOwnershipTransferHistory() {
  */
 export async function canDeleteTeamMember(teamMemberId: string) {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new Error("Database connection not available");
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new Error("No active company");
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Get team member details
 		const { data: teamMember, error } = await supabase

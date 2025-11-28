@@ -1,8 +1,9 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 
-export const JOBS_PAGE_SIZE = 50;
+export const JOBS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const JOBS_SELECT = `
   id,
@@ -145,7 +146,7 @@ export async function getJobsPageData(
  * @param limit - Max results (default: 50)
  * @returns Jobs with customer, property, financial, and time tracking data
  */
-export const getJobsDashboardRpc = cache(
+const getJobsDashboardRpc = cache(
 	async (
 		companyIdOverride?: string,
 		status?: string,

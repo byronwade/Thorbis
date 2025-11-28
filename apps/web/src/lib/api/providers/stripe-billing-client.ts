@@ -51,7 +51,7 @@ interface StripeListResponse<T> {
  * Stripe Billing Client
  * Requires STRIPE_SECRET_KEY environment variable
  */
-export class StripeBillingClient {
+class StripeBillingClient {
 	private baseUrl = "https://api.stripe.com/v1";
 	private secretKey: string;
 

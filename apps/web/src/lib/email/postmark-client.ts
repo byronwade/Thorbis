@@ -29,7 +29,7 @@ const POSTMARK_API_BASE = "https://api.postmarkapp.com";
  * Postmark client configuration
  * Checks environment variables and provides defaults
  */
-export const postmarkConfig = {
+const postmarkConfig = {
 	apiKey: process.env.POSTMARK_API_KEY || "",
 	webhookSecret: process.env.POSTMARK_WEBHOOK_SECRET || "",
 	// Default "from" address for Postmark (must be verified sender signature)
@@ -230,7 +230,7 @@ async function postmarkRequest<T>(
  *   tags: { template: "welcome" },
  * });
  */
-export async function sendPostmarkEmail(options: {
+async function sendPostmarkEmail(options: {
 	to: string | string[];
 	subject: string;
 	html: string;
@@ -303,7 +303,7 @@ export async function sendPostmarkEmail(options: {
  * @param emails - Array of email options
  * @returns Array of send results
  */
-export async function sendPostmarkBatchEmails(
+async function sendPostmarkBatchEmails(
 	emails: Array<{
 		to: string;
 		subject: string;
@@ -352,7 +352,7 @@ export async function sendPostmarkBatchEmails(
  *
  * @returns List of sender signatures
  */
-export async function listPostmarkDomains(): Promise<
+async function listPostmarkDomains(): Promise<
 	PostmarkResponse<{
 		TotalCount: number;
 		SenderSignatures: PostmarkDomainData[];
@@ -368,7 +368,7 @@ export async function listPostmarkDomains(): Promise<
  * @param signatureId - Postmark sender signature ID
  * @returns Sender signature details
  */
-export async function getPostmarkDomain(
+async function getPostmarkDomain(
 	signatureId: number,
 ): Promise<PostmarkResponse<PostmarkDomainData>> {
 	console.log(`[Postmark] Getting sender signature ${signatureId}`);
@@ -385,7 +385,7 @@ export async function getPostmarkDomain(
  * @param options - Sender signature options
  * @returns Created sender signature
  */
-export async function createPostmarkDomain(options: {
+async function createPostmarkDomain(options: {
 	fromEmail: string;
 	name: string;
 	replyToEmail?: string;
@@ -410,7 +410,7 @@ export async function createPostmarkDomain(options: {
  * @param signatureId - Postmark sender signature ID
  * @returns Deletion result
  */
-export async function deletePostmarkDomain(
+async function deletePostmarkDomain(
 	signatureId: number,
 ): Promise<PostmarkResponse<{ Message: string }>> {
 	console.log(`[Postmark] Deleting sender signature ${signatureId}`);
@@ -423,7 +423,7 @@ export async function deletePostmarkDomain(
  * @param signatureId - Postmark sender signature ID
  * @returns Resend result
  */
-export async function resendPostmarkConfirmation(
+async function resendPostmarkConfirmation(
 	signatureId: number,
 ): Promise<PostmarkResponse<{ Message: string }>> {
 	console.log(`[Postmark] Resending confirmation for signature ${signatureId}`);
@@ -437,7 +437,7 @@ export async function resendPostmarkConfirmation(
  * @param signatureId - Postmark sender signature ID
  * @returns Updated sender signature with verification status
  */
-export async function verifyPostmarkDKIM(
+async function verifyPostmarkDKIM(
 	signatureId: number,
 ): Promise<PostmarkResponse<PostmarkDomainData>> {
 	console.log(`[Postmark] Verifying DKIM for signature ${signatureId}`);
@@ -452,7 +452,7 @@ export async function verifyPostmarkDKIM(
  * @param signatureId - Postmark sender signature ID
  * @returns Updated sender signature with verification status
  */
-export async function verifyPostmarkReturnPath(
+async function verifyPostmarkReturnPath(
 	signatureId: number,
 ): Promise<PostmarkResponse<PostmarkDomainData>> {
 	console.log(`[Postmark] Verifying Return-Path for signature ${signatureId}`);
@@ -471,7 +471,7 @@ export async function verifyPostmarkReturnPath(
  *
  * @returns Server information
  */
-export async function getPostmarkServerInfo(): Promise<
+async function getPostmarkServerInfo(): Promise<
 	PostmarkResponse<{
 		ID: number;
 		Name: string;
@@ -563,7 +563,7 @@ export function verifyPostmarkWebhook(options: {
  *
  * @returns Health check result
  */
-export async function checkPostmarkHealth(): Promise<{
+async function checkPostmarkHealth(): Promise<{
 	healthy: boolean;
 	provider: "postmark";
 	latencyMs: number;
@@ -615,7 +615,7 @@ export async function checkPostmarkHealth(): Promise<{
  *
  * @returns Whether Postmark can be used
  */
-export function isPostmarkConfigured(): boolean {
+function isPostmarkConfigured(): boolean {
 	return postmarkConfig.isConfigured;
 }
 
@@ -625,7 +625,7 @@ export function isPostmarkConfigured(): boolean {
  * @param domain - Postmark domain data
  * @returns Formatted DNS records for display
  */
-export function getPostmarkDNSRecords(domain: PostmarkDomainData): Array<{
+function getPostmarkDNSRecords(domain: PostmarkDomainData): Array<{
 	type: string;
 	name: string;
 	value: string;

@@ -3,7 +3,9 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
 
-export const SERVICE_AGREEMENTS_PAGE_SIZE = 50;
+import { PAGINATION } from "@stratos/shared/constants";
+
+export const SERVICE_AGREEMENTS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const SERVICE_AGREEMENTS_SELECT = `
   id,

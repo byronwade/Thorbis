@@ -61,14 +61,14 @@ export interface StratosMessage extends UIMessage {
  * }
  * ```
  */
-export function createStratosChatStore(initialMessages?: StratosMessage[]) {
+function createStratosChatStore(initialMessages?: StratosMessage[]) {
 	return createChatStore<StratosMessage>(initialMessages);
 }
 
 /**
  * Stratos Chat Provider - wraps components with chat store context
  */
-export function StratosChatProvider({
+function StratosChatProvider({
 	children,
 	initialMessages,
 	store,
@@ -131,7 +131,7 @@ export type { StoreState, ChatActions };
  * }
  * ```
  */
-export function useAgentStatus() {
+function useAgentStatus() {
 	return useDataPart<{
 		status: "routing" | "executing" | "completing";
 		agent: string;
@@ -158,7 +158,7 @@ export function useAgentStatus() {
  * }
  * ```
  */
-export function useAgentHandoff() {
+function useAgentHandoff() {
 	return useDataPart<{
 		from: string;
 		to: string;
@@ -187,7 +187,7 @@ export function useAgentHandoff() {
  * }
  * ```
  */
-export function useRateLimit() {
+function useRateLimit() {
 	return useDataPart<{
 		limit: number;
 		remaining: number;
@@ -220,7 +220,7 @@ export function useRateLimit() {
  * }
  * ```
  */
-export function useSuggestions() {
+function useSuggestions() {
 	return useDataPart<{
 		prompts: string[];
 	}>("suggestions");
@@ -242,7 +242,7 @@ export function useSuggestions() {
  * }
  * ```
  */
-export function useLastAssistantMessage() {
+function useLastAssistantMessage() {
 	return useSelector<StratosMessage, StratosMessage | undefined>(
 		"last-assistant",
 		(messages) => messages.filter((m) => m.role === "assistant").slice(-1)[0],
@@ -268,7 +268,7 @@ export function useLastAssistantMessage() {
  * }
  * ```
  */
-export function useMessageCountByRole() {
+function useMessageCountByRole() {
 	return useSelector<
 		StratosMessage,
 		{ user: number; assistant: number; system: number }
@@ -286,7 +286,7 @@ export function useMessageCountByRole() {
 /**
  * Hook to check if a response is currently streaming
  */
-export function useIsStreaming() {
+function useIsStreaming() {
 	const status = useChatStatus();
 	return status === "streaming" || status === "submitted";
 }
@@ -294,7 +294,7 @@ export function useIsStreaming() {
 /**
  * Hook to get all artifacts from messages
  */
-export function useArtifacts() {
+function useArtifacts() {
 	return useSelector<
 		StratosMessage,
 		Array<{ id: string; type: string; messageId: string }>

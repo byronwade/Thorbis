@@ -169,7 +169,7 @@ export function decryptToken(encrypted: string): string {
  * Check if encryption key is configured
  * @returns True if key is set and valid
  */
-export function isEncryptionConfigured(): boolean {
+function isEncryptionConfigured(): boolean {
 	try {
 		getEncryptionKey();
 		return true;
@@ -184,7 +184,7 @@ export function isEncryptionConfigured(): boolean {
  *
  * @returns True if encryption works correctly
  */
-export function testEncryption(): boolean {
+function testEncryption(): boolean {
 	try {
 		const testToken = "test_token_" + crypto.randomBytes(32).toString("hex");
 		const encrypted = encryptToken(testToken);
@@ -206,7 +206,7 @@ export function testEncryption(): boolean {
  * // In a migration script:
  * await migrateTokensToEncrypted();
  */
-export async function migrateTokensToEncrypted() {
+async function migrateTokensToEncrypted() {
 	// This would be implemented as a standalone migration script
 	// NOT included here to prevent accidental execution
 	console.warn("[Token Encryption] Migration must be run as standalone script");

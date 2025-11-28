@@ -19,8 +19,8 @@ import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 
 // Constants - exported for use in dispatch-timeline
-export const DRAG_HOUR_WIDTH = 80; // Must match dispatch-timeline HOUR_WIDTH
-export const DRAG_SNAP_INTERVAL_MINUTES = 15;
+const DRAG_HOUR_WIDTH = 80; // Must match dispatch-timeline HOUR_WIDTH
+const DRAG_SNAP_INTERVAL_MINUTES = 15;
 export const DRAG_UNASSIGNED_DROP_ID = "unassigned-dropzone";
 
 // Type guard for pointer events
@@ -98,6 +98,14 @@ export function useScheduleDrag(
 	const rafIdRef = useRef<number | null>(null);
 	const pendingDragMoveRef = useRef<DragMoveEvent | null>(null);
 	const lastDragPreviewRef = useRef<string>("");
+	const lastOptimisticRef = useRef<{
+		jobId: string;
+		technicianId: string;
+		startTs: number;
+		endTs: number;
+	} | null>(null);
+	const lastOptimisticTsRef = useRef<number>(0);
+	const lastPreviewTsRef = useRef<number>(0);
 
 	// Rollback state for optimistic updates
 	const rollbackStateRef = useRef<{
@@ -238,12 +246,44 @@ export function useScheduleDrag(
 		const newTechnician = targetTech?.name ?? "Unassigned";
 		const previewKey = `${newLabel}|${newTechnician}`;
 
+		// Optimistic position update so the job (and travel lines) move in real time
+		if (!isFromUnassigned) {
+			const last = lastOptimisticRef.current;
+			const startTs = newStart.getTime();
+			const endTs = newEnd.getTime();
+			const now = performance.now();
+			if (
+				!last ||
+				last.jobId !== job.id ||
+				last.technicianId !== targetTechnicianId ||
+				last.startTs !== startTs ||
+				last.endTs !== endTs
+			) {
+				// Throttle optimistic updates (≈50fps) to stay responsive while reducing churn
+				if (now - lastOptimisticTsRef.current > 20) {
+					moveJob(job.id, targetTechnicianId, newStart, newEnd);
+					lastOptimisticRef.current = {
+						jobId: job.id,
+						technicianId: targetTechnicianId,
+						startTs,
+						endTs,
+					};
+					lastOptimisticTsRef.current = now;
+				}
+			}
+		}
+
+		// Debounce preview updates to ~15fps and only when changed
 		if (previewKey !== lastDragPreviewRef.current) {
-			lastDragPreviewRef.current = previewKey;
-			setDragPreview({
-				label: newLabel,
-				technician: newTechnician,
-			});
+			const now = performance.now();
+			if (now - lastPreviewTsRef.current > 20) {
+				lastDragPreviewRef.current = previewKey;
+				lastPreviewTsRef.current = now;
+				setDragPreview({
+					label: newLabel,
+					technician: newTechnician,
+				});
+			}
 		}
 
 		rafIdRef.current = null;

@@ -148,7 +148,7 @@ const typeConfig: Record<
 	},
 };
 
-export function ExtractedInfoPanel({
+function ExtractedInfoPanel({
 	items,
 	isExtracting = false,
 	onApply,
@@ -396,7 +396,7 @@ type ExtractedInfoBadgeProps = {
 	className?: string;
 };
 
-export function ExtractedInfoBadge({
+function ExtractedInfoBadge({
 	count,
 	onClick,
 	className,

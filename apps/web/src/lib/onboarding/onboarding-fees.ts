@@ -45,7 +45,7 @@ export const PHONE_NEW_NUMBER_SETUP_FEE = 5.0;
  * Base platform fee (per company)
  * Includes: CRM, scheduling, unlimited users, base communication features
  */
-export const BASE_PLATFORM_FEE = 200.0;
+const BASE_PLATFORM_FEE = 200.0;
 
 /**
  * New phone number monthly fee (per number)
@@ -67,7 +67,7 @@ export const GMAIL_WORKSPACE_PER_USER_FEE = 6.0;
  *
  * @see https://profitrhino.com/
  */
-export const PROFIT_RHINO_MONTHLY_FEE = 149.0;
+const PROFIT_RHINO_MONTHLY_FEE = 149.0;
 
 // =============================================================================
 // STRIPE PRICE ID MAPPINGS

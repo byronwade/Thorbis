@@ -183,7 +183,7 @@ export async function runHealthChecks(): Promise<HealthCheckJobResult> {
 /**
  * Get current health status for all services
  */
-export async function getServiceHealthStatus(): Promise<ServiceHealthStatus[]> {
+async function getServiceHealthStatus(): Promise<ServiceHealthStatus[]> {
 	const supabase = createServiceSupabaseClient();
 
 	// Get recent health logs
@@ -420,7 +420,7 @@ async function checkVercelHealth(): Promise<{
 /**
  * Get service health history for charting
  */
-export async function getServiceHealthHistory(
+async function getServiceHealthHistory(
 	serviceId: string,
 	hours: number = 24,
 ): Promise<

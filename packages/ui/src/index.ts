@@ -33,6 +33,7 @@ export * from "./input-group";
 export * from "./label";
 export * from "./mobile-work-filter-sheet";
 export * from "./mobile-work-header";
+export * from "./navigation-menu";
 export * from "./password-input";
 export * from "./popover";
 export * from "./progress";

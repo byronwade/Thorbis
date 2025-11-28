@@ -131,7 +131,7 @@ interface HelpSectionProps {
 	className?: string;
 }
 
-export function HelpSection({
+function HelpSection({
 	title = "Why do we need this?",
 	children,
 	defaultOpen = false,
@@ -178,7 +178,7 @@ interface FieldLabelProps {
 	className?: string;
 }
 
-export function FieldLabel({
+function FieldLabel({
 	label,
 	htmlFor,
 	required = false,

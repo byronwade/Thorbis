@@ -55,7 +55,7 @@ export function isOnboardingComplete(options: {
 /**
  * Get onboarding progress percentage based on completed steps.
  */
-export function getOnboardingProgress(options: {
+function getOnboardingProgress(options: {
 	progress?: ProgressRecord;
 }): number {
 	const { progress } = options;
@@ -84,7 +84,7 @@ export function getOnboardingProgress(options: {
  * Check if required steps are completed.
  * Returns which required steps are missing if any.
  */
-export function getMissingRequiredSteps(options: {
+function getMissingRequiredSteps(options: {
 	progress?: ProgressRecord;
 }): string[] {
 	const { progress } = options;
@@ -106,7 +106,7 @@ export function getMissingRequiredSteps(options: {
 /**
  * Get the current onboarding step from progress data.
  */
-export function getCurrentOnboardingStep(options: {
+function getCurrentOnboardingStep(options: {
 	progress?: ProgressRecord;
 }): string {
 	const { progress } = options;

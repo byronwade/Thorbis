@@ -22,36 +22,6 @@
       "filename": "packages/database/src/service-client.ts",
       "exportedName": "createServiceSupabaseClient"
     },
-    "00220a408add4b2d68c326a5361b8492a5ac042be9": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "exportWaitlistSubscribers",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "exportWaitlistSubscribers"
-    },
-    "00274bc21f7401435f4ff3426028d028ce3d6aecd1": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "getWaitlistCampaignReadyCount",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "getWaitlistCampaignReadyCount"
-    },
     "009e52ee6563804aee7bcdb1f1b867287c0523b019": {
       "workers": {
         "app/(dashboard)/dashboard/marketing/page": {
@@ -66,96 +36,6 @@
       },
       "filename": "apps/admin/src/actions/waitlist.ts",
       "exportedName": "getWaitlistStats"
-    },
-    "00b8062af8bf6091cf3fb0e63e99aa907af4362733": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "getWaitlistEmailsForCampaign",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "getWaitlistEmailsForCampaign"
-    },
-    "40386f410a1adf639230952fc1bf21cd88328a8c00": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "importWaitlistSubscribers",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "importWaitlistSubscribers"
-    },
-    "40889fa818e0f7021f9846d3f328f9a24a2919bb26": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "removeWaitlistSubscriber",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "removeWaitlistSubscriber"
-    },
-    "60ce8d8cbdf855be6ff9dafb4b5f15b205f19ed4c2": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "updateWaitlistSubscriber",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "updateWaitlistSubscriber"
-    },
-    "70d902069264973812273e943c6c974062064b83c6": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "getWaitlistSubscribers",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "getWaitlistSubscribers"
-    },
-    "7c5db37dccf6038a6aaa49b92d108c96653cdfae7d": {
-      "workers": {
-        "app/(dashboard)/dashboard/marketing/page": {
-          "moduleId": 97773,
-          "async": false,
-          "exportedName": "addWaitlistSubscriber",
-          "filename": "apps/admin/src/actions/waitlist.ts"
-        }
-      },
-      "layer": {
-        "app/(dashboard)/dashboard/marketing/page": "rsc"
-      },
-      "filename": "apps/admin/src/actions/waitlist.ts",
-      "exportedName": "addWaitlistSubscriber"
     },
     "40258905938530fcaaa6c784215a0af2e117525e15": {
       "workers": {

@@ -427,14 +427,14 @@ async function withRetry(fn, context, options = {}) {
 }
 const scheduleSelect = `
   *,
-  customer:customers(
+  customer:customers!appointments_customer_id_customers_id_fk(
     id,
     first_name,
     last_name,
     email,
     phone
   ),
-  job:jobs(
+  job:jobs!appointments_job_id_jobs_id_fk(
     id,
     job_number,
     title,

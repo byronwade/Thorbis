@@ -21,6 +21,7 @@ import {
 	assertExists,
 	assertSupabase,
 	withErrorHandling,
+	requireCompanyMembership,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 import { sendInvoiceEmail } from "./invoice-communications";
@@ -124,32 +125,7 @@ async function createInvoice(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Parse line items from JSON
 		const lineItemsJson = formData.get("lineItems") as string;
@@ -188,14 +164,14 @@ async function createInvoice(
 		// Generate invoice number
 		const invoiceNumber = await generateInvoiceNumber(
 			supabase,
-			teamMember.company_id,
+			companyId,
 		);
 
 		// Create invoice
 		const { data: newInvoice, error: createError } = await supabase
 			.from("invoices")
 			.insert({
-				company_id: teamMember.company_id,
+				company_id: companyId,
 				customer_id: data.customerId,
 				job_id: data.jobId,
 				invoice_number: invoiceNumber,
@@ -237,32 +213,7 @@ async function updateInvoice(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company
 		const { data: existingInvoice } = await supabase
@@ -273,7 +224,7 @@ async function updateInvoice(
 
 		assertExists(existingInvoice, "Invoice");
 
-		if (existingInvoice.company_id !== teamMember.company_id) {
+		if (existingInvoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -369,32 +320,7 @@ async function updateInvoice(
  */
 async function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company
 		const { data: existingInvoice } = await supabase
@@ -405,7 +331,7 @@ async function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
 
 		assertExists(existingInvoice, "Invoice");
 
-		if (existingInvoice.company_id !== teamMember.company_id) {
+		if (existingInvoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -504,32 +430,7 @@ async function recordPayment(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const data = recordPaymentSchema.parse({
 			amount: formData.get("amount")
@@ -551,7 +452,7 @@ async function recordPayment(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -621,7 +522,7 @@ async function recordPayment(
 			reference_number: data.reference || null,
 			notes: data.notes || null,
 			status: "completed",
-			processed_by: user?.id,
+			processed_by: userId,
 			processed_at: new Date().toISOString(),
 			completed_at: new Date().toISOString(),
 			receipt_emailed: false,
@@ -646,32 +547,7 @@ async function markInvoiceOverdue(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Get invoice
 		const { data: invoice } = await supabase
@@ -682,7 +558,7 @@ async function markInvoiceOverdue(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -733,32 +609,7 @@ async function cancelInvoice(
 	reason?: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Get invoice
 		const { data: invoice } = await supabase
@@ -769,7 +620,7 @@ async function cancelInvoice(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -951,29 +802,7 @@ export async function archiveInvoice(
 	invoiceId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get active company ID using the helper function
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company
 		const { data: invoice } = await supabase
@@ -1010,7 +839,7 @@ export async function archiveInvoice(
 			.from("invoices")
 			.update({
 				deleted_at: now,
-				deleted_by: user.id,
+				deleted_by: userId,
 				archived_at: now,
 				permanent_delete_scheduled_at: scheduledDeletion,
 				// Note: Keep the current status, use archived_at to indicate archived state
@@ -1036,29 +865,7 @@ export async function archiveInvoice(
  */
 async function restoreInvoice(invoiceId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get active company ID using the helper function
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company and is archived
 		const { data: invoice } = await supabase
@@ -1127,32 +934,7 @@ async function updateInvoiceContent(
 	content: any,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company
 		const { data: invoice } = await supabase
@@ -1163,7 +945,7 @@ async function updateInvoiceContent(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1200,32 +982,7 @@ async function getInvoicePayments(
 	invoiceId: string,
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify invoice belongs to company
 		const { data: invoice } = await supabase
@@ -1236,7 +993,7 @@ async function getInvoicePayments(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1306,32 +1063,7 @@ async function generateInvoicePDF(
 	invoiceId: string,
 ): Promise<ActionResult<{ pdfUrl: string; invoice: any }>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Get full invoice data with relations
 		const { data: invoice } = await supabase
@@ -1365,7 +1097,7 @@ async function generateInvoicePDF(
 
 		assertExists(invoice, "Invoice");
 
-		if (invoice.company_id !== teamMember.company_id) {
+		if (invoice.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("invoice"),
 				ERROR_CODES.AUTH_FORBIDDEN,

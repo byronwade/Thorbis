@@ -373,7 +373,7 @@ function getNextHourUTC(): string {
 /**
  * Reset daily email counters (should be called by cron at midnight UTC)
  */
-export async function resetDailyCounters(): Promise<{
+async function resetDailyCounters(): Promise<{
 	success: boolean;
 	error?: string;
 }> {
@@ -398,7 +398,7 @@ export async function resetDailyCounters(): Promise<{
 /**
  * Reset hourly email counters (should be called by cron every hour)
  */
-export async function resetHourlyCounters(): Promise<{
+async function resetHourlyCounters(): Promise<{
 	success: boolean;
 	error?: string;
 }> {

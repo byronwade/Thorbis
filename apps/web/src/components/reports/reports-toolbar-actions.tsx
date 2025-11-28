@@ -84,7 +84,7 @@ export function ReportsToolbarActions({
 /**
  * Simplified toolbar for report detail pages
  */
-export function ReportDetailToolbarActions({
+function ReportDetailToolbarActions({
 	reportType = "financial",
 	reportTitle = "Report",
 }: {

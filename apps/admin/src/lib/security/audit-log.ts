@@ -77,7 +77,7 @@ function getSeverity(eventType: AuditEventType, success: boolean): AuditEventSev
  * @param eventType - Type of authentication event
  * @param options - Event details
  */
-export async function logAdminAuthEvent(
+async function logAdminAuthEvent(
 	eventType: AuditEventType,
 	options: {
 		email?: string;
@@ -222,7 +222,7 @@ export async function logRateLimitExceeded(
 /**
  * Log invalid domain attempt
  */
-export async function logInvalidDomainAttempt(
+async function logInvalidDomainAttempt(
 	email: string,
 	ip: string,
 ): Promise<void> {
@@ -240,7 +240,7 @@ export async function logInvalidDomainAttempt(
 /**
  * Log unauthorized access attempt
  */
-export async function logUnauthorizedAccess(
+async function logUnauthorizedAccess(
 	email: string | undefined,
 	ip: string,
 	path: string,

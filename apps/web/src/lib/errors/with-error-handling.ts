@@ -39,7 +39,10 @@ export type ActionResult<T = void> =
  * Automatically handles errors and returns a consistent ActionResult format.
  * Logs errors appropriately and provides detailed error information in development.
  *
+ * Also supports API route handlers via the `isApiRoute` option.
+ *
  * @example
+ * // Server Action
  * export async function createCustomer(data: CustomerInsert) {
  *   return withErrorHandling(async () => {
  *     const validated = customerInsertSchema.parse(data);
@@ -58,10 +61,28 @@ export type ActionResult<T = void> =
  *     return customer;
  *   });
  * }
+ *
+ * @example
+ * // API Route
+ * export async function GET(request: NextRequest) {
+ *   return withErrorHandling(
+ *     async () => {
+ *       // Route logic
+ *       return NextResponse.json({ data: result });
+ *     },
+ *     { isApiRoute: true }
+ *   );
+ * }
  */
+export type ErrorHandlingOptions = {
+	/** If true, returns NextResponse instead of ActionResult (for API routes) */
+	isApiRoute?: boolean;
+};
+
 export async function withErrorHandling<T>(
 	fn: () => Promise<T>,
-): Promise<ActionResult<T>> {
+	options: ErrorHandlingOptions = {},
+): Promise<ActionResult<T> | NextResponse> {
 	try {
 		const data = await fn();
 		return { success: true, data };
@@ -110,7 +131,7 @@ export async function withErrorHandling<T>(
 
 		// Handle standard JavaScript errors
 		if (error instanceof Error) {
-			return {
+			const errorResponse = {
 				success: false,
 				error:
 					process.env.NODE_ENV === "development"
@@ -118,12 +139,27 @@ export async function withErrorHandling<T>(
 						: "An unexpected error occurred",
 				code: ERROR_CODES.INTERNAL_SERVER_ERROR,
 			};
+
+			// Return NextResponse for API routes
+			if (options.isApiRoute) {
+				return NextResponse.json(errorResponse, { status: 500 });
+			}
+
+			return errorResponse;
 		}
-		return {
+
+		const unknownErrorResponse = {
 			success: false,
 			error: "An unexpected error occurred",
 			code: ERROR_CODES.UNKNOWN_ERROR,
 		};
+
+		// Return NextResponse for API routes
+		if (options.isApiRoute) {
+			return NextResponse.json(unknownErrorResponse, { status: 500 });
+		}
+
+		return unknownErrorResponse;
 	}
 }
 
@@ -292,17 +328,31 @@ export const requireCompanyMembership = cache(
 			);
 		}
 
-		// Check company membership
+		// Get active company ID from cookie (handles multi-company users)
+		// Import dynamically to avoid circular dependencies
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const activeCompanyId = await getActiveCompanyId();
+
+		if (!activeCompanyId) {
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
+		}
+
+		// Verify user has active membership in this company
 		const { data: membership } = await supabase
 			.from("company_memberships")
 			.select("company_id")
 			.eq("user_id", user.id)
+			.eq("company_id", activeCompanyId)
 			.eq("status", "active")
-			.single();
+			.maybeSingle();
 
 		if (!membership?.company_id) {
 			throw new ActionError(
-				"You must be part of a company",
+				"You don't have access to this company",
 				ERROR_CODES.AUTH_FORBIDDEN,
 				403,
 			);

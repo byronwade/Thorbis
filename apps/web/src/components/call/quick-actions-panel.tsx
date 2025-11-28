@@ -245,7 +245,7 @@ type QuickActionsBarProps = Omit<
 	className?: string;
 };
 
-export function QuickActionsBar(props: QuickActionsBarProps) {
+function QuickActionsBar(props: QuickActionsBarProps) {
 	return <QuickActionsPanel {...props} layout="horizontal" />;
 }
 
@@ -258,7 +258,7 @@ type FloatingQuickActionsProps = QuickActionsPanelProps & {
 	position?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
 };
 
-export function FloatingQuickActions({
+function FloatingQuickActions({
 	position = "bottom-right",
 	className,
 	...props

@@ -300,7 +300,12 @@
       "Bash(timeout 30 pnpm exec tsc:*)",
       "Bash(git log:*)",
       "Bash(psql:*)",
-      "Bash(pnpm --filter @stratos/web exec tsc:*)"
+      "Bash(pnpm --filter @stratos/web exec tsc:*)",
+      "WebFetch(domain:www.productboard.com)",
+      "WebFetch(domain:www.joshwcomeau.com)",
+      "Bash(node:*)",
+      "Bash(pnpm --filter @stratos/web typecheck:*)",
+      "Bash(pnpm lint:*)"
     ],
     "deny": [],
     "ask": []

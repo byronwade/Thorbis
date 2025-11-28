@@ -155,7 +155,7 @@ export function getJobCoordinates(job: Job): Coordinates | null {
 /**
  * Get coordinates from a Technician's current location
  */
-export function getTechnicianCoordinates(tech: Technician): Coordinates | null {
+function getTechnicianCoordinates(tech: Technician): Coordinates | null {
 	if (
 		tech.currentLocation?.coordinates?.lat &&
 		tech.currentLocation?.coordinates?.lng
@@ -176,7 +176,7 @@ export function getTechnicianCoordinates(tech: Technician): Coordinates | null {
  * Nearest Neighbor Algorithm
  * Simple greedy algorithm that always visits the nearest unvisited job
  */
-export function optimizeRouteNearestNeighbor(
+function optimizeRouteNearestNeighbor(
 	jobs: Job[],
 	startLocation: Coordinates,
 ): Job[] {

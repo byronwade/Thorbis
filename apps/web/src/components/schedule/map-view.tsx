@@ -86,21 +86,24 @@ type MapMarker = {
 // Job Status Colors
 // ============================================================================
 
+// Status colors - using theme-aware colors that work in both light and dark mode
+// Note: These hex values are for Google Maps API which requires hex colors
+// For UI elements, use theme CSS variables instead
 const JOB_STATUS_COLORS: Record<string, string> = {
-	scheduled: "#3b82f6", // blue
-	dispatched: "#f59e0b", // amber
-	arrived: "#10b981", // green
-	"in-progress": "#8b5cf6", // purple
-	completed: "#6b7280", // gray
-	cancelled: "#ef4444", // red
-	closed: "#6b7280", // gray
+	scheduled: "#3b82f6", // blue-500
+	dispatched: "#f59e0b", // amber-500
+	arrived: "#10b981", // emerald-500
+	"in-progress": "#8b5cf6", // violet-500
+	completed: "#6b7280", // gray-500
+	cancelled: "#ef4444", // red-500
+	closed: "#6b7280", // gray-500
 };
 
 const TECHNICIAN_STATUS_COLORS: Record<string, string> = {
-	available: "#10b981", // green
-	"on-job": "#3b82f6", // blue
-	"on-break": "#f59e0b", // amber
-	offline: "#6b7280", // gray
+	available: "#10b981", // emerald-500
+	"on-job": "#3b82f6", // blue-500
+	"on-break": "#f59e0b", // amber-500
+	offline: "#6b7280", // gray-500
 };
 
 // ============================================================================
@@ -270,6 +273,7 @@ export function MapView({
 
 				if (!existingMarker) {
 					// Create pin element
+					// Use white for borders and glyphs - works in both light and dark mode
 					const pin = new PinElement({
 						background: marker.color,
 						borderColor:
@@ -387,15 +391,17 @@ export function MapView({
 		}
 
 		const map = mapInstanceRef.current;
+		// Route colors for polylines - using distinct colors that work in both themes
+		// Note: These are for Google Maps polylines which require hex colors
 		const techColors = [
-			"#3b82f6",
-			"#10b981",
-			"#f59e0b",
-			"#8b5cf6",
-			"#ef4444",
-			"#ec4899",
-			"#14b8a6",
-			"#f97316",
+			"#3b82f6", // blue-500
+			"#10b981", // emerald-500
+			"#f59e0b", // amber-500
+			"#8b5cf6", // violet-500
+			"#ef4444", // red-500
+			"#ec4899", // pink-500
+			"#14b8a6", // teal-500
+			"#f97316", // orange-500
 		];
 
 		// Get jobs grouped by technician
@@ -747,19 +753,19 @@ export function MapView({
 											}}
 										>
 											<div className="flex items-center gap-2">
-												<div
-													className={cn(
-														"h-2 w-2 rounded-full",
-														job.status === "scheduled" && "bg-blue-500",
-														job.status === "dispatched" && "bg-amber-500",
-														job.status === "arrived" && "bg-green-500",
-														job.status === "in-progress" && "bg-purple-500",
-														job.status === "completed" && "bg-gray-500",
-														job.status === "cancelled" && "bg-red-500",
-														job.status === "closed" && "bg-gray-500",
-														!job.status && "bg-gray-500",
-													)}
-												/>
+									<div
+										className={cn(
+											"h-2 w-2 rounded-full",
+											job.status === "scheduled" && "bg-blue-500 dark:bg-blue-400",
+											job.status === "dispatched" && "bg-amber-500 dark:bg-amber-400",
+											job.status === "arrived" && "bg-emerald-500 dark:bg-emerald-400",
+											job.status === "in-progress" && "bg-violet-500 dark:bg-violet-400",
+											job.status === "completed" && "bg-gray-500 dark:bg-gray-400",
+											job.status === "cancelled" && "bg-red-500 dark:bg-red-400",
+											job.status === "closed" && "bg-gray-500 dark:bg-gray-400",
+											!job.status && "bg-gray-500 dark:bg-gray-400",
+										)}
+									/>
 												<span className="font-medium">{job.title}</span>
 											</div>
 											<div className="flex items-center gap-2 text-muted-foreground">

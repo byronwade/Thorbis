@@ -101,7 +101,7 @@ export type FilterOperator =
 // FINANCIAL DATA SOURCES
 // =============================================================================
 
-export const invoicesDataSource: DataSource = {
+const invoicesDataSource: DataSource = {
 	id: "invoices",
 	name: "Invoices",
 	dbTable: "invoices",
@@ -313,7 +313,7 @@ export const invoicesDataSource: DataSource = {
 	],
 };
 
-export const paymentsDataSource: DataSource = {
+const paymentsDataSource: DataSource = {
 	id: "payments",
 	name: "Payments",
 	dbTable: "payments",
@@ -457,7 +457,7 @@ export const paymentsDataSource: DataSource = {
 // OPERATIONS DATA SOURCES
 // =============================================================================
 
-export const jobsDataSource: DataSource = {
+const jobsDataSource: DataSource = {
 	id: "jobs",
 	name: "Jobs",
 	dbTable: "jobs",
@@ -743,7 +743,7 @@ export const jobsDataSource: DataSource = {
 	],
 };
 
-export const estimatesDataSource: DataSource = {
+const estimatesDataSource: DataSource = {
 	id: "estimates",
 	name: "Estimates",
 	dbTable: "estimates",
@@ -938,7 +938,7 @@ export const estimatesDataSource: DataSource = {
 // CUSTOMER DATA SOURCES
 // =============================================================================
 
-export const customersDataSource: DataSource = {
+const customersDataSource: DataSource = {
 	id: "customers",
 	name: "Customers",
 	dbTable: "customers",
@@ -1212,7 +1212,7 @@ export const customersDataSource: DataSource = {
 // TEAM DATA SOURCES
 // =============================================================================
 
-export const teamMembersDataSource: DataSource = {
+const teamMembersDataSource: DataSource = {
 	id: "team_members",
 	name: "Team Members",
 	dbTable: "team_members",
@@ -1458,7 +1458,7 @@ export const DATA_SOURCES_MAP: Record<string, DataSource> = {
 };
 
 // Helper to get field by ID across all sources
-export function getFieldById(fieldId: string): DataSourceField | undefined {
+function getFieldById(fieldId: string): DataSourceField | undefined {
 	for (const source of DATA_SOURCES) {
 		const field = source.fields.find((f) => f.id === fieldId);
 		if (field) return field;
@@ -1467,7 +1467,7 @@ export function getFieldById(fieldId: string): DataSourceField | undefined {
 }
 
 // Helper to get all fields for a category
-export function getFieldsByCategory(
+function getFieldsByCategory(
 	category: DataSourceCategory,
 ): DataSourceField[] {
 	return DATA_SOURCES.filter((s) => s.category === category).flatMap(

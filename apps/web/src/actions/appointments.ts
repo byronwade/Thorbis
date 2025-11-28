@@ -1030,7 +1030,7 @@ async function unlinkScheduleFromJob(
  * Restore an archived appointment
  * Reverses the soft delete by clearing archived_at, deleted_at, deleted_by
  */
-export async function restoreAppointment(
+async function restoreAppointment(
 	appointmentId: string,
 ): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {

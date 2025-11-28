@@ -264,7 +264,7 @@ export interface OnboardingState {
 // CONSTANTS
 // =============================================================================
 
-export const STEPS_ORDER: OnboardingStep[] = [
+const STEPS_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
 	"data-import",
@@ -429,7 +429,7 @@ export const COMPANY_SIZES = [
 	{ value: "enterprise", label: "Enterprise" },
 ];
 
-export const DEFAULT_NOTIFICATIONS: NotificationPreference[] = [
+const DEFAULT_NOTIFICATIONS: NotificationPreference[] = [
 	{ category: "new_booking", push: true, email: true, sms: false },
 	{ category: "job_updates", push: true, email: false, sms: false },
 	{ category: "payment_received", push: true, email: true, sms: false },
@@ -678,7 +678,7 @@ export const useOnboardingStore = create<OnboardingState>()(
 // HELPERS
 // =============================================================================
 
-export function getNextStep(
+function getNextStep(
 	currentStep: OnboardingStep,
 ): OnboardingStep | null {
 	const currentIndex = STEPS_ORDER.indexOf(currentStep);
@@ -688,7 +688,7 @@ export function getNextStep(
 	return STEPS_ORDER[currentIndex + 1];
 }
 
-export function getPreviousStep(
+function getPreviousStep(
 	currentStep: OnboardingStep,
 ): OnboardingStep | null {
 	const currentIndex = STEPS_ORDER.indexOf(currentStep);
@@ -698,18 +698,18 @@ export function getPreviousStep(
 	return STEPS_ORDER[currentIndex - 1];
 }
 
-export function getStepIndex(step: OnboardingStep): number {
+function getStepIndex(step: OnboardingStep): number {
 	return STEPS_ORDER.indexOf(step);
 }
 
-export function isStepComplete(
+function isStepComplete(
 	step: OnboardingStep,
 	completedSteps: OnboardingStep[],
 ): boolean {
 	return completedSteps.includes(step);
 }
 
-export function getEstimatedTimeRemaining(currentStep: OnboardingStep): number {
+function getEstimatedTimeRemaining(currentStep: OnboardingStep): number {
 	const currentIndex = STEPS_ORDER.indexOf(currentStep);
 	let totalMinutes = 0;
 	for (let i = currentIndex; i < STEPS_ORDER.length; i++) {

@@ -94,7 +94,7 @@ export const getTeamChannels = cache(async (): Promise<TeamChannelsResult> => {
 /**
  * Get team channel by ID
  */
-export const getTeamChannelById = cache(
+const getTeamChannelById = cache(
 	async (channelId: string): Promise<TeamChannel | null> => {
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
@@ -134,7 +134,7 @@ export const getTeamChannelById = cache(
 /**
  * Get team messages for a specific channel
  */
-export const getTeamMessages = cache(
+const getTeamMessages = cache(
 	async (
 		channelId: string,
 		limit: number = 100,
@@ -200,7 +200,7 @@ export const getTeamMessages = cache(
 /**
  * Get team message by ID
  */
-export const getTeamMessageById = cache(
+const getTeamMessageById = cache(
 	async (messageId: string): Promise<TeamMessage | null> => {
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {

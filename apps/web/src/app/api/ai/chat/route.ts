@@ -706,6 +706,68 @@ function filterToolsByPermissions(
 	return filteredTools;
 }
 
+// Select a small subset of tools relevant to the latest user message to
+// avoid sending the entire tool catalog (saves prompt tokens on Groq).
+const DEFAULT_TOOL_NAMES = [
+	"getDashboardMetrics",
+	"getProactiveInsights",
+	"searchCustomers",
+	"searchJobs",
+	"searchInvoices",
+	"createAppointment",
+];
+
+function selectToolsForMessage(
+	tools: Record<string, (typeof aiAgentTools)[keyof typeof aiAgentTools]>,
+	messageText: string,
+	limit = 12,
+): Record<string, (typeof aiAgentTools)[keyof typeof aiAgentTools]> {
+	const selected: Record<string, (typeof aiAgentTools)[keyof typeof aiAgentTools]> = {};
+	const lowerMessage = (messageText || "").toLowerCase();
+	const tokens = new Set(
+		lowerMessage.match(/\b\w+\b/g)?.filter((token) => token.length > 2) || [],
+	);
+
+	// Always include a small baseline set so the agent can answer common requests.
+	for (const name of DEFAULT_TOOL_NAMES) {
+		if (tools[name]) {
+			selected[name] = tools[name];
+		}
+		if (Object.keys(selected).length >= limit) return selected;
+	}
+
+	// Score remaining tools based on simple keyword overlap with the latest user message.
+	const scored = Object.entries(tools)
+		.filter(([name]) => !selected[name])
+		.map(([name, toolInstance]) => {
+			const description = (toolInstance as { description?: string }).description || "";
+			const lowerDescription = description.toLowerCase();
+			let score = 0;
+
+			// Boost for matches in tool name.
+			for (const token of tokens) {
+				if (name.toLowerCase().includes(token)) score += 2;
+				if (lowerDescription.includes(token)) score += 1;
+			}
+
+			// Small boost if category name is mentioned in the message.
+			const category = toolCategories[name];
+			if (category && lowerMessage.includes(category)) score += 1.5;
+
+			return { name, score };
+		})
+		.sort((a, b) => b.score - a.score);
+
+	for (const { name, score } of scored) {
+		// Skip tools with zero relevance unless we still have a lot of room.
+		if (Object.keys(selected).length >= limit) break;
+		if (score <= 0 && Object.keys(selected).length >= DEFAULT_TOOL_NAMES.length) continue;
+		selected[name] = tools[name];
+	}
+
+	return selected;
+}
+
 // Request action approval tool - used when permission mode is ask_permission
 // AI SDK 6: parameters -> inputSchema
 const requestApprovalTool = tool({
@@ -916,6 +978,10 @@ export async function POST(req: Request) {
 			availableTools.requestApproval = requestApprovalTool;
 		}
 
+		// Select only the most relevant tools for this message to reduce token usage
+		const selectedTools = selectToolsForMessage(availableTools, userMessageContent || "");
+		console.log("[AI Chat API] Selected tools:", Object.keys(selectedTools));
+
 		// Determine model and provider - Groq only
 		const temperature = settings?.model_temperature || 0.7;
 
@@ -980,7 +1046,7 @@ export async function POST(req: Request) {
 
 	// Enable tools - Groq with llama-3.3-70b-versatile supports tools
 	if (!shouldDisableTools) {
-		streamConfig.tools = availableTools;
+		streamConfig.tools = selectedTools;
 		streamConfig.stopWhen = stepCountIs(5); // Reduced from 10 to lower AI costs
 		streamConfig.maxToolRoundtrips = 2; // cap tool loops to improve response time
 	}

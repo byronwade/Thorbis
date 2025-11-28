@@ -12,7 +12,7 @@ import {
 	type PortingOrderRequest,
 } from "@/lib/twilio/porting";
 
-export async function submitPortingOrder(data: {
+async function submitPortingOrder(data: {
 	companyId: string;
 	phoneNumbers: string[];
 	currentCarrierName: string;
@@ -104,7 +104,7 @@ export async function checkPortability(phoneNumber: string): Promise<{
 	return await checkNumberPortability(phoneNumber);
 }
 
-export async function getPortingStatus(portingOrderId: string): Promise<{
+async function getPortingStatus(portingOrderId: string): Promise<{
 	success: boolean;
 	status?: string;
 	focDate?: string;

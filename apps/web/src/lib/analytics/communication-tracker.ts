@@ -191,7 +191,7 @@ async function logCommunicationEvent(
 /**
  * Track when an email is sent
  */
-export async function trackEmailSent(
+async function trackEmailSent(
 	event: BaseCommunicationEvent,
 ): Promise<void> {
 	await logCommunicationEvent(
@@ -210,7 +210,7 @@ export async function trackEmailSent(
 /**
  * Track when an email is delivered
  */
-export async function trackEmailDelivered(
+async function trackEmailDelivered(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -221,7 +221,7 @@ export async function trackEmailDelivered(
  * Track when an email is opened
  * Call this from your email tracking pixel endpoint
  */
-export async function trackEmailOpen(
+async function trackEmailOpen(
 	companyId: string,
 	messageId: string,
 	options?: { userAgent?: string; ipAddress?: string },
@@ -233,7 +233,7 @@ export async function trackEmailOpen(
  * Track when a link in an email is clicked
  * Call this from your email link redirect endpoint
  */
-export async function trackEmailClick(
+async function trackEmailClick(
 	companyId: string,
 	messageId: string,
 	linkUrl: string,
@@ -248,7 +248,7 @@ export async function trackEmailClick(
 /**
  * Track when an email bounces
  */
-export async function trackEmailBounce(
+async function trackEmailBounce(
 	companyId: string,
 	messageId: string,
 	bounceType: "hard" | "soft",
@@ -263,7 +263,7 @@ export async function trackEmailBounce(
 /**
  * Track when a recipient complains (marks as spam)
  */
-export async function trackEmailComplaint(
+async function trackEmailComplaint(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -273,7 +273,7 @@ export async function trackEmailComplaint(
 /**
  * Track when a recipient unsubscribes
  */
-export async function trackEmailUnsubscribe(
+async function trackEmailUnsubscribe(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -283,7 +283,7 @@ export async function trackEmailUnsubscribe(
 /**
  * Track when a recipient replies to an email
  */
-export async function trackEmailReply(
+async function trackEmailReply(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -297,7 +297,7 @@ export async function trackEmailReply(
 /**
  * Track when an SMS is sent
  */
-export async function trackSmsSent(
+async function trackSmsSent(
 	event: BaseCommunicationEvent & { segments?: number },
 ): Promise<void> {
 	await logCommunicationEvent(event.companyId, "sms", event.messageId, "sent", {
@@ -311,7 +311,7 @@ export async function trackSmsSent(
 /**
  * Track when an SMS is delivered
  */
-export async function trackSmsDelivered(
+async function trackSmsDelivered(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -321,7 +321,7 @@ export async function trackSmsDelivered(
 /**
  * Track when an SMS fails to deliver
  */
-export async function trackSmsFailed(
+async function trackSmsFailed(
 	companyId: string,
 	messageId: string,
 	errorCode: string,
@@ -336,7 +336,7 @@ export async function trackSmsFailed(
 /**
  * Track when a recipient replies to an SMS
  */
-export async function trackSmsReply(
+async function trackSmsReply(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -346,7 +346,7 @@ export async function trackSmsReply(
 /**
  * Track when a recipient opts out of SMS
  */
-export async function trackSmsOptOut(
+async function trackSmsOptOut(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -360,7 +360,7 @@ export async function trackSmsOptOut(
 /**
  * Track when a call is initiated
  */
-export async function trackCallInitiated(
+async function trackCallInitiated(
 	event: BaseCommunicationEvent,
 ): Promise<void> {
 	await logCommunicationEvent(
@@ -378,7 +378,7 @@ export async function trackCallInitiated(
 /**
  * Track when a call is connected
  */
-export async function trackCallConnected(
+async function trackCallConnected(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -388,7 +388,7 @@ export async function trackCallConnected(
 /**
  * Track when a call is completed
  */
-export async function trackCallCompleted(
+async function trackCallCompleted(
 	companyId: string,
 	messageId: string,
 	durationSeconds: number,
@@ -405,7 +405,7 @@ export async function trackCallCompleted(
 /**
  * Track when a call fails
  */
-export async function trackCallFailed(
+async function trackCallFailed(
 	companyId: string,
 	messageId: string,
 	errorCode: string,
@@ -420,7 +420,7 @@ export async function trackCallFailed(
 /**
  * Track when a call goes to voicemail
  */
-export async function trackCallVoicemail(
+async function trackCallVoicemail(
 	companyId: string,
 	messageId: string,
 	recordingUrl?: string,
@@ -433,7 +433,7 @@ export async function trackCallVoicemail(
 /**
  * Track when a call is not answered
  */
-export async function trackCallNoAnswer(
+async function trackCallNoAnswer(
 	companyId: string,
 	messageId: string,
 ): Promise<void> {
@@ -546,7 +546,7 @@ export async function getCommunicationStats(
 /**
  * Get email engagement for a specific message
  */
-export async function getEmailEngagement(
+async function getEmailEngagement(
 	companyId: string,
 	messageId: string,
 ): Promise<{

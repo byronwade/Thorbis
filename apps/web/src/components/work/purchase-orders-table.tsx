@@ -9,6 +9,7 @@ import {
 	Package,
 	PackageCheck,
 	PackageX,
+	Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -362,6 +363,17 @@ export function PurchaseOrdersTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredOrders}
+			emptyAction={
+				<Button
+					onClick={() =>
+						(window.location.href = "/dashboard/work/purchase-orders/new")
+					}
+					size="sm"
+				>
+					<Plus className="mr-2 size-4" />
+					Create Purchase Order
+				</Button>
+			}
 			emptyIcon={
 				<Package className="text-muted-foreground mx-auto h-12 w-12" />
 			}

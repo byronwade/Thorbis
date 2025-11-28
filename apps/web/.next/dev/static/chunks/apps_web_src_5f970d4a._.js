@@ -773,7 +773,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$zu
 const BUFFER_DAYS_BEFORE = 3; // Initial days to load before current date
 const BUFFER_DAYS_AFTER = 3; // Initial days to load after current date
 const EXTEND_DAYS = 3; // Days to add when extending buffer (reduces state updates)
-const MAX_BUFFER_DAYS = 14; // Maximum buffer size before trimming (prevents memory bloat)
+const MAX_BUFFER_DAYS = Number.POSITIVE_INFINITY; // Unlimited buffer to enable true infinite scroll
 // Detect mobile viewport and set default view accordingly
 // List view is more mobile-friendly than day view
 const getDefaultViewMode = ()=>{
@@ -812,14 +812,18 @@ const useScheduleViewStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f
                 viewMode: mode
             }),
         setCurrentDate: (date)=>{
-            // Update buffer when current date changes
+            // Expand buffer to include the new date but never shrink it
             const { bufferStartDate, bufferEndDate } = createBufferDates(date);
-            set({
-                currentDate: date,
-                bufferStartDate,
-                bufferEndDate
-            });
+            set((state)=>({
+                    currentDate: date,
+                    bufferStartDate: state.bufferStartDate < bufferStartDate ? state.bufferStartDate : bufferStartDate,
+                    bufferEndDate: state.bufferEndDate > bufferEndDate ? state.bufferEndDate : bufferEndDate
+                }));
         },
+        // Preserve existing buffer when the visible date shifts via scrolling
+        setCurrentDatePreserveBuffer: (date)=>set({
+                currentDate: date
+            }),
         setZoomLevel: (level)=>set({
                 zoomLevel: level
             }),
@@ -832,11 +836,11 @@ const useScheduleViewStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f
         goToToday: ()=>{
             const today = new Date();
             const { bufferStartDate, bufferEndDate } = createBufferDates(today);
-            set({
-                currentDate: today,
-                bufferStartDate,
-                bufferEndDate
-            });
+            set((state)=>({
+                    currentDate: today,
+                    bufferStartDate: state.bufferStartDate < bufferStartDate ? state.bufferStartDate : bufferStartDate,
+                    bufferEndDate: state.bufferEndDate > bufferEndDate ? state.bufferEndDate : bufferEndDate
+                }));
         },
         navigatePrevious: ()=>{
             const { currentDate, viewMode } = get();
@@ -849,11 +853,11 @@ const useScheduleViewStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f
                 newDate.setMonth(newDate.getMonth() - 1);
             }
             const { bufferStartDate, bufferEndDate } = createBufferDates(newDate);
-            set({
-                currentDate: newDate,
-                bufferStartDate,
-                bufferEndDate
-            });
+            set((state)=>({
+                    currentDate: newDate,
+                    bufferStartDate: state.bufferStartDate < bufferStartDate ? state.bufferStartDate : bufferStartDate,
+                    bufferEndDate: state.bufferEndDate > bufferEndDate ? state.bufferEndDate : bufferEndDate
+                }));
         },
         navigateNext: ()=>{
             const { currentDate, viewMode } = get();
@@ -866,11 +870,11 @@ const useScheduleViewStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f
                 newDate.setMonth(newDate.getMonth() + 1);
             }
             const { bufferStartDate, bufferEndDate } = createBufferDates(newDate);
-            set({
-                currentDate: newDate,
-                bufferStartDate,
-                bufferEndDate
-            });
+            set((state)=>({
+                    currentDate: newDate,
+                    bufferStartDate: state.bufferStartDate < bufferStartDate ? state.bufferStartDate : bufferStartDate,
+                    bufferEndDate: state.bufferEndDate > bufferEndDate ? state.bufferEndDate : bufferEndDate
+                }));
         },
         // Extend buffer to the left (earlier dates) for infinite scroll
         // Extends by EXTEND_DAYS at once to reduce state update frequency

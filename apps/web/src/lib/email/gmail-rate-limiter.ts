@@ -238,7 +238,7 @@ export function releaseSyncLock(lock: SyncLock): void {
 /**
  * Get count of active syncs
  */
-export function getActiveSyncCount(): number {
+function getActiveSyncCount(): number {
 	// Clean up expired locks first
 	const now = Date.now();
 	for (const lock of activeSyncLocks) {
@@ -287,7 +287,7 @@ function cleanup(): void {
 /**
  * Start automatic cleanup
  */
-export function startCleanup(): void {
+function startCleanup(): void {
 	if (cleanupInterval) {
 		return; // Already started
 	}
@@ -301,7 +301,7 @@ export function startCleanup(): void {
 /**
  * Stop automatic cleanup
  */
-export function stopCleanup(): void {
+function stopCleanup(): void {
 	if (cleanupInterval) {
 		clearInterval(cleanupInterval);
 		cleanupInterval = null;
@@ -343,7 +343,7 @@ export function validateSyncParams(maxResults: number): {
 /**
  * Get rate limiter statistics
  */
-export function getRateLimiterStats(): {
+function getRateLimiterStats(): {
 	apiRateLimits: number;
 	lastSyncTimes: number;
 	activeSyncs: number;
@@ -360,7 +360,7 @@ export function getRateLimiterStats(): {
 /**
  * Reset all rate limits (for testing only!)
  */
-export function resetRateLimits(): void {
+function resetRateLimits(): void {
 	apiRateLimits.clear();
 	lastSyncTimes.clear();
 	activeSyncLocks.clear();
@@ -378,7 +378,7 @@ startCleanup();
 // EXPORTS
 // =============================================================================
 
-export const RATE_LIMITS = {
+const RATE_LIMITS = {
 	SYNC_COOLDOWN_MS,
 	MAX_MESSAGES_PER_SYNC,
 	MAX_CONCURRENT_SYNCS,

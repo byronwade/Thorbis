@@ -242,51 +242,16 @@ export function LinearHomepage() {
 
 					{/* Hero Product Image */}
 					<div className="hero-text-animate animate-delay-600 relative pb-20">
-						<div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/50 transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5">
+						<div className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5">
 							<div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-blue-500/5 opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-							<div className="aspect-[16/10] bg-muted/20">
-								{/* Product screenshot will go here */}
-								<div className="flex size-full items-center justify-center text-muted-foreground">
-									<Calendar className="size-16 opacity-20 transition-transform duration-500 group-hover:scale-110" />
-								</div>
-							</div>
-						</div>
-						{/* Floating UI Element - Animated */}
-						<div
-							className="absolute top-8 right-8 hidden rounded-lg border border-border/40 bg-card/95 p-4 backdrop-blur-md transition-all duration-500 hover:scale-105 hover:border-primary/30 md:block"
-							style={{
-								animation: "float-medium 8s ease-in-out infinite",
-							}}
-						>
-							<div className="flex items-center gap-3">
-								<div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-									<CheckCircle2 className="size-5" />
-								</div>
-								<div>
-									<p className="text-sm font-medium">Job Completed</p>
-									<p className="text-xs text-muted-foreground">
-										HVAC Repair - $450
-									</p>
-								</div>
-							</div>
-						</div>
-						{/* Additional floating element - bottom left */}
-						<div
-							className="absolute bottom-24 left-8 hidden rounded-lg border border-border/40 bg-card/95 p-4 backdrop-blur-md transition-all duration-500 hover:scale-105 hover:border-primary/30 md:block"
-							style={{
-								animation: "float-slow 10s ease-in-out infinite reverse",
-							}}
-						>
-							<div className="flex items-center gap-3">
-								<div className="flex size-10 items-center justify-center rounded-full bg-green-500/10 text-green-500">
-									<DollarSign className="size-5" />
-								</div>
-								<div>
-									<p className="text-sm font-medium">Payment Received</p>
-									<p className="text-xs text-muted-foreground">
-										Invoice #1247 - Paid
-									</p>
-								</div>
+							<div className="relative aspect-[16/10] bg-muted/20">
+								<Image
+									alt="Thorbis scheduling and dispatch dashboard"
+									className="object-contain"
+									fill
+									priority
+									src="/image.png"
+								/>
 							</div>
 						</div>
 					</div>

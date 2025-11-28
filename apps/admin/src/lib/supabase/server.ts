@@ -33,7 +33,7 @@ export async function createClient() {
 /**
  * Get the current admin session from cookies
  */
-export async function getAdminSession() {
+async function getAdminSession() {
 	const cookieStore = await cookies();
 	const sessionToken = cookieStore.get("admin_session")?.value;
 
@@ -49,7 +49,7 @@ export async function getAdminSession() {
 /**
  * Get the current admin user from the session
  */
-export async function getCurrentAdminUser() {
+async function getCurrentAdminUser() {
 	const session = await getAdminSession();
 
 	if (!session) {
@@ -71,5 +71,5 @@ export async function getCurrentAdminUser() {
 }
 
 // Re-export the admin client for convenience
-export { createAdminClient, getAdminClient } from "./admin-client";
-export { createWebReaderClient, getWebReaderClient } from "./web-reader";
+export { createAdminClient } from "./admin-client";
+export { getWebReaderClient } from "./web-reader";

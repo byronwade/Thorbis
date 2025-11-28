@@ -19,7 +19,7 @@ const FONT_URLS: Record<number, string> = {
 /**
  * Load Inter font with specified weight
  */
-export async function loadInterFont(
+async function loadInterFont(
 	weight: 400 | 500 | 700 | 800 = 700,
 ): Promise<ArrayBuffer> {
 	const cacheKey = `inter-${weight}`;
@@ -109,7 +109,7 @@ export async function loadOGFonts(): Promise<
 /**
  * Load a single font weight (more efficient for simple use cases)
  */
-export async function loadSingleFont(
+async function loadSingleFont(
 	weight: 400 | 500 | 700 | 800 = 700,
 ): Promise<{
 	name: string;

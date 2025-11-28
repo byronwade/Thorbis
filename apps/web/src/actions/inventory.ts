@@ -14,6 +14,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
 	ActionError,
 	ERROR_CODES,
@@ -21,11 +22,10 @@ import {
 } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
-	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // CONSTANTS & VALIDATION SCHEMAS
@@ -86,15 +86,8 @@ async function createInventory(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
-		const companyId = await getUserCompanyIdOrThrow(supabase);
 		const data = parseInventoryFormData(formData);
 
 		await getPriceBookItemForCompanyOrThrow(
@@ -134,15 +127,8 @@ async function updateInventory(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
-		const companyId = await getUserCompanyIdOrThrow(supabase);
 		const inventory = await getInventoryForCompanyOrThrow(
 			supabase,
 			inventoryId,
@@ -175,32 +161,7 @@ async function deleteInventory(
 	inventoryId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify inventory exists and belongs to company
 		const { data: inventory } = await supabase
@@ -212,7 +173,7 @@ async function deleteInventory(
 
 		assertExists(inventory, "Inventory");
 
-		if (inventory.company_id !== teamMember.company_id) {
+		if (inventory.company_id !== companyId) {
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -233,7 +194,7 @@ async function deleteInventory(
 			.from("inventory")
 			.update({
 				deleted_at: new Date().toISOString(),
-				deleted_by: user.id,
+				deleted_by: userId,
 				status: "discontinued",
 			})
 			.eq("id", inventoryId);
@@ -258,15 +219,8 @@ async function deleteInventory(
  */
 async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
-		const companyId = await getUserCompanyIdOrThrow(supabase);
 		const adjustment = parseStockAdjustmentFormData(formData);
 
 		const inventory = await getInventoryForCompanyOrThrow(
@@ -296,10 +250,6 @@ async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
 		}
 
 		// Create stock_movements record to track the adjustment
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-
 		const movementType = mapReasonToMovementType(adjustment.reason);
 		const quantityBefore = inventory.quantity_on_hand as number;
 		const quantityAfter = derived.newQuantityOnHand;
@@ -314,7 +264,7 @@ async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
 			reason: adjustment.reason,
 			notes: adjustment.notes,
 			reference_number: adjustment.reference,
-			created_by: user?.id,
+			created_by: userId,
 		});
 
 		revalidatePath("/dashboard/work/materials");
@@ -325,32 +275,9 @@ async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
 // HELPER FUNCTIONS
 // ============================================================================
 
-type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+type SupabaseClientType = SupabaseClient;
 
-async function getUserCompanyIdOrThrow(
-	supabase: SupabaseClientType,
-): Promise<string> {
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	assertAuthenticated(user?.id);
-
-	const { data: teamMember } = await supabase
-		.from("company_memberships")
-		.select("company_id")
-		.eq("user_id", user.id)
-		.single();
-
-	if (!teamMember?.company_id) {
-		throw new ActionError(
-			"You must be part of a company",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
-		);
-	}
-
-	return teamMember.company_id;
-}
+// Removed getUserCompanyIdOrThrow - use requireCompanyMembership() instead
 
 function parseInventoryFormData(formData: FormData) {
 	return inventorySchema.parse({
@@ -632,32 +559,7 @@ function mapReasonToMovementType(
  */
 async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Validate input
 		const data = reserveStockSchema.parse({
@@ -677,7 +579,7 @@ async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 
 		assertExists(inventory, "Inventory");
 
-		if (inventory.company_id !== teamMember.company_id) {
+		if (inventory.company_id !== companyId) {
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -717,12 +619,12 @@ async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 
 		// Create stock_reservations record to track the reservation
 		await supabase.from("stock_reservations").insert({
-			company_id: teamMember.company_id,
+			company_id: companyId,
 			inventory_id: data.inventoryId,
 			job_id: data.jobId,
 			quantity_reserved: data.quantity,
 			status: "active",
-			reserved_by: user.id,
+			reserved_by: userId,
 			notes: data.notes,
 			// Set expiration to 30 days by default
 			expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -730,7 +632,7 @@ async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 
 		// Also record a stock movement for the reservation
 		await supabase.from("stock_movements").insert({
-			company_id: teamMember.company_id,
+			company_id: companyId,
 			inventory_id: data.inventoryId,
 			movement_type: "reservation",
 			quantity_before: inventory.quantity_on_hand,
@@ -739,7 +641,7 @@ async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 			job_id: data.jobId,
 			reason: "Stock reserved for job",
 			notes: data.notes,
-			created_by: user.id,
+			created_by: userId,
 		});
 
 		if (data.jobId) {
@@ -757,32 +659,7 @@ async function releaseReservedStock(
 	quantity: number,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify inventory exists and belongs to company
 		const { data: inventory } = await supabase
@@ -794,7 +671,7 @@ async function releaseReservedStock(
 
 		assertExists(inventory, "Inventory");
 
-		if (inventory.company_id !== teamMember.company_id) {
+		if (inventory.company_id !== companyId) {
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -844,14 +721,14 @@ async function releaseReservedStock(
 
 		// Record a stock movement for the release
 		await supabase.from("stock_movements").insert({
-			company_id: teamMember.company_id,
+			company_id: companyId,
 			inventory_id: inventoryId,
 			movement_type: "release",
 			quantity_before: inventory.quantity_on_hand,
 			quantity_change: 0, // Release doesn't change on-hand
 			quantity_after: inventory.quantity_on_hand,
 			reason: "Reserved stock released",
-			created_by: user.id,
+			created_by: userId,
 		});
 
 		revalidatePath("/dashboard/work/materials");
@@ -867,32 +744,7 @@ async function useReservedStock(
 	jobId?: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify inventory exists and belongs to company
 		const { data: inventory } = await supabase
@@ -906,7 +758,7 @@ async function useReservedStock(
 
 		assertExists(inventory, "Inventory");
 
-		if (inventory.company_id !== teamMember.company_id) {
+		if (inventory.company_id !== companyId) {
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -968,7 +820,7 @@ async function useReservedStock(
 
 		// Record a stock movement for the usage
 		await supabase.from("stock_movements").insert({
-			company_id: teamMember.company_id,
+			company_id: companyId,
 			inventory_id: inventoryId,
 			movement_type: "issue",
 			quantity_before: inventory.quantity_on_hand,
@@ -976,7 +828,7 @@ async function useReservedStock(
 			quantity_after: newQuantityOnHand,
 			job_id: jobId,
 			reason: "Stock used for job",
-			created_by: user.id,
+			created_by: userId,
 		});
 
 		if (jobId) {
@@ -993,26 +845,7 @@ export async function archiveInventoryItem(
 	inventoryId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		assertExists(teamMember, "Team member");
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const { data: inventory } = await supabase
 			.from("inventory")
@@ -1022,7 +855,7 @@ export async function archiveInventoryItem(
 
 		assertExists(inventory, "Inventory");
 
-		if (inventory.company_id !== teamMember.company_id) {
+		if (inventory.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("inventory item"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1061,32 +894,7 @@ export async function archiveInventoryItem(
  */
 async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Get items at or below reorder point
 		const { data: lowStockItems, error } = await supabase
@@ -1097,7 +905,7 @@ async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
         item:price_book_items(id, name, sku, unit, supplier_id)
       `,
 			)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or("quantity_on_hand.lte.reorder_point,is_low_stock.eq.true")
@@ -1122,32 +930,7 @@ async function getItemsNeedingStockCheck(
 	daysSinceLastCheck = 30,
 ): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const checkDate = new Date();
 		checkDate.setDate(checkDate.getDate() - daysSinceLastCheck);
@@ -1160,7 +943,7 @@ async function getItemsNeedingStockCheck(
         item:price_book_items(id, name, sku)
       `,
 			)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or(

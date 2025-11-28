@@ -265,7 +265,7 @@ export async function recordFallbackTriggered(
  * @param period - Time period ("1h", "24h", "7d", "30d")
  * @returns Provider statistics
  */
-export async function getProviderStats(
+async function getProviderStats(
 	provider: EmailProvider,
 	period: "1h" | "24h" | "7d" | "30d" = "24h",
 ): Promise<ProviderStats | null> {
@@ -370,7 +370,7 @@ export async function getProviderStats(
  *
  * @returns Dashboard data for monitoring UI
  */
-export async function getProviderHealthDashboard(): Promise<ProviderHealthDashboard> {
+async function getProviderHealthDashboard(): Promise<ProviderHealthDashboard> {
 	console.log("[ProviderMonitor] Getting health dashboard data...");
 
 	// Get stats for both providers
@@ -455,7 +455,7 @@ export async function getProviderHealthDashboard(): Promise<ProviderHealthDashbo
  * @param retentionDays - Number of days to retain events
  * @returns Number of deleted events
  */
-export async function cleanupOldEvents(
+async function cleanupOldEvents(
 	retentionDays: number = 30,
 ): Promise<{ deleted: number; error?: string }> {
 	try {
@@ -499,7 +499,7 @@ export async function cleanupOldEvents(
  * @param provider - Provider to check
  * @returns Alert status and reason
  */
-export async function checkProviderAlert(provider: EmailProvider): Promise<{
+async function checkProviderAlert(provider: EmailProvider): Promise<{
 	shouldAlert: boolean;
 	severity: "info" | "warning" | "critical";
 	reason?: string;

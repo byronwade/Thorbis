@@ -10,12 +10,13 @@
 
 import { createClient } from "@/lib/supabase/server";
 import Twilio from "twilio";
+import { env } from "@stratos/config/env";
 
 // Global Twilio config (for admin operations only)
 export const TWILIO_ADMIN_CONFIG = {
-	accountSid: process.env.TWILIO_ACCOUNT_SID,
-	authToken: process.env.TWILIO_AUTH_TOKEN,
-	webhookBaseUrl: process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000",
+	accountSid: env.twilio.accountSid || undefined,
+	authToken: env.twilio.authToken || undefined,
+	webhookBaseUrl: env.siteUrl || "https://localhost:3000",
 };
 
 // Twilio client cache (keyed by company ID)

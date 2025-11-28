@@ -166,7 +166,7 @@ export async function destroySession(): Promise<void> {
 /**
  * Revoke all sessions for a user (e.g., on password change)
  */
-export async function revokeAllUserSessions(userId: string): Promise<void> {
+async function revokeAllUserSessions(userId: string): Promise<void> {
 	const supabase = await createClient();
 
 	await supabase
@@ -190,7 +190,7 @@ async function hashToken(token: string): Promise<string> {
 /**
  * Clean up expired sessions (run periodically)
  */
-export async function cleanupExpiredSessions(): Promise<number> {
+async function cleanupExpiredSessions(): Promise<number> {
 	const supabase = await createClient();
 
 	const { data, error } = await supabase

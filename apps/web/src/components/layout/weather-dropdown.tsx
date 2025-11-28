@@ -200,7 +200,7 @@ export function WeatherDropdown({ initialWeather }: WeatherDropdownProps) {
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<button
-							className="hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 size-10 md:size-8 text-muted-foreground"
+							className="focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 w-8 items-center justify-center rounded-md transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 							type="button"
 							disabled
 						>
@@ -221,12 +221,12 @@ export function WeatherDropdown({ initialWeather }: WeatherDropdownProps) {
 						<PopoverTrigger asChild>
 							<button
 								className={cn(
-									"hover:border-primary/20 hover:bg-primary/10 focus-visible:ring-ring/50 flex items-center justify-center gap-1.5 rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 h-10 md:h-8 px-2",
+									"focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md px-2 transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50",
 									hasSevereAlerts
-										? "text-red-500 bg-red-500/10 border-red-500/20"
+										? "text-destructive bg-destructive/10"
 										: hasActiveAlerts
-											? "text-orange-500 bg-orange-500/10 border-orange-500/20"
-											: "text-muted-foreground hover:text-primary"
+											? "text-warning bg-warning/10"
+											: "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 								)}
 								type="button"
 							>

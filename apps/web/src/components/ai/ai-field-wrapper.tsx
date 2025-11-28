@@ -47,7 +47,7 @@ type AIFieldWrapperProps = {
 	suggestionCount?: number;
 };
 
-export function AIFieldWrapper({
+function AIFieldWrapper({
 	children,
 	value,
 	onChange,

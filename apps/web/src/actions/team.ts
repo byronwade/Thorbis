@@ -21,9 +21,11 @@ import {
 	type ActionResult,
 	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@stratos/config/env";
 
 // Schema for inviting team members
 const inviteTeamMemberSchema = z.object({
@@ -63,34 +65,7 @@ export async function createTeamMemberDirect(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: companyMembership } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!companyMembership?.company_id) {
-			throw new ActionError(
-				"You must be part of a company to create team members",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId: currentUserId, companyId, supabase } = await requireCompanyMembership();
 
 		const email = formData.get("email") as string;
 		const firstName = formData.get("firstName") as string;
@@ -106,7 +81,7 @@ export async function createTeamMemberDirect(
 		}
 
 		// Create or get user profile
-		let userId: string;
+		let targetUserId: string;
 		const { data: existingProfile } = await supabase
 			.from("profiles")
 			.select("id")
@@ -114,7 +89,7 @@ export async function createTeamMemberDirect(
 			.single();
 
 		if (existingProfile) {
-			userId = existingProfile.id;
+			targetUserId = existingProfile.id;
 		} else {
 			// Create Supabase Auth user with temporary password
 			const tempPassword = formData.get("temp_password") as string;
@@ -142,11 +117,11 @@ export async function createTeamMemberDirect(
 				);
 			}
 
-			userId = authUser.user.id;
+			targetUserId = authUser.user.id;
 
 			// Create profile record
 			const { error: profileError } = await supabase.from("profiles").insert({
-				id: userId,
+				id: targetUserId,
 				email,
 				full_name: `${firstName} ${lastName}`,
 				phone: (formData.get("phone") as string) || null,
@@ -233,8 +208,8 @@ export async function createTeamMemberDirect(
 		const { data: membership, error: membershipError } = await supabase
 			.from("company_memberships")
 			.insert({
-				company_id: companyMembership.company_id,
-				user_id: userId,
+				company_id: companyId,
+				user_id: targetUserId,
 				role: role as
 					| "owner"
 					| "admin"
@@ -329,7 +304,7 @@ export async function createTeamMemberDirect(
 				const { data: company } = await supabase
 					.from("companies")
 					.select("name")
-					.eq("id", companyMembership.company_id)
+					.eq("id", companyId)
 					.single();
 
 				const companyName = company?.name || "the team";
@@ -338,7 +313,7 @@ export async function createTeamMemberDirect(
 				await sendEmail({
 					to: email,
 					subject: `Welcome to ${companyName}!`,
-					text: `Hi ${fullName},\n\nYou've been added as a team member at ${companyName}. You can now log in to access your dashboard and start working.\n\nLogin here: ${process.env.NEXT_PUBLIC_SITE_URL}/login\n\nIf you have any questions, please reach out to your team administrator.\n\nWelcome aboard!`,
+					text: `Hi ${fullName},\n\nYou've been added as a team member at ${companyName}. You can now log in to access your dashboard and start working.\n\nLogin here: ${env.siteUrl || "https://app.thorbis.com"}/login\n\nIf you have any questions, please reach out to your team administrator.\n\nWelcome aboard!`,
 				});
 			} catch (emailError) {
 				// Don't fail the whole operation if email fails
@@ -359,34 +334,7 @@ async function inviteTeamMember(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: companyMembership } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!companyMembership?.company_id) {
-			throw new ActionError(
-				"You must be part of a company to invite team members",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId: currentUserId, companyId, supabase } = await requireCompanyMembership();
 
 		const data = inviteTeamMemberSchema.parse({
 			email: formData.get("email"),
@@ -397,7 +345,7 @@ async function inviteTeamMember(
 		});
 
 		// Check if user already exists in profiles
-		let userId: string;
+		let targetUserId: string;
 		const { data: existingProfile } = await supabase
 			.from("profiles")
 			.select("id")
@@ -405,7 +353,7 @@ async function inviteTeamMember(
 			.single();
 
 		if (existingProfile) {
-			userId = existingProfile.id;
+			targetUserId = existingProfile.id;
 		} else {
 			// Create profile record (they'll complete registration via invitation link)
 			const { data: newProfile, error: profileError } = await supabase
@@ -424,7 +372,7 @@ async function inviteTeamMember(
 				);
 			}
 
-			userId = newProfile.id;
+			targetUserId = newProfile.id;
 		}
 
 		// Get role ID if role is specified
@@ -434,7 +382,7 @@ async function inviteTeamMember(
 				.from("custom_roles")
 				.select("id")
 				.eq("name", data.role)
-				.eq("company_id", companyMembership.company_id)
+				.eq("company_id", companyId)
 				.single();
 
 			roleId = role?.id;
@@ -447,7 +395,7 @@ async function inviteTeamMember(
 				.from("departments")
 				.select("id")
 				.eq("id", data.department)
-				.eq("company_id", companyMembership.company_id)
+				.eq("company_id", companyId)
 				.single();
 
 			departmentId = dept?.id;
@@ -457,8 +405,8 @@ async function inviteTeamMember(
 		const { data: invitation, error: inviteError } = await supabase
 			.from("company_memberships")
 			.insert({
-				company_id: companyMembership.company_id,
-				user_id: userId,
+				company_id: companyId,
+				user_id: targetUserId,
 				role: data.role as
 					| "owner"
 					| "admin"
@@ -527,34 +475,7 @@ async function updateTeamMember(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company to verify permissions
-		const { data: currentUserMembership } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserMembership?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify team member belongs to same company
 		const { data: targetMembership } = await supabase
@@ -565,7 +486,7 @@ async function updateTeamMember(
 
 		assertExists(targetMembership, "Team member");
 
-		if (targetMembership.company_id !== currentUserMembership.company_id) {
+		if (targetMembership.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team member"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -584,7 +505,7 @@ async function updateTeamMember(
 				.from("departments")
 				.select("id")
 				.eq("id", departmentInput)
-				.eq("company_id", currentUserMembership.company_id)
+				.eq("company_id", companyId)
 				.single();
 
 			departmentId = dept?.id || null;
@@ -597,7 +518,7 @@ async function updateTeamMember(
 			const { data: company } = await supabase
 				.from("companies")
 				.select("owner_id")
-				.eq("id", currentUserMembership.company_id)
+				.eq("id", companyId)
 				.single();
 
 			if (company && company.owner_id === targetMembership.user_id) {
@@ -645,34 +566,7 @@ async function updateTeamMember(
  */
 async function removeTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company to verify permissions
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify team member belongs to same company
 		const { data: targetMember } = await supabase
@@ -683,7 +577,7 @@ async function removeTeamMember(memberId: string): Promise<ActionResult<void>> {
 
 		assertExists(targetMember, "Team member");
 
-		if (targetMember.company_id !== currentUserTeam.company_id) {
+		if (targetMember.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team member"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -692,7 +586,7 @@ async function removeTeamMember(memberId: string): Promise<ActionResult<void>> {
 		}
 
 		// Prevent removing yourself
-		if (targetMember.user_id === user.id) {
+		if (targetMember.user_id === userId) {
 			throw new ActionError(
 				"You cannot remove yourself from the team",
 				ERROR_CODES.BUSINESS_RULE_VIOLATION,
@@ -1334,35 +1228,12 @@ async function updateTeamMemberPermissions(
 	newRole: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get active company ID
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Check if user is owner or manager
-		const isOwner = await isCompanyOwner(supabase, user.id, companyId);
-		const isManager = await hasRole(supabase, user.id, "manager", companyId);
-		const isAdmin = await hasRole(supabase, user.id, "admin", companyId);
+		const isOwner = await isCompanyOwner(supabase, userId, companyId);
+		const isManager = await hasRole(supabase, userId, "manager", companyId);
+		const isAdmin = await hasRole(supabase, userId, "admin", companyId);
 
 		if (!(isOwner || isManager || isAdmin)) {
 			throw new ActionError(
@@ -1383,7 +1254,7 @@ async function updateTeamMemberPermissions(
 		assertExists(targetMember, "Team member");
 
 		// Prevent changing your own role
-		if (targetMember.user_id === user.id) {
+		if (targetMember.user_id === userId) {
 			throw new ActionError(
 				"You cannot change your own role",
 				ERROR_CODES.BUSINESS_RULE_VIOLATION,
@@ -1421,7 +1292,7 @@ async function updateTeamMemberPermissions(
 		// Log the permission change
 		await supabase.from("activity_logs").insert({
 			company_id: companyId,
-			user_id: user.id,
+			user_id: userId,
 			action_type: "permissions_updated",
 			resource_type: "team_member",
 			resource_id: memberId,
@@ -1442,34 +1313,7 @@ async function updateTeamMemberPermissions(
  */
 async function createRole(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const permissionsString = formData.get("permissions") as string;
 		const permissions = permissionsString ? permissionsString.split(",") : [];
@@ -1486,7 +1330,7 @@ async function createRole(formData: FormData): Promise<ActionResult<string>> {
 			.from("custom_roles")
 			.select("id")
 			.eq("name", data.name)
-			.eq("company_id", currentUserTeam.company_id)
+			.eq("company_id", companyId)
 			.single();
 
 		if (existingRole) {
@@ -1500,7 +1344,7 @@ async function createRole(formData: FormData): Promise<ActionResult<string>> {
 		const { data: newRole, error: createError } = await supabase
 			.from("custom_roles")
 			.insert({
-				company_id: currentUserTeam.company_id,
+				company_id: companyId,
 				name: data.name,
 				description: data.description,
 				color: data.color,
@@ -1530,34 +1374,7 @@ async function updateRole(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify role belongs to company and is not a system role
 		const { data: existingRole } = await supabase
@@ -1568,7 +1385,7 @@ async function updateRole(
 
 		assertExists(existingRole, "Role");
 
-		if (existingRole.company_id !== currentUserTeam.company_id) {
+		if (existingRole.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("role"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1621,34 +1438,7 @@ async function updateRole(
  */
 async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify role belongs to company and is not a system role
 		const { data: existingRole } = await supabase
@@ -1659,7 +1449,7 @@ async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 
 		assertExists(existingRole, "Role");
 
-		if (existingRole.company_id !== currentUserTeam.company_id) {
+		if (existingRole.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("role"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1722,34 +1512,7 @@ async function createDepartment(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const data = createDepartmentSchema.parse({
 			name: formData.get("name"),
@@ -1762,7 +1525,7 @@ async function createDepartment(
 			.from("departments")
 			.select("id")
 			.eq("name", data.name)
-			.eq("company_id", currentUserTeam.company_id)
+			.eq("company_id", companyId)
 			.single();
 
 		if (existingDepartment) {
@@ -1776,7 +1539,7 @@ async function createDepartment(
 		const { data: newDepartment, error: createError } = await supabase
 			.from("departments")
 			.insert({
-				company_id: currentUserTeam.company_id,
+				company_id: companyId,
 				name: data.name,
 				description: data.description,
 			})
@@ -1803,34 +1566,7 @@ async function updateDepartment(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify department belongs to company
 		const { data: existingDepartment } = await supabase
@@ -1841,7 +1577,7 @@ async function updateDepartment(
 
 		assertExists(existingDepartment, "Department");
 
-		if (existingDepartment.company_id !== currentUserTeam.company_id) {
+		if (existingDepartment.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("department"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1882,34 +1618,7 @@ async function deleteDepartment(
 	departmentId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: currentUserTeam } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify department belongs to company
 		const { data: existingDepartment } = await supabase
@@ -1920,7 +1629,7 @@ async function deleteDepartment(
 
 		assertExists(existingDepartment, "Department");
 
-		if (existingDepartment.company_id !== currentUserTeam.company_id) {
+		if (existingDepartment.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("department"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -2150,39 +1859,13 @@ async function getRoles(): Promise<
 	>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Fetch roles
 		const { data: roles, error } = await supabase
 			.from("custom_roles")
 			.select("id, name, description, color, permissions, is_system")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.order("name");
 
 		if (error) {
@@ -2201,7 +1884,7 @@ async function getRoles(): Promise<
 		const { data: roleCounts } = await supabase
 			.from("company_memberships")
 			.select("role_id")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.not("role_id", "is", null);
 
 		// Aggregate counts by role in-memory
@@ -2315,39 +1998,13 @@ async function getDepartments(): Promise<
 	>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Fetch departments
 		const { data: departments, error } = await supabase
 			.from("departments")
 			.select("id, name, description, color")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.order("name");
 
 		if (error) {
@@ -2366,7 +2023,7 @@ async function getDepartments(): Promise<
 		const { data: deptCounts } = await supabase
 			.from("company_memberships")
 			.select("department_id")
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.not("department_id", "is", null);
 
 		// Aggregate counts by department in-memory

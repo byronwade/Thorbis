@@ -19,7 +19,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
  * IMPORTANT: This should only be used for READ operations.
  * Never write to the web database from the admin app.
  */
-export function createWebReaderClient() {
+function createWebReaderClient() {
 	const supabaseUrl = process.env.WEB_SUPABASE_URL;
 	const serviceRoleKey = process.env.WEB_SUPABASE_SERVICE_ROLE_KEY;
 
@@ -59,7 +59,7 @@ export function getWebReaderClient() {
 /**
  * Get a company from the web database by ID
  */
-export async function getWebCompany(companyId: string) {
+async function getWebCompany(companyId: string) {
 	const client = getWebReaderClient();
 	const { data, error } = await client
 		.from("companies")
@@ -74,7 +74,7 @@ export async function getWebCompany(companyId: string) {
 /**
  * Get all companies from the web database
  */
-export async function getWebCompanies(options?: {
+async function getWebCompanies(options?: {
 	limit?: number;
 	offset?: number;
 	status?: string;
@@ -103,7 +103,7 @@ export async function getWebCompanies(options?: {
 /**
  * Get users for a company from the web database
  */
-export async function getWebCompanyUsers(companyId: string) {
+async function getWebCompanyUsers(companyId: string) {
 	const client = getWebReaderClient();
 	const { data, error } = await client
 		.from("team_members")
@@ -118,7 +118,7 @@ export async function getWebCompanyUsers(companyId: string) {
 /**
  * Get jobs for a company from the web database
  */
-export async function getWebCompanyJobs(companyId: string, options?: { limit?: number }) {
+async function getWebCompanyJobs(companyId: string, options?: { limit?: number }) {
 	const client = getWebReaderClient();
 	let query = client
 		.from("jobs")
@@ -139,7 +139,7 @@ export async function getWebCompanyJobs(companyId: string, options?: { limit?: n
 /**
  * Get customers for a company from the web database
  */
-export async function getWebCompanyCustomers(companyId: string, options?: { limit?: number }) {
+async function getWebCompanyCustomers(companyId: string, options?: { limit?: number }) {
 	const client = getWebReaderClient();
 	let query = client
 		.from("customers")
@@ -160,7 +160,7 @@ export async function getWebCompanyCustomers(companyId: string, options?: { limi
 /**
  * Get invoices for a company from the web database
  */
-export async function getWebCompanyInvoices(companyId: string, options?: { limit?: number }) {
+async function getWebCompanyInvoices(companyId: string, options?: { limit?: number }) {
 	const client = getWebReaderClient();
 	let query = client
 		.from("invoices")
@@ -181,7 +181,7 @@ export async function getWebCompanyInvoices(companyId: string, options?: { limit
 /**
  * Search across web database (for support purposes)
  */
-export async function searchWebDatabase(searchTerm: string, options?: { limit?: number }) {
+async function searchWebDatabase(searchTerm: string, options?: { limit?: number }) {
 	const client = getWebReaderClient();
 	const limit = options?.limit || 10;
 

@@ -186,7 +186,7 @@ export async function updatePayoutSchedule(
 /**
  * Connect bank account via Plaid
  */
-export async function connectBankAccount(
+async function connectBankAccount(
 	companyId: string,
 	plaidPublicToken: string,
 ): Promise<{
@@ -251,7 +251,7 @@ export async function connectBankAccount(
 /**
  * Request instant payout
  */
-export async function requestInstantPayout(
+async function requestInstantPayout(
 	companyId: string,
 	amount: number,
 ): Promise<{

@@ -386,7 +386,7 @@ type InlineQuickRepliesProps = {
 	className?: string;
 };
 
-export function InlineQuickReplies({
+function InlineQuickReplies({
 	customerPhone,
 	templateContext = {},
 	onSelectTemplate,
@@ -419,5 +419,5 @@ export function InlineQuickReplies({
 }
 
 // Export templates for use in other components
-export { CALL_QUICK_REPLIES };
+{ CALL_QUICK_REPLIES };
 export type { QuickReplyTemplate, TemplateContext };

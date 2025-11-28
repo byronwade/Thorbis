@@ -79,7 +79,7 @@ export function calculateStorageCost(bytes: number): {
  * Get current storage usage for a company
  * Queries Supabase Storage API for all company buckets
  */
-export async function getStorageUsage(companyId: string): Promise<StorageUsage> {
+async function getStorageUsage(companyId: string): Promise<StorageUsage> {
 	const supabase = await createServiceSupabaseClient();
 	if (!supabase) {
 		return createEmptyUsage(companyId);
@@ -187,7 +187,7 @@ export async function getStorageUsage(companyId: string): Promise<StorageUsage> 
  * Get storage usage from database records (for jobs, invoices, etc.)
  * This is an alternative method that counts attachments in the database
  */
-export async function getStorageUsageFromDatabase(
+async function getStorageUsageFromDatabase(
 	companyId: string,
 ): Promise<StorageUsage> {
 	const supabase = await createServiceSupabaseClient();
@@ -290,7 +290,7 @@ export async function getStorageUsageFromDatabase(
  * Take a storage snapshot for a company
  * Should be run daily via cron job
  */
-export async function trackStorageSnapshot(
+async function trackStorageSnapshot(
 	companyId: string,
 ): Promise<StorageSnapshot | null> {
 	const supabase = await createServiceSupabaseClient();
@@ -352,7 +352,7 @@ export async function trackStorageSnapshot(
  * Get monthly storage usage for billing
  * Returns the peak storage usage for the month (highest daily snapshot)
  */
-export async function getMonthlyStorageUsage(
+async function getMonthlyStorageUsage(
 	companyId: string,
 	monthYear: string, // Format: "2024-11"
 ): Promise<{
@@ -449,7 +449,7 @@ export async function getMonthlyStorageUsage(
 /**
  * Get storage usage trend over multiple months
  */
-export async function getStorageUsageTrend(
+async function getStorageUsageTrend(
 	companyId: string,
 	months: number = 6,
 ): Promise<
@@ -526,7 +526,7 @@ export function formatBytes(bytes: number): string {
 // Exports
 // ============================================
 
-export default {
+default {
 	getStorageUsage,
 	getStorageUsageFromDatabase,
 	trackStorageSnapshot,

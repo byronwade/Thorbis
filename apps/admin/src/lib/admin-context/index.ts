@@ -58,7 +58,7 @@ export const getActiveSupportSessionId = cache(async (): Promise<string | null> 
 /**
  * Set impersonation context (call when entering view-as mode)
  */
-export async function setImpersonation(companyId: string, sessionId: string): Promise<void> {
+async function setImpersonation(companyId: string, sessionId: string): Promise<void> {
 	const cookieStore = await cookies();
 
 	// Verify admin session
@@ -92,7 +92,7 @@ export async function setImpersonation(companyId: string, sessionId: string): Pr
 /**
  * Clear impersonation context (call when exiting view-as mode)
  */
-export async function clearImpersonation(): Promise<void> {
+async function clearImpersonation(): Promise<void> {
 	const cookieStore = await cookies();
 	cookieStore.delete(IMPERSONATION_COOKIE);
 	cookieStore.delete(SESSION_COOKIE);
@@ -152,7 +152,7 @@ export async function requireActiveSupportSession(): Promise<{
 /**
  * Check if currently in view-as mode
  */
-export const isInViewAsMode = cache(async (): Promise<boolean> => {
+const isInViewAsMode = cache(async (): Promise<boolean> => {
 	const companyId = await getImpersonatedCompanyId();
 	return companyId !== null;
 });
@@ -160,7 +160,7 @@ export const isInViewAsMode = cache(async (): Promise<boolean> => {
 /**
  * Get support session permissions
  */
-export async function getSessionPermissions(sessionId: string): Promise<string[]> {
+async function getSessionPermissions(sessionId: string): Promise<string[]> {
 	const adminDb = createAdminClient();
 
 	const { data: permissions } = await adminDb.from("support_session_permissions").select("action_type").eq("session_id", sessionId).eq("granted", true);
@@ -184,7 +184,7 @@ export async function hasPermission(actionType: string): Promise<boolean> {
 /**
  * Higher-order function to wrap Server Actions with permission checks
  */
-export function withSupportSession<T extends (...args: any[]) => Promise<any>>(action: T, requiredPermission?: string): T {
+function withSupportSession<T extends (...args: any[]) => Promise<any>>(action: T, requiredPermission?: string): T {
 	return (async (...args: any[]) => {
 		// Verify active support session
 		const session = await requireActiveSupportSession();

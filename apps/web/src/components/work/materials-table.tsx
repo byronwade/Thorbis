@@ -5,6 +5,7 @@ import {
 	Download,
 	MoreHorizontal,
 	Package,
+	Plus,
 	ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
@@ -301,6 +302,17 @@ export function MaterialsTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredMaterials}
+			emptyAction={
+				<Button
+					onClick={() =>
+						(window.location.href = "/dashboard/work/materials/new")
+					}
+					size="sm"
+				>
+					<Plus className="mr-2 size-4" />
+					Add Material
+				</Button>
+			}
 			emptyIcon={
 				<Package className="text-muted-foreground mx-auto h-12 w-12" />
 			}

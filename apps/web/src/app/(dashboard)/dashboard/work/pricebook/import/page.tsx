@@ -6,13 +6,13 @@
  */
 
 import { Suspense } from "react";
-import { UimportData } from "@/components/work/import/import-data";
+import { ImportData } from "@/components/work/import/import-data";
 import { UimportSkeleton } from "@/components/work/import/import-skeleton";
 
 export default function UimportPage() {
 	return (
 		<Suspense fallback={<UimportSkeleton />}>
-			<UimportData />
+			<ImportData />
 		</Suspense>
 	);
 }

@@ -29,7 +29,7 @@ export interface SupportSession {
 /**
  * Request a support session to access a customer's account
  */
-export async function requestSupportSession(companyId: string, ticketId: string | null, reason: string, requestedPermissions: string[] = ["view"]) {
+async function requestSupportSession(companyId: string, ticketId: string | null, reason: string, requestedPermissions: string[] = ["view"]) {
 	const session = await getAdminSession();
 	if (!session) {
 		return { error: "Unauthorized" };
@@ -99,7 +99,7 @@ export async function requestSupportSession(companyId: string, ticketId: string 
 /**
  * Approve a support session (called by customer in web app)
  */
-export async function approveSupportSession(sessionId: string, durationMinutes: number = 60) {
+async function approveSupportSession(sessionId: string, durationMinutes: number = 60) {
 	// TODO: Verify customer authorization (will implement with web app integration)
 	// const webSession = await getWebSession();
 	// if (!webSession) return { error: "Unauthorized" };
@@ -152,7 +152,7 @@ export async function approveSupportSession(sessionId: string, durationMinutes: 
 /**
  * Reject a support session (called by customer in web app)
  */
-export async function rejectSupportSession(sessionId: string, reason?: string) {
+async function rejectSupportSession(sessionId: string, reason?: string) {
 	// TODO: Verify customer authorization
 	const adminDb = createAdminClient();
 
@@ -223,7 +223,7 @@ export async function endSupportSession(sessionId: string, endedBy: "admin" | "c
 /**
  * Get support session status
  */
-export async function getSupportSessionStatus(sessionId: string) {
+async function getSupportSessionStatus(sessionId: string) {
 	const adminDb = createAdminClient();
 
 	const { data: session, error } = await adminDb.from("support_sessions").select("*, admin_users(email, full_name)").eq("id", sessionId).single();
@@ -247,7 +247,7 @@ export async function getSupportSessionStatus(sessionId: string) {
 /**
  * Get active session for a company (if any)
  */
-export async function getActiveSessionForCompany(companyId: string) {
+async function getActiveSessionForCompany(companyId: string) {
 	const adminDb = createAdminClient();
 
 	const { data: sessionId } = await adminDb.rpc("get_active_session_for_company", {
@@ -264,7 +264,7 @@ export async function getActiveSessionForCompany(companyId: string) {
 /**
  * Extend a support session (requires customer approval)
  */
-export async function requestSessionExtension(sessionId: string, additionalMinutes: number = 30) {
+async function requestSessionExtension(sessionId: string, additionalMinutes: number = 30) {
 	const session = await getAdminSession();
 	if (!session) {
 		return { error: "Unauthorized" };
@@ -301,7 +301,7 @@ export async function requestSessionExtension(sessionId: string, additionalMinut
 /**
  * Log a support action during an active session
  */
-export async function logSupportAction(sessionId: string, action: string, resourceType: string, resourceId: string, beforeData?: any, afterData?: any, reason?: string) {
+async function logSupportAction(sessionId: string, action: string, resourceType: string, resourceId: string, beforeData?: any, afterData?: any, reason?: string) {
 	const session = await getAdminSession();
 	if (!session) {
 		return { error: "Unauthorized" };
@@ -340,7 +340,7 @@ export async function logSupportAction(sessionId: string, action: string, resour
 /**
  * Get all sessions for a company (for audit trail)
  */
-export async function getCompanySupportSessions(companyId: string, limit: number = 50) {
+async function getCompanySupportSessions(companyId: string, limit: number = 50) {
 	const adminDb = createAdminClient();
 
 	const { data: sessions, error } = await adminDb
@@ -366,7 +366,7 @@ export async function getCompanySupportSessions(companyId: string, limit: number
 /**
  * Get all actions for a session (detailed audit trail)
  */
-export async function getSessionActions(sessionId: string) {
+async function getSessionActions(sessionId: string) {
 	const adminDb = createAdminClient();
 
 	const { data: actions, error } = await adminDb
@@ -390,7 +390,7 @@ export async function getSessionActions(sessionId: string) {
 /**
  * Check if admin has permission for an action in current session
  */
-export async function hasSessionPermission(sessionId: string, actionType: string): Promise<boolean> {
+async function hasSessionPermission(sessionId: string, actionType: string): Promise<boolean> {
 	const adminDb = createAdminClient();
 
 	const { data: permission } = await adminDb.from("support_session_permissions").select("granted").eq("session_id", sessionId).eq("action_type", actionType).single();

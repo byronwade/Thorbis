@@ -173,7 +173,7 @@ export const API_COSTS = {
 /**
  * Get estimated cost for an API call
  */
-export function getApiCost(apiName: string, endpoint: string): number {
+function getApiCost(apiName: string, endpoint: string): number {
 	const apiCosts = API_COSTS[apiName as keyof typeof API_COSTS];
 	if (!apiCosts) return 0;
 
@@ -191,7 +191,7 @@ export function getApiCost(apiName: string, endpoint: string): number {
  * @param params - Usage tracking parameters
  * @returns The updated usage record or null if tracking failed
  */
-export async function trackApiUsage(
+async function trackApiUsage(
 	params: TrackApiUsageParams,
 ): Promise<ApiUsageRecord | null> {
 	const {
@@ -329,7 +329,7 @@ export async function checkApiQuota(
  * @param monthYear - Specific month (YYYY-MM) or null for current month
  * @returns Array of usage records
  */
-export async function getApiUsageStats(
+async function getApiUsageStats(
 	companyId: string,
 	monthYear?: string,
 ): Promise<ApiUsageRecord[]> {
@@ -360,7 +360,7 @@ export async function getApiUsageStats(
  * @param months - Number of months to include (default: 3)
  * @returns Array of monthly summaries
  */
-export async function getApiUsageSummary(
+async function getApiUsageSummary(
 	companyId: string,
 	months: number = 3,
 ): Promise<ApiUsageSummary[]> {
@@ -399,7 +399,7 @@ export async function getApiUsageSummary(
  * const trackedApi = createTrackedApiClient(companyId, "google_document_ai");
  * const result = await trackedApi.call("process_invoice", () => service.processInvoice(doc));
  */
-export function createTrackedApiClient(companyId: string, apiName: string) {
+function createTrackedApiClient(companyId: string, apiName: string) {
 	return {
 		call: <T>(
 			endpoint: string,
@@ -457,7 +457,7 @@ export function createTrackedApiClient(companyId: string, apiName: string) {
  *   throw error;
  * }
  */
-export function apiUsageTracker(
+function apiUsageTracker(
 	companyId: string,
 	apiName: string,
 	endpoint: string,

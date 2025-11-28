@@ -114,19 +114,13 @@ const BLOCKED_EXTENSIONS = [
 	".cab",
 ];
 
+import { FILE_SIZE_LIMITS } from "@stratos/shared/constants";
+
 /**
  * File size limits by context (in bytes)
+ * Using centralized constants from @stratos/shared
  */
-const SIZE_LIMITS = {
-	avatar: 5 * 1024 * 1024, // 5MB
-	image: 20 * 1024 * 1024, // 20MB
-	document: 100 * 1024 * 1024, // 100MB
-	video: 250 * 1024 * 1024, // 250MB
-	general: 250 * 1024 * 1024, // 250MB
-	invoice: 20 * 1024 * 1024, // 20MB
-	estimate: 20 * 1024 * 1024, // 20MB
-	contract: 50 * 1024 * 1024, // 50MB
-} as const;
+const SIZE_LIMITS = FILE_SIZE_LIMITS;
 
 /**
  * Allowed MIME types by category

@@ -214,11 +214,53 @@ export function ScheduleJobContextMenu({
 		);
 		toast.dismiss();
 
-		if (result.success) {
-			toast.success("Completion notification sent!");
-		} else {
-			toast.error(result.error || "Failed to send notification");
-		}
+	if (result.success) {
+		toast.success("Completion notification sent!");
+	} else {
+		toast.error(result.error || "Failed to send notification");
+	}
+};
+
+	// Archive with undo countdown (5s)
+	const handleArchiveWithUndo = () => {
+		if (!job.id) return;
+
+		let remaining = 5;
+		let cancelled = false;
+
+		const toastId = toast.loading(`Archiving in ${remaining}s...`, {
+			action: {
+				label: "Undo",
+				onClick: () => {
+					cancelled = true;
+					toast.dismiss(toastId);
+					toast.success("Archive cancelled");
+				},
+			},
+		});
+
+		const intervalId = setInterval(async () => {
+			if (cancelled) {
+				clearInterval(intervalId);
+				return;
+			}
+
+			remaining -= 1;
+			if (remaining > 0) {
+				toast.loading(`Archiving in ${remaining}s...`, { id: toastId });
+				return;
+			}
+
+			clearInterval(intervalId);
+			toast.loading("Archiving appointment...", { id: toastId });
+			const result = await archiveAppointment(job.id);
+			toast.dismiss(toastId);
+			if (result.success) {
+				toast.success("Appointment archived");
+			} else {
+				toast.error(result.error || "Failed to archive appointment");
+			}
+		}, 1000);
 	};
 
 	return (
@@ -518,7 +560,7 @@ export function ScheduleJobContextMenu({
 
 						<ContextMenuItem
 							variant="destructive"
-							onClick={() => handleAction("Archiving", archiveAppointment)}
+							onClick={handleArchiveWithUndo}
 						>
 							<Archive className="size-4" />
 							<span>Archive</span>

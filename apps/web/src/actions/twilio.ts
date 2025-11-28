@@ -324,7 +324,7 @@ export async function getCompanyPhoneNumbers(companyId: string) {
 /**
  * Release (delete) a phone number
  */
-export async function deletePhoneNumber(phoneNumberId: string) {
+async function deletePhoneNumber(phoneNumberId: string) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -494,7 +494,7 @@ export async function makeCall(params: {
 /**
  * End an active call
  */
-export async function endActiveCall(params: {
+async function endActiveCall(params: {
 	companyId: string;
 	callSid: string;
 }) {
@@ -562,7 +562,7 @@ export async function stopCallRecording(params: {
 /**
  * Transfer an active call to another number
  */
-export async function transferActiveCall(params: {
+async function transferActiveCall(params: {
 	companyId: string;
 	callSid: string;
 	to: string;
@@ -1010,7 +1010,7 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
 /**
  * Transcribe a call recording using AssemblyAI
  */
-export async function transcribeCallRecording(params: {
+async function transcribeCallRecording(params: {
 	recordingUrl: string;
 	communicationId: string;
 }) {

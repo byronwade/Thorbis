@@ -12,6 +12,7 @@ import {
 	AlertCircle,
 	Briefcase,
 	Calendar,
+	Check,
 	ChevronLeft,
 	ChevronRight,
 	ClipboardCheck,
@@ -470,12 +471,25 @@ export function UnassignedPanel({
 							>
 								<div className="space-y-2 p-3">
 									{jobs.length === 0 ? (
-										<div className="rounded-lg border border-dashed p-6 text-center">
-											<p className="text-muted-foreground text-xs">
-												{trimmedSearch
-													? "No jobs match this search"
-													: "All jobs scheduled"}
-											</p>
+										<div className="rounded-lg border border-dashed border-border/60 bg-gradient-to-b from-muted/30 to-transparent p-6 text-center">
+											<div className="flex flex-col items-center gap-3">
+												{/* Icon illustration */}
+												<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 ring-1 ring-emerald-500/20">
+													<Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+												</div>
+												<div className="space-y-1">
+													<p className="text-foreground/80 text-xs font-medium">
+														{trimmedSearch
+															? "No jobs match this search"
+															: "All jobs scheduled!"}
+													</p>
+													<p className="text-muted-foreground text-[10px]">
+														{trimmedSearch
+															? "Try a different search term"
+															: "Great work keeping on top of things"}
+													</p>
+												</div>
+											</div>
 										</div>
 									) : (
 										<SortableContext

@@ -153,7 +153,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 	// For beta and coming-soon, show badge
 	if (status === "beta") {
 		return (
-			<span className="absolute -top-1.5 right-0 rounded bg-blue-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white uppercase shadow-sm">
+			<span className="absolute -top-1.5 right-0 rounded bg-primary px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-primary-foreground uppercase shadow-sm">
 				Beta
 			</span>
 		);
@@ -170,7 +170,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 	// Badge for "new" and "updated"
 	if (status === "new") {
 		return (
-			<span className="absolute -top-1.5 right-0 rounded bg-green-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white uppercase shadow-sm">
+			<span className="absolute -top-1.5 right-0 rounded bg-success px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-foreground uppercase shadow-sm">
 				New
 			</span>
 		);
@@ -178,7 +178,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 
 	return (
 		<span
-			className="absolute -top-1 right-0 size-2 rounded-full bg-blue-500 shadow-sm"
+			className="absolute -top-1 right-0 size-2 rounded-full bg-primary shadow-sm"
 			title="Updated"
 		/>
 	);
@@ -190,9 +190,9 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
 	}
 
 	const styles = {
-		beta: "bg-blue-500 text-white shadow-sm",
-		new: "bg-green-500 text-white shadow-sm",
-		updated: "bg-purple-500 text-white shadow-sm",
+		beta: "bg-primary text-primary-foreground shadow-sm",
+		new: "bg-success text-foreground shadow-sm",
+		updated: "bg-primary/80 text-primary-foreground shadow-sm",
 		"coming-soon": "bg-purple-500 text-white shadow-sm",
 	};
 
@@ -230,7 +230,7 @@ function UnreadBadge({ count }: { count: number }) {
 		return null;
 	}
 	return (
-		<span className="absolute -top-1.5 right-0 rounded bg-red-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white shadow-sm whitespace-nowrap">
+		<span className="absolute -top-1.5 right-0 rounded bg-destructive px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-destructive-foreground shadow-sm whitespace-nowrap">
 			{formatBadgeCount(count)}
 		</span>
 	);
@@ -371,7 +371,7 @@ export function AppHeaderClient({
 						{/* TV Display */}
 						<Link href="/dashboard/tv" title="TV Display">
 							<button
-								className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 size-10 md:size-8"
+								className="focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 w-8 items-center justify-center rounded-md transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 								type="button"
 							>
 								<Tv className="size-4" />

@@ -243,7 +243,7 @@ export function useCallShortcuts(
 /**
  * Shortcut descriptions for UI display
  */
-export const SHORTCUT_DESCRIPTIONS: Record<string, string> = {
+const SHORTCUT_DESCRIPTIONS: Record<string, string> = {
 	toggle_mute: "M",
 	toggle_hold: "H",
 	toggle_recording: "R",
@@ -263,7 +263,7 @@ export const SHORTCUT_DESCRIPTIONS: Record<string, string> = {
 /**
  * Get shortcut hint for a specific action
  */
-export function getShortcutHint(
+function getShortcutHint(
 	action: keyof typeof SHORTCUT_DESCRIPTIONS,
 ): string {
 	return SHORTCUT_DESCRIPTIONS[action] || "";

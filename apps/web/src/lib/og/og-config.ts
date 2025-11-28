@@ -360,7 +360,7 @@ export const OG_MESSAGING = {
 /**
  * Visual element patterns for different templates
  */
-export const OG_PATTERNS = {
+const OG_PATTERNS = {
 	// Geometric patterns
 	dots: {
 		size: 4,

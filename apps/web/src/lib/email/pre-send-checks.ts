@@ -149,7 +149,7 @@ export async function checkSuppressionList(
  * Calculate spam score for email content
  * Lower is better: 0-30 = good, 30-60 = warning, 60+ = likely spam
  */
-export function calculateSpamScore(
+function calculateSpamScore(
 	subject: string,
 	htmlContent: string,
 	textContent: string,
@@ -249,7 +249,7 @@ export function calculateSpamScore(
 /**
  * Check domain warm-up status and recommend volume
  */
-export async function checkDomainWarmup(domainId: string): Promise<{
+async function checkDomainWarmup(domainId: string): Promise<{
 	inWarmup: boolean;
 	daysSinceCreation: number;
 	recommendedDailyLimit: number;
@@ -330,7 +330,7 @@ export async function checkDomainWarmup(domainId: string): Promise<{
 /**
  * Verify domain is properly configured for sending
  */
-export async function verifyDomainStatus(domainId: string): Promise<{
+async function verifyDomainStatus(domainId: string): Promise<{
 	canSend: boolean;
 	issues: string[];
 	dnsStatus: {
@@ -603,7 +603,7 @@ export async function addToGlobalBounceList(
 /**
  * Remove email from suppression list (for manual review cases)
  */
-export async function removeFromSuppressionList(
+async function removeFromSuppressionList(
 	companyId: string,
 	email: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -626,7 +626,7 @@ export async function removeFromSuppressionList(
 /**
  * Get suppression list for a company
  */
-export async function getSuppressionList(
+async function getSuppressionList(
 	companyId: string,
 	limit: number = 100,
 	offset: number = 0,

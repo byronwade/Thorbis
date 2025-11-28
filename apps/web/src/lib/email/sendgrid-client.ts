@@ -10,14 +10,15 @@
 
 import { MailService, type MailDataRequired } from "@sendgrid/mail";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { env } from "@stratos/config/env";
 
 // Global SendGrid config (for admin operations only)
 // Note: For multi-tenant operations, use company-specific settings from database
 export const SENDGRID_ADMIN_CONFIG = {
-	apiKey: process.env.SENDGRID_API_KEY,
-	webhookSecret: process.env.SENDGRID_WEBHOOK_SECRET,
+	apiKey: env.resend.apiKey || undefined, // Note: SendGrid uses Resend API key in this codebase
+	webhookSecret: env.resend.webhookSecret || undefined,
 	// defaultFrom removed - use company-specific from addresses from database
-	defaultFromName: process.env.SENDGRID_FROM_NAME || "Thorbis",
+	defaultFromName: env.resend.fromName || "Thorbis",
 };
 
 // SendGrid client cache (keyed by company ID)
@@ -36,7 +37,7 @@ export type CompanySendGridSettings = {
 /**
  * Get SendGrid settings for a company
  */
-export async function getCompanySendGridSettings(
+async function getCompanySendGridSettings(
 	companyId: string,
 ): Promise<CompanySendGridSettings | null> {
 	const supabase = createServiceSupabaseClient();
@@ -60,7 +61,7 @@ export async function getCompanySendGridSettings(
 /**
  * Create SendGrid client for a company
  */
-export async function createSendGridClient(
+async function createSendGridClient(
 	companyId: string,
 ): Promise<MailService | null> {
 	// Check cache first
@@ -85,7 +86,7 @@ export async function createSendGridClient(
 /**
  * Clear cached client for a company (use when credentials change)
  */
-export function clearSendGridClientCache(companyId: string): void {
+function clearSendGridClientCache(companyId: string): void {
 	clientCache.delete(companyId);
 }
 
@@ -234,7 +235,7 @@ export async function sendSendGridEmail(params: {
 /**
  * Send batch emails via SendGrid (multi-tenant)
  */
-export async function sendSendGridBatchEmails(params: {
+async function sendSendGridBatchEmails(params: {
 	companyId: string;
 	emails: Array<{
 		to: string;

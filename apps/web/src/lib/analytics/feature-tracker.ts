@@ -261,7 +261,7 @@ function getEventQueue(): FeatureEventQueue {
 /**
  * Track a feature usage event
  */
-export function trackFeature(
+function trackFeature(
 	featureName: string,
 	category: FeatureCategory,
 	metadata?: Record<string, unknown>,
@@ -290,7 +290,7 @@ export function trackFeature(
 /**
  * Track a button click
  */
-export function trackClick(
+function trackClick(
 	featureName: string,
 	category: FeatureCategory,
 	metadata?: Record<string, unknown>,
@@ -301,7 +301,7 @@ export function trackClick(
 /**
  * Track a form submission
  */
-export function trackSubmit(
+function trackSubmit(
 	featureName: string,
 	category: FeatureCategory,
 	metadata?: Record<string, unknown>,
@@ -312,7 +312,7 @@ export function trackSubmit(
 /**
  * Track a toggle change
  */
-export function trackToggle(
+function trackToggle(
 	featureName: string,
 	category: FeatureCategory,
 	value: boolean,
@@ -324,7 +324,7 @@ export function trackToggle(
 /**
  * Track a page view
  */
-export function trackPageView(
+function trackPageView(
 	path: string,
 	referrer?: string | null,
 ): void {
@@ -350,7 +350,7 @@ export function trackPageView(
 /**
  * Track search query
  */
-export function trackSearch(
+function trackSearch(
 	query: string,
 	category: FeatureCategory = "search",
 	resultsCount?: number,
@@ -379,7 +379,7 @@ export interface UseFeatureTrackerReturn {
  * React hook for feature tracking
  * Provides memoized tracking functions for use in components
  */
-export function useFeatureTracker(): UseFeatureTrackerReturn {
+function useFeatureTracker(): UseFeatureTrackerReturn {
 	const sessionRef = useRef<SessionInfo | null>(null);
 
 	// Initialize session on mount
@@ -440,7 +440,7 @@ export function useFeatureTracker(): UseFeatureTrackerReturn {
  * Hook to automatically track page views
  * Use in your root layout or page components
  */
-export function usePageViewTracker(path: string): void {
+function usePageViewTracker(path: string): void {
 	const lastPathRef = useRef<string | null>(null);
 	const startTimeRef = useRef<number>(Date.now());
 
@@ -483,7 +483,7 @@ export interface PerformanceMetrics {
 /**
  * Collect Core Web Vitals and send to analytics
  */
-export function trackWebVitals(): void {
+function trackWebVitals(): void {
 	if (typeof window === "undefined") return;
 
 	// Use web-vitals library if available, otherwise use basic Performance API

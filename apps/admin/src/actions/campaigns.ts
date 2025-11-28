@@ -119,7 +119,7 @@ export async function createCampaign(
 /**
  * Update an existing campaign
  */
-export async function updateCampaign(
+async function updateCampaign(
 	input: UpdateCampaignInput
 ): Promise<ActionResult<EmailCampaign>> {
 	try {
@@ -173,7 +173,7 @@ export async function updateCampaign(
 /**
  * Delete a draft campaign
  */
-export async function deleteCampaign(id: string): Promise<ActionResult> {
+async function deleteCampaign(id: string): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -210,7 +210,7 @@ export async function deleteCampaign(id: string): Promise<ActionResult> {
 /**
  * Duplicate an existing campaign
  */
-export async function duplicateCampaign(id: string): Promise<ActionResult<EmailCampaign>> {
+async function duplicateCampaign(id: string): Promise<ActionResult<EmailCampaign>> {
 	try {
 		const supabase = await createClient();
 
@@ -465,7 +465,7 @@ export async function scheduleCampaign(
 /**
  * Cancel a scheduled campaign
  */
-export async function cancelScheduledCampaign(id: string): Promise<ActionResult> {
+async function cancelScheduledCampaign(id: string): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -497,7 +497,7 @@ export async function cancelScheduledCampaign(id: string): Promise<ActionResult>
 /**
  * Pause a sending campaign
  */
-export async function pauseCampaign(id: string): Promise<ActionResult> {
+async function pauseCampaign(id: string): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -528,7 +528,7 @@ export async function pauseCampaign(id: string): Promise<ActionResult> {
 /**
  * Resume a paused campaign
  */
-export async function resumeCampaign(id: string): Promise<ActionResult> {
+async function resumeCampaign(id: string): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -564,7 +564,7 @@ export async function resumeCampaign(id: string): Promise<ActionResult> {
  * Preview audience based on filters
  * Returns estimated count and sample recipients
  */
-export async function previewAudience(
+async function previewAudience(
 	audienceType: string,
 	filter?: AudienceFilter
 ): Promise<ActionResult<AudiencePreviewResult>> {
@@ -595,7 +595,7 @@ export async function previewAudience(
 /**
  * Get campaign analytics
  */
-export async function getCampaignAnalytics(id: string): Promise<ActionResult<{
+async function getCampaignAnalytics(id: string): Promise<ActionResult<{
 	topLinks: { url: string; linkText: string; clicks: number; uniqueClicks: number }[];
 	deviceBreakdown: { desktop: number; mobile: number; tablet: number };
 	hourlyOpens: { hour: string; opens: number }[];
@@ -678,7 +678,7 @@ export async function getCampaignAnalytics(id: string): Promise<ActionResult<{
  * Record a webhook event (open, click, bounce, etc.)
  * Called by Resend webhooks
  */
-export async function recordCampaignEvent(
+async function recordCampaignEvent(
 	campaignId: string,
 	recipientEmail: string,
 	eventType: "delivered" | "opened" | "clicked" | "bounced" | "complained" | "unsubscribed",

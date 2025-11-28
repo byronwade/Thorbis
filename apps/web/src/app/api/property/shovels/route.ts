@@ -62,20 +62,12 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// Map action to endpoint name for tracking
-		const endpointMap: Record<string, string> = {
-			search: "search_permits",
-			permits: "permits_by_address",
-			contractor: "contractor",
-			"verify-license": "verify_license",
-			"hvac-history": "hvac_history",
-			"plumbing-history": "plumbing_history",
-			"equipment-timeline": "equipment_timeline",
-			"service-leads": "service_leads",
-			competitors: "competitors",
-		};
+		// Use centralized endpoint mapping
+		if (!isValidAction("shovels", action)) {
+			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+		}
 
-		const endpoint = endpointMap[action];
+		const endpoint = getEndpointName("shovels", action);
 		if (!endpoint) {
 			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 		}

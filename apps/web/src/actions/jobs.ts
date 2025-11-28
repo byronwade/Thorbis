@@ -17,7 +17,6 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
 	ActionError,
 	ERROR_CODES,
@@ -27,10 +26,10 @@ import {
 	type ActionResult,
 	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { notifyJobCreated } from "@/lib/notifications/triggers";
-import { createClient } from "@/lib/supabase/server";
 import {
 	type JobStatus,
 	type JobStatusTransitionContext,
@@ -255,31 +254,7 @@ export async function createJob(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const data = createJobSchema.parse({
 			propertyId: formData.get("propertyId"),
@@ -497,7 +472,7 @@ export async function createJob(
 		}
 
 		// Send notification to assigned user if job is assigned
-		if (data.assignedTo && data.assignedTo !== user.id) {
+		if (data.assignedTo && data.assignedTo !== userId) {
 			await notifyJobCreated({
 				userId: data.assignedTo,
 				companyId: companyId,
@@ -526,31 +501,7 @@ export async function createJob(
  */
 async function getJob(jobId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Get job with basic relationships
 		// Simplified query - many domain tables don't exist yet
@@ -599,29 +550,7 @@ export async function updateJob(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get active company ID
-		const activeCompanyId = await getActiveCompanyId();
-		if (!activeCompanyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Get user's role to check if they're admin/owner
 		const { data: teamMember } = await supabase
@@ -632,8 +561,8 @@ export async function updateJob(
         custom_roles!role_id(name, is_system)
       `,
 			)
-			.eq("user_id", user.id)
-			.eq("company_id", activeCompanyId)
+			.eq("user_id", userId)
+			.eq("company_id", companyId)
 			.eq("status", "active")
 			.maybeSingle();
 
@@ -655,7 +584,7 @@ export async function updateJob(
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== activeCompanyId) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -962,31 +891,7 @@ export async function updateJobStatus(
 	newStatus: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Validate status value
 		const validStatuses: JobStatus[] = [
@@ -1116,31 +1021,7 @@ async function assignJob(
 	technicianId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: existingJob } = await supabase
@@ -1202,31 +1083,7 @@ async function scheduleJob(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		const data = scheduleJobSchema.parse({
 			scheduledStart: formData.get("scheduledStart"),
@@ -1280,31 +1137,7 @@ async function scheduleJob(
  */
 export async function startJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: existingJob } = await supabase
@@ -1362,31 +1195,7 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
  */
 export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company and get time tracking data
 		const { data: existingJob } = await supabase
@@ -1461,31 +1270,7 @@ async function cancelJob(
 	reason?: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: existingJob } = await supabase
@@ -1547,32 +1332,7 @@ async function searchJobs(
 	options?: { limit?: number; offset?: number },
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Use full-text search with ranking for best matches
 		const { searchJobsFullText } = await import(
@@ -1581,7 +1341,7 @@ async function searchJobs(
 
 		const jobs = await searchJobsFullText(
 			supabase,
-			teamMember.company_id,
+			companyId,
 			searchTerm,
 			{
 				limit: options?.limit || 50,
@@ -1599,36 +1359,11 @@ async function searchJobs(
  */
 async function searchAll(searchTerm: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Use universal search RPC function
 		const { data, error } = await supabase.rpc("search_all_entities", {
-			company_id_param: teamMember.company_id,
+			company_id_param: companyId,
 			search_query: searchTerm,
 			per_entity_limit: 5,
 		});
@@ -1654,32 +1389,7 @@ async function searchAll(searchTerm: string): Promise<ActionResult<any>> {
  */
 export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: job } = await supabase
@@ -1690,7 +1400,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== teamMember.company_id) {
+		if (job.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1728,7 +1438,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 			supabase
 				.from("job_multi_entity")
 				.update({
-					deleted_by: user.id,
+					deleted_by: userId,
 					permanent_delete_scheduled_at: scheduledDeletion,
 				})
 				.eq("job_id", jobId),
@@ -1755,32 +1465,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
  */
 async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company and is archived
 		const { data: job } = await supabase
@@ -1791,7 +1476,7 @@ async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== teamMember.company_id) {
+		if (job.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1851,30 +1536,7 @@ async function removeTeamAssignment(
 	assignmentId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's active company using helper (handles multi-company users)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-		const companyId = await getActiveCompanyId();
-
-		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { companyId, supabase } = await requireCompanyMembership();
 
 		// Get the junction record to find job_id for revalidation
 		const { data: record, error: fetchError } = await supabase
@@ -1938,27 +1600,7 @@ export async function assignCustomerToJob(
 	propertyId: string | null,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("company access"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job exists and belongs to company
 		const { data: job, error: jobError } = await supabase
@@ -2038,7 +1680,7 @@ export async function assignCustomerToJob(
 		await supabase.from("job_activity_log").insert({
 			job_id: jobId,
 			company_id: companyId,
-			user_id: user.id,
+			user_id: userId,
 			activity_type: "assigned",
 			entity_type: "customer",
 			description: `Assigned customer${propertyId ? " and property" : ""}`,
@@ -2066,27 +1708,7 @@ export async function removeCustomerFromJob(
 	jobId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("company access"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job exists and belongs to company
 		const { data: job } = await supabase
@@ -2119,7 +1741,7 @@ export async function removeCustomerFromJob(
 		await supabase.from("job_activity_log").insert({
 			job_id: jobId,
 			company_id: companyId,
-			user_id: user.id,
+			user_id: userId,
 			activity_type: "removed",
 			entity_type: "customer",
 			description: "Removed customer and property",

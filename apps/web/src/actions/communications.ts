@@ -170,7 +170,7 @@ export async function sendCustomerEmailAction(
  * Bulk archive multiple communications by their IDs
  * Works for any communication type (email, sms, call)
  */
-export async function bulkArchiveCommunicationsAction(
+async function bulkArchiveCommunicationsAction(
 	communicationIds: string[],
 	type?: "email" | "sms" | "call",
 ): Promise<{

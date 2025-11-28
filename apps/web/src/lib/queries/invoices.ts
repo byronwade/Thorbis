@@ -1,8 +1,9 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 
-export const INVOICES_PAGE_SIZE = 50;
+export const INVOICES_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const INVOICE_SELECT = `
   id,
@@ -95,7 +96,7 @@ export async function getInvoicesPageData(
  * @param limit - Max results (default: 50)
  * @returns Invoices with customer info and calculated fields
  */
-export const getInvoicesSummaryRpc = cache(
+const getInvoicesSummaryRpc = cache(
 	async (statuses?: string[], limit: number = 50) => {
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {

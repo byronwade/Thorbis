@@ -325,7 +325,7 @@ export function RelatedEntityCardGrid({
 /**
  * RelatedEntityCardSkeleton - Loading state for RelatedEntityCard
  */
-export function RelatedEntityCardSkeleton({
+function RelatedEntityCardSkeleton({
 	size = "md",
 }: {
 	size?: "sm" | "md" | "lg";

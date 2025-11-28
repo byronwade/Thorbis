@@ -16,9 +16,9 @@ import {
 } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
-	assertAuthenticated,
 	assertExists,
 	assertSupabase,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
@@ -79,10 +79,8 @@ const updateEstimateSchema = z.object({
 /**
  * Generate unique estimate number
  */
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 async function generateEstimateNumber(
-	supabase: SupabaseClient,
+	supabase: Awaited<ReturnType<typeof requireCompanyMembership>>["supabase"],
 	companyId: string,
 ): Promise<string> {
 	const { data: latestEstimate } = await supabase
@@ -133,20 +131,7 @@ async function createEstimate(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 		const lineItems = parseEstimateLineItems(formData.get("lineItems")) || [];
 		const data = parseCreateEstimateFormData(formData, lineItems);
 
@@ -193,20 +178,7 @@ async function updateEstimate(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 		const existingEstimate = await getEstimateForCompanyOrThrow(
 			supabase,
 			estimateId,
@@ -245,27 +217,6 @@ async function updateEstimate(
 
 type CreateEstimateParsed = z.infer<typeof createEstimateSchema>;
 type UpdateEstimateParsed = z.infer<typeof updateEstimateSchema>;
-
-async function requireEstimateCompanyId(
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string,
-): Promise<string> {
-	const { data: teamMember } = await supabase
-		.from("company_memberships")
-		.select("company_id")
-		.eq("user_id", userId)
-		.single();
-
-	if (!teamMember?.company_id) {
-		throw new ActionError(
-			"You must be part of a company",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
-		);
-	}
-
-	return teamMember.company_id;
-}
 
 function parseEstimateLineItems(
 	value: FormDataEntryValue | null,
@@ -348,7 +299,7 @@ function buildCreateEstimateInsertPayload(
 }
 
 async function getEstimateForCompanyOrThrow(
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+	supabase: Awaited<ReturnType<typeof requireCompanyMembership>>["supabase"],
 	estimateId: string,
 	companyId: string,
 ) {
@@ -434,20 +385,7 @@ function buildUpdateEstimatePayload(
  */
 async function sendEstimate(estimateId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify estimate belongs to company
 		const { data: existingEstimate } = await supabase
@@ -678,20 +616,7 @@ async function convertEstimateToJob(
 	estimateId: string,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Get estimate
 		const { data: estimate } = await supabase
@@ -809,20 +734,7 @@ export async function updateEstimateStatus(
 	newStatus: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Validate status value
 		const validStatuses = ["draft", "sent", "viewed", "accepted", "rejected", "expired"];
@@ -890,20 +802,7 @@ export async function archiveEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify estimate belongs to company
 		const { data: estimate } = await supabase
@@ -940,7 +839,7 @@ export async function archiveEstimate(
 			.from("estimates")
 			.update({
 				deleted_at: now,
-				deleted_by: user.id,
+				deleted_by: userId,
 				archived_at: now,
 				permanent_delete_scheduled_at: scheduledDeletion,
 				status: "archived",
@@ -966,20 +865,7 @@ async function restoreEstimate(
 	estimateId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		const companyId = await requireEstimateCompanyId(supabase, user.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify estimate belongs to company and is archived
 		const { data: estimate } = await supabase

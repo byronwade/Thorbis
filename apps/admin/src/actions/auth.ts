@@ -166,7 +166,7 @@ export async function adminSignIn(formData: FormData): Promise<AdminLoginResult>
 /**
  * Admin Sign Out Server Action
  */
-export async function adminSignOut(): Promise<{ success: boolean; error?: string }> {
+async function adminSignOut(): Promise<{ success: boolean; error?: string }> {
 	try {
 		await destroySession();
 		return { success: true };
@@ -182,7 +182,7 @@ export async function adminSignOut(): Promise<{ success: boolean; error?: string
 /**
  * Get current admin user
  */
-export async function getCurrentAdmin() {
+async function getCurrentAdmin() {
 	const session = await getSession();
 
 	if (!session) {
@@ -206,7 +206,7 @@ export async function getCurrentAdmin() {
 /**
  * Require admin authentication (redirect if not authenticated)
  */
-export async function requireAdmin() {
+async function requireAdmin() {
 	const admin = await getCurrentAdmin();
 
 	if (!admin) {
@@ -219,7 +219,7 @@ export async function requireAdmin() {
 /**
  * Change admin password
  */
-export async function changePassword(
+async function changePassword(
 	currentPassword: string,
 	newPassword: string
 ): Promise<{ success: boolean; error?: string }> {

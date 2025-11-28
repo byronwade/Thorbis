@@ -22,10 +22,9 @@ import {
 import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
-	assertAuthenticated,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
 // Types
@@ -68,45 +67,6 @@ const getChatActionsSchema = z.object({
 });
 
 // ============================================================================
-// Helper Functions
-// ============================================================================
-
-async function getAuthenticatedUserWithCompany() {
-	const supabase = await createClient();
-	if (!supabase) {
-		throw new ActionError(
-			"Database connection failed",
-			ERROR_CODES.DB_CONNECTION_ERROR,
-		);
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	assertAuthenticated(user?.id);
-
-	const { data: teamMember } = await supabase
-		.from("company_memberships")
-		.select("company_id, role")
-		.eq("user_id", user.id)
-		.single();
-
-	if (!teamMember?.company_id) {
-		throw new ActionError(
-			"You must be part of a company",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			403,
-		);
-	}
-
-	return {
-		userId: user.id,
-		companyId: teamMember.company_id,
-		role: teamMember.role,
-	};
-}
-
-// ============================================================================
 // Server Actions
 // ============================================================================
 
@@ -114,12 +74,12 @@ async function getAuthenticatedUserWithCompany() {
  * Approve a pending AI action - OWNER ONLY
  * This action will be executed immediately after approval
  */
-export async function approveAIAction(
+async function approveAIAction(
 	input: z.infer<typeof approveActionSchema>,
 ): Promise<ActionResult<ApprovalActionResult>> {
 	return await withErrorHandling(async () => {
 		const validated = approveActionSchema.parse(input);
-		const { userId, companyId } = await getAuthenticatedUserWithCompany();
+		const { userId, companyId } = await requireCompanyMembership();
 
 		// Verify user is owner (double-check even though DB function enforces this)
 		const ownerCheck = await isCompanyOwner(companyId, userId);
@@ -185,12 +145,12 @@ export async function approveAIAction(
  * Reject a pending AI action - OWNER ONLY
  * The AI will not execute this action
  */
-export async function rejectAIAction(
+async function rejectAIAction(
 	input: z.infer<typeof rejectActionSchema>,
 ): Promise<ActionResult<ApprovalActionResult>> {
 	return await withErrorHandling(async () => {
 		const validated = rejectActionSchema.parse(input);
-		const { userId, companyId } = await getAuthenticatedUserWithCompany();
+		const { userId, companyId } = await requireCompanyMembership();
 
 		// Verify user is owner
 		const ownerCheck = await isCompanyOwner(companyId, userId);
@@ -238,7 +198,7 @@ export async function getCompanyPendingActions(
 		const validated = input
 			? getPendingActionsSchema.parse(input)
 			: { limit: 50 };
-		const { companyId } = await getAuthenticatedUserWithCompany();
+		const { companyId } = await requireCompanyMembership();
 
 		// Expire old actions first
 		await expireOldActions(companyId);
@@ -257,12 +217,12 @@ export async function getCompanyPendingActions(
  * Get pending actions for a specific chat session
  * Used to show approval banners in the AI chat
  */
-export async function getChatPendingActions(
+async function getChatPendingActions(
 	input: z.infer<typeof getChatActionsSchema>,
 ): Promise<ActionResult<PendingAction[]>> {
 	return await withErrorHandling(async () => {
 		const validated = getChatActionsSchema.parse(input);
-		const { companyId } = await getAuthenticatedUserWithCompany();
+		const { companyId } = await requireCompanyMembership();
 
 		// Expire old actions first
 		await expireOldActions(companyId);
@@ -277,12 +237,12 @@ export async function getChatPendingActions(
 /**
  * Get a specific pending action by ID
  */
-export async function getPendingActionById(
+async function getPendingActionById(
 	actionId: string,
 ): Promise<ActionResult<PendingAction | null>> {
 	return await withErrorHandling(async () => {
 		const validated = z.string().uuid("Invalid action ID").parse(actionId);
-		const { companyId } = await getAuthenticatedUserWithCompany();
+		const { companyId } = await requireCompanyMembership();
 
 		const action = await getPendingAction(companyId, validated);
 		return action;
@@ -295,7 +255,7 @@ export async function getPendingActionById(
  */
 export async function checkIsCompanyOwner(): Promise<ActionResult<boolean>> {
 	return await withErrorHandling(async () => {
-		const { userId, companyId } = await getAuthenticatedUserWithCompany();
+		const { userId, companyId } = await requireCompanyMembership();
 		const isOwner = await isCompanyOwner(companyId, userId);
 		return isOwner;
 	});
@@ -304,14 +264,14 @@ export async function checkIsCompanyOwner(): Promise<ActionResult<boolean>> {
 /**
  * Get pending action counts for notifications
  */
-export async function getPendingActionCounts(): Promise<
+async function getPendingActionCounts(): Promise<
 	ActionResult<{
 		total: number;
 		byRiskLevel: Record<string, number>;
 	}>
 > {
 	return await withErrorHandling(async () => {
-		const { companyId } = await getAuthenticatedUserWithCompany();
+		const { companyId } = await requireCompanyMembership();
 
 		// Expire old actions first
 		await expireOldActions(companyId);

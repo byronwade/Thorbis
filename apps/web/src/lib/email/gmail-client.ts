@@ -347,7 +347,7 @@ function isTokenExpiringSoon(expiresAt: Date): boolean {
 /**
  * Refresh Gmail OAuth token for a company
  */
-export async function refreshCompanyGmailToken(
+async function refreshCompanyGmailToken(
 	companyId: string,
 	refreshToken: string,
 ): Promise<CompanyGmailTokenData | null> {
@@ -511,7 +511,7 @@ export async function storeCompanyGmailTokens(
 /**
  * Disconnect Gmail from a company
  */
-export async function disconnectCompanyGmail(
+async function disconnectCompanyGmail(
 	companyId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
@@ -792,7 +792,7 @@ export async function checkCompanyGmailHealth(
 /**
  * Get Gmail tokens for a specific team member
  */
-export async function getUserGmailTokens(
+async function getUserGmailTokens(
 	teamMemberId: string,
 ): Promise<UserGmailTokenData | null> {
 	try {
@@ -852,7 +852,7 @@ export async function getUserGmailTokens(
 /**
  * Refresh Gmail OAuth token for a team member
  */
-export async function refreshUserGmailToken(
+async function refreshUserGmailToken(
 	teamMemberId: string,
 	refreshToken: string,
 ): Promise<UserGmailTokenData | null> {
@@ -1086,7 +1086,7 @@ export async function disconnectUserGmail(
 /**
  * Fetch inbox messages for a team member
  */
-export async function fetchUserInbox(
+async function fetchUserInbox(
 	teamMemberId: string,
 	maxResults: number = 50,
 	pageToken?: string,
@@ -1227,7 +1227,7 @@ function parseGmailMessage(message: GmailMessage): ParsedGmailMessage {
 /**
  * Store Gmail message in communications table
  */
-export async function storeGmailMessage(
+async function storeGmailMessage(
 	companyId: string,
 	teamMemberId: string,
 	emailAccountId: string,

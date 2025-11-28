@@ -388,7 +388,7 @@ export function SmallChartCard({
 }
 
 // Mock Data Generator
-export function generateMockData(days = 90) {
+function generateMockData(days = 90) {
 	const data = [];
 	const now = new Date();
 	for (let i = days; i >= 0; i--) {

@@ -11,6 +11,7 @@ import { withUsageTracking } from "@/lib/api/usage-tracking";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { fbiCrimeService } from "@/lib/services/fbi-crime-service";
 import { createClient } from "@/lib/supabase/server";
+import { getEndpointName, isValidAction } from "@/lib/api/endpoint-maps";
 
 export async function GET(request: NextRequest) {
 	try {
@@ -45,19 +46,12 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// Map action to endpoint name for tracking
-		const endpointMap: Record<string, string> = {
-			"state-stats": "state_stats",
-			"national-stats": "national_stats",
-			trends: "crime_trends",
-			agencies: "agencies",
-			"safety-report": "safety_report",
-			"evening-safety": "evening_safety",
-			"equipment-theft-risk": "equipment_theft_risk",
-			"compare-areas": "compare_areas",
-		};
+		// Use centralized endpoint mapping
+		if (!isValidAction("fbi_crime", action)) {
+			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+		}
 
-		const endpoint = endpointMap[action];
+		const endpoint = getEndpointName("fbi_crime", action);
 		if (!endpoint) {
 			return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 		}

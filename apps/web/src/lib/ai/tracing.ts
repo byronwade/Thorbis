@@ -81,14 +81,14 @@ const MODEL_COSTS: Record<string, { input: number; output: number }> = {
 /**
  * Generate a new trace ID
  */
-export function generateTraceId(): string {
+function generateTraceId(): string {
 	return crypto.randomUUID();
 }
 
 /**
  * Create a new trace context
  */
-export function createTraceContext(
+function createTraceContext(
 	companyId: string,
 	options?: { userId?: string; chatId?: string },
 ): TraceContext {
@@ -103,7 +103,7 @@ export function createTraceContext(
 /**
  * Calculate cost from token counts
  */
-export function calculateCost(
+function calculateCost(
 	modelId: string,
 	inputTokens: number,
 	outputTokens: number,
@@ -118,7 +118,7 @@ export function calculateCost(
 /**
  * Start a new span
  */
-export async function startSpan(
+async function startSpan(
 	context: TraceContext,
 	data: SpanData,
 ): Promise<string> {
@@ -170,7 +170,7 @@ export async function startSpan(
 /**
  * End a span with results
  */
-export async function endSpan(
+async function endSpan(
 	spanId: string,
 	companyId: string,
 	result: {
@@ -217,7 +217,7 @@ export async function endSpan(
 /**
  * Record a span event
  */
-export async function recordSpanEvent(
+async function recordSpanEvent(
 	spanId: string,
 	traceId: string,
 	companyId: string,
@@ -249,7 +249,7 @@ export async function recordSpanEvent(
 /**
  * Get trace summary for a conversation
  */
-export async function getTraceSummary(
+async function getTraceSummary(
 	companyId: string,
 	traceId: string,
 ): Promise<{
@@ -299,7 +299,7 @@ export async function getTraceSummary(
 /**
  * Get daily metrics for a company
  */
-export async function getDailyMetrics(
+async function getDailyMetrics(
 	companyId: string,
 	date: Date,
 ): Promise<{

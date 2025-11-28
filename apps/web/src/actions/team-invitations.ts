@@ -20,14 +20,16 @@ import {
 import {
 	type ActionResult,
 	assertAuthenticated,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@stratos/config/env";
 
 const INVITATION_EXPIRY_DAYS = 7;
 
 function requireSiteUrl(): string {
-	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+	const siteUrl = env.siteUrl;
 	if (!siteUrl) {
 		throw new ActionError(
 			"NEXT_PUBLIC_SITE_URL is not configured",
@@ -193,35 +195,14 @@ export async function sendSingleTeamInvitation(
 	formData: FormData,
 ): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
-		// Get current user
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("company_memberships")
-			.select("company_id, companies!inner(name)")
-			.eq("user_id", user.id)
-			.eq("status", "active")
+		// Get company name for email
+		const { data: company } = await supabase
+			.from("companies")
+			.select("name")
+			.eq("id", companyId)
 			.single();
-
-		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company to invite team members",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
 
 		const email = formData.get("email") as string;
 		const firstName = formData.get("firstName") as string;
@@ -242,7 +223,7 @@ export async function sendSingleTeamInvitation(
 		// Generate invitation token
 		const token = generateInvitationToken({
 			email: validated.email,
-			companyId: teamMember.company_id,
+			companyId,
 			role: validated.role,
 		});
 
@@ -253,14 +234,14 @@ export async function sendSingleTeamInvitation(
 		const { error: invitationError } = await supabase
 			.from("team_invitations")
 			.insert({
-				company_id: teamMember.company_id,
+				company_id: companyId,
 				email: validated.email,
 				first_name: validated.firstName,
 				last_name: validated.lastName,
 				role: validated.role,
 				phone: phone || null,
 				token,
-				invited_by: user.id,
+				invited_by: userId,
 				expires_at: expiresAt.toISOString(),
 			});
 
@@ -275,23 +256,19 @@ export async function sendSingleTeamInvitation(
 		const siteUrl = requireSiteUrl();
 		const magicLink = `${siteUrl}/accept-invitation?token=${token}`;
 
-		const companies = Array.isArray(teamMember.companies)
-			? teamMember.companies[0]
-			: teamMember.companies;
-
 		const { data: inviter } = await supabase
 			.from("profiles")
 			.select("full_name, email")
-			.eq("id", user.id)
+			.eq("id", userId)
 			.single();
 
 		const emailResult = await sendPlatformEmail({
 			to: validated.email,
-			subject: `You've been invited to join ${companies?.name} on Thorbis`,
+			subject: `You've been invited to join ${company?.name} on Thorbis`,
 			template: TeamInvitationEmail({
 				inviteeName: `${validated.firstName} ${validated.lastName}`,
 				inviterName: inviter?.name || inviter?.email || "Your colleague",
-				companyName: companies?.name || "the team",
+				companyName: company?.name || "the team",
 				role: validated.role,
 				magicLink,
 				expiresInDays: INVITATION_EXPIRY_DAYS,

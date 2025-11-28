@@ -1,6 +1,9 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+/**
+ * Utils - Re-export from shared package
+ *
+ * This file maintains backward compatibility for existing imports.
+ * New code should import directly from @stratos/shared/utils
+ */
 
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
+// Re-export cn from shared package
+export { cn } from "@stratos/shared/utils";

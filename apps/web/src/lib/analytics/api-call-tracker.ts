@@ -79,7 +79,7 @@ const requestContext = new Map<
 /**
  * Generate or retrieve trace ID for request correlation
  */
-export function getOrCreateTraceId(request: Request): string {
+function getOrCreateTraceId(request: Request): string {
 	// Check for existing trace ID in headers
 	const existingTraceId = request.headers.get("x-trace-id");
 	if (existingTraceId) return existingTraceId;
@@ -181,7 +181,7 @@ function extractIpAddress(request: Request): string | null {
  * Start tracking an API call manually
  * Returns an object with success/error methods to complete tracking
  */
-export function startApiCall(request: Request) {
+function startApiCall(request: Request) {
 	const startTime = Date.now();
 	const traceId = getOrCreateTraceId(request);
 	const endpoint = extractEndpoint(request);
@@ -309,7 +309,7 @@ type RouteHandler = (
  *   return NextResponse.json(data);
  * });
  */
-export function withApiTracking(handler: RouteHandler): RouteHandler {
+function withApiTracking(handler: RouteHandler): RouteHandler {
 	return async (request, context) => {
 		const tracker = startApiCall(request);
 
@@ -423,7 +423,7 @@ function getBatcher(): ApiCallBatcher {
  * Log API call using batched writes (for high-frequency endpoints)
  * Useful for endpoints like health checks that are called frequently
  */
-export function logApiCallBatched(entry: ApiCallLogEntry): void {
+function logApiCallBatched(entry: ApiCallLogEntry): void {
 	getBatcher().add(entry);
 }
 
@@ -472,7 +472,7 @@ export async function getApiCallStats(
 /**
  * Get recent API calls for debugging
  */
-export async function getRecentApiCalls(
+async function getRecentApiCalls(
 	companyId: string,
 	limit: number = 50,
 ): Promise<ApiCallLogEntry[]> {
@@ -568,7 +568,7 @@ export async function getSlowApiCalls(
 /**
  * Get API error rates by endpoint
  */
-export async function getApiErrorRates(
+async function getApiErrorRates(
 	companyId: string,
 	hours: number = 24,
 ): Promise<

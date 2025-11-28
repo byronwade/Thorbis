@@ -31,21 +31,21 @@ import {
 	sendWelcomeEmail,
 } from "./emails";
 
-const NAME_MIN_LENGTH = 2;
-const NAME_MAX_LENGTH = 100;
-const COMPANY_NAME_MIN_LENGTH = 2;
-const COMPANY_NAME_MAX_LENGTH = 200;
-const PHONE_MIN_DIGITS = 10;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 100;
-const CONFIRMATION_TOKEN_TTL_HOURS = 24;
-const COUNTRY_CODE_US = "1";
-const NATIONAL_NUMBER_DIGITS = 10;
-const EXTENDED_US_NUMBER_DIGITS = 11;
-const BYTES_PER_KILOBYTE = 1024;
-const BYTES_PER_MEGABYTE = BYTES_PER_KILOBYTE * BYTES_PER_KILOBYTE;
-const AVATAR_SIZE_LIMIT_MB = 5;
-const MAX_AVATAR_FILE_SIZE = AVATAR_SIZE_LIMIT_MB * BYTES_PER_MEGABYTE;
+import { VALIDATION_LIMITS, TIME_DEFAULTS, COUNTRY_DEFAULTS, FILE_SIZE_LIMITS } from "@stratos/shared/constants";
+
+// Use centralized constants
+const NAME_MIN_LENGTH = VALIDATION_LIMITS.name.min;
+const NAME_MAX_LENGTH = VALIDATION_LIMITS.name.max;
+const COMPANY_NAME_MIN_LENGTH = VALIDATION_LIMITS.companyName.min;
+const COMPANY_NAME_MAX_LENGTH = VALIDATION_LIMITS.companyName.max;
+const PHONE_MIN_DIGITS = VALIDATION_LIMITS.phone.minDigits;
+const PASSWORD_MIN_LENGTH = VALIDATION_LIMITS.password.min;
+const PASSWORD_MAX_LENGTH = VALIDATION_LIMITS.password.max;
+const CONFIRMATION_TOKEN_TTL_HOURS = TIME_DEFAULTS.confirmationTokenTTLHours;
+const COUNTRY_CODE_US = COUNTRY_DEFAULTS.us.code;
+const NATIONAL_NUMBER_DIGITS = COUNTRY_DEFAULTS.us.nationalNumberDigits;
+const EXTENDED_US_NUMBER_DIGITS = COUNTRY_DEFAULTS.us.extendedNumberDigits;
+const MAX_AVATAR_FILE_SIZE = FILE_SIZE_LIMITS.avatar;
 
 /**
  * Authentication Server Actions - Supabase Auth + SendGrid Email Integration
@@ -58,66 +58,8 @@ const MAX_AVATAR_FILE_SIZE = AVATAR_SIZE_LIMIT_MB * BYTES_PER_MEGABYTE;
  * - Proper error handling with user-friendly messages
  */
 
-// Validation Schemas
-const signUpSchema = z.object({
-	name: z
-		.string()
-		.trim()
-		.min(NAME_MIN_LENGTH, "Name must be at least 2 characters")
-		.max(NAME_MAX_LENGTH, "Name is too long"),
-	email: z.string().email("Invalid email address"),
-	phone: z
-		.string()
-		.trim()
-		.min(PHONE_MIN_DIGITS, "Phone number is required")
-		.refine(
-			(value) => value.replace(/\D/g, "").length >= PHONE_MIN_DIGITS,
-			"Enter a valid phone number",
-		),
-	password: z
-		.string()
-		.min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
-		.max(PASSWORD_MAX_LENGTH, "Password is too long")
-		.regex(
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-			"Password must contain uppercase, lowercase, and number",
-		),
-	companyName: z
-		.string()
-		.trim()
-		.min(COMPANY_NAME_MIN_LENGTH, "Company name must be at least 2 characters")
-		.max(COMPANY_NAME_MAX_LENGTH, "Company name is too long")
-		.optional(),
-	terms: z
-		.boolean()
-		.refine((val) => val === true, "You must accept the terms and conditions"),
-});
-
-const signInSchema = z.object({
-	email: z.string().email("Invalid email address"),
-	password: z.string().min(1, "Password is required"),
-});
-
-const forgotPasswordSchema = z.object({
-	email: z.string().email("Invalid email address"),
-});
-
-const resetPasswordSchema = z
-	.object({
-		password: z
-			.string()
-			.min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
-			.max(PASSWORD_MAX_LENGTH, "Password is too long")
-			.regex(
-				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-				"Password must contain uppercase, lowercase, and number",
-			),
-		confirmPassword: z.string(),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ["confirmPassword"],
-	});
+// Import centralized validation schemas
+import { signUpSchema, signInSchema, forgotPasswordSchema, resetPasswordSchema } from "@/lib/validations/form-schemas";
 
 const AVATAR_STORAGE_BUCKET = "avatars";
 const SUPABASE_RATE_LIMIT_MAX_RETRIES = 3;
@@ -1550,7 +1492,7 @@ async function resendVerificationEmail(
  *
  * Server action to get the currently active company ID for client components.
  */
-export async function getCompanyIdAction(): Promise<{
+async function getCompanyIdAction(): Promise<{
 	success: boolean;
 	companyId?: string;
 	error?: string;

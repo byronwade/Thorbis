@@ -386,6 +386,15 @@ export function TechnicianDayView({
 		setTimeout(() => setIsRefreshing(false), 1000);
 	}, [router]);
 
+	const handleBack = useCallback(() => {
+		// Use history back when available, otherwise route to schedule
+		if (typeof window !== "undefined" && window.history.length > 1) {
+			router.back();
+		} else {
+			router.push("/dashboard/schedule");
+		}
+	}, [router]);
+
 	const utilizationPercent = Math.min(
 		100,
 		Math.round((totalScheduledMinutes / 480) * 100), // 8 hour day
@@ -398,11 +407,13 @@ export function TechnicianDayView({
 				<div className="flex items-center gap-4">
 					<Button
 						variant="ghost"
-						size="icon"
-						onClick={() => router.back()}
-						className="shrink-0"
+						size="sm"
+						onClick={handleBack}
+						className="shrink-0 inline-flex items-center gap-2 px-3"
+						aria-label="Back to schedule"
 					>
 						<ArrowLeft className="h-5 w-5" />
+						<span className="text-sm font-medium">Back</span>
 					</Button>
 
 					<Avatar className="h-14 w-14 border-2 border-primary/20">

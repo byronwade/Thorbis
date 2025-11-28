@@ -2,58 +2,64 @@
   "[project]/apps/web/src/components/layout/incoming-call-notification.tsx [app-client] (ecmascript, next/dynamic entry)": {
     "id": "[project]/apps/web/src/components/layout/incoming-call-notification.tsx [app-client] (ecmascript, next/dynamic entry)",
     "files": [
-      "static/chunks/_48dd9841._.js",
-      "static/chunks/apps_web_src_a33cc085._.js",
+      "static/chunks/_844020a4._.js",
+      "static/chunks/apps_web_src_5289ba40._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_phone-off_19f0b4b4.js",
-      "static/chunks/apps_web_src_components_layout_incoming-call-notification_tsx_3209a4e3._.js",
+      "static/chunks/apps_web_src_components_layout_incoming-call-notification_tsx_5df365c8._.js",
       "static/chunks/node_modules__pnpm_2d6cedaf._.js",
-      "static/chunks/c2687_@twilio_voice-sdk_esm_twilio_0a9e5f95.js",
+      "static/chunks/c2687_@twilio_voice-sdk_esm_twilio_ff25e9a1.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_index_d3e11254.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_e0b04b7b._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_lucide-react_49a05b6b.js",
       "static/chunks/f56e1_lucide-react_dist_esm_lucide-react_9c3626c4.js",
-      "static/chunks/f56e1_lucide-react_dist_esm_lucide-react_1f2d6b16.js",
+      "static/chunks/f56e1_lucide-react_dist_esm_lucide-react_09f11713.js",
       "static/chunks/_cececfe8._.js",
-      "static/chunks/apps_web_src_components_call_transfer-call-modal_tsx_61052e20._.js",
+      "static/chunks/apps_web_src_components_call_transfer-call-modal_tsx_41b37693._.js",
       "static/chunks/apps_web_src_33ff943c._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_pen_8adb2a31.js",
-      "static/chunks/apps_web_src_components_communication_ai-autofill-preview_tsx_61052e20._.js",
+      "static/chunks/apps_web_src_components_communication_ai-autofill-preview_tsx_41b37693._.js",
       "static/chunks/_0a079180._.js",
-      "static/chunks/apps_web_src_components_communication_transcript-panel_tsx_61052e20._.js",
+      "static/chunks/apps_web_src_components_communication_transcript-panel_tsx_41b37693._.js",
       "static/chunks/apps_web_src_components_layout_video-conference_tsx_32a4e24e._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_348d4aa7._.js",
-      "static/chunks/apps_web_src_components_layout_video-conference_tsx_61052e20._.js",
-      "static/chunks/apps_web_src_actions_2ff2b182._.js",
-      "static/chunks/apps_web_src_actions_customers_ts_0a9e5f95._.js"
+      "static/chunks/apps_web_src_components_layout_video-conference_tsx_41b37693._.js"
+    ]
+  },
+  "[project]/apps/web/src/components/schedule/dispatch-map/dispatch-map-embedded.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/apps/web/src/components/schedule/dispatch-map/dispatch-map-embedded.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/apps_web_src_9474ffe4._.js",
+      "static/chunks/node_modules__pnpm_f78b2fd0._.js",
+      "static/chunks/apps_web_src_components_schedule_dispatch-map_dispatch-map-embedded_tsx_79d2593a._.js"
     ]
   },
   "[project]/apps/web/src/components/schedule/dispatch-timeline.tsx [app-client] (ecmascript, next/dynamic entry)": {
     "id": "[project]/apps/web/src/components/schedule/dispatch-timeline.tsx [app-client] (ecmascript, next/dynamic entry)",
     "files": [
-      "static/chunks/apps_web_src_actions_509fee69._.js",
-      "static/chunks/apps_web_src_components_c5bad235._.js",
-      "static/chunks/apps_web_src_lib_utils_customer-display_ts_2ca7ee01._.js",
-      "static/chunks/f56e1_lucide-react_dist_esm_icons_cd8436b6._.js",
-      "static/chunks/apps_web_src_components_schedule_dispatch-timeline_tsx_4aeee5ca._.js"
+      "static/chunks/apps_web_src_actions_667fdce4._.js",
+      "static/chunks/apps_web_src_components_633c2a38._.js",
+      "static/chunks/apps_web_src_lib_be1c6e77._.js",
+      "static/chunks/f56e1_lucide-react_dist_esm_icons_5a1e7ebd._.js",
+      "static/chunks/apps_web_src_components_schedule_dispatch-timeline_tsx_79d2593a._.js"
     ]
   },
   "[project]/apps/web/src/components/schedule/kanban-view.tsx [app-client] (ecmascript, next/dynamic entry)": {
     "id": "[project]/apps/web/src/components/schedule/kanban-view.tsx [app-client] (ecmascript, next/dynamic entry)",
     "files": [
-      "static/chunks/apps_web_src_actions_schedule-assignments_ts_8692a01b._.js",
-      "static/chunks/apps_web_src_1974240f._.js",
+      "static/chunks/apps_web_src_actions_schedule-assignments_ts_4f52eb0d._.js",
+      "static/chunks/apps_web_src_19298b09._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_5a1e7ebd._.js",
-      "static/chunks/apps_web_src_components_schedule_kanban-view_tsx_4aeee5ca._.js",
-      "static/chunks/apps_web_src_actions_def79504._.js",
-      "static/chunks/apps_web_src_actions_schedule-assignments_ts_71ca525d._.js"
+      "static/chunks/apps_web_src_components_schedule_kanban-view_tsx_79d2593a._.js",
+      "static/chunks/apps_web_src_actions_222b32d9._.js",
+      "static/chunks/apps_web_src_actions_schedule-assignments_ts_9801ee41._.js"
     ]
   },
   "[project]/apps/web/src/components/schedule/monthly-view.tsx [app-client] (ecmascript, next/dynamic entry)": {
     "id": "[project]/apps/web/src/components/schedule/monthly-view.tsx [app-client] (ecmascript, next/dynamic entry)",
     "files": [
-      "static/chunks/apps_web_src_202176d0._.js",
+      "static/chunks/apps_web_src_111a184f._.js",
       "static/chunks/f56e1_lucide-react_dist_esm_icons_73ac6991._.js",
-      "static/chunks/apps_web_src_components_schedule_monthly-view_tsx_4aeee5ca._.js"
+      "static/chunks/apps_web_src_components_schedule_monthly-view_tsx_79d2593a._.js"
     ]
   }
 }

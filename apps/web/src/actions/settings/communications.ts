@@ -68,7 +68,7 @@ const emailSettingsSchema = z.object({
 		.default("#3b82f6"),
 });
 
-export async function updateEmailSettings(
+async function updateEmailSettings(
 	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
@@ -142,7 +142,7 @@ export async function updateEmailSettings(
 	});
 }
 
-export async function getEmailSettings(): Promise<ActionResult<any>> {
+async function getEmailSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -177,7 +177,7 @@ export async function getEmailSettings(): Promise<ActionResult<any>> {
 	});
 }
 
-export async function getEmailInfrastructure(): Promise<
+async function getEmailInfrastructure(): Promise<
 	ActionResult<{
 		domain: Record<string, unknown> | null;
 		inboundRoute: Record<string, unknown> | null;
@@ -605,7 +605,7 @@ export async function updateNotificationSettings(
 	});
 }
 
-export async function getNotificationSettings(): Promise<ActionResult<any>> {
+async function getNotificationSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

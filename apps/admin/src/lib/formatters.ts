@@ -52,7 +52,7 @@ export function formatRelativeTime(value: string | Date | null | undefined): str
 /**
  * Format percentage values (admin-specific with decimals option)
  */
-export function formatPercent(value: number | null | undefined, options?: { decimals?: number }): string {
+function formatPercent(value: number | null | undefined, options?: { decimals?: number }): string {
 	if (value === null || value === undefined) {
 		return "—";
 	}

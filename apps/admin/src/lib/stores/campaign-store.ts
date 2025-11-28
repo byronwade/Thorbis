@@ -387,7 +387,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
 // ============================================================================
 
 /** Get filtered and sorted campaigns */
-export const useFilteredCampaigns = () => {
+const useFilteredCampaigns = () => {
 	return useCampaignStore((state) => {
 		let filtered = [...state.campaigns];
 
@@ -465,12 +465,12 @@ export const useFilteredCampaigns = () => {
 };
 
 /** Get selected campaign */
-export const useSelectedCampaign = () => {
+const useSelectedCampaign = () => {
 	return useCampaignStore((state) => (state.selectedCampaignId ? state.campaigns.find((c) => c.id === state.selectedCampaignId) || null : null));
 };
 
 /** Get campaign stats summary */
-export const useCampaignStats = () => {
+const useCampaignStats = () => {
 	return useCampaignStore((state) => {
 		const campaigns = state.campaigns;
 		return {
@@ -488,6 +488,6 @@ export const useCampaignStats = () => {
 };
 
 /** Check if builder has unsaved changes */
-export const useBuilderIsDirty = () => {
+const useBuilderIsDirty = () => {
 	return useCampaignStore((state) => state.builder.isDirty);
 };

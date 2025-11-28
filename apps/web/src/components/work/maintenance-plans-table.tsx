@@ -6,6 +6,7 @@ import {
 	Download,
 	FileText,
 	MoreHorizontal,
+	Plus,
 	Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -365,6 +366,17 @@ export function MaintenancePlansTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredPlans}
+				emptyAction={
+					<Button
+						onClick={() =>
+							(window.location.href = "/dashboard/work/maintenance-plans/new")
+						}
+						size="sm"
+					>
+						<Plus className="mr-2 size-4" />
+						Create Maintenance Plan
+					</Button>
+				}
 				emptyIcon={
 					<Calendar className="text-muted-foreground mx-auto h-12 w-12" />
 				}

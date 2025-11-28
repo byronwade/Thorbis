@@ -61,6 +61,7 @@ const nextConfig: NextConfig = {
 			"@stratos/ui": "../../packages/ui/src",
 			"@stratos/database": "../../packages/database/src",
 			"@stratos/auth": "../../packages/auth/src",
+			"@stratos/config": "../../packages/config/src",
 			"@stratos/shared": "../../packages/shared/src",
 		},
 	},
@@ -101,6 +102,7 @@ const nextConfig: NextConfig = {
 		"@stratos/ui",
 		"@stratos/database",
 		"@stratos/auth",
+		"@stratos/config",
 		"@stratos/shared",
 	],
 	serverExternalPackages: ["prettier"], // Allow prettier to be used by @react-email/render

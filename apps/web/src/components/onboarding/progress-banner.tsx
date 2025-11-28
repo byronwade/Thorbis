@@ -36,7 +36,7 @@ interface ProgressBannerProps {
 	className?: string;
 }
 
-export function ProgressBanner({
+function ProgressBanner({
 	isSaving = false,
 	lastSaved,
 	show = true,
@@ -148,7 +148,7 @@ interface WelcomeBackBannerProps {
 	onStartFresh?: () => void;
 }
 
-export function WelcomeBackBanner({
+function WelcomeBackBanner({
 	companyName,
 	currentStep,
 	progress = 0,
@@ -249,7 +249,7 @@ interface StepInfoCardProps {
 	className?: string;
 }
 
-export function StepInfoCard({
+function StepInfoCard({
 	title,
 	description,
 	bullets,

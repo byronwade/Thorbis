@@ -140,8 +140,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				<button
 					className={cn(
 						"flex h-8 items-center gap-2 rounded-lg px-2 transition-all duration-150",
-						"hover:bg-accent/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+						"hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 						"outline-none disabled:pointer-events-none disabled:opacity-50",
+						"text-muted-foreground",
 						isOpen && "bg-accent",
 					)}
 					type="button"

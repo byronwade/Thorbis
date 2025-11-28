@@ -124,7 +124,7 @@ export interface ProviderHealthStatus {
 /**
  * Provider configuration
  */
-export const providerConfig = {
+const providerConfig = {
 	/** Primary provider - SendGrid (Twilio ecosystem) */
 	primary: "sendgrid" as EmailProvider,
 	/** Enable logging for debugging */
@@ -138,14 +138,14 @@ export const providerConfig = {
 /**
  * Check if SendGrid is configured
  */
-export function isProviderConfigured(): boolean {
+function isProviderConfigured(): boolean {
 	return isAdminSendGridConfigured();
 }
 
 /**
  * Get list of configured providers
  */
-export function getConfiguredProviders(): EmailProvider[] {
+function getConfiguredProviders(): EmailProvider[] {
 	const providers: EmailProvider[] = [];
 
 	if (isAdminSendGridConfigured()) {
@@ -379,7 +379,7 @@ export async function sendEmailWithFallback(
 }
 
 // Alias for backward compatibility
-export const sendEmailWithProvider = sendEmailWithFallback;
+const sendEmailWithProvider = sendEmailWithFallback;
 
 // =============================================================================
 // HEALTH CHECKS
@@ -388,7 +388,7 @@ export const sendEmailWithProvider = sendEmailWithFallback;
 /**
  * Check health of SendGrid provider
  */
-export async function checkSendGridHealth(): Promise<ProviderHealthStatus> {
+async function checkSendGridHealth(): Promise<ProviderHealthStatus> {
 	const startTime = Date.now();
 
 	if (!isAdminSendGridConfigured()) {
@@ -453,7 +453,7 @@ export async function checkSendGridHealth(): Promise<ProviderHealthStatus> {
 /**
  * Check health of all configured providers
  */
-export async function checkAllProvidersHealth(): Promise<{
+async function checkAllProvidersHealth(): Promise<{
 	sendgrid: ProviderHealthStatus | null;
 	recommendedProvider: EmailProvider | null;
 }> {
@@ -499,7 +499,7 @@ export function getProviderSetupInfo(): {
 /**
  * Log a summary of the current provider configuration
  */
-export function logProviderConfiguration(): void {
+function logProviderConfiguration(): void {
 	const info = getProviderSetupInfo();
 
 	console.log("=".repeat(60));

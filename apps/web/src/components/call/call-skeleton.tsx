@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 /**
  * Customer Stats Bar Skeleton
  */
-export function CustomerStatsBarSkeleton({
+function CustomerStatsBarSkeleton({
 	className,
 }: {
 	className?: string;
@@ -43,7 +43,7 @@ export function CustomerStatsBarSkeleton({
 /**
  * Customer Alert Banner Skeleton
  */
-export function CustomerAlertBannerSkeleton({
+function CustomerAlertBannerSkeleton({
 	className,
 }: {
 	className?: string;
@@ -64,7 +64,7 @@ export function CustomerAlertBannerSkeleton({
 /**
  * Quick Actions Panel Skeleton
  */
-export function QuickActionsPanelSkeleton({
+function QuickActionsPanelSkeleton({
 	className,
 }: {
 	className?: string;
@@ -87,7 +87,7 @@ export function QuickActionsPanelSkeleton({
 /**
  * Previous Call Summary Skeleton
  */
-export function PreviousCallSummarySkeleton({
+function PreviousCallSummarySkeleton({
 	className,
 }: {
 	className?: string;
@@ -109,7 +109,7 @@ export function PreviousCallSummarySkeleton({
 /**
  * AI Suggestions Widget Skeleton
  */
-export function AISuggestionsWidgetSkeleton({
+function AISuggestionsWidgetSkeleton({
 	className,
 }: {
 	className?: string;
@@ -149,7 +149,7 @@ export function AISuggestionsWidgetSkeleton({
 /**
  * Sentiment Indicator Skeleton
  */
-export function SentimentIndicatorSkeleton({
+function SentimentIndicatorSkeleton({
 	className,
 }: {
 	className?: string;
@@ -178,7 +178,7 @@ export function SentimentIndicatorSkeleton({
 /**
  * Extracted Info Panel Skeleton
  */
-export function ExtractedInfoPanelSkeleton({
+function ExtractedInfoPanelSkeleton({
 	className,
 }: {
 	className?: string;
@@ -218,7 +218,7 @@ export function ExtractedInfoPanelSkeleton({
 /**
  * Smart Call Notes Skeleton
  */
-export function SmartCallNotesSkeleton({ className }: { className?: string }) {
+function SmartCallNotesSkeleton({ className }: { className?: string }) {
 	return (
 		<div className={cn("rounded-xl border bg-card", className)}>
 			<div className="flex items-center justify-between border-b px-4 py-2">
@@ -244,7 +244,7 @@ export function SmartCallNotesSkeleton({ className }: { className?: string }) {
 /**
  * Transcript Panel Skeleton
  */
-export function TranscriptPanelSkeleton({ className }: { className?: string }) {
+function TranscriptPanelSkeleton({ className }: { className?: string }) {
 	return (
 		<div className={cn("rounded-xl border bg-card", className)}>
 			<div className="flex items-center justify-between border-b px-4 py-3">
@@ -285,7 +285,7 @@ export function TranscriptPanelSkeleton({ className }: { className?: string }) {
 /**
  * Customer Sidebar Skeleton
  */
-export function CustomerSidebarSkeleton({ className }: { className?: string }) {
+function CustomerSidebarSkeleton({ className }: { className?: string }) {
 	return (
 		<div className={cn("flex h-full flex-col", className)}>
 			<CustomerStatsBarSkeleton />

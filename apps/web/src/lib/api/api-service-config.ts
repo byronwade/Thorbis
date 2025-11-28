@@ -478,7 +478,7 @@ export const API_SERVICES: Record<string, ApiServiceConfig> = {
 /**
  * Get services by category
  */
-export function getServicesByCategory(
+function getServicesByCategory(
 	category: ServiceCategory,
 ): ApiServiceConfig[] {
 	return Object.values(API_SERVICES).filter((s) => s.category === category);
@@ -487,28 +487,28 @@ export function getServicesByCategory(
 /**
  * Get services by provider
  */
-export function getServicesByProvider(provider: string): ApiServiceConfig[] {
+function getServicesByProvider(provider: string): ApiServiceConfig[] {
 	return Object.values(API_SERVICES).filter((s) => s.provider === provider);
 }
 
 /**
  * Get all services with free tiers
  */
-export function getServicesWithFreeTier(): ApiServiceConfig[] {
+function getServicesWithFreeTier(): ApiServiceConfig[] {
 	return Object.values(API_SERVICES).filter((s) => s.freeTier !== null);
 }
 
 /**
  * Get all services that have external APIs for usage data
  */
-export function getServicesWithExternalApi(): ApiServiceConfig[] {
+function getServicesWithExternalApi(): ApiServiceConfig[] {
 	return Object.values(API_SERVICES).filter((s) => s.hasExternalApi);
 }
 
 /**
  * Calculate cost for usage
  */
-export function calculateCost(
+function calculateCost(
 	serviceName: string,
 	usage: number,
 	transactionAmount?: number,
@@ -564,7 +564,7 @@ export function getAlertLevel(
 /**
  * Service categories with display names
  */
-export const SERVICE_CATEGORIES: Record<
+const SERVICE_CATEGORIES: Record<
 	ServiceCategory,
 	{ displayName: string; icon: string }
 > = {

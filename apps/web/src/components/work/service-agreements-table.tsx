@@ -6,6 +6,7 @@ import {
 	Download,
 	FileText,
 	MoreHorizontal,
+	Plus,
 	Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -372,6 +373,17 @@ export function ServiceAgreementsTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredAgreements}
+				emptyAction={
+					<Button
+						onClick={() =>
+							(window.location.href = "/dashboard/work/service-agreements/new")
+						}
+						size="sm"
+					>
+						<Plus className="mr-2 size-4" />
+						Create Service Agreement
+					</Button>
+				}
 				emptyIcon={
 					<FileText className="text-muted-foreground mx-auto h-12 w-12" />
 				}

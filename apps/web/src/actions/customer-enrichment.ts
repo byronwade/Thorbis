@@ -15,8 +15,8 @@ import { revalidatePath } from "next/cache";
 import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
-	assertAuthenticated,
 	assertExists,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import {
@@ -309,8 +309,7 @@ async function deleteEnrichmentData(
 	customerId: string,
 ): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {
-		const supabase = await getSupabaseServerClient();
-		await getAuthenticatedUserId(supabase);
+		const { supabase } = await requireCompanyMembership();
 
 		// Delete enrichment data (RLS will ensure user has access)
 		const { error } = await supabase
@@ -340,59 +339,34 @@ const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
 	return supabase as SupabaseServerClient;
 };
 
-const getAuthenticatedUserId = async (
-	supabase: SupabaseServerClient,
-): Promise<string> => {
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	assertAuthenticated(user?.id);
-	return user?.id as string;
-};
-
 const resolveCompanyMembership = async (
-	supabase: SupabaseServerClient,
+	_supabase: SupabaseServerClient,
 	options?: { includeRole?: boolean },
 ): Promise<{ teamMember: TeamMemberRecord }> => {
-	const userId = await getAuthenticatedUserId(supabase);
-	const teamMember = await loadActiveTeamMember(
-		supabase,
-		userId,
-		options?.includeRole ?? false,
-	);
-	return { teamMember };
-};
+	const { userId, companyId, supabase } = await requireCompanyMembership();
 
-const loadActiveTeamMember = async (
-	supabase: SupabaseServerClient,
-	userId: string,
-	includeRole: boolean,
-): Promise<TeamMemberRecord> => {
-	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-	const activeCompanyId = await getActiveCompanyId();
+	// If role is needed, fetch it separately
+	if (options?.includeRole) {
+		const { data } = await supabase
+			.from("company_memberships")
+			.select("company_id, role")
+			.eq("user_id", userId)
+			.eq("company_id", companyId)
+			.eq("status", "active")
+			.maybeSingle()
+			.returns<TeamMemberRecord>();
 
-	if (!activeCompanyId) {
-		throw new ActionError("No active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+		if (!data?.company_id) {
+			throw new ActionError(
+				"User not in active company",
+				ERROR_CODES.AUTH_UNAUTHORIZED,
+			);
+		}
+
+		return { teamMember: data };
 	}
 
-	const columns = includeRole ? "company_id, role" : "company_id";
-	const { data } = await supabase
-		.from("company_memberships")
-		.select(columns)
-		.eq("user_id", userId)
-		.eq("company_id", activeCompanyId)
-		.eq("status", "active")
-		.maybeSingle()
-		.returns<TeamMemberRecord>();
-
-	if (!data?.company_id) {
-		throw new ActionError(
-			"User not in active company",
-			ERROR_CODES.AUTH_UNAUTHORIZED,
-		);
-	}
-
-	return data as TeamMemberRecord;
+	return { teamMember: { company_id: companyId } };
 };
 
 const fetchCustomerForCompany = async <TData>(

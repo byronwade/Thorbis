@@ -194,7 +194,7 @@ export async function storeMemory(
 /**
  * Store multiple memories efficiently
  */
-export async function storeMemories(
+async function storeMemories(
 	companyId: string,
 	userId: string | undefined,
 	memories: MemoryEntry[],
@@ -426,7 +426,7 @@ export async function getEntityMemories(
 /**
  * Update memory importance based on usage patterns
  */
-export async function updateMemoryImportance(
+async function updateMemoryImportance(
 	companyId: string,
 	memoryId: string,
 	importance: number,
@@ -447,7 +447,7 @@ export async function updateMemoryImportance(
 /**
  * Soft delete a memory
  */
-export async function deleteMemory(
+async function deleteMemory(
 	companyId: string,
 	memoryId: string,
 ): Promise<boolean> {
@@ -470,7 +470,7 @@ export async function deleteMemory(
 /**
  * Extract and store memories from a conversation
  */
-export async function extractMemoriesFromConversation(
+async function extractMemoriesFromConversation(
 	companyId: string,
 	userId: string | undefined,
 	chatId: string,
@@ -522,7 +522,7 @@ export async function extractMemoriesFromConversation(
 /**
  * Get memory statistics for monitoring
  */
-export async function getMemoryStatistics(companyId: string): Promise<{
+async function getMemoryStatistics(companyId: string): Promise<{
 	totalMemories: number;
 	byType: Record<string, number>;
 	byScope: Record<string, number>;
@@ -580,7 +580,7 @@ export async function getMemoryStatistics(companyId: string): Promise<{
 /**
  * Consolidate similar memories to reduce redundancy
  */
-export async function consolidateMemories(companyId: string): Promise<{
+async function consolidateMemories(companyId: string): Promise<{
 	consolidated: number;
 	deleted: number;
 }> {
@@ -594,7 +594,7 @@ export async function consolidateMemories(companyId: string): Promise<{
 /**
  * Decay old, unused memories to free up space
  */
-export async function decayOldMemories(
+async function decayOldMemories(
 	companyId: string,
 	options?: {
 		maxAge?: number; // days

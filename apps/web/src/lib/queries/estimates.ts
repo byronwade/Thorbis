@@ -1,8 +1,9 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 
-export const ESTIMATES_PAGE_SIZE = 50;
+export const ESTIMATES_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const ESTIMATE_SELECT = `
   id,

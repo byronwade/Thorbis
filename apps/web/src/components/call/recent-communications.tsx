@@ -218,7 +218,7 @@ type CommunicationBadgeProps = {
 	className?: string;
 };
 
-export function LastCommunicationBadge({
+function LastCommunicationBadge({
 	communication,
 	className,
 }: CommunicationBadgeProps) {

@@ -8,6 +8,7 @@ import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { deserializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
+import { DispatchMapLazy as DispatchMapView } from "./dispatch-map/dispatch-map-lazy";
 import { DispatchTimelineLazy as DispatchTimeline } from "./dispatch-timeline-lazy";
 import { KanbanViewLazy as KanbanView } from "./kanban-view-lazy";
 import { DayViewMobile } from "./mobile/day-view-mobile";
@@ -80,6 +81,8 @@ export function SchedulePageClient({
 						<KanbanViewMobile />
 					) : viewMode === "month" ? (
 						<MonthlyViewMobile />
+					) : viewMode === "map" ? (
+						<DispatchMapView />
 					) : (
 						// Fallback: Use list view for unknown modes
 						<ListViewMobile />
@@ -95,6 +98,8 @@ export function SchedulePageClient({
 					) : viewMode === "list" ? (
 						// Desktop users can access list view too
 						<ListViewMobile />
+					) : viewMode === "map" ? (
+						<DispatchMapView />
 					) : (
 						<DispatchTimeline />
 					)}

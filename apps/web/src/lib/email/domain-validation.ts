@@ -83,7 +83,7 @@ export interface DomainConfig {
 /**
  * Get domain configuration - all companies have the same config (no tiers)
  */
-export function getDomainConfig(): DomainConfig {
+function getDomainConfig(): DomainConfig {
 	return {
 		allowCustomDomain: true,
 		requireSubdomain: false, // Can use root domain or subdomain
@@ -94,7 +94,7 @@ export function getDomainConfig(): DomainConfig {
 /**
  * Parse a domain into its components
  */
-export function parseDomain(domain: string): {
+function parseDomain(domain: string): {
 	subdomain: string | null;
 	rootDomain: string;
 	tld: string;
@@ -127,7 +127,7 @@ export function parseDomain(domain: string): {
 /**
  * Validate a domain for registration
  */
-export function validateDomain(domain: string): DomainValidationResult {
+function validateDomain(domain: string): DomainValidationResult {
 	if (!domain || typeof domain !== "string") {
 		return { valid: false, error: "Domain is required" };
 	}
@@ -186,7 +186,7 @@ export function generatePlatformSubdomain(companySlug: string): string {
 /**
  * Generate default sending address for a company
  */
-export function generateSendingAddress(
+function generateSendingAddress(
 	companySlug: string,
 	domain: string,
 	type: "notifications" | "support" | "billing" | "noreply" = "notifications",
@@ -197,7 +197,7 @@ export function generateSendingAddress(
 /**
  * Check if company can register more domains
  */
-export function canRegisterMoreDomains(currentDomainCount: number): {
+function canRegisterMoreDomains(currentDomainCount: number): {
 	allowed: boolean;
 	reason?: string;
 } {
@@ -216,7 +216,7 @@ export function canRegisterMoreDomains(currentDomainCount: number): {
 /**
  * Suggest subdomain options for a domain
  */
-export function suggestSubdomains(rootDomain: string): string[] {
+function suggestSubdomains(rootDomain: string): string[] {
 	return [
 		`mail.${rootDomain}`,
 		`notifications.${rootDomain}`,
@@ -229,7 +229,7 @@ export function suggestSubdomains(rootDomain: string): string[] {
 /**
  * Validate email address format
  */
-export function validateEmailAddress(email: string): {
+function validateEmailAddress(email: string): {
 	valid: boolean;
 	error?: string;
 	local?: string;

@@ -265,7 +265,7 @@ type StatusDotProps = {
 	className?: string;
 };
 
-export function CustomerStatusDot({
+function CustomerStatusDot({
 	openBalance,
 	hasOverdueInvoices = false,
 	className,

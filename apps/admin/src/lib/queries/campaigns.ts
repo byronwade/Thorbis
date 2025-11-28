@@ -139,7 +139,7 @@ export const getCampaignStats = cache(async (): Promise<{
 /**
  * Get sends for a specific campaign
  */
-export const getCampaignSends = cache(async (
+const getCampaignSends = cache(async (
 	campaignId: string,
 	options?: {
 		status?: string;
@@ -176,7 +176,7 @@ export const getCampaignSends = cache(async (
 /**
  * Get send statistics for a campaign
  */
-export const getCampaignSendStats = cache(async (campaignId: string): Promise<{
+const getCampaignSendStats = cache(async (campaignId: string): Promise<{
 	total: number;
 	pending: number;
 	sent: number;

@@ -66,7 +66,7 @@ export interface InsightResult {
 /**
  * Create a new insight
  */
-export async function createInsight(
+async function createInsight(
 	companyId: string,
 	insight: Insight,
 	sourceAnalysis?: string,
@@ -132,7 +132,7 @@ export async function createInsight(
 /**
  * Get active insights for a company
  */
-export async function getActiveInsights(
+async function getActiveInsights(
 	companyId: string,
 	options?: {
 		priority?: InsightPriority[];
@@ -203,7 +203,7 @@ export async function getActiveInsights(
 /**
  * Acknowledge an insight
  */
-export async function acknowledgeInsight(
+async function acknowledgeInsight(
 	companyId: string,
 	insightId: string,
 	userId: string,
@@ -232,7 +232,7 @@ export async function acknowledgeInsight(
 /**
  * Dismiss an insight
  */
-export async function dismissInsight(
+async function dismissInsight(
 	companyId: string,
 	insightId: string,
 	userId: string,
@@ -262,7 +262,7 @@ export async function dismissInsight(
 /**
  * Mark insight as resolved
  */
-export async function resolveInsight(
+async function resolveInsight(
 	companyId: string,
 	insightId: string,
 	userId: string,
@@ -292,7 +292,7 @@ export async function resolveInsight(
 /**
  * Run revenue analysis to detect anomalies and opportunities
  */
-export async function analyzeRevenue(companyId: string): Promise<Insight[]> {
+async function analyzeRevenue(companyId: string): Promise<Insight[]> {
 	const supabase = createServiceSupabaseClient();
 	const insights: Insight[] = [];
 
@@ -401,7 +401,7 @@ export async function analyzeRevenue(companyId: string): Promise<Insight[]> {
 /**
  * Run customer analysis to identify at-risk customers and opportunities
  */
-export async function analyzeCustomers(companyId: string): Promise<Insight[]> {
+async function analyzeCustomers(companyId: string): Promise<Insight[]> {
 	const supabase = createServiceSupabaseClient();
 	const insights: Insight[] = [];
 
@@ -445,7 +445,7 @@ export async function analyzeCustomers(companyId: string): Promise<Insight[]> {
 /**
  * Run scheduling analysis to identify capacity issues
  */
-export async function analyzeScheduling(companyId: string): Promise<Insight[]> {
+async function analyzeScheduling(companyId: string): Promise<Insight[]> {
 	const supabase = createServiceSupabaseClient();
 	const insights: Insight[] = [];
 
@@ -502,7 +502,7 @@ export async function analyzeScheduling(companyId: string): Promise<Insight[]> {
 /**
  * Run full proactive analysis (call all analyzers)
  */
-export async function runFullAnalysis(companyId: string): Promise<{
+async function runFullAnalysis(companyId: string): Promise<{
 	totalInsights: number;
 	byCategory: Record<string, number>;
 	byPriority: Record<string, number>;
@@ -551,7 +551,7 @@ export async function runFullAnalysis(companyId: string): Promise<{
 /**
  * Get insight statistics for monitoring dashboard
  */
-export async function getInsightStatistics(
+async function getInsightStatistics(
 	companyId: string,
 	dateRange: { start: Date; end: Date },
 ): Promise<{

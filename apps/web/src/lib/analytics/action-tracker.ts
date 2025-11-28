@@ -199,7 +199,7 @@ async function logActionToDatabase(entry: ActionExecutionLog): Promise<void> {
  * Start tracking a server action execution manually
  * Returns an object with success/error methods to complete tracking
  */
-export async function startActionExecution(
+async function startActionExecution(
 	actionName: string,
 	category: ActionCategory,
 	options: ActionTrackingOptions = {},
@@ -302,7 +302,7 @@ type ServerAction<TInput, TOutput> = (
  *   { entityType: "job" }
  * );
  */
-export function withActionTracking<TInput, TOutput>(
+function withActionTracking<TInput, TOutput>(
 	category: ActionCategory,
 	action: ServerAction<TInput, TOutput>,
 	options: Omit<ActionTrackingOptions, "entityId"> = {},
@@ -347,7 +347,7 @@ export function withActionTracking<TInput, TOutput>(
  *   return { success: true, data: job };
  * }, { entityType: "job" });
  */
-export function createCategoryTracker(category: ActionCategory) {
+function createCategoryTracker(category: ActionCategory) {
 	return <TInput, TOutput>(
 		action: ServerAction<TInput, TOutput>,
 		options?: Omit<ActionTrackingOptions, "entityId">,
@@ -357,20 +357,20 @@ export function createCategoryTracker(category: ActionCategory) {
 }
 
 // Pre-configured category trackers for common action types
-export const withJobsTracking = createCategoryTracker("jobs");
-export const withInvoicesTracking = createCategoryTracker("invoices");
-export const withEstimatesTracking = createCategoryTracker("estimates");
-export const withPaymentsTracking = createCategoryTracker("payments");
-export const withCustomersTracking = createCategoryTracker("customers");
-export const withPropertiesTracking = createCategoryTracker("properties");
-export const withEquipmentTracking = createCategoryTracker("equipment");
-export const withContractsTracking = createCategoryTracker("contracts");
-export const withTeamTracking = createCategoryTracker("team");
-export const withCommunicationsTracking =
+const withJobsTracking = createCategoryTracker("jobs");
+const withInvoicesTracking = createCategoryTracker("invoices");
+const withEstimatesTracking = createCategoryTracker("estimates");
+const withPaymentsTracking = createCategoryTracker("payments");
+const withCustomersTracking = createCategoryTracker("customers");
+const withPropertiesTracking = createCategoryTracker("properties");
+const withEquipmentTracking = createCategoryTracker("equipment");
+const withContractsTracking = createCategoryTracker("contracts");
+const withTeamTracking = createCategoryTracker("team");
+const withCommunicationsTracking =
 	createCategoryTracker("communications");
-export const withSettingsTracking = createCategoryTracker("settings");
-export const withAuthTracking = createCategoryTracker("auth");
-export const withAITracking = createCategoryTracker("ai");
+const withSettingsTracking = createCategoryTracker("settings");
+const withAuthTracking = createCategoryTracker("auth");
+const withAITracking = createCategoryTracker("ai");
 
 // ============================================
 // Query Functions
@@ -418,7 +418,7 @@ export async function getActionStats(
 /**
  * Get recent action executions for debugging
  */
-export async function getRecentActions(
+async function getRecentActions(
 	companyId: string,
 	limit: number = 50,
 ): Promise<ActionExecutionLog[]> {
@@ -521,7 +521,7 @@ export async function getFailedActions(
 /**
  * Get slow actions for performance monitoring
  */
-export async function getSlowActions(
+async function getSlowActions(
 	companyId: string,
 	thresholdMs: number = 2000,
 	limit: number = 20,

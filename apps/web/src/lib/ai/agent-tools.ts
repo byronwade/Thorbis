@@ -279,7 +279,7 @@ export const queryDatabaseTool = tool({
 	},
 });
 
-export const getRecordByIdTool = tool({
+const getRecordByIdTool = tool({
 	description:
 		"Get a specific record by its ID from any table. Use when you need full details of a known record.",
 	inputSchema: z.object({
@@ -333,7 +333,7 @@ export const getRecordByIdTool = tool({
 	},
 });
 
-export const getRelatedRecordsTool = tool({
+const getRelatedRecordsTool = tool({
 	description:
 		"Get records related to a specific entity (e.g., all jobs for a customer, all invoices for a job).",
 	inputSchema: z.object({
@@ -511,7 +511,7 @@ export const getCompanyOverviewTool = tool({
 	},
 });
 
-export const searchAllEntitesTool = tool({
+const searchAllEntitesTool = tool({
 	description:
 		"Search across multiple tables simultaneously using full-text search with relevance ranking. Use for broad searches when you don't know which entity type contains the information.",
 	inputSchema: z.object({
@@ -625,7 +625,7 @@ export const getCustomerDetailsTool = tool({
 	},
 });
 
-export const createCustomerTool = tool({
+const createCustomerTool = tool({
 	description:
 		"Create a new customer in the system. Use this when a new customer contacts the business.",
 	inputSchema: z.object({
@@ -729,7 +729,7 @@ export const updateCustomerTool = tool({
 // TEAM MEMBER TOOLS
 // ============================================================================
 
-export const searchTeamMembersTool = tool({
+const searchTeamMembersTool = tool({
 	description:
 		"Search for team members by name, role, or department. Use this to find employees to assign or contact.",
 	inputSchema: z.object({
@@ -767,7 +767,7 @@ export const searchTeamMembersTool = tool({
 	},
 });
 
-export const getTeamMemberDetailsTool = tool({
+const getTeamMemberDetailsTool = tool({
 	description:
 		"Get detailed information about a team member including their schedule and performance",
 	inputSchema: z.object({
@@ -802,7 +802,7 @@ export const getTeamMemberDetailsTool = tool({
 	},
 });
 
-export const sendTeamEmailTool = tool({
+const sendTeamEmailTool = tool({
 	description:
 		"Send an email to a team member for internal communication, assignments, or updates.",
 	inputSchema: z.object({
@@ -845,7 +845,7 @@ export const sendTeamEmailTool = tool({
 	},
 });
 
-export const sendTeamSmsTool = tool({
+const sendTeamSmsTool = tool({
 	description:
 		"Send an SMS to a team member for urgent updates or assignments.",
 	inputSchema: z.object({
@@ -899,7 +899,7 @@ export const sendTeamSmsTool = tool({
 // VENDOR TOOLS
 // ============================================================================
 
-export const searchVendorsTool = tool({
+const searchVendorsTool = tool({
 	description: "Search for vendors/suppliers by name, category, or status",
 	inputSchema: z.object({
 		query: z.string().optional().describe("Search query - name or contact"),
@@ -934,7 +934,7 @@ export const searchVendorsTool = tool({
 	},
 });
 
-export const getVendorDetailsTool = tool({
+const getVendorDetailsTool = tool({
 	description:
 		"Get detailed information about a vendor including purchase history",
 	inputSchema: z.object({
@@ -969,7 +969,7 @@ export const getVendorDetailsTool = tool({
 	},
 });
 
-export const sendVendorEmailTool = tool({
+const sendVendorEmailTool = tool({
 	description:
 		"Send an email to a vendor for orders, inquiries, or communication.",
 	inputSchema: z.object({
@@ -1011,7 +1011,7 @@ export const sendVendorEmailTool = tool({
 	},
 });
 
-export const sendVendorSmsTool = tool({
+const sendVendorSmsTool = tool({
 	description: "Send an SMS to a vendor contact for urgent communication.",
 	inputSchema: z.object({
 		vendorId: z.string().describe("Vendor ID"),
@@ -1064,7 +1064,7 @@ export const sendVendorSmsTool = tool({
 // PROPERTY & EQUIPMENT TOOLS
 // ============================================================================
 
-export const searchPropertiesTool = tool({
+const searchPropertiesTool = tool({
 	description: "Search for service properties by address, customer, or type",
 	inputSchema: z.object({
 		query: z.string().optional().describe("Address or property name search"),
@@ -1102,7 +1102,7 @@ export const searchPropertiesTool = tool({
 	},
 });
 
-export const getPropertyDetailsTool = tool({
+const getPropertyDetailsTool = tool({
 	description:
 		"Get detailed property information including equipment and service history",
 	inputSchema: z.object({
@@ -1145,7 +1145,7 @@ export const getPropertyDetailsTool = tool({
 	},
 });
 
-export const searchEquipmentTool = tool({
+const searchEquipmentTool = tool({
 	description: "Search for equipment/assets by type, customer, or model",
 	inputSchema: z.object({
 		query: z
@@ -1185,7 +1185,7 @@ export const searchEquipmentTool = tool({
 	},
 });
 
-export const getMaintenanceDueTool = tool({
+const getMaintenanceDueTool = tool({
 	description: "Get equipment that is due or overdue for maintenance service",
 	inputSchema: z.object({
 		daysAhead: z
@@ -1482,7 +1482,7 @@ export const createInvoiceTool = tool({
 	},
 });
 
-export const getFinancialSummaryTool = tool({
+const getFinancialSummaryTool = tool({
 	description:
 		"Get a financial summary including revenue, outstanding balances, and trends. Use this to provide business advice.",
 	inputSchema: z.object({
@@ -1563,7 +1563,7 @@ export const getFinancialSummaryTool = tool({
 	},
 });
 
-export const getVirtualBucketsTool = tool({
+const getVirtualBucketsTool = tool({
 	description:
 		"Get virtual financial buckets for the company. These are savings goals and fund allocations.",
 	inputSchema: z.object({
@@ -1582,7 +1582,7 @@ export const getVirtualBucketsTool = tool({
 	},
 });
 
-export const transferToBucketTool = tool({
+const transferToBucketTool = tool({
 	description:
 		"Transfer funds to a virtual bucket for savings goals. This is for financial planning.",
 	inputSchema: z.object({
@@ -1742,7 +1742,7 @@ export const sendSmsTool = tool({
 	},
 });
 
-export const initiateCallTool = tool({
+const initiateCallTool = tool({
 	description:
 		"Initiate a phone call to a customer. The call will be connected through the business phone system.",
 	inputSchema: z.object({
@@ -1796,7 +1796,7 @@ export const initiateCallTool = tool({
 	},
 });
 
-export const getCommunicationHistoryTool = tool({
+const getCommunicationHistoryTool = tool({
 	description:
 		"Get communication history with a customer (calls, texts, emails)",
 	inputSchema: z.object({
@@ -1830,7 +1830,7 @@ export const getCommunicationHistoryTool = tool({
 // REPORTING/ANALYTICS TOOLS
 // ============================================================================
 
-export const getDashboardMetricsTool = tool({
+const getDashboardMetricsTool = tool({
 	description:
 		"Get key business metrics for the dashboard. Use this to provide business insights and recommendations.",
 	inputSchema: z.object({
@@ -1884,7 +1884,7 @@ export const getDashboardMetricsTool = tool({
 	},
 });
 
-export const getProactiveInsightsTool = tool({
+const getProactiveInsightsTool = tool({
 	description:
 		"Get proactive business insights and recommendations. Use this to help owners make decisions.",
 	inputSchema: z.object({
@@ -2093,7 +2093,7 @@ export const scheduleReminderTool = tool({
 	},
 });
 
-export const cancelReminderTool = tool({
+const cancelReminderTool = tool({
 	description: "Cancel a scheduled reminder",
 	inputSchema: z.object({
 		reminderId: z.string().describe("ID of the reminder to cancel"),
@@ -2112,7 +2112,7 @@ export const cancelReminderTool = tool({
 	},
 });
 
-export const getScheduledRemindersTool = tool({
+const getScheduledRemindersTool = tool({
 	description: "Get list of scheduled reminders for a customer, job, or entity",
 	inputSchema: z.object({
 		recipientType: z.enum(["customer", "team_member", "vendor"]).optional(),
@@ -2152,7 +2152,7 @@ export const getScheduledRemindersTool = tool({
 	},
 });
 
-export const sendImmediateNotificationTool = tool({
+const sendImmediateNotificationTool = tool({
 	description:
 		"Send an immediate notification to a customer, team member, or vendor. Use for urgent updates.",
 	inputSchema: z.object({
@@ -2266,7 +2266,7 @@ export const sendImmediateNotificationTool = tool({
 // ENHANCED REPORTING TOOLS
 // ============================================================================
 
-export const getJobCostingReportTool = tool({
+const getJobCostingReportTool = tool({
 	description:
 		"Get detailed job costing report including labor, materials, and profit margins",
 	inputSchema: z.object({
@@ -2372,7 +2372,7 @@ export const getJobCostingReportTool = tool({
 	},
 });
 
-export const getRevenueBreakdownTool = tool({
+const getRevenueBreakdownTool = tool({
 	description:
 		"Get revenue breakdown by customer, service type, or time period",
 	inputSchema: z.object({
@@ -2457,7 +2457,7 @@ export const getRevenueBreakdownTool = tool({
 	},
 });
 
-export const getARAgingReportTool = tool({
+const getARAgingReportTool = tool({
 	description:
 		"Get accounts receivable aging report showing outstanding invoices by age (30/60/90+ days)",
 	inputSchema: z.object({
@@ -2529,7 +2529,7 @@ export const getARAgingReportTool = tool({
 	},
 });
 
-export const getTeamPerformanceReportTool = tool({
+const getTeamPerformanceReportTool = tool({
 	description:
 		"Get team member performance metrics including jobs completed, revenue generated, and ratings",
 	inputSchema: z.object({
@@ -2626,7 +2626,7 @@ export const getTeamPerformanceReportTool = tool({
 	},
 });
 
-export const getCustomerLifetimeValueTool = tool({
+const getCustomerLifetimeValueTool = tool({
 	description:
 		"Get customer lifetime value (CLV) analysis showing total revenue and engagement per customer",
 	inputSchema: z.object({
@@ -2721,7 +2721,7 @@ export const getCustomerLifetimeValueTool = tool({
 // ESTIMATE & CONTRACT TOOLS
 // ============================================================================
 
-export const searchEstimatesTool = tool({
+const searchEstimatesTool = tool({
 	description: "Search for estimates by customer, status, or amount",
 	inputSchema: z.object({
 		query: z.string().optional(),
@@ -2757,7 +2757,7 @@ export const searchEstimatesTool = tool({
 	},
 });
 
-export const searchContractsTool = tool({
+const searchContractsTool = tool({
 	description: "Search for contracts by customer, status, or type",
 	inputSchema: z.object({
 		query: z.string().optional(),
@@ -6456,7 +6456,7 @@ export const webSearchSiteTool = tool({
  * Maps tool names to their destructive metadata.
  * Tools marked as destructive will be intercepted and require owner approval.
  */
-export const destructiveTools: Record<string, DestructiveToolMetadata> = {
+const destructiveTools: Record<string, DestructiveToolMetadata> = {
 	// Communication tools - sending messages to external parties
 	sendEmail: {
 		isDestructive: true,
@@ -6589,6 +6589,6 @@ export function getDestructiveToolMetadata(
 /**
  * Get all destructive tool names
  */
-export function getDestructiveToolNames(): string[] {
+function getDestructiveToolNames(): string[] {
 	return Object.keys(destructiveTools);
 }

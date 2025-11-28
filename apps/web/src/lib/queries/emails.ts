@@ -292,7 +292,7 @@ export const getEmails = cache(
 /**
  * Get a single email by ID
  */
-export const getEmailById = cache(
+const getEmailById = cache(
 	async (emailId: string): Promise<EmailRecord | null> => {
 		const companyId = await getActiveCompanyId();
 		if (!companyId) return null;

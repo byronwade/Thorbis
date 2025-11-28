@@ -133,7 +133,7 @@ export type MessageBranchProps = HTMLAttributes<HTMLDivElement> & {
 	onBranchChange?: (branchIndex: number) => void;
 };
 
-export const MessageBranch = ({
+const MessageBranch = ({
 	defaultBranch = 0,
 	onBranchChange,
 	className,
@@ -180,7 +180,7 @@ export const MessageBranch = ({
 
 export type MessageBranchContentProps = HTMLAttributes<HTMLDivElement>;
 
-export const MessageBranchContent = ({
+const MessageBranchContent = ({
 	children,
 	...props
 }: MessageBranchContentProps) => {
@@ -212,7 +212,7 @@ export type MessageBranchSelectorProps = HTMLAttributes<HTMLDivElement> & {
 	from: UIMessage["role"];
 };
 
-export const MessageBranchSelector = ({
+const MessageBranchSelector = ({
 	className,
 	from,
 	...props
@@ -235,7 +235,7 @@ export const MessageBranchSelector = ({
 
 export type MessageBranchPreviousProps = ComponentProps<typeof Button>;
 
-export const MessageBranchPrevious = ({
+const MessageBranchPrevious = ({
 	children,
 	...props
 }: MessageBranchPreviousProps) => {
@@ -258,7 +258,7 @@ export const MessageBranchPrevious = ({
 
 export type MessageBranchNextProps = ComponentProps<typeof Button>;
 
-export const MessageBranchNext = ({
+const MessageBranchNext = ({
 	children,
 	className,
 	...props
@@ -282,7 +282,7 @@ export const MessageBranchNext = ({
 
 export type MessageBranchPageProps = HTMLAttributes<HTMLSpanElement>;
 
-export const MessageBranchPage = ({
+const MessageBranchPage = ({
 	className,
 	...props
 }: MessageBranchPageProps) => {
@@ -305,7 +305,7 @@ export const MessageBranchPage = ({
  * Streaming cursor - shows a blinking cursor during AI response streaming
  * Professional ChatGPT-style animation
  */
-export const StreamingCursor = ({ className }: { className?: string }) => (
+const StreamingCursor = ({ className }: { className?: string }) => (
 	<span
 		className={cn(
 			"inline-block w-2 h-4 bg-primary/80 ml-0.5 align-middle animate-pulse",

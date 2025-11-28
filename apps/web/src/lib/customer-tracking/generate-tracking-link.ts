@@ -30,7 +30,7 @@ const TOKEN_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
 /**
  * Generate a cryptographically secure URL-safe token
  */
-export function generateTrackingToken(): string {
+function generateTrackingToken(): string {
 	const bytes = new Uint8Array(TOKEN_LENGTH);
 	crypto.getRandomValues(bytes);
 
@@ -49,7 +49,7 @@ export function generateTrackingToken(): string {
 /**
  * Create a new customer tracking link for an appointment
  */
-export async function createTrackingLink(
+async function createTrackingLink(
 	input: TrackingLinkCreateInput,
 ): Promise<{ link: TrackingLink; url: string } | { error: string }> {
 	const supabase = createServiceSupabaseClient();
@@ -269,7 +269,7 @@ export async function getTrackingLinkByToken(
 /**
  * Update tracking link status (called when appointment status changes)
  */
-export async function updateTrackingLinkStatus(
+async function updateTrackingLinkStatus(
 	appointmentId: string,
 	status: TrackingLinkStatus,
 	technicianStatus?: "en-route" | "arriving-soon" | "arrived" | "working",
@@ -294,7 +294,7 @@ export async function updateTrackingLinkStatus(
 /**
  * Update ETA for tracking link
  */
-export async function updateTrackingLinkETA(
+async function updateTrackingLinkETA(
 	appointmentId: string,
 	etaMinutes: number,
 	distanceMeters: number,
@@ -356,7 +356,7 @@ function getStatusMessage(
 /**
  * Send tracking link to customer via SMS
  */
-export async function sendTrackingLinkSMS(
+async function sendTrackingLinkSMS(
 	phoneNumber: string,
 	trackingUrl: string,
 	technicianName: string,
@@ -392,7 +392,7 @@ export async function sendTrackingLinkSMS(
 /**
  * Send tracking link to customer via email
  */
-export async function sendTrackingLinkEmail(
+async function sendTrackingLinkEmail(
 	email: string,
 	trackingUrl: string,
 	technicianName: string,

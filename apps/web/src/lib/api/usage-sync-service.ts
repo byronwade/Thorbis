@@ -527,7 +527,7 @@ export async function getServicesApproachingLimits(): Promise<
 /**
  * Track internal API usage (for APIs without external tracking)
  */
-export async function trackInternalUsage(
+async function trackInternalUsage(
 	serviceId: string,
 	incrementBy: number = 1,
 	costCents: number = 0,

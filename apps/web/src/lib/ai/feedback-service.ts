@@ -52,7 +52,7 @@ export interface FeedbackResponse {
 /**
  * Submit feedback for an AI message
  */
-export async function submitFeedback(
+async function submitFeedback(
 	companyId: string,
 	userId: string,
 	feedback: FeedbackSubmission,
@@ -95,7 +95,7 @@ export async function submitFeedback(
 /**
  * Submit quick thumbs up/down feedback
  */
-export async function submitQuickFeedback(
+async function submitQuickFeedback(
 	companyId: string,
 	userId: string,
 	messageId: string,
@@ -113,7 +113,7 @@ export async function submitQuickFeedback(
 /**
  * Submit a correction for an AI response
  */
-export async function submitCorrection(
+async function submitCorrection(
 	companyId: string,
 	userId: string,
 	messageId: string,
@@ -138,7 +138,7 @@ export async function submitCorrection(
 /**
  * Flag a response for review
  */
-export async function flagResponse(
+async function flagResponse(
 	companyId: string,
 	userId: string,
 	messageId: string,
@@ -159,7 +159,7 @@ export async function flagResponse(
 /**
  * Get feedback for a specific message
  */
-export async function getMessageFeedback(
+async function getMessageFeedback(
 	companyId: string,
 	messageId: string,
 ): Promise<{
@@ -221,7 +221,7 @@ export async function getMessageFeedback(
 /**
  * Get feedback summary for a chat session
  */
-export async function getChatFeedbackSummary(
+async function getChatFeedbackSummary(
 	companyId: string,
 	chatId: string,
 ): Promise<{
@@ -284,7 +284,7 @@ export async function getChatFeedbackSummary(
 /**
  * Get company-wide feedback analytics
  */
-export async function getCompanyFeedbackAnalytics(
+async function getCompanyFeedbackAnalytics(
 	companyId: string,
 	dateRange: { start: Date; end: Date },
 ): Promise<{
@@ -393,7 +393,7 @@ export async function getCompanyFeedbackAnalytics(
 /**
  * Get feedback items that need review (for admin dashboard)
  */
-export async function getPendingFeedbackReview(
+async function getPendingFeedbackReview(
 	companyId: string,
 	options?: {
 		limit?: number;
@@ -464,7 +464,7 @@ export async function getPendingFeedbackReview(
 /**
  * Update feedback status (mark as reviewed, actioned, etc.)
  */
-export async function updateFeedbackStatus(
+async function updateFeedbackStatus(
 	companyId: string,
 	feedbackId: string,
 	status: FeedbackStatus,
@@ -493,7 +493,7 @@ export async function updateFeedbackStatus(
 /**
  * Get corrections for training/fine-tuning purposes (RLHF data export)
  */
-export async function exportCorrectionsForTraining(
+async function exportCorrectionsForTraining(
 	companyId: string,
 	options?: { since?: Date; limit?: number },
 ): Promise<

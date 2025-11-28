@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 import type { ArchiveFilter } from "@/lib/utils/archive";
 
-export const TEAM_MEMBERS_PAGE_SIZE = 50;
+export const TEAM_MEMBERS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const TEAM_MEMBERS_SELECT = `
   id,

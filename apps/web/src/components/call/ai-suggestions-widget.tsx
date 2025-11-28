@@ -151,7 +151,7 @@ const suggestionConfig: Record<
 
 const priorityOrder = { high: 0, medium: 1, low: 2 };
 
-export function AISuggestionsWidget({
+function AISuggestionsWidget({
 	suggestions,
 	isAnalyzing = false,
 	onRefresh,
@@ -344,7 +344,7 @@ export function AISuggestionsWidget({
  * Generate mock suggestions based on context
  * In production, this would call an AI service
  */
-export function generateMockSuggestions(context: {
+function generateMockSuggestions(context: {
 	hasOutstandingBalance?: boolean;
 	balanceAmount?: number;
 	customerSentiment?: "positive" | "neutral" | "negative";

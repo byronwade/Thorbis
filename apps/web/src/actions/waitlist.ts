@@ -3,19 +3,79 @@
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import { z } from "zod";
-// import { resend } from "@/lib/email/resend-client";
+import { Resend } from "resend";
 import { authRateLimiter, checkRateLimit } from "@/lib/security/rate-limit";
+import { env } from "@stratos/config/env";
 import WaitlistAdminNotificationEmail from "../../emails/templates/waitlist/admin-notification";
 import WaitlistSubscriptionEmail from "../../emails/templates/waitlist/subscription-confirmation";
 
-const waitlistSchema = z.object({
-	name: z
-		.string()
-		.trim()
-		.min(2, "Name must be at least 2 characters")
-		.max(100, "Name is too long"),
-	email: z.string().email("Invalid email address"),
-});
+// Initialize Resend client
+const resend = new Resend(env.resend.apiKey || undefined);
+
+// Cache for audience ID (avoid repeated API calls)
+let cachedAudienceId: string | null = null;
+
+/**
+ * Get or create the waitlist audience
+ * Automatically discovers existing "Waitlist" audience or creates one
+ */
+async function getWaitlistAudienceId(): Promise<string | null> {
+	// Return cached value if available
+	if (cachedAudienceId) {
+		return cachedAudienceId;
+	}
+
+	// Check env var first
+	if (env.resend.waitlistAudienceId) {
+		cachedAudienceId = env.resend.waitlistAudienceId;
+		return cachedAudienceId;
+	}
+
+	// If no API key, skip Resend integration
+	if (!env.resend.apiKey) {
+		console.warn("[Waitlist] RESEND_API_KEY not set, skipping Resend contact creation");
+		return null;
+	}
+
+	try {
+		// List all audiences to find existing waitlist
+		const { data: audiences, error: listError } = await resend.audiences.list();
+
+		if (listError) {
+			console.error("Failed to list audiences:", listError);
+			return null;
+		}
+
+		// Look for existing waitlist audience
+		const waitlistAudience = audiences?.data?.find(
+			(a) => a.name.toLowerCase().includes("waitlist")
+		);
+
+		if (waitlistAudience) {
+			cachedAudienceId = waitlistAudience.id;
+			return cachedAudienceId;
+		}
+
+		// Create new waitlist audience if none exists
+		const { data: newAudience, error: createError } = await resend.audiences.create({
+			name: "Thorbis Waitlist",
+		});
+
+		if (createError) {
+			console.error("Failed to create waitlist audience:", createError);
+			return null;
+		}
+
+		cachedAudienceId = newAudience?.id || null;
+		console.log("Created new waitlist audience:", cachedAudienceId);
+		return cachedAudienceId;
+	} catch (error) {
+		console.error("Error getting waitlist audience:", error);
+		return null;
+	}
+}
+
+import { waitlistSchema } from "@/lib/validations/form-schemas";
 
 type WaitlistResult = {
 	success: boolean;
@@ -58,27 +118,83 @@ export async function joinWaitlist(
 		// Rate limit check
 		await checkRateLimit(validated.email, authRateLimiter);
 
-		// NOTE: Resend contact creation removed during migration to SendGrid.
-		// TODO: Implement SendGrid Marketing Contacts API or similar if needed.
-		
-		// Send subscription confirmation email (only for new subscriptions)
+		// Add contact to Resend audience for waitlist management
+		let isNewSubscriber = true;
+		let alreadySubscribedMessage = false;
+
 		try {
-			await sendEmail({
-				to: validated.email,
-				subject: "Welcome to the Thorbis Waitlist! 🎉",
-				template: WaitlistSubscriptionEmail({
-					name: validated.name,
-					previewText: "Welcome to the Thorbis waitlist!",
-				}),
-				templateType: EmailTemplate.WAITLIST_SUBSCRIPTION,
-				tags: [{ name: "category", value: "waitlist" }],
-			});
-		} catch (emailError) {
-			// Log email error but don't fail the signup
-			console.error(
-				"Failed to send waitlist confirmation email:",
-				emailError,
-			);
+			const audienceId = await getWaitlistAudienceId();
+
+			if (audienceId) {
+				// Parse name into first and last name
+				const nameParts = validated.name.trim().split(/\s+/);
+				const firstName = nameParts[0] || "";
+				const lastName = nameParts.slice(1).join(" ") || "";
+
+				// Attempt to create contact in Resend
+				const response = await resend.contacts.create({
+					email: validated.email,
+					firstName,
+					lastName,
+					unsubscribed: false,
+					audienceId,
+				});
+
+				if (response.error) {
+					// Check if error is due to duplicate email
+					// Resend API returns errors like: "Contact already exists in this audience"
+					const errorMessage = response.error.message || "";
+					const errorCode = response.error.name || "";
+					
+					const isDuplicate = 
+						errorMessage.toLowerCase().includes("already exists") ||
+						errorMessage.toLowerCase().includes("duplicate") ||
+						errorMessage.toLowerCase().includes("already subscribed") ||
+						errorCode.toLowerCase().includes("duplicate") ||
+						errorCode.toLowerCase().includes("conflict");
+
+					if (isDuplicate) {
+						isNewSubscriber = false;
+						alreadySubscribedMessage = true;
+						console.log(`[Waitlist] Email ${validated.email} already in waitlist audience`);
+					} else {
+						// Log other errors but don't fail the signup
+						console.error("Failed to add waitlist subscriber to Resend:", {
+							error: response.error,
+							message: errorMessage,
+							code: errorCode,
+						});
+					}
+				} else {
+					isNewSubscriber = true;
+					console.log(`[Waitlist] Successfully added ${validated.email} to Resend audience (ID: ${response.data?.id})`);
+				}
+			}
+		} catch (resendError) {
+			// Log Resend error but don't fail the signup (emails will still be sent)
+			console.error("Error adding contact to Resend audience:", resendError);
+		}
+
+		// Send subscription confirmation email (only for new subscriptions)
+		if (isNewSubscriber) {
+			try {
+				await sendEmail({
+					to: validated.email,
+					subject: "Welcome to the Thorbis Waitlist! 🎉",
+					template: WaitlistSubscriptionEmail({
+						name: validated.name,
+						previewText: "Welcome to the Thorbis waitlist!",
+					}),
+					templateType: EmailTemplate.WAITLIST_SUBSCRIPTION,
+					tags: [{ name: "category", value: "waitlist" }],
+				});
+			} catch (emailError) {
+				// Log email error but don't fail the signup
+				console.error(
+					"Failed to send waitlist confirmation email:",
+					emailError,
+				);
+			}
 		}
 
 		// Send admin notification email
@@ -104,7 +220,9 @@ export async function joinWaitlist(
 
 		return {
 			success: true,
-			message: "Successfully joined the waitlist!",
+			message: alreadySubscribedMessage
+				? "You're already subscribed to the waitlist!"
+				: "Successfully joined the waitlist!",
 		};
 	} catch (error) {
 		if (error instanceof z.ZodError) {

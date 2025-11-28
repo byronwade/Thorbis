@@ -167,7 +167,7 @@ const categoryLabels: Record<string, string> = {
 	general: "General",
 };
 
-export function SmartCallNotes({
+function SmartCallNotes({
 	value,
 	onChange,
 	onSave,
@@ -492,7 +492,7 @@ type FloatingNotesProps = {
 	className?: string;
 };
 
-export function FloatingNotes({
+function FloatingNotes({
 	value,
 	onChange,
 	className,

@@ -258,7 +258,7 @@ export async function ensureMessagingBranding(
 }
 
 // Linking campaigns touches several Twilio APIs sequentially
-export async function ensureMessagingCampaign(
+async function ensureMessagingCampaign(
 	companyId: string,
 	phoneNumber: { id: string; e164: string },
 	options?: { supabase?: TypedSupabaseClient | null },

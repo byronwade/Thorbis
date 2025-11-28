@@ -1542,7 +1542,7 @@ export function GenericTemplate({
 /**
  * DEFAULT - Alias for GenericTemplate
  */
-export const DefaultTemplate = GenericTemplate;
+const DefaultTemplate = GenericTemplate;
 
 /**
  * INTEGRATION - Integration showcase

@@ -690,7 +690,7 @@ async function unlinkPurchaseOrderFromJob(
  * Restore an archived purchase order
  * Reverses the soft delete by clearing deleted_at
  */
-export async function restorePurchaseOrder(
+async function restorePurchaseOrder(
 	poId: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {

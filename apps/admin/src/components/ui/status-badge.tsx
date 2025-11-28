@@ -253,7 +253,7 @@ function getUserStatusConfig(status: string): {
 /**
  * Ticket Status Badge
  */
-export function TicketStatusBadge({
+function TicketStatusBadge({
 	status,
 	className,
 }: {

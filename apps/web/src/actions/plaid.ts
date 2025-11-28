@@ -18,6 +18,7 @@ import {
 	assertAuthenticated,
 	assertSupabase,
 	ERROR_CODES,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
 import { plaidClient } from "@/lib/payments/plaid-client";
@@ -45,29 +46,7 @@ async function createPlaidLinkToken(
 	companyId: string,
 ): Promise<ActionResult<{ linkToken: string }>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		assertSupabase(supabase);
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Verify user belongs to company
-		const { data: membership } = await supabase
-			.from("company_memberships")
-			.select("*")
-			.eq("company_id", companyId)
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!membership) {
-			throw new ActionError(
-				"You do not have access to this company",
-				ERROR_CODES.UNAUTHORIZED,
-			);
-		}
+		const { supabase } = await requireCompanyMembership();
 
 		// Get company details
 		const { data: company, error: companyError } = await supabase
@@ -123,29 +102,7 @@ async function exchangePlaidToken(
 	metadata: any,
 ): Promise<ActionResult<{ accountsLinked: number }>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		assertSupabase(supabase);
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
-
-		// Verify user belongs to company
-		const { data: membership } = await supabase
-			.from("company_memberships")
-			.select("*")
-			.eq("company_id", companyId)
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!membership) {
-			throw new ActionError(
-				"You do not have access to this company",
-				ERROR_CODES.UNAUTHORIZED,
-			);
-		}
+		const { supabase } = await requireCompanyMembership();
 
 		try {
 			// Exchange public token for access token
@@ -261,31 +218,15 @@ export async function syncTransactions(
 	accessToken?: string,
 ): Promise<ActionResult<{ synced: number }>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		assertSupabase(supabase);
-
 		// If called from server, skip auth check
 		// If called from client, verify user belongs to company
+		let supabase;
 		if (!accessToken) {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			assertAuthenticated(user?.id);
-
-			const { data: membership } = await supabase
-				.from("company_memberships")
-				.select("*")
-				.eq("company_id", companyId)
-				.eq("user_id", user.id)
-				.eq("status", "active")
-				.single();
-
-			if (!membership) {
-				throw new ActionError(
-					"You do not have access to this company",
-					ERROR_CODES.UNAUTHORIZED,
-				);
-			}
+			const membership = await requireCompanyMembership();
+			supabase = membership.supabase;
+		} else {
+			supabase = await createClient();
+			assertSupabase(supabase);
 		}
 
 		// Get all accounts for company with Plaid access tokens
@@ -400,13 +341,7 @@ async function getTransactions(
 	}>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		assertSupabase(supabase);
-
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		assertAuthenticated(user?.id);
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify user has access to this bank account
 		const { data: account } = await supabase
@@ -419,15 +354,7 @@ async function getTransactions(
 			throw new ActionError("Bank account not found", ERROR_CODES.NOT_FOUND);
 		}
 
-		const { data: membership } = await supabase
-			.from("company_memberships")
-			.select("*")
-			.eq("company_id", account.company_id)
-			.eq("user_id", user.id)
-			.eq("status", "active")
-			.single();
-
-		if (!membership) {
+		if (account.company_id !== companyId) {
 			throw new ActionError(
 				"You do not have access to this bank account",
 				ERROR_CODES.UNAUTHORIZED,

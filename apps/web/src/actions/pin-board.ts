@@ -76,7 +76,7 @@ async function assertAdminOrOwner(
 // CATEGORY ACTIONS
 // ============================================================================
 
-export async function createPinBoardCategory(
+async function createPinBoardCategory(
 	data: z.infer<typeof categorySchema>,
 ) {
 	const supabase = await createClient();
@@ -121,7 +121,7 @@ export async function createPinBoardCategory(
 	}
 }
 
-export async function updatePinBoardCategory(
+async function updatePinBoardCategory(
 	id: string,
 	data: Partial<z.infer<typeof categorySchema>>,
 ) {
@@ -169,7 +169,7 @@ export async function updatePinBoardCategory(
 	}
 }
 
-export async function deletePinBoardCategory(id: string) {
+async function deletePinBoardCategory(id: string) {
 	const supabase = await createClient();
 	const companyId = await getActiveCompanyId();
 
@@ -507,7 +507,7 @@ export async function addPinBoardAttachment(
 	}
 }
 
-export async function deletePinBoardAttachment(id: string) {
+async function deletePinBoardAttachment(id: string) {
 	const supabase = await createClient();
 	const companyId = await getActiveCompanyId();
 
@@ -645,7 +645,7 @@ export async function uploadPinBoardFile(formData: FormData) {
 	}
 }
 
-export async function getPinBoardFileUrl(attachmentId: string) {
+async function getPinBoardFileUrl(attachmentId: string) {
 	const supabase = await createClient();
 	const companyId = await getActiveCompanyId();
 
@@ -685,7 +685,7 @@ export async function getPinBoardFileUrl(attachmentId: string) {
 // SEED DEFAULT CATEGORIES
 // ============================================================================
 
-export async function seedDefaultCategories() {
+async function seedDefaultCategories() {
 	const supabase = await createClient();
 	const companyId = await getActiveCompanyId();
 

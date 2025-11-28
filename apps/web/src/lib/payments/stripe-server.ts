@@ -15,6 +15,7 @@
 
 import Stripe from "stripe";
 import { stripeTracker } from "@/lib/analytics/external-api-tracker";
+import { env } from "@stratos/config/env";
 
 /**
  * Initialize Stripe server client
@@ -22,7 +23,7 @@ import { stripeTracker } from "@/lib/analytics/external-api-tracker";
  * SECURITY: This uses the secret key and must only be called server-side
  */
 function getStripeServer(): Stripe | null {
-	const secretKey = process.env.STRIPE_SECRET_KEY;
+	const secretKey = env.stripe.secretKey;
 
 	if (!secretKey) {
 		return null;

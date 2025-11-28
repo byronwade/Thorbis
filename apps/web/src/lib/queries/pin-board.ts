@@ -151,7 +151,7 @@ export const getPinBoardPosts = cache(
 /**
  * Get a single post by ID with full details
  */
-export const getPinBoardPost = cache(
+const getPinBoardPost = cache(
 	async (companyId: string, postId: string): Promise<PinBoardPost | null> => {
 		const supabase = await createClient();
 		if (!supabase) return null;
@@ -179,7 +179,7 @@ export const getPinBoardPost = cache(
 /**
  * Get view statistics for posts
  */
-export const getPinBoardPostViews = cache(
+const getPinBoardPostViews = cache(
 	async (
 		companyId: string,
 		postIds: string[],
@@ -213,7 +213,7 @@ export const getPinBoardPostViews = cache(
 /**
  * Check which posts the current user has viewed
  */
-export const getUserViewedPosts = cache(
+const getUserViewedPosts = cache(
 	async (
 		companyId: string,
 		userId: string,
@@ -243,7 +243,7 @@ export const getUserViewedPosts = cache(
 /**
  * Search posts by title or content
  */
-export const searchPinBoardPosts = cache(
+const searchPinBoardPosts = cache(
 	async (
 		companyId: string,
 		searchQuery: string,

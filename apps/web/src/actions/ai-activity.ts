@@ -151,7 +151,7 @@ export async function getActivityStatsAction(dateRange?: {
 	}
 }
 
-export async function getHighSeverityActionsAction(): Promise<{
+async function getHighSeverityActionsAction(): Promise<{
 	entries: Array<{
 		id: string;
 		action: string;
@@ -264,7 +264,7 @@ export async function undoActionAction(
 	}
 }
 
-export async function getRevertableActionsAction(chatId?: string): Promise<{
+async function getRevertableActionsAction(chatId?: string): Promise<{
 	actions: Array<{
 		id: string;
 		messageId: string;

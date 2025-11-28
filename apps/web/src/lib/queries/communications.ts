@@ -108,7 +108,7 @@ export interface CommunicationsFilters {
  * @param filters - Optional filters
  * @returns Promise<Communication[]>
  */
-export const getCommunications = cache(
+const getCommunications = cache(
 	async (
 		teamMemberId: string,
 		companyId: string,
@@ -253,7 +253,7 @@ export const getCommunications = cache(
  * @param limit - Max results
  * @returns Promise<Communication[]>
  */
-export async function getCommunicationsByCategory(
+async function getCommunicationsByCategory(
 	teamMemberId: string,
 	companyId: string,
 	category: EmailCategory,
@@ -276,7 +276,7 @@ export async function getCommunicationsByCategory(
  * @param limit - Max results
  * @returns Promise<Communication[]>
  */
-export async function getPersonalInbox(
+async function getPersonalInbox(
 	teamMemberId: string,
 	companyId: string,
 	limit: number = 50,
@@ -296,7 +296,7 @@ export async function getPersonalInbox(
  * @param limit - Max results
  * @returns Promise<Communication[]>
  */
-export async function getSharedCommunications(
+async function getSharedCommunications(
 	teamMemberId: string,
 	companyId: string,
 	limit: number = 50,
@@ -383,7 +383,7 @@ export async function getSharedCommunications(
  * @param limit - Max results
  * @returns Promise<Communication[]>
  */
-export async function getAssignedCommunications(
+async function getAssignedCommunications(
 	teamMemberId: string,
 	companyId: string,
 	limit: number = 50,
@@ -403,7 +403,7 @@ export async function getAssignedCommunications(
  * @param teamMemberId - Team member viewing
  * @returns Promise<Communication | null>
  */
-export const getCommunicationById = cache(
+const getCommunicationById = cache(
 	async (
 		communicationId: string,
 		teamMemberId: string,
@@ -476,7 +476,7 @@ export const getCommunicationById = cache(
  * @param companyId - Company ID
  * @returns Promise<Record<EmailCategory, number>>
  */
-export const getCommunicationCountsByCategory = cache(
+const getCommunicationCountsByCategory = cache(
 	async (
 		teamMemberId: string,
 		companyId: string,
@@ -511,7 +511,7 @@ export const getCommunicationCountsByCategory = cache(
  * @param offset - Pagination offset (default: 0)
  * @returns Communications with total count
  */
-export const getCommunicationsFilteredRpc = cache(
+const getCommunicationsFilteredRpc = cache(
 	async (
 		companyId: string,
 		channel?: string,

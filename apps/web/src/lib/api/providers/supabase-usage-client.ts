@@ -35,7 +35,7 @@ interface ApiCountsResponse {
  * Supabase Usage Client
  * Requires SUPABASE_MANAGEMENT_PAT environment variable
  */
-export class SupabaseUsageClient {
+class SupabaseUsageClient {
 	private baseUrl = "https://api.supabase.com/v1";
 	private accessToken: string;
 	private projectRef: string;

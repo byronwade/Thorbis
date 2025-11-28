@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 import type { Database } from "@/types/supabase";
 
-export const PURCHASE_ORDERS_PAGE_SIZE = 50;
+export const PURCHASE_ORDERS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const PURCHASE_ORDERS_SELECT = `
   id,

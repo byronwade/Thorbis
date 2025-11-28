@@ -436,5 +436,5 @@ Current context: ${JSON.stringify(context || {})}`,
 }
 
 // Export individual agent factories for direct use
-export { Agent };
+{ Agent };
 export type { AgentConfig };

@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { PAGINATION } from "@stratos/shared/constants";
 import type { Database } from "@/types/supabase";
 
-export const APPOINTMENTS_PAGE_SIZE = 50;
+export const APPOINTMENTS_PAGE_SIZE = PAGINATION.defaultPageSize;
 
 const APPOINTMENTS_SELECT = `
   id,
@@ -158,7 +159,7 @@ export const getAppointmentStats = cache(async (companyIdOverride?: string) => {
  * @param limit - Max results (default: 50)
  * @returns Appointments with customer, job, and team assignment details
  */
-export const getAppointmentsWithDetailsRpc = cache(
+const getAppointmentsWithDetailsRpc = cache(
 	async (
 		companyIdOverride?: string,
 		startTime?: string,

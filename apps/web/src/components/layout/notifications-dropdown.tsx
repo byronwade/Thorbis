@@ -110,7 +110,7 @@ function NotificationBadge({ count }: { count: number }) {
 		return null;
 	}
 	return (
-		<span className="bg-destructive absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[0.625rem] leading-none font-bold text-white">
+		<span className="bg-destructive absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[0.625rem] leading-none font-bold text-destructive-foreground">
 			{formatBadgeCount(count)}
 		</span>
 	);
@@ -299,7 +299,7 @@ export function NotificationsDropdown({
 	return (
 		<div className="relative overflow-visible" ref={dropdownRef}>
 			<button
-				className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
+				className="focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 w-8 items-center justify-center rounded-md transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 				onClick={() => setIsOpen(!isOpen)}
 				title={
 					hasSyncActivity ? "Notifications & Sync Status" : "Notifications"

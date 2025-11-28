@@ -76,7 +76,7 @@ export interface PlanExecutionResult {
 /**
  * Create a new multi-step plan
  */
-export async function createPlan(
+async function createPlan(
 	companyId: string,
 	userId: string,
 	chatId: string,
@@ -129,7 +129,7 @@ export async function createPlan(
 /**
  * Get a plan by ID
  */
-export async function getPlan(
+async function getPlan(
 	companyId: string,
 	planId: string,
 ): Promise<Plan | null> {
@@ -161,7 +161,7 @@ export async function getPlan(
 /**
  * Approve a plan for execution
  */
-export async function approvePlan(
+async function approvePlan(
 	companyId: string,
 	planId: string,
 	approvedBy: string,
@@ -190,7 +190,7 @@ export async function approvePlan(
 /**
  * Reject a plan
  */
-export async function rejectPlan(
+async function rejectPlan(
 	companyId: string,
 	planId: string,
 	rejectedBy: string,
@@ -221,7 +221,7 @@ export async function rejectPlan(
 /**
  * Update plan execution progress
  */
-export async function updatePlanProgress(
+async function updatePlanProgress(
 	companyId: string,
 	planId: string,
 	stepNumber: number,
@@ -313,7 +313,7 @@ export async function updatePlanProgress(
 /**
  * Start plan execution
  */
-export async function startPlanExecution(
+async function startPlanExecution(
 	companyId: string,
 	planId: string,
 ): Promise<boolean> {
@@ -341,7 +341,7 @@ export async function startPlanExecution(
 /**
  * Cancel a plan in progress
  */
-export async function cancelPlan(
+async function cancelPlan(
 	companyId: string,
 	planId: string,
 	cancelledBy: string,
@@ -372,7 +372,7 @@ export async function cancelPlan(
 /**
  * Get plans for a chat session
  */
-export async function getChatPlans(
+async function getChatPlans(
 	companyId: string,
 	chatId: string,
 	options?: { status?: PlanStatus; limit?: number },
@@ -421,7 +421,7 @@ export async function getChatPlans(
 /**
  * Get pending approval plans for a company (admin dashboard)
  */
-export async function getPendingApprovalPlans(
+async function getPendingApprovalPlans(
 	companyId: string,
 	options?: { limit?: number },
 ): Promise<
@@ -469,7 +469,7 @@ export async function getPendingApprovalPlans(
 /**
  * Get plan execution statistics
  */
-export async function getPlanStatistics(
+async function getPlanStatistics(
 	companyId: string,
 	dateRange: { start: Date; end: Date },
 ): Promise<{
@@ -544,7 +544,7 @@ export async function getPlanStatistics(
  * Generate a plan from natural language description
  * This is a simplified version - in production, use an LLM
  */
-export function generatePlanFromDescription(
+function generatePlanFromDescription(
 	description: string,
 	context: { entityType?: string; entityId?: string },
 ): PlanStep[] {

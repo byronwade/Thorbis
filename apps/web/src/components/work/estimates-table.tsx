@@ -5,6 +5,7 @@ import {
 	Download,
 	FileText,
 	MoreHorizontal,
+	Plus,
 	Send,
 } from "lucide-react";
 import Link from "next/link";
@@ -400,6 +401,17 @@ export function EstimatesTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredEstimates}
+				emptyAction={
+					<Button
+						onClick={() =>
+							(window.location.href = "/dashboard/work/estimates/new")
+						}
+						size="sm"
+					>
+						<Plus className="mr-2 size-4" />
+						Create Estimate
+					</Button>
+				}
 				emptyIcon={
 					<FileText className="text-muted-foreground mx-auto h-12 w-12" />
 				}

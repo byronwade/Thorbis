@@ -55,7 +55,7 @@ export function createAdminClient() {
  */
 let adminClientInstance: ReturnType<typeof createAdminClient> | null = null;
 
-export function getAdminClient() {
+function getAdminClient() {
 	if (!adminClientInstance) {
 		adminClientInstance = createAdminClient();
 	}

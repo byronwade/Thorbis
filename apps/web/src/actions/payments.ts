@@ -606,7 +606,7 @@ export async function unlinkPaymentFromJob(
  * Restore an archived payment
  * Reverses the soft delete by clearing deleted_at and deleted_by
  */
-export async function restorePayment(
+async function restorePayment(
 	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {

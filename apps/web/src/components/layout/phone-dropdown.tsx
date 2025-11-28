@@ -332,10 +332,10 @@ export function PhoneDropdown({
 						<DropdownMenuTrigger asChild>
 							<button
 								className={cn(
-									"relative flex h-8 w-8 items-center justify-center rounded-md",
-									"border border-transparent transition-all",
-									"hover:border-primary/20 hover:bg-primary/10 hover:text-primary",
-									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+									"focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 w-8 items-center justify-center rounded-md",
+									"transition-all duration-150 outline-none focus-visible:ring-2",
+									"disabled:pointer-events-none disabled:opacity-50",
+									"text-muted-foreground hover:bg-muted/70 hover:text-foreground",
 									hasIncomingCall && "animate-pulse text-primary",
 									hasActiveCall && "text-success",
 								)}

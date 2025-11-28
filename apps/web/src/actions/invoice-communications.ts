@@ -347,7 +347,7 @@ export async function sendEstimateEmail(estimateId: string) {
  * Uses Twilio messaging with 10DLC compliance.
  * Includes payment link for quick mobile payments.
  */
-export async function sendInvoicePaymentReminderSMS(
+async function sendInvoicePaymentReminderSMS(
 	invoiceId: string,
 	customerPhone: string,
 	reminderType: "upcoming" | "due-today" | "overdue" | "final-notice" = "upcoming",
@@ -502,7 +502,7 @@ export async function sendInvoicePaymentReminderSMS(
  *
  * Useful for automated daily/weekly reminder jobs.
  */
-export async function sendBulkPaymentReminders(
+async function sendBulkPaymentReminders(
 	companyId: string,
 	reminderType: "upcoming" | "overdue" = "overdue",
 ) {
@@ -594,7 +594,7 @@ export async function sendBulkPaymentReminders(
 /**
  * Send payment confirmation SMS after payment is received
  */
-export async function sendPaymentConfirmationSMS(
+async function sendPaymentConfirmationSMS(
 	invoiceId: string,
 	amountPaid: number,
 	customerPhone: string,

@@ -4637,6 +4637,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../src/app/api/waitlist/test/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/waitlist/test">> = Specific
+  const handler = {} as typeof import("../../../src/app/api/waitlist/test/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../src/app/api/waitlist/verify/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/waitlist/verify">> = Specific
+  const handler = {} as typeof import("../../../src/app/api/waitlist/verify/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../src/app/api/weather/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/weather">> = Specific

@@ -86,7 +86,7 @@ export async function trackExternalApiCall(
 /**
  * Higher-order function to wrap external API calls with tracking
  */
-export function withExternalApiTracking<T>(
+function withExternalApiTracking<T>(
 	apiName: string,
 	endpoint: string,
 	companyId: string,
@@ -126,7 +126,7 @@ export function withExternalApiTracking<T>(
 /**
  * Create a tracker instance for a specific API
  */
-export function createApiTracker(apiName: string) {
+function createApiTracker(apiName: string) {
 	return {
 		track: (
 			endpoint: string,

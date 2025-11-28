@@ -42,7 +42,7 @@ export interface RevertResult {
 /**
  * Create an action snapshot before AI performs an action
  */
-export async function createActionSnapshot(
+async function createActionSnapshot(
 	companyId: string,
 	messageId: string,
 	chatId: string,
@@ -78,7 +78,7 @@ export async function createActionSnapshot(
 /**
  * Create bulk snapshots for multiple entities (e.g., bulk operations)
  */
-export async function createBulkSnapshots(
+async function createBulkSnapshots(
 	companyId: string,
 	messageId: string,
 	chatId: string,
@@ -120,7 +120,7 @@ export async function createBulkSnapshots(
 /**
  * Get all snapshots for a specific message (for undo capability)
  */
-export async function getMessageSnapshots(
+async function getMessageSnapshots(
 	companyId: string,
 	messageId: string,
 ): Promise<
@@ -366,7 +366,7 @@ export async function revertSnapshot(
 /**
  * Revert all actions from a specific message
  */
-export async function revertMessageActions(
+async function revertMessageActions(
 	companyId: string,
 	messageId: string,
 	userId: string,
@@ -481,7 +481,7 @@ export async function previewRevert(
 /**
  * Get revert history for an entity
  */
-export async function getEntityRevertHistory(
+async function getEntityRevertHistory(
 	companyId: string,
 	entityType: string,
 	entityId: string,
@@ -526,7 +526,7 @@ export async function getEntityRevertHistory(
 /**
  * Batch revert multiple snapshots with transaction-like behavior
  */
-export async function batchRevert(
+async function batchRevert(
 	companyId: string,
 	snapshotIds: string[],
 	userId: string,

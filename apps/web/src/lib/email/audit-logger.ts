@@ -321,7 +321,7 @@ export async function logTokenRefreshFailed(
 /**
  * Log permission grant
  */
-export async function logPermissionGranted(
+async function logPermissionGranted(
 	grantedBy: string,
 	grantedByName: string,
 	grantedTo: string,
@@ -345,7 +345,7 @@ export async function logPermissionGranted(
 /**
  * Log permission revocation
  */
-export async function logPermissionRevoked(
+async function logPermissionRevoked(
 	revokedBy: string,
 	revokedByName: string,
 	revokedFrom: string,
@@ -385,7 +385,7 @@ export async function logSyncFailed(
 /**
  * Log unauthorized access attempt
  */
-export async function logUnauthorizedAccess(
+async function logUnauthorizedAccess(
 	userId: string,
 	userName: string,
 	resource: string,
@@ -401,7 +401,7 @@ export async function logUnauthorizedAccess(
 /**
  * Log rate limit exceeded
  */
-export async function logRateLimitExceeded(
+async function logRateLimitExceeded(
 	userId: string,
 	userName: string,
 	requestsPerMinute: number,
@@ -425,7 +425,7 @@ export async function logRateLimitExceeded(
  * @param limit - Max events to return
  * @returns List of audit events
  */
-export async function getAuditEventsForUser(
+async function getAuditEventsForUser(
 	teamMemberId: string,
 	limit: number = 100,
 ): Promise<AuditEvent[]> {
@@ -466,7 +466,7 @@ export async function getAuditEventsForUser(
  * @param limit - Max events to return
  * @returns List of audit events
  */
-export async function getAuditEventsForCompany(
+async function getAuditEventsForCompany(
 	companyId: string,
 	limit: number = 100,
 ): Promise<AuditEvent[]> {
@@ -506,7 +506,7 @@ export async function getAuditEventsForCompany(
  * @param limit - Max events to return
  * @returns List of critical events
  */
-export async function getCriticalSecurityEvents(
+async function getCriticalSecurityEvents(
 	limit: number = 50,
 ): Promise<AuditEvent[]> {
 	try {

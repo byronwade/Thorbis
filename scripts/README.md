@@ -2,6 +2,8 @@
 
 This directory contains utility scripts organized by purpose for better maintainability and discoverability.
 
+> **Note:** For detailed usage instructions, see the README files in each subdirectory.
+
 ## Directory Structure
 
 ### `/database`

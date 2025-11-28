@@ -51,6 +51,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
+import { useCommunicationRefresh } from "@/hooks/use-communication-refresh";
 import {
 	archiveEmailAction,
 	bulkDeleteEmailsAction,
@@ -208,9 +210,8 @@ export function UnifiedInboxPageClient({
 			return null;
 		});
 
-	// Search and filter state
-	const [searchQuery, setSearchQuery] = useState("");
-	const [searchInput, setSearchInput] = useState("");
+	// Search and filter state - using debounced search hook
+	const { searchInput, searchQuery, setSearchInput, clearSearch } = useDebouncedSearch();
 	const [typeFilter, setTypeFilter] = useState<CommunicationType>(
 		(initialActiveType as CommunicationType) || "all",
 	);
@@ -243,7 +244,6 @@ export function UnifiedInboxPageClient({
 	const [transferDialogOpen, setTransferDialogOpen] = useState(false);
 
 	// Refs
-	const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const selectedCommunicationRef = useRef<Communication | null>(selectedCommunication);
 	const refreshingRef = useRef(refreshing);
 	refreshingRef.current = refreshing;
@@ -354,23 +354,6 @@ export function UnifiedInboxPageClient({
 			setConversationMessages([]);
 		}
 	}, [communicationId, communications]);
-
-	// Debounced search
-	useEffect(() => {
-		if (searchTimeoutRef.current) {
-			clearTimeout(searchTimeoutRef.current);
-		}
-
-		searchTimeoutRef.current = setTimeout(() => {
-			setSearchQuery(searchInput);
-		}, 300);
-
-		return () => {
-			if (searchTimeoutRef.current) {
-				clearTimeout(searchTimeoutRef.current);
-			}
-		};
-	}, [searchInput]);
 
 	// Fetch communications function
 	const fetchCommunications = useCallback(
@@ -491,31 +474,11 @@ export function UnifiedInboxPageClient({
 		}
 	}, [searchQuery]);
 
-	// Auto-refresh every 30 seconds
-	useEffect(() => {
-		const interval = setInterval(() => {
-			if (!refreshingRef.current && !composeMode) {
-				fetchCommunications();
-			}
-		}, 30000);
-
-		// Listen for custom events
-		const handleRefresh = () => {
-			setTimeout(() => fetchCommunications(), 1000);
-		};
-		window.addEventListener("email-received", handleRefresh);
-		window.addEventListener("email-sent", handleRefresh);
-		window.addEventListener("sms-read", handleRefresh);
-		window.addEventListener("communication-updated", handleRefresh);
-
-		return () => {
-			clearInterval(interval);
-			window.removeEventListener("email-received", handleRefresh);
-			window.removeEventListener("email-sent", handleRefresh);
-			window.removeEventListener("sms-read", handleRefresh);
-			window.removeEventListener("communication-updated", handleRefresh);
-		};
-	}, [fetchCommunications, composeMode]);
+	// Auto-refresh using consolidated hook
+	useCommunicationRefresh(fetchCommunications, {
+		interval: 30000,
+		disabled: composeMode || refreshingRef.current,
+	});
 
 	// Handle communication selection
 	const handleCommunicationSelect = useCallback(
@@ -1045,7 +1008,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 										</svg>
 										{searchInput && (
 											<button
-												onClick={() => setSearchInput("")}
+												onClick={clearSearch}
 												className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
 											>
 												<X className="h-3 w-3" />

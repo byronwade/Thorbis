@@ -206,14 +206,14 @@ async function fetchRelatedCustomerData(
 			.select(
 				`
         *,
-        job:jobs!job_id(id, job_number, title),
-        property:properties!property_id(id, name, address)
+        job:jobs!appointments_job_id_jobs_id_fk(id, job_number, title),
+        property:properties!appointments_property_id_properties_id_fk(id, name, address)
       `,
 			)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
-			.gte("scheduled_start", new Date().toISOString())
-			.order("scheduled_start", { ascending: true })
+			.gte("start_time", new Date().toISOString())
+			.order("start_time", { ascending: true })
 			.limit(10),
 
 		// Properties

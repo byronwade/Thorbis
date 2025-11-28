@@ -37,7 +37,7 @@ type RegistrationResult = {
  * 6. Attaches all company phone numbers to the campaign
  * 7. Updates company_twilio_settings with brand and campaign IDs
  */
-export async function registerCompanyFor10DLC(
+async function registerCompanyFor10DLC(
 	companyId: string,
 ): Promise<RegistrationResult> {
 	const log: string[] = [];
@@ -496,7 +496,7 @@ function determineVertical(businessType?: string | null): string {
  *
  * Returns the current verification level and what's required to proceed
  */
-export async function checkTwilioVerificationStatus(): Promise<{
+async function checkTwilioVerificationStatus(): Promise<{
 	success: boolean;
 	data?: {
 		id?: string;

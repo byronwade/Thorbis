@@ -156,7 +156,7 @@ interface InfoCardProps {
 	className?: string;
 }
 
-export function InfoCard({
+function InfoCard({
 	icon,
 	title,
 	description,
@@ -222,7 +222,7 @@ interface ExpandableInfoProps {
 	defaultExpanded?: boolean;
 }
 
-export function ExpandableInfo({
+function ExpandableInfo({
 	title = "Why this matters",
 	children,
 	defaultExpanded = false,

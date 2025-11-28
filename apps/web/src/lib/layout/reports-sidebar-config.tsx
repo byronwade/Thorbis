@@ -60,7 +60,7 @@ export type ReportSection = {
 };
 
 // All available report sections
-export const REPORT_SECTIONS: ReportSection[] = [
+const REPORT_SECTIONS: ReportSection[] = [
 	{
 		id: "overview",
 		title: "Overview",
@@ -314,7 +314,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
 ];
 
 // Quick access reports (shown at top of sidebar)
-export const QUICK_ACCESS_REPORTS: ReportCategory[] = [
+const QUICK_ACCESS_REPORTS: ReportCategory[] = [
 	{
 		id: "dashboard",
 		title: "Analytics Dashboard",

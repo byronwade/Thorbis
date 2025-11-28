@@ -94,4 +94,4 @@ export const createWebClient = () => {
  * Type-safe helper to get the web client.
  * Alias for createWebClient() with better semantics.
  */
-export const getWebDatabaseClient = createWebClient;
+const getWebDatabaseClient = createWebClient;

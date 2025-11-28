@@ -13,7 +13,7 @@ type TimelineZoomLevel = 15 | 30 | 60;
 const BUFFER_DAYS_BEFORE = 3; // Initial days to load before current date
 const BUFFER_DAYS_AFTER = 3; // Initial days to load after current date
 const EXTEND_DAYS = 3; // Days to add when extending buffer (reduces state updates)
-const MAX_BUFFER_DAYS = 14; // Maximum buffer size before trimming (prevents memory bloat)
+const MAX_BUFFER_DAYS = Number.POSITIVE_INFINITY; // Unlimited buffer to enable true infinite scroll
 
 type ScheduleViewStore = {
 	viewMode: TimelineViewMode;
@@ -26,6 +26,7 @@ type ScheduleViewStore = {
 	bufferEndDate: Date;
 	setViewMode: (mode: TimelineViewMode) => void;
 	setCurrentDate: (date: Date) => void;
+	setCurrentDatePreserveBuffer: (date: Date) => void;
 	setZoomLevel: (level: TimelineZoomLevel) => void;
 	toggleTravelTime: () => void;
 	toggleCapacity: () => void;
@@ -47,11 +48,11 @@ const getDefaultViewMode = (): TimelineViewMode => {
 	return window.innerWidth < 768 ? "list" : "day";
 };
 
-// Helper to create buffer dates around a center date
-const createBufferDates = (centerDate: Date) => {
-	const start = new Date(centerDate);
-	start.setDate(start.getDate() - BUFFER_DAYS_BEFORE);
-	start.setHours(0, 0, 0, 0);
+	// Helper to create buffer dates around a center date
+	const createBufferDates = (centerDate: Date) => {
+		const start = new Date(centerDate);
+		start.setDate(start.getDate() - BUFFER_DAYS_BEFORE);
+		start.setHours(0, 0, 0, 0);
 
 	const end = new Date(centerDate);
 	end.setDate(end.getDate() + BUFFER_DAYS_AFTER);
@@ -82,23 +83,46 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 				setViewMode: (mode) => set({ viewMode: mode }),
 
 				setCurrentDate: (date) => {
-					// Update buffer when current date changes
+					// Expand buffer to include the new date but never shrink it
 					const { bufferStartDate, bufferEndDate } = createBufferDates(date);
-					set({ currentDate: date, bufferStartDate, bufferEndDate });
+					set((state) => ({
+						currentDate: date,
+						bufferStartDate:
+							state.bufferStartDate < bufferStartDate
+								? state.bufferStartDate
+								: bufferStartDate,
+						bufferEndDate:
+							state.bufferEndDate > bufferEndDate
+								? state.bufferEndDate
+								: bufferEndDate,
+					}));
 				},
+
+				// Preserve existing buffer when the visible date shifts via scrolling
+				setCurrentDatePreserveBuffer: (date) => set({ currentDate: date }),
 
 				setZoomLevel: (level) => set({ zoomLevel: level }),
 
 				toggleTravelTime: () =>
 					set((state) => ({ showTravelTime: !state.showTravelTime })),
 
-				toggleCapacity: () =>
-					set((state) => ({ showCapacity: !state.showCapacity })),
+					toggleCapacity: () =>
+						set((state) => ({ showCapacity: !state.showCapacity })),
 
 				goToToday: () => {
 					const today = new Date();
 					const { bufferStartDate, bufferEndDate } = createBufferDates(today);
-					set({ currentDate: today, bufferStartDate, bufferEndDate });
+					set((state) => ({
+						currentDate: today,
+						bufferStartDate:
+							state.bufferStartDate < bufferStartDate
+								? state.bufferStartDate
+								: bufferStartDate,
+						bufferEndDate:
+							state.bufferEndDate > bufferEndDate
+								? state.bufferEndDate
+								: bufferEndDate,
+					}));
 				},
 
 				navigatePrevious: () => {
@@ -112,7 +136,17 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 						newDate.setMonth(newDate.getMonth() - 1);
 					}
 					const { bufferStartDate, bufferEndDate } = createBufferDates(newDate);
-					set({ currentDate: newDate, bufferStartDate, bufferEndDate });
+					set((state) => ({
+						currentDate: newDate,
+						bufferStartDate:
+							state.bufferStartDate < bufferStartDate
+								? state.bufferStartDate
+								: bufferStartDate,
+						bufferEndDate:
+							state.bufferEndDate > bufferEndDate
+								? state.bufferEndDate
+								: bufferEndDate,
+					}));
 				},
 
 				navigateNext: () => {
@@ -126,7 +160,17 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 						newDate.setMonth(newDate.getMonth() + 1);
 					}
 					const { bufferStartDate, bufferEndDate } = createBufferDates(newDate);
-					set({ currentDate: newDate, bufferStartDate, bufferEndDate });
+					set((state) => ({
+						currentDate: newDate,
+						bufferStartDate:
+							state.bufferStartDate < bufferStartDate
+								? state.bufferStartDate
+								: bufferStartDate,
+						bufferEndDate:
+							state.bufferEndDate > bufferEndDate
+								? state.bufferEndDate
+								: bufferEndDate,
+					}));
 				},
 
 				// Extend buffer to the left (earlier dates) for infinite scroll

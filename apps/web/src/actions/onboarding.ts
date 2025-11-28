@@ -1230,7 +1230,7 @@ async function saveOnboardingNotificationSettings(formData: FormData): Promise<{
  * Save payment processor setup during onboarding (Step 5)
  * This step configures payment processors before final completion
  */
-export async function savePaymentSetupProgress(
+async function savePaymentSetupProgress(
 	companyId: string,
 	paymentConfig: {
 		adyenEnabled?: boolean;

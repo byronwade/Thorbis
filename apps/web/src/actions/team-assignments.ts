@@ -9,14 +9,13 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import {
 	ActionError,
 	type ActionResult,
 	ERROR_CODES,
+	requireCompanyMembership,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { createClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 // ============================================================================
@@ -79,30 +78,7 @@ async function getJobTeamAssignments(
 	jobId: string,
 ): Promise<ActionResult<TeamMemberAssignment[]>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const serviceSupabase = await createServiceSupabaseClient();
 		if (!serviceSupabase) {
@@ -273,30 +249,7 @@ export async function getAvailableTeamMembers(): Promise<
 	>
 > {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		const serviceSupabase = await createServiceSupabaseClient();
 		if (!serviceSupabase) {
@@ -407,30 +360,7 @@ export async function assignTeamMemberToJob(
 ): Promise<ActionResult<{ id: string }>> {
 	return withErrorHandling(async () => {
 		const validated = assignTeamMemberSchema.parse(input);
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: job, error: jobError } = await supabase
@@ -560,7 +490,7 @@ export async function assignTeamMemberToJob(
 				.from("job_team_assignments")
 				.update({
 					role: validated.role,
-					assigned_by: user.id,
+					assigned_by: userId,
 					notes: validated.notes || null,
 					removed_at: null,
 					assigned_at: new Date().toISOString(),
@@ -580,7 +510,7 @@ export async function assignTeamMemberToJob(
 					job_id: validated.jobId,
 					team_member_id: actualTeamMemberId,
 					role: validated.role,
-					assigned_by: user.id,
+					assigned_by: userId,
 					notes: validated.notes || null,
 				})
 				.select("id")
@@ -633,30 +563,7 @@ export async function removeTeamMemberFromJob(
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const validated = removeTeamMemberSchema.parse(input);
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company before removing assignments
 		const { data: job, error: jobError } = await supabase
@@ -691,13 +598,13 @@ export async function removeTeamMemberFromJob(
 			.from("job_team_assignments")
 			.update({
 				removed_at: new Date().toISOString(),
-				removed_by: user.id,
+				removed_by: userId,
 			})
 			.eq("job_id", validated.jobId)
 			.eq("team_member_id", validated.teamMemberId)
 			.is("removed_at", null);
 
-		if (error || !assignment) {
+		if (error) {
 			throw new ActionError(
 				"Failed to remove team member",
 				ERROR_CODES.DB_UPDATE_ERROR,
@@ -728,30 +635,7 @@ async function bulkAssignTeamMembers(
 ): Promise<ActionResult<{ assigned: number }>> {
 	return withErrorHandling(async () => {
 		const validated = bulkAssignTeamMembersSchema.parse(input);
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: job, error: jobError } = await supabase
@@ -786,7 +670,7 @@ async function bulkAssignTeamMembers(
 			job_id: validated.jobId,
 			team_member_id: teamMemberId,
 			role: validated.role,
-			assigned_by: user.id,
+			assigned_by: userId,
 		}));
 
 		const { error, count } = await supabase
@@ -795,7 +679,7 @@ async function bulkAssignTeamMembers(
 				onConflict: "job_id,team_member_id",
 			});
 
-		if (error || !assignment) {
+		if (error) {
 			throw new ActionError(
 				"Failed to assign team members",
 				ERROR_CODES.DB_UPDATE_ERROR,
@@ -824,30 +708,7 @@ async function updateTeamMemberRole(
 	newRole: "primary" | "assistant" | "crew" | "supervisor",
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
-		const supabase = await createClient();
-		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
-		}
-
-		// Verify user authentication
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		if (!user) {
-			throw new ActionError("Unauthorized", ERROR_CODES.AUTH_UNAUTHORIZED, 401);
-		}
-
-		const companyId = await getActiveCompanyId();
-		if (!companyId) {
-			throw new ActionError(
-				"No active company selected",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
-		}
+		const { userId, companyId, supabase } = await requireCompanyMembership();
 
 		// Verify job belongs to company
 		const { data: job, error: jobError } = await supabase
@@ -904,7 +765,7 @@ async function updateTeamMemberRole(
 			.eq("team_member_id", teamMemberId)
 			.is("removed_at", null);
 
-		if (error || !assignment) {
+		if (error) {
 			throw new ActionError(
 				"Failed to update team member role",
 				ERROR_CODES.DB_UPDATE_ERROR,

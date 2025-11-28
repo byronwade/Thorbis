@@ -57,7 +57,7 @@ interface BillingReportResponse {
  * - GOOGLE_CLOUD_BILLING_ACCOUNT_ID
  * - GOOGLE_CLOUD_API_KEY or GOOGLE_APPLICATION_CREDENTIALS
  */
-export class GoogleCloudClient {
+class GoogleCloudClient {
 	private projectId: string;
 	private billingAccountId: string;
 	private accessToken: string;

@@ -111,7 +111,7 @@ const trendConfig = {
 	},
 };
 
-export function SentimentIndicator({
+function SentimentIndicator({
 	sentiment,
 	showTrend = true,
 	showKeywords = false,
@@ -326,7 +326,7 @@ type SentimentBadgeProps = {
 	className?: string;
 };
 
-export function SentimentBadge({
+function SentimentBadge({
 	sentiment,
 	onClick,
 	className,
@@ -372,7 +372,7 @@ export function SentimentBadge({
 /**
  * Calculate sentiment level from score
  */
-export function getSentimentLevel(score: number): SentimentLevel {
+function getSentimentLevel(score: number): SentimentLevel {
 	if (score >= 66) return "positive";
 	if (score >= 33) return "neutral";
 	return "negative";
@@ -381,7 +381,7 @@ export function getSentimentLevel(score: number): SentimentLevel {
 /**
  * Calculate sentiment trend from history
  */
-export function getSentimentTrend(
+function getSentimentTrend(
 	history: number[],
 ): "improving" | "stable" | "declining" {
 	if (history.length < 2) return "stable";

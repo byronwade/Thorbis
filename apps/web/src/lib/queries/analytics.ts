@@ -1579,7 +1579,7 @@ export interface JobCostingData {
 /**
  * Get job costing and profitability analytics
  */
-export const getJobCostingAnalytics = cache(
+const getJobCostingAnalytics = cache(
 	async (companyId: string, days: number = 90): Promise<JobCostingData> => {
 		const supabase = await createClient();
 		const startDate = new Date();
@@ -1750,7 +1750,7 @@ export interface CompanyKPIs {
 /**
  * Get company KPIs from the summary table
  */
-export const getCompanyKPIs = cache(
+const getCompanyKPIs = cache(
 	async (companyId: string): Promise<CompanyKPIs | null> => {
 		const supabase = await createClient();
 
@@ -1822,7 +1822,7 @@ export interface EquipmentHealthSummary {
 /**
  * Get equipment health analytics
  */
-export const getEquipmentHealthAnalytics = cache(
+const getEquipmentHealthAnalytics = cache(
 	async (companyId: string): Promise<EquipmentHealthSummary> => {
 		const supabase = await createClient();
 
@@ -1961,7 +1961,7 @@ export interface TechnicianPerformanceData {
 /**
  * Get detailed technician performance analytics
  */
-export const getTechnicianPerformance = cache(
+const getTechnicianPerformance = cache(
 	async (
 		companyId: string,
 		days: number = 30,
@@ -2068,7 +2068,7 @@ export interface MarketingCampaignData {
 /**
  * Get marketing campaign ROI analytics
  */
-export const getMarketingROIAnalytics = cache(
+const getMarketingROIAnalytics = cache(
 	async (
 		companyId: string,
 		days: number = 90,
@@ -2275,7 +2275,7 @@ export interface CSRScorecardData {
 /**
  * Get CSR scorecard analytics
  */
-export const getCSRScorecardAnalytics = cache(
+const getCSRScorecardAnalytics = cache(
 	async (companyId: string, days: number = 30): Promise<CSRScorecardData> => {
 		const supabase = await createClient();
 		const startDate = new Date();
@@ -2446,7 +2446,7 @@ export interface CallTrackingData {
 /**
  * Get call tracking analytics
  */
-export const getCallTrackingAnalytics = cache(
+const getCallTrackingAnalytics = cache(
 	async (companyId: string, days: number = 30): Promise<CallTrackingData> => {
 		const supabase = await createClient();
 		const startDate = new Date();
@@ -2627,7 +2627,7 @@ export interface DispatchEfficiencyData {
 /**
  * Get dispatch efficiency analytics
  */
-export const getDispatchEfficiencyAnalytics = cache(
+const getDispatchEfficiencyAnalytics = cache(
 	async (
 		companyId: string,
 		days: number = 30,
@@ -2919,7 +2919,7 @@ export interface PricebookPerformanceData {
 /**
  * Get pricebook performance analytics
  */
-export const getPricebookPerformanceAnalytics = cache(
+const getPricebookPerformanceAnalytics = cache(
 	async (
 		companyId: string,
 		days: number = 90,
@@ -3134,7 +3134,7 @@ export interface CustomerHealthAnalyticsData {
 /**
  * Get customer health analytics
  */
-export const getCustomerHealthAnalytics = cache(
+const getCustomerHealthAnalytics = cache(
 	async (companyId: string): Promise<CustomerHealthAnalyticsData> => {
 		const supabase = await createClient();
 

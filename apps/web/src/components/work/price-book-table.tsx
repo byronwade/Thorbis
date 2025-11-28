@@ -30,6 +30,7 @@ import {
 	Image as ImageIcon,
 	MoreHorizontal,
 	Package,
+	Plus,
 	TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
@@ -486,6 +487,17 @@ export function PriceBookTable({
 						bulkActions={bulkActions}
 						columns={columns}
 						data={filteredItems}
+						emptyAction={
+							<Button
+								onClick={() =>
+									(window.location.href = "/dashboard/work/pricebook/new")
+								}
+								size="sm"
+							>
+								<Plus className="mr-2 size-4" />
+								Add Price Book Item
+							</Button>
+						}
 						emptyIcon={<Box className="text-muted-foreground h-8 w-8" />}
 						emptyMessage={emptyMessage}
 						getItemId={(item) => item.id}

@@ -16,9 +16,7 @@ module.exports = [
     "OG_CONFIG",
     ()=>OG_CONFIG,
     "OG_MESSAGING",
-    ()=>OG_MESSAGING,
-    "OG_PATTERNS",
-    ()=>OG_PATTERNS
+    ()=>OG_MESSAGING
 ]);
 const OG_CONFIG = {
     // Image dimensions (universal social media standard)
@@ -507,7 +505,9 @@ const OG_MESSAGING = {
         ]
     }
 };
-const OG_PATTERNS = {
+/**
+ * Visual element patterns for different templates
+ */ const OG_PATTERNS = {
     // Geometric patterns
     dots: {
         size: 4,
@@ -535,12 +535,8 @@ const OG_PATTERNS = {
  * Compatible with Edge Runtime (no Node.js APIs).
  */ // Font data cache to avoid repeated fetches
 __turbopack_context__.s([
-    "loadInterFont",
-    ()=>loadInterFont,
     "loadOGFonts",
-    ()=>loadOGFonts,
-    "loadSingleFont",
-    ()=>loadSingleFont
+    ()=>loadOGFonts
 ]);
 const fontCache = new Map();
 // Font URLs (relative to public directory)
@@ -550,7 +546,9 @@ const FONT_URLS = {
     700: "/fonts/inter-700.woff",
     800: "/fonts/inter-800.woff"
 };
-async function loadInterFont(weight = 700) {
+/**
+ * Load Inter font with specified weight
+ */ async function loadInterFont(weight = 700) {
     const cacheKey = `inter-${weight}`;
     if (fontCache.has(cacheKey)) {
         return fontCache.get(cacheKey);
@@ -612,7 +610,9 @@ async function loadOGFonts() {
         throw error;
     }
 }
-async function loadSingleFont(weight = 700) {
+/**
+ * Load a single font weight (more efficient for simple use cases)
+ */ async function loadSingleFont(weight = 700) {
     const cacheKey = `inter-${weight}`;
     if (fontCache.has(cacheKey)) {
         return {
@@ -653,8 +653,6 @@ async function loadSingleFont(weight = 700) {
     ()=>CalculatorTemplate,
     "CompetitorTemplate",
     ()=>CompetitorTemplate,
-    "DefaultTemplate",
-    ()=>DefaultTemplate,
     "FeatureTemplate",
     ()=>FeatureTemplate,
     "GenericTemplate",
@@ -2697,7 +2695,9 @@ function GenericTemplate({ title, subtitle, logoDataUrl }) {
         columnNumber: 3
     }, this);
 }
-const DefaultTemplate = GenericTemplate;
+/**
+ * DEFAULT - Alias for GenericTemplate
+ */ const DefaultTemplate = GenericTemplate;
 function IntegrationTemplate({ name, description, logoDataUrl }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$4_$40$opentelemetry$2b$api$40$1$2e$9$2e$0_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: {
