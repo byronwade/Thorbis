@@ -270,6 +270,7 @@ type JobWithPosition = {
 	top: number;
 	lane: number;
 	hasOverlap: boolean;
+	overlapRange: { left: number; width: number } | null;
 };
 
 // Travel time gap between consecutive jobs
@@ -623,6 +624,25 @@ function detectOverlaps(
 			});
 		}
 
+		// Compute overlapped segment (union of overlaps)
+		let overlapRange: { left: number; width: number } | null = null;
+		if (overlapping.length > 0) {
+			let minLeft = Infinity;
+			let maxRight = -Infinity;
+			overlapping.forEach((p) => {
+				const pRight = p.left + p.width;
+				const overlapLeft = Math.max(left, p.left);
+				const overlapRight = Math.min(right, pRight);
+				if (overlapRight > overlapLeft) {
+					minLeft = Math.min(minLeft, overlapLeft);
+					maxRight = Math.max(maxRight, overlapRight);
+				}
+			});
+			if (minLeft !== Infinity && maxRight !== -Infinity) {
+				overlapRange = { left: minLeft, width: maxRight - minLeft };
+			}
+		}
+
 		// Find the first available lane (row)
 		let lane = 0;
 		const usedLanes = new Set(overlapping.map((p) => p.lane));
@@ -637,8 +657,34 @@ function detectOverlaps(
 			top: lane * (JOB_HEIGHT + STACK_GAP),
 			lane,
 			hasOverlap: overlapping.length > 0,
+			overlapRange,
 		});
 	});
+
+	// Post-process to ensure each job has its overlap segment (union of all intersections)
+	for (let i = 0; i < positioned.length; i++) {
+		let minLeft = Infinity;
+		let maxRight = -Infinity;
+		const a = positioned[i];
+		const aRight = a.left + a.width;
+		for (let j = 0; j < positioned.length; j++) {
+			if (i === j) continue;
+			const b = positioned[j];
+			const bRight = b.left + b.width;
+			const overlapLeft = Math.max(a.left, b.left);
+			const overlapRight = Math.min(aRight, bRight);
+			if (overlapRight > overlapLeft) {
+				minLeft = Math.min(minLeft, overlapLeft);
+				maxRight = Math.max(maxRight, overlapRight);
+				a.hasOverlap = true;
+			}
+		}
+		if (minLeft !== Infinity && maxRight !== -Infinity) {
+			a.overlapRange = { left: minLeft, width: maxRight - minLeft };
+		} else {
+			a.overlapRange = null;
+		}
+	}
 
 	return positioned;
 }
@@ -650,6 +696,7 @@ const JobCard = memo(
 		width,
 		top,
 		hasOverlap,
+		overlapRange,
 		isSelected,
 		onSelect,
 		onHover,
@@ -661,6 +708,7 @@ const JobCard = memo(
 		width: number;
 		top: number;
 		hasOverlap: boolean;
+		overlapRange: { left: number; width: number } | null;
 		isSelected: boolean;
 		onSelect: () => void;
 		onHover: (isHovering: boolean) => void;
@@ -671,6 +719,9 @@ const JobCard = memo(
 		) => void;
 		onResizeComplete: (jobId: string, hasChanges: boolean) => void;
 	}) {
+		const [isHovered, setIsHovered] = useState(false);
+		const [optimizationText, setOptimizationText] = useState<string | null>(null);
+		const [optimizationLoading, setOptimizationLoading] = useState(false);
 		const [isResizing, setIsResizing] = useState(false);
 		const [resizeDirection, setResizeDirection] = useState<"start" | "end" | null>(null);
 		const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -861,6 +912,49 @@ const JobCard = memo(
 
 		const borderColor = getJobTypeColor(job);
 
+		const buildFallbackSuggestion = () => {
+			const bhStart = new Date(startTime);
+			bhStart.setHours(8, 0, 0, 0);
+			const bhEnd = new Date(startTime);
+			bhEnd.setHours(18, 0, 0, 0);
+			const durationMs = endTime.getTime() - startTime.getTime();
+			let suggestion = "Optimization available";
+			let saved = hasOverlap ? 20 : 10;
+
+			if (startTime < bhStart) {
+				const newStart = bhStart;
+				const newEnd = new Date(newStart.getTime() + durationMs);
+				suggestion = `Move to ${format(newStart, "h:mm a")} – ${format(
+					newEnd,
+					"h:mm a",
+				)} to stay in business hours`;
+				saved = 25;
+			} else if (endTime > bhEnd) {
+				const newEnd = bhEnd;
+				const newStart = new Date(newEnd.getTime() - durationMs);
+				suggestion = `Pull earlier to ${format(
+					newStart,
+					"h:mm a",
+				)} – ${format(newEnd, "h:mm a")} to finish before close`;
+				saved = 20;
+			} else if (hasOverlap) {
+				const newStart = new Date(startTime.getTime() - 30 * 60 * 1000);
+				const newEnd = new Date(newStart.getTime() + durationMs);
+				suggestion = `Slide to ${format(newStart, "h:mm a")} – ${format(
+					newEnd,
+					"h:mm a",
+				)} to clear overlap`;
+				saved = 20;
+			} else if ((job as any).revenue) {
+				suggestion = `Keep within ${format(bhStart, "h:mm a")}–${format(
+					bhEnd,
+					"h:mm a",
+				)} and assign best-fit tech to protect revenue`;
+				saved = 15;
+			}
+			return { suggestion, saved };
+		};
+
 		const appointmentCategory =
 			job.appointmentCategory || getAppointmentCategory(job.appointmentType, job.allDay);
 		const categoryIconMap = {
@@ -881,11 +975,11 @@ const JobCard = memo(
 					<Popover>
 						<PopoverTrigger asChild>
 							<div
-								className={cn(
-									"group absolute",
-									!isDragging &&
-										"transition-[left,top,width] duration-200 ease-out",
-								)}
+									className={cn(
+										"group absolute",
+										!isDragging &&
+											"transition-[left,top,width] duration-200 ease-out",
+									)}
 								data-job-card
 								ref={setNodeRef}
 								style={style}
@@ -894,12 +988,12 @@ const JobCard = memo(
 								onMouseEnter={() => onHover(true)}
 								onMouseLeave={() => onHover(false)}
 							>
-							{/* Left resize handle */}
-							<div
-								className={cn(
-									"absolute left-0 top-0 z-30 h-full w-3",
-									"flex items-center justify-center",
-									"transition-opacity duration-200",
+								{/* Left resize handle */}
+								<div
+									className={cn(
+										"absolute left-0 top-0 z-30 h-full w-3",
+										"flex items-center justify-center",
+										"transition-opacity duration-200",
 									"group-hover:opacity-100",
 									isResizing && resizeDirection === "start"
 										? "opacity-100 cursor-grabbing"
@@ -930,17 +1024,17 @@ const JobCard = memo(
 										: "cursor-ew-resize opacity-0",
 								)}
 								data-resize-handle="end"
-								onMouseDown={(e) => handleResizeStart("end", e)}
-							>
-								{/* Grip indicator */}
-								<div
-									className={cn(
+									onMouseDown={(e) => handleResizeStart("end", e)}
+								>
+									{/* Grip indicator */}
+									<div
+										className={cn(
 										"h-8 w-1 rounded-full transition-colors",
 										"bg-primary/40 group-hover:bg-primary/60",
 										isResizing && resizeDirection === "end" && "bg-primary",
-									)}
-								/>
-							</div>
+										)}
+									/>
+								</div>
 
 								<div
 									className={cn(
@@ -956,11 +1050,99 @@ const JobCard = memo(
 											"opacity-60",
 									)}
 									onClick={onSelect}
-								>
-									<div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
+									onMouseEnter={() => {
+										setIsHovered(true);
+										onHover(true);
+										if (!optimizationText && !optimizationLoading) {
+											setOptimizationLoading(true);
+											const fallback = buildFallbackSuggestion();
+											setOptimizationText(
+												`${fallback.suggestion} (save ~${fallback.saved}m)`,
+											);
+											void fetch("/api/schedule/optimization-suggestion", {
+												method: "POST",
+												headers: { "Content-Type": "application/json" },
+												body: JSON.stringify({
+													job: {
+														id: job.id,
+														title: job.title,
+														customerName: job.customer?.name,
+														technicianId: job.technicianId,
+														startTime:
+															job.startTime instanceof Date
+																? job.startTime.toISOString()
+																: job.startTime,
+														endTime:
+															job.endTime instanceof Date
+																? job.endTime.toISOString()
+																: job.endTime,
+														revenue: (job as any).revenue ?? null,
+														isExistingCustomer: job.customer?.isExisting ?? false,
+														location: job.location?.coordinates || null,
+														technicianLocation:
+															job.technician?.currentLocation?.coordinates || null,
+													},
+													businessHours: { start: "08:00", end: "18:00" },
+													hasOverlap,
+													techniciansAvailable: [],
+												}),
+											})
+												.then(async (res) => res.json())
+												.then((data) => {
+													setOptimizationText(
+														data?.suggestion
+															? `${data.suggestion}${
+																	data.timeSavedMinutes
+																		? ` (save ~${Math.round(
+																				data.timeSavedMinutes,
+																		  )}m)`
+																		: ""
+															  }`
+															: `${fallback.suggestion} (save ~${fallback.saved}m)`,
+													);
+												})
+												.catch(() => {
+													setOptimizationText(
+														`${fallback.suggestion} (save ~${fallback.saved}m)`,
+													);
+												})
+												.finally(() => setOptimizationLoading(false));
+										}
+									}}
+									onMouseLeave={() => {
+										setIsHovered(false);
+										onHover(false);
+									}}
+									>
+										{isHovered && (
+											<div className="absolute -top-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+												{optimizationLoading
+													? "Optimizing..."
+													: optimizationText ||
+														"Optimization available"}
+											</div>
+										)}
+									{hasOverlap && overlapRange && (
+										<div
+											className="pointer-events-none absolute z-10 bg-[repeating-linear-gradient(45deg,rgba(239,68,68,0.28),rgba(239,68,68,0.28)_6px,rgba(239,68,68,0.08)_6px,rgba(239,68,68,0.08)_12px)]"
+											style={{
+												left: `${Math.max(0, overlapRange.left - left)}px`,
+												width: `${Math.max(
+													6,
+													Math.min(
+														overlapRange.width,
+														Math.max(0, width - Math.max(0, overlapRange.left - left)),
+													),
+												)}px`,
+												top: 0,
+												height: "100%",
+											}}
+										/>
+									)}
+									<div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted relative z-20">
 										<CategoryIcon className="size-4 text-primary" />
 									</div>
-									<div className="min-w-0 flex-1">
+									<div className="min-w-0 flex-1 relative z-20">
 										<p className="truncate text-sm font-semibold text-foreground">
 											{job.customer?.name || job.title || "Untitled"}
 										</p>
@@ -1140,6 +1322,11 @@ const JobCard = memo(
 			prev.width === next.width &&
 			prev.top === next.top &&
 			prev.hasOverlap === next.hasOverlap &&
+			((prev.overlapRange === null && next.overlapRange === null) ||
+				(prev.overlapRange !== null &&
+					next.overlapRange !== null &&
+					prev.overlapRange.left === next.overlapRange.left &&
+					prev.overlapRange.width === next.overlapRange.width)) &&
 			prev.isSelected === next.isSelected
 		);
 	},
@@ -1531,13 +1718,13 @@ const TechnicianLane = memo(
 								<TravelTimeIndicator
 									gap={gap}
 									key={`travel-${gap.fromJobId}-${gap.toJobId}`}
-								/>
-							))}
-
+							/>
+						))}
 						{/* Job cards */}
-						{jobs.map(({ job, left, width, top, hasOverlap }) => (
+						{jobs.map(({ job, left, width, top, hasOverlap, overlapRange }) => (
 							<JobCard
 								hasOverlap={hasOverlap}
+								overlapRange={overlapRange}
 								isSelected={
 									isSelectionMode
 										? selectedJobIds.has(job.id)

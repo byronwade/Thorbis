@@ -39,7 +39,6 @@ import { useSchedule } from "@/hooks/use-schedule";
 import type { TimelineViewMode } from "@/lib/stores/schedule-view-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
-import { RouteOptimizationSheet } from "./route-optimization-panel";
 import type { Job, Technician } from "./schedule-types";
 
 const jobTypeLegend = [
@@ -178,15 +177,6 @@ export function ScheduleToolbarActions() {
 				<Button onClick={goToToday} size="sm" variant="outline">
 					Today
 				</Button>
-			)}
-
-			{/* Route Optimization - Only show in day/timeline view */}
-			{!isMapView && viewMode === "day" && (
-				<RouteOptimizationSheet
-					technicians={technicians}
-					jobsByTechnician={jobsByTechnician}
-					selectedDate={currentDate}
-				/>
 			)}
 
 			<TooltipProvider>

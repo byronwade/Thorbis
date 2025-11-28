@@ -1,11 +1,6 @@
 {
   "/(dashboard)/dashboard/ai/[chatId]/page": "app/(dashboard)/dashboard/ai/[chatId]/page.js",
-  "/(dashboard)/dashboard/ai/page": "app/(dashboard)/dashboard/ai/page.js",
   "/(dashboard)/dashboard/communication/page": "app/(dashboard)/dashboard/communication/page.js",
-  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
   "/(dashboard)/dashboard/schedule/page": "app/(dashboard)/dashboard/schedule/page.js",
-  "/(dashboard)/dashboard/schedule/technician/[id]/page": "app/(dashboard)/dashboard/schedule/technician/[id]/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/ai/chat/route": "app/api/ai/chat/route.js",
-  "/api/distance/route": "app/api/distance/route.js"
+  "/api/schedule/optimization-suggestion/route": "app/api/schedule/optimization-suggestion/route.js"
 }
