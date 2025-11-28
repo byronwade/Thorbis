@@ -39,6 +39,11 @@ export function SupportSessionProvider({
 }: {
 	children: React.ReactNode;
 }) {
+	const enabled = process.env.NEXT_PUBLIC_SUPPORT_SESSIONS_ENABLED === "true";
+	if (!enabled) {
+		return <>{children}</>;
+	}
+
 	const [pendingSessions, setPendingSessions] = useState<SupportSession[]>([]);
 	const [activeSessions, setActiveSessions] = useState<SupportSession[]>([]);
 	const [showApprovalModal, setShowApprovalModal] = useState(false);

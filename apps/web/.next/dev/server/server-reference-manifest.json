@@ -19,12 +19,19 @@
           "async": true,
           "exportedName": "getCurrentUserRole",
           "filename": "apps/web/src/actions/roles.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "getCurrentUserRole",
+          "filename": "apps/web/src/actions/roles.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/ai/[chatId]/page": "action-browser",
         "app/(dashboard)/dashboard/communication/page": "action-browser",
-        "app/(dashboard)/dashboard/schedule/page": "action-browser"
+        "app/(dashboard)/dashboard/schedule/page": "action-browser",
+        "app/_not-found/page": "action-browser"
       },
       "filename": "apps/web/src/actions/roles.ts",
       "exportedName": "getCurrentUserRole"
@@ -48,12 +55,19 @@
           "async": true,
           "exportedName": "canDeleteTeamMember",
           "filename": "apps/web/src/actions/roles.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": "[project]/apps/web/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/web/src/actions/roles.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "canDeleteTeamMember",
+          "filename": "apps/web/src/actions/roles.ts"
         }
       },
       "layer": {
         "app/(dashboard)/dashboard/ai/[chatId]/page": "action-browser",
         "app/(dashboard)/dashboard/communication/page": "action-browser",
-        "app/(dashboard)/dashboard/schedule/page": "action-browser"
+        "app/(dashboard)/dashboard/schedule/page": "action-browser",
+        "app/_not-found/page": "action-browser"
       },
       "filename": "apps/web/src/actions/roles.ts",
       "exportedName": "canDeleteTeamMember"

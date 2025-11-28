@@ -131,6 +131,10 @@ export function useSchedule() {
 				}
 
 				let companyId = companyIdRef.current;
+				const fallbackCompanyId = process.env.NEXT_PUBLIC_DEFAULT_COMPANY_ID;
+				if (!companyId && fallbackCompanyId) {
+					companyId = fallbackCompanyId;
+				}
 
 				if (!companyId) {
 					const { data: membership, error: membershipError } = await supabase
@@ -143,11 +147,27 @@ export function useSchedule() {
 						.maybeSingle();
 
 					if (membershipError) {
-						throw membershipError;
+						console.warn("Company membership lookup failed; falling back to empty schedule", membershipError.message);
+						return {
+							jobs: [],
+							technicians: [],
+							unassignedMeta: {
+								totalCount: 0,
+								hasMore: false,
+							},
+						};
 					}
 
 					if (!membership?.company_id) {
-						throw new Error("No active company membership found");
+						console.warn("No active company membership found; returning empty schedule");
+						return {
+							jobs: [],
+							technicians: [],
+							unassignedMeta: {
+								totalCount: 0,
+								hasMore: false,
+							},
+						};
 					}
 
 					companyId = membership.company_id;

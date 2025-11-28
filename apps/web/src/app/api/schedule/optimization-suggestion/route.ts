@@ -116,29 +116,34 @@ Techs: ${techSummary || "not provided"}.
 
 Respond as JSON: { "suggestion": string, "timeSavedMinutes": number, "confidence": 0-1 }`;
 
-		const completion = await model.complete({
-			prompt,
-			temperature: 0.2,
-		});
-
-		let parsed = fallbackSuggestion;
 		try {
-			const json = JSON.parse(completion.text.trim());
-			if (json.suggestion) {
+			const completion = await model.complete({
+				prompt,
+				temperature: 0.2,
+			});
+
+			let parsed = fallbackSuggestion;
+			try {
+				const json = JSON.parse(completion.text.trim());
+				if (json.suggestion) {
+					parsed = {
+						suggestion: json.suggestion,
+						timeSavedMinutes: Number(json.timeSavedMinutes) || fallbackSuggestion.timeSavedMinutes,
+						confidence: Number(json.confidence) || fallbackSuggestion.confidence,
+					};
+				}
+			} catch {
 				parsed = {
-					suggestion: json.suggestion,
-					timeSavedMinutes: Number(json.timeSavedMinutes) || fallbackSuggestion.timeSavedMinutes,
-					confidence: Number(json.confidence) || fallbackSuggestion.confidence,
+					...fallbackSuggestion,
+					suggestion: completion.text.trim() || fallbackSuggestion.suggestion,
 				};
 			}
-		} catch {
-			parsed = {
-				...fallbackSuggestion,
-				suggestion: completion.text.trim() || fallbackSuggestion.suggestion,
-			};
-		}
 
-		return NextResponse.json(parsed);
+			return NextResponse.json(parsed);
+		} catch (err) {
+			console.error("Optimization suggestion AI error", err);
+			return NextResponse.json(fallbackSuggestion);
+		}
 	} catch (err) {
 		console.error("Optimization suggestion error", err);
 		return NextResponse.json(

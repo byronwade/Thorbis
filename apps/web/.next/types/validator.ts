@@ -4538,6 +4538,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/schedule/optimization-suggestion/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/schedule/optimization-suggestion">> = Specific
+  const handler = {} as typeof import("../../src/app/api/schedule/optimization-suggestion/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/schedule/unscheduled/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/schedule/unscheduled">> = Specific
@@ -4614,6 +4623,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/travel-time">> = Specific
   const handler = {} as typeof import("../../src/app/api/travel-time/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/user/preferences/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/user/preferences">> = Specific
+  const handler = {} as typeof import("../../src/app/api/user/preferences/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

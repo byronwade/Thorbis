@@ -2862,6 +2862,11 @@
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
 
+  .-translate-y-full {
+    --tw-translate-y: -100%;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+
   .translate-y-0 {
     --tw-translate-y: calc(var(--spacing) * 0);
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -11090,6 +11095,10 @@
     color: var(--color-gray-800);
   }
 
+  .text-gray-900 {
+    color: var(--color-gray-900);
+  }
+
   .text-green-500 {
     color: var(--color-green-500);
   }
@@ -17060,6 +17069,10 @@
     .dark\:border-emerald-900\/30:is(.dark *) {
       border-color: color-mix(in oklab, var(--color-emerald-900) 30%, transparent);
     }
+  }
+
+  .dark\:border-gray-700:is(.dark *) {
+    border-color: var(--color-gray-700);
   }
 
   .dark\:border-gray-900\/30:is(.dark *) {

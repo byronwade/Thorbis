@@ -30,6 +30,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSchedule, useScheduleRealtime } from "@/hooks/use-schedule";
+import { useJobTimezone } from "@/hooks/use-job-timezone";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { useUIStore } from "@/lib/stores/ui-store";
 import { cn } from "@/lib/utils";
@@ -421,6 +422,43 @@ function calculateTravelGaps(
 	return gaps;
 }
 
+// Job time display component with timezone awareness
+const JobTimeDisplay = memo(function JobTimeDisplay({
+	job,
+	startTime,
+	endTime,
+	duration,
+}: {
+	job: Job;
+	startTime: Date;
+	endTime: Date;
+	duration: number;
+}) {
+	const { isDifferent, formatJobTime, isLoading } = useJobTimezone(job);
+
+	const jobStartTime = formatJobTime(startTime);
+	const jobEndTime = formatJobTime(endTime);
+
+	return (
+		<div className="flex items-center gap-2.5">
+			<Clock className="text-muted-foreground size-4" />
+			<div>
+				<p className="text-foreground text-sm font-medium">
+					{format(startTime, "h:mm a")} – {format(endTime, "h:mm a")}
+					{isDifferent && !isLoading && jobStartTime && jobEndTime && (
+						<span className="text-muted-foreground ml-1.5 text-xs font-normal">
+							({jobStartTime} – {jobEndTime} local)
+						</span>
+					)}
+				</p>
+				<p className="text-muted-foreground text-xs">
+					{format(startTime, "EEE, MMM d")} • {duration} min
+				</p>
+			</div>
+		</div>
+	);
+});
+
 // Travel time indicator component
 const TravelTimeIndicator = memo(function TravelTimeIndicator({
 	gap,
@@ -700,6 +738,7 @@ const JobCard = memo(
 		isSelected,
 		onSelect,
 		onHover,
+		onApplyOptimization,
 		onResize,
 		onResizeComplete,
 	}: {
@@ -712,6 +751,12 @@ const JobCard = memo(
 		isSelected: boolean;
 		onSelect: () => void;
 		onHover: (isHovering: boolean) => void;
+		onApplyOptimization: (
+			job: Job,
+			newStart: Date,
+			newEnd: Date,
+			newTechId?: string,
+		) => Promise<void>;
 		onResize: (
 			jobId: string,
 			direction: "start" | "end",
@@ -722,6 +767,7 @@ const JobCard = memo(
 		const [isHovered, setIsHovered] = useState(false);
 		const [optimizationText, setOptimizationText] = useState<string | null>(null);
 		const [optimizationLoading, setOptimizationLoading] = useState(false);
+		const [showOptimizationPopover, setShowOptimizationPopover] = useState(false);
 		const [isResizing, setIsResizing] = useState(false);
 		const [resizeDirection, setResizeDirection] = useState<"start" | "end" | null>(null);
 		const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -899,7 +945,8 @@ const JobCard = memo(
 					y: transform?.y ?? 0,
 				}),
 				opacity: isDragging ? 0 : 1, // Hide original while drag overlay is visible
-				zIndex: isDragging ? 50 : isSelected ? 20 : 10 - top / JOB_STACK_OFFSET,
+				// Lower base z-index so the today line (z-10) draws above jobs; keep drag on top
+				zIndex: isDragging ? 50 : isSelected ? 8 : Math.max(2, 6 - top / JOB_STACK_OFFSET),
 			};
 
 		const startTime =
@@ -1053,74 +1100,128 @@ const JobCard = memo(
 									onMouseEnter={() => {
 										setIsHovered(true);
 										onHover(true);
-										if (!optimizationText && !optimizationLoading) {
-											setOptimizationLoading(true);
-											const fallback = buildFallbackSuggestion();
-											setOptimizationText(
-												`${fallback.suggestion} (save ~${fallback.saved}m)`,
-											);
-											void fetch("/api/schedule/optimization-suggestion", {
-												method: "POST",
-												headers: { "Content-Type": "application/json" },
-												body: JSON.stringify({
-													job: {
-														id: job.id,
-														title: job.title,
-														customerName: job.customer?.name,
-														technicianId: job.technicianId,
-														startTime:
-															job.startTime instanceof Date
-																? job.startTime.toISOString()
-																: job.startTime,
-														endTime:
-															job.endTime instanceof Date
-																? job.endTime.toISOString()
-																: job.endTime,
-														revenue: (job as any).revenue ?? null,
-														isExistingCustomer: job.customer?.isExisting ?? false,
-														location: job.location?.coordinates || null,
-														technicianLocation:
-															job.technician?.currentLocation?.coordinates || null,
-													},
-													businessHours: { start: "08:00", end: "18:00" },
-													hasOverlap,
-													techniciansAvailable: [],
-												}),
-											})
-												.then(async (res) => res.json())
-												.then((data) => {
-													setOptimizationText(
-														data?.suggestion
-															? `${data.suggestion}${
-																	data.timeSavedMinutes
-																		? ` (save ~${Math.round(
-																				data.timeSavedMinutes,
-																		  )}m)`
-																		: ""
-															  }`
-															: `${fallback.suggestion} (save ~${fallback.saved}m)`,
-													);
-												})
-												.catch(() => {
-													setOptimizationText(
-														`${fallback.suggestion} (save ~${fallback.saved}m)`,
-													);
-												})
-												.finally(() => setOptimizationLoading(false));
-										}
 									}}
 									onMouseLeave={() => {
 										setIsHovered(false);
 										onHover(false);
 									}}
-									>
-										{isHovered && (
-											<div className="absolute -top-3 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
-												{optimizationLoading
-													? "Optimizing..."
-													: optimizationText ||
-														"Optimization available"}
-											</div>
+								>
+									{isHovered &&
+										job.status !== "completed" &&
+										job.status !== "closed" && (
+											<Popover open={showOptimizationPopover} onOpenChange={setShowOptimizationPopover}>
+												<PopoverTrigger asChild>
+													<button
+														type="button"
+												className="absolute -top-4 left-1/2 z-30 -translate-x-1/2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-semibold text-white shadow"
+												onClick={() => {
+													setShowOptimizationPopover(true);
+													if (!optimizationText && !optimizationLoading) {
+														setOptimizationLoading(true);
+														const fallback = buildFallbackSuggestion();
+														setOptimizationText(
+															`${fallback.suggestion} (save ~${fallback.saved}m)`,
+														);
+																void fetch("/api/schedule/optimization-suggestion", {
+																	method: "POST",
+																	headers: { "Content-Type": "application/json" },
+																	body: JSON.stringify({
+																		job: {
+																			id: job.id,
+																			title: job.title,
+																			customerName: job.customer?.name,
+																			technicianId: job.technicianId,
+																			startTime:
+																				job.startTime instanceof Date
+																					? job.startTime.toISOString()
+																					: job.startTime,
+																			endTime:
+																				job.endTime instanceof Date
+																					? job.endTime.toISOString()
+																					: job.endTime,
+																			revenue: (job as any).revenue ?? null,
+																			isExistingCustomer: job.customer?.isExisting ?? false,
+																			location: job.location?.coordinates || null,
+																			technicianLocation:
+																				job.technician?.currentLocation?.coordinates || null,
+																		},
+																		businessHours: { start: "08:00", end: "18:00" },
+																		hasOverlap,
+																		techniciansAvailable: [],
+																	}),
+																})
+																	.then(async (res) => res.json())
+																	.then((data) => {
+																		setOptimizationText(
+																			data?.suggestion
+																				? `${data.suggestion}${
+																						data.timeSavedMinutes
+																							? ` (save ~${Math.round(
+																									data.timeSavedMinutes,
+																							  )}m)`
+																							: ""
+																				  }`
+																				: `${fallback.suggestion} (save ~${fallback.saved}m)`,
+																		);
+																	})
+																	.catch(() => {
+																		setOptimizationText(
+																			`${fallback.suggestion} (save ~${fallback.saved}m)`,
+																		);
+																	})
+																	.finally(() => setOptimizationLoading(false));
+															}
+														}}
+													>
+														{optimizationLoading
+															? "Optimizing..."
+															: optimizationText
+																? "Optimization"
+																: "Optimize"}
+													</button>
+												</PopoverTrigger>
+												<PopoverContent side="top" align="center" className="w-72 space-y-2">
+													<p className="text-sm font-semibold">Optimization Suggestion</p>
+													<p className="text-sm text-muted-foreground">
+														{optimizationLoading
+															? "Calculating best slot…"
+															: optimizationText ||
+																"Suggested: shift to reduce conflicts and stay in business hours."}
+													</p>
+													<div className="flex justify-end gap-2">
+														<button
+															type="button"
+															className="rounded border px-3 py-1 text-xs"
+															onClick={() => setShowOptimizationPopover(false)}
+														>
+															Deny
+														</button>
+														<button
+															type="button"
+															className="rounded bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+															onClick={async () => {
+																setShowOptimizationPopover(false);
+																const startTime =
+																	job.startTime instanceof Date
+																		? job.startTime
+																		: new Date(job.startTime);
+																const endTime =
+																	job.endTime instanceof Date
+																		? job.endTime
+																		: new Date(job.endTime);
+																await onApplyOptimization(
+																	job,
+																	startTime,
+																	endTime,
+																	job.technicianId,
+																);
+															}}
+														>
+															Confirm
+														</button>
+													</div>
+												</PopoverContent>
+											</Popover>
 										)}
 									{hasOverlap && overlapRange && (
 										<div
@@ -1226,18 +1327,12 @@ const JobCard = memo(
 								</div>
 
 								<div className="space-y-3 p-4">
-									<div className="flex items-center gap-2.5">
-										<Clock className="text-muted-foreground size-4" />
-										<div>
-											<p className="text-foreground text-sm font-medium">
-												{format(startTime, "h:mm a")} –{" "}
-												{format(endTime, "h:mm a")}
-											</p>
-											<p className="text-muted-foreground text-xs">
-												{format(startTime, "EEE, MMM d")} • {duration} min
-											</p>
-										</div>
-									</div>
+									<JobTimeDisplay
+										job={job}
+										startTime={startTime}
+										endTime={endTime}
+										duration={duration}
+									/>
 
 									{job.location?.address?.street && (
 										<div className="flex items-start gap-2.5">
@@ -1787,6 +1882,10 @@ export function DispatchTimeline() {
 	const [isSelectionMode, setIsSelectionMode] = useState(false);
 	const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
 	const [isBulkActionPending, startBulkTransition] = useTransition();
+	const [visibleLaneRange, setVisibleLaneRange] = useState<{ start: number; end: number }>({
+		start: 0,
+		end: 0,
+	});
 	// Navigation for technician detail page
 	const router = useRouter();
 	const pathname = usePathname();
@@ -2232,8 +2331,60 @@ export function DispatchTimeline() {
 			};
 		});
 
-		return lanes;
+			return lanes;
 	}, [technicians, getJobsForTechnician, timeRange.start, timeRange.end]);
+
+	// Lane metadata with cumulative offsets for virtualization
+	const PERF_MODE_OVERSCAN = 200;
+
+	const laneMeta = useMemo(() => {
+		let offset = 0;
+		return technicianLanes.map((lane, index) => {
+			const top = offset;
+			const bottom = top + lane.height;
+			offset = bottom;
+			return { index, top, bottom, lane };
+		});
+	}, [technicianLanes]);
+
+	useEffect(() => {
+		const container = scrollContainerRef.current;
+		if (!container) return;
+
+		const updateVisible = () => {
+			if (laneMeta.length === 0) {
+				setVisibleLaneRange({ start: 0, end: -1 });
+				return;
+			}
+			const scrollTop = container.scrollTop;
+			const viewHeight = container.clientHeight;
+			let start = 0;
+			let end = laneMeta.length - 1;
+
+			for (let i = 0; i < laneMeta.length; i++) {
+				if (laneMeta[i].bottom >= scrollTop - PERF_MODE_OVERSCAN) {
+					start = i;
+					break;
+				}
+			}
+			for (let i = start; i < laneMeta.length; i++) {
+				if (laneMeta[i].top <= scrollTop + viewHeight + PERF_MODE_OVERSCAN) {
+					end = i;
+				} else {
+					break;
+				}
+			}
+			setVisibleLaneRange({ start, end });
+		};
+
+		updateVisible();
+		container.addEventListener("scroll", updateVisible, { passive: true });
+		window.addEventListener("resize", updateVisible);
+		return () => {
+			container.removeEventListener("scroll", updateVisible);
+			window.removeEventListener("resize", updateVisible);
+		};
+	}, [laneMeta, PERF_MODE_OVERSCAN]);
 
 	// Calculate total conflicts across all lanes
 	const conflictCount = useMemo(() => {
@@ -2290,12 +2441,10 @@ export function DispatchTimeline() {
 	const totalContentHeight = useMemo(() => {
 		// h-11 = 2.75rem = 44px
 		const headerHeight = 44;
-		const lanesHeight = technicianLanes.reduce(
-			(sum, lane) => sum + lane.height,
-			0,
-		);
+		if (laneMeta.length === 0) return headerHeight;
+		const lanesHeight = laneMeta.at(-1)?.bottom ?? 0;
 		return headerHeight + lanesHeight;
-	}, [technicianLanes]);
+	}, [laneMeta]);
 
 	// Track resize state to accumulate changes
 	const resizeStateRef = useRef<{
@@ -2626,7 +2775,7 @@ export function DispatchTimeline() {
 	const hoverIndicatorRef = useRef<HTMLDivElement | null>(null);
 	const handleMouseMove = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
-			if (!timelineRef.current || isJobHovered || activeJobId) {
+			if (!timelineRef.current || !scrollContainerRef.current || isJobHovered || activeJobId) {
 				if (hoverIndicatorRef.current) {
 					hoverIndicatorRef.current.style.display = "none";
 				}
@@ -2634,9 +2783,10 @@ export function DispatchTimeline() {
 			}
 
 			const rect = timelineRef.current.getBoundingClientRect();
+			const scrollLeft = scrollContainerRef.current.scrollLeft;
 			const x = e.clientX - rect.left;
 
-			if (x < 0 || x > totalWidth) {
+			if (x < 0 || x > rect.width) {
 				if (hoverIndicatorRef.current) {
 					hoverIndicatorRef.current.style.display = "none";
 				}
@@ -2648,10 +2798,23 @@ export function DispatchTimeline() {
 			}
 
 			hoverRaf.current = requestAnimationFrame(() => {
-				// Calculate time at cursor position
-				const minutesFromStart = (x / totalWidth) * (24 * 60);
-				const hoverDate = new Date(timeRange.start);
-				hoverDate.setMinutes(hoverDate.getMinutes() + minutesFromStart);
+				// Calculate time at cursor position using the exact same system as hour slots
+				// Hour slots are positioned at: index * HOUR_WIDTH pixels
+				// Each slot represents one hour, starting from hourlySlotData.startTs (midnight)
+				// x is relative to timeline container, scrollLeft is scroll offset
+				const absoluteX = Math.min(
+					Math.max(0, scrollLeft + x),
+					totalWidth,
+				);
+				// Calculate which hour slot index (same as how hour labels are positioned)
+				const hourIndex = Math.floor(absoluteX / HOUR_WIDTH);
+				const pixelOffsetInHour = absoluteX % HOUR_WIDTH;
+				// Get the exact hour start time from the slot system (same as hour labels use)
+				const hourStartTime = hourlySlotData.getSlot(hourIndex);
+				// Calculate minutes within that hour
+				const minutesInHour = (pixelOffsetInHour / HOUR_WIDTH) * 60;
+				// Create the exact time
+				const hoverDate = new Date(hourStartTime.getTime() + minutesInHour * 60 * 1000);
 
 				const nextTime = format(hoverDate, "h:mm a");
 				// Skip updates if position/time haven't materially changed (reduces rerenders)
@@ -2667,16 +2830,19 @@ export function DispatchTimeline() {
 
 				const indicator = hoverIndicatorRef.current;
 				if (indicator) {
-					indicator.style.display = "block";
-					indicator.style.left = `${x}px`;
 					const inner = indicator.firstChild as HTMLDivElement | null;
 					if (inner) {
 						inner.textContent = nextTime;
 					}
+					indicator.style.display = "block";
+					// Position indicator in header at bottom (same as current time badge)
+					// X position: x is relative to timeline, header is sibling with same scroll position
+					// Since both scroll together, x maps directly to header position
+					indicator.style.left = `${x}px`;
 				}
 			});
 		},
-		[totalWidth, timeRange, isJobHovered, activeJobId],
+		[totalWidth, timeRange, isJobHovered, activeJobId, hourlySlotData],
 	);
 
 	const handleMouseLeave = useCallback(() => {
@@ -3428,6 +3594,14 @@ export function DispatchTimeline() {
 										</div>
 									</div>
 								)}
+								{/* Hover Time Indicator - in header at bottom */}
+								<div
+									ref={hoverIndicatorRef}
+									className="pointer-events-none absolute bottom-0 z-50 hidden -translate-x-1/2 translate-y-1/2"
+								>
+									<div className="rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-2.5 py-1 text-xs font-semibold whitespace-nowrap shadow-lg border border-gray-200 dark:border-gray-700">
+									</div>
+								</div>
 							</div>
 
 							{/* Timeline Grid */}
@@ -3479,15 +3653,6 @@ export function DispatchTimeline() {
 									})}
 								</div>
 
-								{/* Hover Time Indicator - managed imperatively for perf */}
-								<div
-									ref={hoverIndicatorRef}
-									className="pointer-events-none absolute top-0 z-50 hidden -translate-x-1/2 -translate-y-1/2"
-									style={{ transform: "translate(-50%, -50%)" }}
-								>
-									<div className="bg-foreground text-background rounded-md px-2.5 py-1 text-xs font-semibold whitespace-nowrap shadow-lg" />
-								</div>
-
 								{/* Current Time Indicator - Blue Line */}
 								{currentTimePosition !== null && (
 									<div
@@ -3501,27 +3666,39 @@ export function DispatchTimeline() {
 									</div>
 								)}
 
-								{/* Technician Lanes */}
-								{technicianLanes.map(({ technician, jobs, height }) => (
-									<TechnicianLane
-										height={height}
-										isDragActive={activeJobId !== null}
-										jobs={jobs}
-										key={technician.id}
-										onJobHover={setIsJobHovered}
-										onResize={handleResize}
-										onResizeComplete={finalizeResize}
-										onSelectJob={selectJob}
-										selectedJobId={selectedJobId}
-										technician={technician}
-										onDragCreate={handleLaneDragCreate}
-										totalWidth={totalWidth}
-										timeRangeStart={timeRange.start}
-										isSelectionMode={isSelectionMode}
-										selectedJobIds={selectedJobIds}
-										onToggleJobSelection={toggleJobSelection}
-									/>
-								))}
+								{/* Technician Lanes with virtualization */}
+								<div className="relative" style={{ height: totalContentHeight }}>
+									{laneMeta
+										.slice(
+											visibleLaneRange.start,
+											Math.min(visibleLaneRange.end + 1, laneMeta.length),
+										)
+										.map((meta) => (
+											<div
+												key={technicianLanes[meta.index].technician.id}
+												className="absolute left-0 w-full"
+												style={{ top: meta.top, height: meta.lane.height }}
+											>
+												<TechnicianLane
+													height={meta.lane.height}
+													isDragActive={activeJobId !== null}
+													jobs={meta.lane.jobs}
+													onJobHover={setIsJobHovered}
+													onResize={handleResize}
+													onResizeComplete={finalizeResize}
+													onSelectJob={selectJob}
+													selectedJobId={selectedJobId}
+													technician={meta.lane.technician}
+													onDragCreate={handleLaneDragCreate}
+													totalWidth={totalWidth}
+													timeRangeStart={timeRange.start}
+													isSelectionMode={isSelectionMode}
+													selectedJobIds={selectedJobIds}
+													onToggleJobSelection={toggleJobSelection}
+												/>
+											</div>
+										))}
+								</div>
 							</div>
 						</div>
 					</div>
