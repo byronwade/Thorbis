@@ -19,7 +19,7 @@ export function getCommunicationReportsSidebarConfig(): CommunicationSidebarConf
 	return {
 		navGroups: [
 			{
-				label: "MY INBOX",
+				label: "My Inbox",
 				items: [
 					{
 						title: "Inbox",
@@ -49,7 +49,7 @@ export function getCommunicationReportsSidebarConfig(): CommunicationSidebarConf
 				],
 			},
 			{
-				label: "COMPANY INBOX",
+				label: "Company Inbox",
 				items: [
 					{
 						title: "Support",

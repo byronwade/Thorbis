@@ -33,10 +33,11 @@ import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
  * Navigation group configuration for communication sidebar
  */
 export type CommunicationNavGroup = {
-	label: string;
+	label?: string;
 	badge?: number | string; // Badge for the collapsible group header
 	collapsible?: boolean; // Whether the group is collapsible
 	defaultOpen?: boolean; // Default open state for collapsible groups
+	onAddClick?: () => void; // Handler for add button (e.g., create channel)
 	items: Array<{
 		title: string;
 		url: string;
@@ -210,6 +211,33 @@ export function CommunicationSidebar({
 			</SidebarHeader>
 
 			<SidebarContent ref={scrollRef}>
+				{/* Top-level item (e.g., "All Messages") */}
+				{topLevelItem && (
+					<SidebarGroup>
+						<SidebarMenu>
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={isUrlActive(topLevelItem.url)}
+									tooltip={topLevelItem.title}
+								>
+									<Link href={topLevelItem.url}>
+										<topLevelItem.icon className="shrink-0" />
+										<span>{topLevelItem.title}</span>
+									</Link>
+								</SidebarMenuButton>
+								{topLevelItem.badge !== undefined && topLevelItem.badge > 0 && (
+									<SidebarMenuBadge>
+										{typeof topLevelItem.badge === "number"
+											? topLevelItem.badge.toLocaleString()
+											: topLevelItem.badge}
+									</SidebarMenuBadge>
+								)}
+							</SidebarMenuItem>
+						</SidebarMenu>
+					</SidebarGroup>
+				)}
+
 				{/* Navigation Groups */}
 				<NavGrouped
 					groups={navGroups}
@@ -226,34 +254,36 @@ export function CommunicationSidebar({
 					>
 						<SidebarGroup>
 							<CollapsibleTrigger asChild>
-								<Button
-									variant="ghost"
-									className="w-full justify-start px-2 h-auto py-1.5 hover:bg-sidebar-accent/50"
-									type="button"
+								<SidebarGroupLabel
+									className="group/label cursor-pointer"
+									asChild
 								>
-									<SidebarGroupLabel className="flex items-center gap-2 w-full">
-										<ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-										<span className="flex-1 text-left">{section.label}</span>
-										{section.addButton ||
-											(section.onAddClick && (
-												<Button
-													variant="ghost"
-													size="icon"
-													className="h-6 w-6"
-													onClick={(e) => {
-														e.stopPropagation();
-														section.onAddClick?.();
-													}}
-													type="button"
-												>
-													<Plus className="size-4" />
-												</Button>
-											))}
-									</SidebarGroupLabel>
-								</Button>
+									<button type="button" className="flex items-center w-full">
+										<span>{section.label}</span>
+										<div className="ml-auto flex items-center gap-2">
+											{section.addButton ||
+												(section.onAddClick && (
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-6 w-6"
+														onClick={(e) => {
+															e.stopPropagation();
+															section.onAddClick?.();
+														}}
+														type="button"
+													>
+														<Plus className="size-4" />
+													</Button>
+												))}
+											<ChevronRight className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+										</div>
+									</button>
+								</SidebarGroupLabel>
 							</CollapsibleTrigger>
 							<CollapsibleContent>
-								<SidebarMenu>
+								<SidebarGroupContent>
+									<SidebarMenu>
 									{section.scrollable ? (
 										<ScrollArea
 											className={section.scrollHeight || "h-[200px] w-full"}
@@ -455,7 +485,8 @@ export function CommunicationSidebar({
 											);
 										})
 									)}
-								</SidebarMenu>
+									</SidebarMenu>
+								</SidebarGroupContent>
 							</CollapsibleContent>
 						</SidebarGroup>
 					</Collapsible>

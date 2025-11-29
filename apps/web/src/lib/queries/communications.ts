@@ -53,6 +53,7 @@ export interface Communication {
 	internalNotesUpdatedAt?: string;
 	internalNotesUpdatedBy?: string;
 	contentType?: string;
+	tags?: string[] | null; // Tags array for starred, spam, etc.
 	createdAt: string;
 	// Call-specific fields
 	callDuration?: number | null;
@@ -255,6 +256,7 @@ const getCommunications = cache(
 						| null
 						| undefined,
 					emailCategory: comm.category as EmailCategory | undefined,
+					tags: comm.tags as string[] | null | undefined,
 					createdAt: comm.created_at,
 					customer: comm.customer
 						? {
@@ -487,6 +489,7 @@ const getCommunicationById = cache(
 				| null
 				| undefined,
 			emailCategory: comm.category as EmailCategory | undefined,
+			tags: comm.tags as string[] | null | undefined,
 			createdAt: comm.created_at,
 			customer: comm.customer
 				? {
@@ -725,6 +728,7 @@ export const getCompanyCommunications = cache(
 			internalNotes: comm.internal_notes || undefined,
 			internalNotesUpdatedAt: comm.internal_notes_updated_at || undefined,
 			internalNotesUpdatedBy: comm.internal_notes_updated_by || undefined,
+			tags: comm.tags as string[] | null | undefined,
 			createdAt: comm.created_at,
 			// Call-specific fields
 			callDuration: comm.call_duration,

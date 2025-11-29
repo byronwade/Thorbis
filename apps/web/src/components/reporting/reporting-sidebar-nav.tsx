@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NavGrouped } from "@/components/layout/nav-grouped";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
@@ -81,48 +82,39 @@ export function ReportingSidebarNav() {
 		<div className="flex flex-col gap-4">
 			{/* Preset Reports Dropdown */}
 			<SidebarGroup>
-				<SidebarGroupLabel>All Reports</SidebarGroupLabel>
+				<SidebarGroupLabel>All reports</SidebarGroupLabel>
 				<PresetReportsDropdown />
 			</SidebarGroup>
 
 			{/* Top Reports for Business Owners */}
-			<SidebarGroup>
-				<SidebarGroupLabel>Quick Access</SidebarGroupLabel>
-				<SidebarGroupContent>
-					<SidebarMenu>
-					{topReports.map((report) => {
-						const isActive = pathname === report.href;
-						return (
-							<SidebarMenuItem key={report.href}>
-								<SidebarMenuButton
-									asChild
-									isActive={isActive}
-									tooltip={report.description}
-								>
-									<Link href={report.href}>
-										<report.icon className="h-4 w-4" />
-										<span className="flex-1 truncate">{report.title}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						);
-					})}
-				</SidebarMenu>
-				</SidebarGroupContent>
-			</SidebarGroup>
+			<NavGrouped
+				groups={[
+					{
+						label: "Quick access",
+						items: topReports.map((report) => ({
+							title: report.title,
+							url: report.href,
+							icon: report.icon,
+						})),
+					},
+				]}
+				pathname={pathname}
+			/>
 
 			{/* Custom Reports Section - Takes Center Stage */}
 			<SidebarGroup>
-				<SidebarGroupLabel className="flex items-center justify-between">
-					<span>My Custom Reports</span>
-					<button
-						className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex h-5 w-5 items-center justify-center rounded-md transition-colors"
-						onClick={handleCreateReport}
-						title="Create new report"
-						type="button"
-					>
-						<Plus className="h-3.5 w-3.5" />
-					</button>
+				<SidebarGroupLabel>
+					<div className="flex items-center justify-between w-full">
+						<span>My custom reports</span>
+						<button
+							className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex h-5 w-5 items-center justify-center rounded-md transition-colors"
+							onClick={handleCreateReport}
+							title="Create new report"
+							type="button"
+						>
+							<Plus className="h-3.5 w-3.5" />
+						</button>
+					</div>
 				</SidebarGroupLabel>
 				<SidebarGroupContent>
 					<SidebarMenu>

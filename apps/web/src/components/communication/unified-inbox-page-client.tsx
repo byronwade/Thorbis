@@ -10,50 +10,49 @@
 
 import { toggleStarCommunicationAction } from "@/actions/communications";
 import {
-    archiveEmailAction,
-    bulkDeleteEmailsAction,
-    fetchEmailContentAction,
-    markEmailAsReadAction,
-    retryFailedEmailAction,
-    toggleSpamEmailAction,
+	archiveEmailAction,
+	bulkDeleteEmailsAction,
+	fetchEmailContentAction,
+	markEmailAsReadAction,
+	retryFailedEmailAction,
+	toggleSpamEmailAction,
 } from "@/actions/email-actions";
 import type {
-    CompanySms,
-    SmsTemplateContext,
+	CompanySms,
+	SmsTemplateContext,
 } from "@/actions/sms-actions";
-import { useCommunicationRefresh } from "@/hooks/use-communication-refresh";
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import { formatDistanceToNow } from "date-fns";
 import {
-    AlertCircle,
-    AlertTriangle,
-    Archive,
-    ArrowLeft,
-    Briefcase,
-    CheckCheck,
-    Clock,
-    Download,
-    Flag,
-    Forward,
-    Loader2,
-    Mail,
-    MessageSquare,
-    MoreHorizontal,
-    PanelLeft,
-    Paperclip,
-    Phone,
-    Plus,
-    Printer,
-    RefreshCw,
-    Reply,
-    ReplyAll,
-    Star,
-    StickyNote,
-    Trash2,
-    User,
-    UserPlus,
-    Voicemail,
-    X
+	AlertCircle,
+	AlertTriangle,
+	Archive,
+	ArrowLeft,
+	Briefcase,
+	CheckCheck,
+	Clock,
+	Download,
+	Flag,
+	Forward,
+	Loader2,
+	Mail,
+	MessageSquare,
+	MoreHorizontal,
+	PanelLeft,
+	Paperclip,
+	Phone,
+	Plus,
+	Printer,
+	RefreshCw,
+	Reply,
+	ReplyAll,
+	Star,
+	StickyNote,
+	Trash2,
+	User,
+	UserPlus,
+	Voicemail,
+	X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -68,16 +67,16 @@ type MessageAttachment = {
 };
 
 import {
-    getCompanyContextAction,
-    getSmsConversationAction,
-    markSmsAsReadAction,
-    markSmsConversationAsReadAction,
+	getCompanyContextAction,
+	getSmsConversationAction,
+	markSmsAsReadAction,
+	markSmsConversationAsReadAction,
 } from "@/actions/sms-actions";
 import {
-    getTeamChannelMessagesAction,
-    markTeamChannelAsReadAction,
-    sendTeamChannelMessageAction,
-    type ChannelMessage,
+	getTeamChannelMessagesAction,
+	markTeamChannelAsReadAction,
+	sendTeamChannelMessageAction,
+	type ChannelMessage,
 } from "@/actions/teams-actions";
 import { sendTextMessage } from "@/actions/twilio";
 import { AutoLinkSuggestions } from "@/components/communication/auto-link-suggestions";
@@ -85,42 +84,42 @@ import { CallDetailView } from "@/components/communication/call-detail-view";
 import { EmailContent } from "@/components/communication/email-content";
 import { EmailFullComposer } from "@/components/communication/email-full-composer";
 import {
-    EmailReplyComposer,
-    type EmailReplyMode,
+	EmailReplyComposer,
+	type EmailReplyMode,
 } from "@/components/communication/email-reply-composer";
 import { SmsMessageInput } from "@/components/communication/sms-message-input";
 import { TransferDialog } from "@/components/communication/transfer-dialog";
 import { VoicemailDetailView } from "@/components/communication/voicemail-detail-view";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import {
-    TooltipProvider
+	TooltipProvider
 } from "@/components/ui/tooltip";
-import { type EmailCategory } from "@/lib/email/email-permissions";
 import type { Communication, CommunicationCounts } from "@/lib/queries/communications";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 import { Hash } from "lucide-react";
 
@@ -213,6 +212,7 @@ export function UnifiedInboxPageClient({
 	const [channelMessages, setChannelMessages] = useState<ChannelMessage[]>([]);
 	const [loadingChannelMessages, setLoadingChannelMessages] = useState(false);
 	const conversationScrollRef = useRef<HTMLDivElement>(null);
+	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
 	const [refreshing, setRefreshing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -236,7 +236,7 @@ export function UnifiedInboxPageClient({
 	useEffect(() => {
 		if (typeFromUrl) {
 			setTypeFilter(typeFromUrl);
-		} else if (!typeFromUrl && typeFilter !== "all") {
+		} else if (!typeFromUrl) {
 			// Reset to "all" if type is removed from URL
 			setTypeFilter("all");
 		}
@@ -333,6 +333,18 @@ export function UnifiedInboxPageClient({
 				setCompanyContext(result.context);
 			}
 		});
+	}, []);
+
+	// Get current user ID for Teams channel message direction
+	useEffect(() => {
+		const supabase = createClient();
+		if (supabase) {
+			supabase.auth.getUser().then(({ data: { user } }) => {
+				if (user) {
+					setCurrentUserId(user.id);
+				}
+			});
+		}
 	}, []);
 
 	// Track the last loaded communication ID to prevent re-fetching on list refresh
@@ -467,7 +479,9 @@ export function UnifiedInboxPageClient({
 						mailboxOwnerId: inboxType === "personal" && folder === "inbox" ? teamMemberId : undefined,
 						// If viewing company inbox, filter by category
 						category:
-							inboxType === "company" ? (category as EmailCategory) : undefined,
+							inboxType === "company" && category && ["support", "sales", "billing", "general"].includes(category)
+								? (category as "support" | "sales" | "billing" | "general")
+								: undefined,
 						// Status filter for archive, trash, spam
 						status: statusFilter,
 						// Special handling for "sent" folder - filter by direction
@@ -514,7 +528,7 @@ export function UnifiedInboxPageClient({
 				}
 			});
 		},
-		[searchQuery, folder, inboxType, category, typeFilter, channelId, teamMemberId, companyId, assignedFilter],
+		[searchQuery, folder, inboxType, category, typeFilter, channelId, teamMemberId, companyId, assignedFilter, typeFromUrl],
 	);
 
 	// Fetch SMS conversation
@@ -564,15 +578,10 @@ export function UnifiedInboxPageClient({
 		}
 	}, []);
 
-	// Refetch when URL params change (folder, inboxType, category, etc.)
+	// Refetch when URL params change (folder, inboxType, category, type, etc.)
 	useEffect(() => {
 		fetchCommunications();
-	}, [folder, inboxType, category, assignedFilter, fetchCommunications]);
-
-	// Refetch when type filter changes
-	useEffect(() => {
-		fetchCommunications();
-	}, [typeFilter, fetchCommunications]);
+	}, [folder, inboxType, category, assignedFilter, typeFromUrl, fetchCommunications]);
 
 	// Refetch when search changes
 	useEffect(() => {
@@ -580,6 +589,145 @@ export function UnifiedInboxPageClient({
 			fetchCommunications();
 		}
 	}, [searchQuery, fetchCommunications]);
+
+	// Auto-scroll to bottom for Teams channel messages
+	useEffect(() => {
+		if (channelId && channelMessages.length > 0 && !loadingChannelMessages) {
+			setTimeout(() => {
+				if (conversationScrollRef.current) {
+					conversationScrollRef.current.scrollTop =
+						conversationScrollRef.current.scrollHeight;
+				}
+			}, 100);
+		}
+	}, [channelId, channelMessages.length, loadingChannelMessages]);
+
+	// Real-time subscription for Teams channel messages
+	useEffect(() => {
+		if (!channelId || !companyId) {
+			return;
+		}
+
+		const supabase = createClient();
+		if (!supabase) {
+			return;
+		}
+
+		// Create realtime channel for team messages
+		const channelName = `teams-channel-${channelId}-${companyId}`;
+		const channel = supabase
+			.channel(channelName)
+			.on(
+				"postgres_changes",
+				{
+					event: "INSERT",
+					schema: "public",
+					table: "communications",
+					filter: `company_id=eq.${companyId}`,
+				},
+				async (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+					// Check if this message belongs to the current channel
+					const newMessage = payload.new as {
+						id: string;
+						company_id: string;
+						type: string;
+						tags: string[] | null;
+						direction: string;
+						body: string;
+						body_html: string | null;
+						created_at: string;
+						read_at: string | null;
+						sent_by: string | null;
+						provider_metadata: Record<string, unknown> | null;
+					};
+
+					// Filter by type and channel tag
+					if (
+						newMessage.type === "sms" &&
+						newMessage.tags &&
+						Array.isArray(newMessage.tags) &&
+						newMessage.tags.includes(channelId)
+					) {
+						// Fetch the full message with user info
+						const { data: fullMessage } = await supabase
+							.from("communications")
+							.select(`
+								id,
+								body,
+								body_html,
+								created_at,
+								read_at,
+								direction,
+								sent_by,
+								provider_metadata,
+								tags,
+								sent_by_user:users!sent_by(id, name, avatar, email)
+							`)
+							.eq("id", newMessage.id)
+							.single();
+
+						if (fullMessage) {
+							// Handle sent_by_user - it might be an array or single object
+							const userData = Array.isArray(fullMessage.sent_by_user)
+								? fullMessage.sent_by_user[0]
+								: fullMessage.sent_by_user;
+
+							const channelMessage: ChannelMessage = {
+								id: fullMessage.id,
+								body: fullMessage.body || "",
+								body_html: fullMessage.body_html,
+								created_at: fullMessage.created_at,
+								read_at: fullMessage.read_at,
+								direction: fullMessage.direction as "inbound" | "outbound",
+								sent_by: fullMessage.sent_by,
+								sent_by_user: userData
+									? {
+											id: userData.id,
+											name: userData.name || null,
+											avatar: userData.avatar || null,
+											email: userData.email || null,
+										}
+									: null,
+								provider_metadata: (fullMessage.provider_metadata as Record<string, unknown>) || null,
+							};
+
+							// Add new message to state
+							setChannelMessages((prev) => {
+								// Check if message already exists (prevent duplicates)
+								if (prev.some((msg) => msg.id === channelMessage.id)) {
+									return prev;
+								}
+								return [...prev, channelMessage];
+							});
+
+							// Auto-scroll to bottom
+							setTimeout(() => {
+								if (conversationScrollRef.current) {
+									conversationScrollRef.current.scrollTop =
+										conversationScrollRef.current.scrollHeight;
+								}
+							}, 100);
+
+							// Mark as read if it's an inbound message
+							if (channelMessage.direction === "inbound" && !channelMessage.read_at) {
+								markTeamChannelAsReadAction(channelId).catch(console.error);
+							}
+						}
+					}
+				},
+			)
+			.subscribe((status: "SUBSCRIBED" | "TIMED_OUT" | "CLOSED" | "CHANNEL_ERROR") => {
+				if (status === "SUBSCRIBED") {
+					console.log(`✅ Subscribed to Teams channel: ${channelId}`);
+				} else if (status === "CHANNEL_ERROR") {
+					console.error(`❌ Failed to subscribe to Teams channel: ${channelId}`);
+				}
+			});
+
+		return () => {
+			supabase.removeChannel(channel);
+		};
+	}, [channelId, companyId]);
 
 	// Auto-refresh using consolidated hook
 	// useCommunicationRefresh(fetchCommunications, {
@@ -1038,27 +1186,87 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 		fetchCommunications,
 	]);
 
-	// Placeholder for handleSendSms for Teams channel
+	// Handle sending Teams channel messages
 	const handleSendSms = useCallback(async (text: string, attachments: any[]) => {
-		if (!channelId) {
-			toast.error("Channel ID not found.");
+		if (!channelId || sendingMessage) {
+			if (!channelId) {
+				toast.error("Channel ID not found.");
+			}
 			return;
 		}
-		const result = await sendTeamChannelMessageAction({
-			channel: channelId,
-			text,
-			attachments: attachments.map((a) => ({
-				file: a.file,
-				type: a.type === "image" ? "image" : "file",
-			})),
-		});
 
-		if (result.success) {
-			fetchCommunications();
-		} else {
+		setSendingMessage(true);
+
+		// Optimistic update - add message immediately to UI
+		const tempId = `temp-${Date.now()}`;
+		const optimisticMessage: ChannelMessage = {
+			id: tempId,
+			body: text,
+			body_html: text,
+			created_at: new Date().toISOString(),
+			read_at: null,
+			direction: "outbound",
+			sent_by: currentUserId || teamMemberId,
+			sent_by_user: currentUserId ? {
+				id: currentUserId,
+				name: null, // Will be filled by realtime update
+				avatar: null,
+				email: null, // Will be filled by realtime update
+			} : null,
+			provider_metadata: attachments.length > 0
+				? {
+						attachments: attachments.map((a) => ({
+							url: a.url || "",
+							type: a.type || "file",
+							filename: a.filename || "attachment",
+						})),
+					}
+				: null,
+		};
+
+		// Add optimistic message to state
+		setChannelMessages((prev) => [...prev, optimisticMessage]);
+
+		// Auto-scroll to bottom immediately
+		setTimeout(() => {
+			if (conversationScrollRef.current) {
+				conversationScrollRef.current.scrollTop =
+					conversationScrollRef.current.scrollHeight;
+			}
+		}, 50);
+
+		try {
+			// Send message to server
+			const result = await sendTeamChannelMessageAction({
+				channel: channelId,
+				text,
+				attachments: attachments.map((a) => ({
+					file: a.file,
+					type: a.type === "image" ? "image" : "file",
+				})),
+			});
+
+			if (result.success) {
+				// Remove optimistic message (realtime will add the real one)
+				setChannelMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+				// Clear message input
+				setMessageInput("");
+				setAttachments([]);
+				// Refresh to get the real message with full user data
+				fetchCommunications();
+			} else {
+				// Remove failed optimistic message
+				setChannelMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+				toast.error("Failed to send message");
+			}
+		} catch (error) {
+			// Remove failed optimistic message
+			setChannelMessages((prev) => prev.filter((msg) => msg.id !== tempId));
 			toast.error("Failed to send message");
+		} finally {
+			setSendingMessage(false);
 		}
-	}, [channelId, fetchCommunications]);
+	}, [channelId, currentUserId, teamMemberId, sendingMessage, fetchCommunications]);
 
 
 	// Format timestamp for SMS messages
@@ -1081,6 +1289,27 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 			minute: "2-digit",
 		});
 	};
+
+	// Helper function to get user display name (Slack-style)
+	const getUserDisplayName = useCallback((user: {
+		name?: string | null;
+		email?: string | null;
+	} | null | undefined): string => {
+		if (!user) return "Unknown User";
+		if (user.name) return user.name;
+		if (user.email) return user.email.split("@")[0];
+		return "Unknown User";
+	}, []);
+
+	// Helper function to check if messages should be grouped (Slack-style)
+	const shouldGroupMessages = useCallback((msg1: ChannelMessage, msg2: ChannelMessage): boolean => {
+		// Different users - don't group
+		if (msg1.sent_by_user?.id !== msg2.sent_by_user?.id) return false;
+		
+		// Same user - check time gap (group if within 2 minutes)
+		const timeDiff = new Date(msg2.created_at).getTime() - new Date(msg1.created_at).getTime();
+		return timeDiff < 2 * 60 * 1000; // 2 minutes
+	}, []);
 
 	// Filter communications by type and search
 	const filteredCommunications = communications.filter((comm) => {
@@ -1111,99 +1340,342 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 	const getTypeConfig = (type: string) => {
 		switch (type) {
 			case "email":
-				return { icon: Mail, color: "text-blue-500", bg: "bg-blue-500/10" };
+				return { 
+					icon: Mail, 
+					bg: "bg-blue-500 dark:bg-blue-600",
+					iconColor: "text-white"
+				};
 			case "sms":
 				return {
 					icon: MessageSquare,
-					color: "text-green-500",
-					bg: "bg-green-500/10",
+					bg: "bg-green-500 dark:bg-green-600",
+					iconColor: "text-white"
 				};
 			case "call":
 				return {
 					icon: Phone,
-					color: "text-purple-500",
-					bg: "bg-purple-500/10",
+					bg: "bg-purple-500 dark:bg-purple-600",
+					iconColor: "text-white"
 				};
 			case "voicemail":
 				return {
 					icon: Voicemail,
-					color: "text-orange-500",
-					bg: "bg-orange-500/10",
+					bg: "bg-orange-500 dark:bg-orange-600",
+					iconColor: "text-white"
 				};
 			default:
-				return { icon: Mail, color: "text-gray-500", bg: "bg-gray-500/10" };
+				return { 
+					icon: Mail, 
+					bg: "bg-gray-500 dark:bg-gray-600",
+					iconColor: "text-white"
+				};
 		}
 	};
 
 	// Render content based on view mode (Teams vs Email/SMS)
 	const renderContent = () => {
 		if (channelId) {
-			// Teams Channel View
+			// Teams Channel View - Full-width matching SMS design exactly
 			return (
-				<div className="flex flex-col h-full">
-					<div className="flex items-center justify-between px-4 py-2 border-b h-14 shrink-0">
-						<div className="flex items-center gap-2">
-							<Hash className="h-5 w-5 text-muted-foreground" />
-							<h2 className="text-lg font-semibold capitalize">{channelId}</h2>
+				<div className="flex flex-1 h-full w-full flex-col overflow-hidden bg-sidebar">
+					<div className="flex flex-1 h-full w-full flex-col overflow-hidden bg-card md:rounded-tl-2xl">
+						{/* Header Toolbar - matching SMS view */}
+						<div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
+							<div className="flex flex-1 items-center gap-2">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => {
+										const params = new URLSearchParams(searchParams?.toString() || "");
+										params.delete("channel");
+										const newUrl = params.toString()
+											? `/dashboard/communication?${params.toString()}`
+											: "/dashboard/communication";
+										router.push(newUrl, { scroll: false });
+									}}
+									className="h-10 w-10 p-0 md:h-8 md:w-8"
+									title="Back to communications"
+								>
+									<ArrowLeft className="h-5 w-5 md:hidden text-muted-foreground" />
+									<X className="h-4 w-4 hidden md:block text-muted-foreground" />
+								</Button>
+								<Separator
+									orientation="vertical"
+									className="h-4 bg-border/60 hidden md:block"
+								/>
+							</div>
 						</div>
-					</div>
-					
-					<ScrollArea className="flex-1 p-4">
-						<div className="flex flex-col gap-4 max-w-3xl mx-auto">
-							{loadingChannelMessages ? (
-								<div className="flex flex-col gap-4">
-									{[1, 2, 3].map((i) => (
-										<div key={i} className="flex items-start gap-3">
-											<Skeleton className="h-10 w-10 rounded-full" />
-											<div className="space-y-2">
-												<Skeleton className="h-4 w-[200px]" />
-												<Skeleton className="h-16 w-[300px]" />
+
+						{/* Communication Content - matching SMS structure exactly */}
+						<div className="flex min-h-0 flex-1 flex-col overflow-hidden w-full">
+							<div className="relative overflow-hidden flex-1 h-full min-h-0 flex flex-col w-full">
+								<TooltipProvider delayDuration={100}>
+									{/* Header section - matching SMS view exactly */}
+									<div className="border-b border-border/50 px-2 py-4 space-y-3">
+										<h1 className="text-base font-semibold text-foreground">
+											#{channelId}
+										</h1>
+
+										<div className="flex items-center gap-3">
+											<Avatar className="h-9 w-9 shrink-0 rounded-md cursor-pointer">
+												<AvatarFallback className="bg-muted text-muted-foreground font-semibold text-sm rounded-md">
+													<Hash className="h-4 w-4" />
+												</AvatarFallback>
+											</Avatar>
+
+											<div className="flex-1 min-w-0">
+												<div className="flex items-center gap-2">
+													<span className="font-semibold text-sm text-foreground capitalize">
+														{channelId}
+													</span>
+												</div>
+												<div className="flex items-center gap-2 text-xs text-muted-foreground">
+													<span>Team Channel</span>
+												</div>
 											</div>
-										</div>
-									))}
-								</div>
-							) : channelMessages.length === 0 ? (
-								<div className="text-center py-10 text-muted-foreground">
-									No messages in this channel yet. Start the conversation!
-								</div>
-							) : (
-								channelMessages.map((msg) => (
-									<div key={msg.id} className="flex items-start gap-3 group">
-										<Avatar className="h-8 w-8 mt-1">
-											<AvatarFallback>
-												{msg.sent_by_user?.name?.[0] || "?"}
-											</AvatarFallback>
-										</Avatar>
-										<div className="flex flex-col gap-1 min-w-0 flex-1">
-											<div className="flex items-baseline gap-2">
-												<span className="font-semibold text-sm">
-													{msg.sent_by_user?.name || "Unknown User"}
-												</span>
-												<span className="text-xs text-muted-foreground">
-													{formatDistanceToNow(new Date(msg.created_at), {
-														addSuffix: true,
-													})}
-												</span>
-											</div>
-											<div className="text-sm text-foreground/90 whitespace-pre-wrap">
-												{msg.body}
-											</div>
-											{/* Attachments would go here */}
 										</div>
 									</div>
-								))
-							)}
-							<div ref={conversationScrollRef} />
-						</div>
-					</ScrollArea>
 
-					<div className="p-4 border-t bg-background">
-						<div className="max-w-3xl mx-auto">
-							<SmsMessageInput
-								onSend={handleSendSms}
-								placeholder={`Message #${channelId}`}
-								disabled={isPending}
-							/>
+									{/* Conversation area - matching SMS view exactly */}
+									<>
+										<div
+											ref={conversationScrollRef}
+											className="flex-1 overflow-y-auto bg-card px-4 py-4"
+										>
+											{loadingChannelMessages ? (
+												<div className="flex items-center justify-center h-full">
+													<Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+												</div>
+											) : channelMessages.length === 0 ? (
+												<div className="flex items-center justify-center h-full">
+													<div className="text-center">
+														<MessageSquare className="h-12 w-12 text-muted-foreground opacity-50 mx-auto mb-2" />
+														<p className="text-sm text-muted-foreground">
+															No messages in this channel yet. Start the conversation!
+														</p>
+													</div>
+												</div>
+											) : (
+												<div className="space-y-1">
+													{channelMessages.map((msg, index) => {
+														// Determine if this is the first message in a group
+														const isFirstInGroup =
+															index === 0 ||
+															!shouldGroupMessages(
+																channelMessages[index - 1],
+																msg,
+															);
+
+														// Show timestamp for first message in group or when time gap > 5 minutes
+														const showTime =
+															isFirstInGroup ||
+															(index > 0 &&
+																new Date(msg.created_at).getTime() -
+																	new Date(
+																		channelMessages[index - 1].created_at,
+																	).getTime() >
+																	5 * 60 * 1000);
+
+														const userDisplayName = getUserDisplayName(
+															msg.sent_by_user,
+														);
+														const userProfileUrl = msg.sent_by_user?.id
+															? `/dashboard/team/${msg.sent_by_user.id}`
+															: "#";
+
+														return (
+															<div key={msg.id}>
+																{showTime && (
+																	<div className="flex justify-center my-3">
+																		<span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+																			{formatMessageTime(msg.created_at)}
+																		</span>
+																	</div>
+																)}
+																{(() => {
+																	const isOutbound = msg.direction === "outbound" || 
+																		(currentUserId && msg.sent_by_user?.id === currentUserId);
+																	return (
+																		<div className={cn(
+																			"flex gap-2 px-2 group",
+																			isOutbound ? "flex-row-reverse" : "flex-row",
+																			isFirstInGroup ? "pt-1 pb-0.5" : "pt-0 pb-0.5"
+																		)}>
+																			{/* Avatar - always visible, only show for first message in group */}
+																			{isFirstInGroup ? (
+																				<Link
+																					href={userProfileUrl}
+																					className="flex-shrink-0"
+																				>
+																					<Avatar className="h-9 w-9">
+																						{msg.sent_by_user?.avatar ? (
+																							<AvatarImage
+																								src={msg.sent_by_user.avatar}
+																								alt={userDisplayName}
+																							/>
+																						) : null}
+																						<AvatarFallback className="bg-primary/10 text-primary">
+																							{userDisplayName
+																								.charAt(0)
+																								.toUpperCase()}
+																						</AvatarFallback>
+																					</Avatar>
+																				</Link>
+																			) : (
+																				<div className={cn(
+																					"flex-shrink-0",
+																					isOutbound ? "w-9" : "w-9"
+																				)} />
+																			)}
+
+																			{/* Message content */}
+																			<div className={cn(
+																				"flex flex-col min-w-0",
+																				isOutbound ? "items-end" : "items-start"
+																			)}>
+																				{/* User name - only show for first message in group */}
+																				{isFirstInGroup && (
+																					<div className="mb-0.5">
+																						<Link
+																							href={userProfileUrl}
+																							className="text-sm font-semibold text-foreground hover:underline"
+																						>
+																							{userDisplayName}
+																						</Link>
+																					</div>
+																				)}
+
+																				{/* Message bubble - match SMS design with primary color for outbound */}
+																				<div
+																					className={cn(
+																						"max-w-[75%] min-w-0 rounded-2xl px-4 py-2 shadow-sm",
+																						isOutbound
+																							? "bg-primary text-primary-foreground rounded-tr-sm"
+																							: "bg-muted text-foreground rounded-tl-sm",
+																					)}
+																				>
+																					{/* Show attachments if present */}
+																					{msg.provider_metadata &&
+																						typeof msg.provider_metadata ===
+																							"object" &&
+																						"attachments" in
+																							msg.provider_metadata &&
+																						Array.isArray(
+																							msg.provider_metadata.attachments,
+																						) &&
+																						msg.provider_metadata.attachments
+																							.length > 0 && (
+																							<div className="mb-2 space-y-2">
+																								{(msg.provider_metadata.attachments as MessageAttachment[]).map(
+																									(att, attIdx) => {
+																										const isImage =
+																											att.type === "image" ||
+																											(att.url &&
+																												/\.(jpg|jpeg|png|gif|webp)$/i.test(
+																													att.url,
+																												));
+																										return (
+																											<div
+																												key={attIdx}
+																												className="rounded-lg overflow-hidden"
+																											>
+																												{isImage ? (
+																													<img
+																														src={att.url}
+																														alt={
+																															att.filename ||
+																															"Image"
+																														}
+																														className="max-w-full max-h-64 object-contain rounded-lg"
+																														loading="lazy"
+																													/>
+																												) : (
+																													<a
+																														href={att.url}
+																														target="_blank"
+																														rel="noopener noreferrer"
+																														className={cn(
+																															"flex items-center gap-2 p-2 rounded-lg hover:opacity-80 transition-opacity",
+																															isOutbound
+																																? "bg-primary-foreground/20"
+																																: "bg-background/20",
+																														)}
+																													>
+																														<Paperclip className="h-4 w-4" />
+																														<span className="text-xs truncate">
+																															{att.filename ||
+																																"Attachment"}
+																														</span>
+																													</a>
+																												)}
+																											</div>
+																										);
+																									},
+																								)}
+																							</div>
+																						)}
+																						{msg.body && (
+																							<p className="text-sm whitespace-pre-wrap">
+																								{msg.body}
+																							</p>
+																						)}
+																						{!msg.body &&
+																							(!msg.provider_metadata ||
+																								typeof msg.provider_metadata !==
+																									"object" ||
+																								!("attachments" in
+																									msg.provider_metadata) ||
+																								!Array.isArray(
+																									msg.provider_metadata.attachments,
+																								) ||
+																								msg.provider_metadata.attachments
+																									.length === 0) && (
+																									<p className="text-sm opacity-70 italic">
+																										No message content
+																									</p>
+																								)}
+																					</div>
+																					{/* Timestamp below message bubble */}
+																					<span
+																						className={cn(
+																							"text-xs text-muted-foreground mt-0.5",
+																							isOutbound
+																								? "text-right"
+																								: "text-left",
+																						)}
+																					>
+																						{new Date(
+																							msg.created_at,
+																						).toLocaleTimeString("en-US", {
+																							hour: "numeric",
+																							minute: "2-digit",
+																						})}
+																					</span>
+																				</div>
+																			</div>
+																		);
+																	})()}
+															</div>
+														);
+													})}
+												</div>
+											)}
+										</div>
+
+										{/* SMS Message Input - matching SMS view exactly */}
+										<SmsMessageInput
+											value={messageInput}
+											onChange={setMessageInput}
+											onSend={handleSendSms}
+											onAttach={handleAttachFiles}
+											sending={sendingMessage}
+											disabled={!channelId || isPending || loadingChannelMessages}
+											placeholder={`Message #${channelId}`}
+											showSegmentCounter={false}
+										/>
+									</>
+								</TooltipProvider>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1393,15 +1865,14 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																		</Avatar>
 																		<div
 																			className={cn(
-																				"absolute -bottom-1 -right-1 rounded-full p-0.5 border border-white dark:border-[#1C1C1C]",
+																				"absolute -bottom-1 -right-1 rounded-full p-1 flex items-center justify-center",
 																				typeConfig.bg,
+																				"shadow-sm ring-1 ring-background/50",
 																			)}
 																		>
 																			<TypeIcon
-																				className={cn(
-																					"h-2.5 w-2.5",
-																					typeConfig.color,
-																				)}
+																				className="h-2.5 w-2.5"
+																				style={{ color: 'white' }}
 																			/>
 																		</div>
 																	</div>

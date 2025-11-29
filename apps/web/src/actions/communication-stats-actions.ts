@@ -66,6 +66,11 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 		company_billing_sent?: number;
 		company_billing_drafts?: number;
 		company_billing_archived?: number;
+		team_general?: number;
+		team_sales?: number;
+		team_support?: number;
+		team_technicians?: number;
+		team_management?: number;
 	};
 	error?: string;
 }> {
@@ -110,6 +115,7 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			billingSentResult,
 			billingDraftsResult,
 			billingArchivedResult,
+			allUnreadTeamMessagesResult,
 		] = await Promise.all([
 			// Personal inbox - all communication types, not archived, not draft, not deleted, no category (personal)
 			// "All Messages" shows all personal messages (both inbound and outbound)
@@ -345,6 +351,18 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 				.eq("category", "billing")
 				.eq("is_archived", true)
 				.is("deleted_at", null),
+			
+			// Team channels - unread inbound messages (read_at IS NULL)
+			// Fetch all unread team messages and filter by tag in memory
+			// We need to fetch data (not just count) to filter by tags array
+			supabase
+				.from("communications")
+				.select("tags, read_at")
+				.eq("company_id", companyId)
+				.eq("type", "sms")
+				.eq("direction", "inbound")
+				.is("read_at", null)
+				.is("deleted_at", null),
 		]);
 
 		// Count starred items in memory (items with "starred" tag)
@@ -352,6 +370,14 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			return (data ?? []).filter((comm) => {
 				const tags = comm.tags as string[] | null;
 				return Array.isArray(tags) && tags.includes("starred");
+			}).length;
+		};
+
+		// Count team channel unread messages (filter by tag in memory)
+		const countTeamChannel = (data: any[], channelName: string) => {
+			return (data ?? []).filter((comm) => {
+				const tags = comm.tags as string[] | null;
+				return Array.isArray(tags) && tags.includes(channelName);
 			}).length;
 		};
 
@@ -386,6 +412,16 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			(supportArchivedResult.count ?? 0) +
 			(billingArchivedResult.count ?? 0);
 
+		// Count team channel unread messages
+		// Note: We fetch all unread team messages and filter by tag in memory
+		// because Supabase doesn't support JSONB array contains queries efficiently
+		const allUnreadTeamMessages = allUnreadTeamMessagesResult.data ?? [];
+		const teamGeneralCount = countTeamChannel(allUnreadTeamMessages, "general");
+		const teamSalesCount = countTeamChannel(allUnreadTeamMessages, "sales");
+		const teamSupportCount = countTeamChannel(allUnreadTeamMessages, "support");
+		const teamTechniciansCount = countTeamChannel(allUnreadTeamMessages, "technicians");
+		const teamManagementCount = countTeamChannel(allUnreadTeamMessages, "management");
+
 		return {
 			success: true,
 			counts: {
@@ -418,6 +454,11 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 				company_billing_sent: billingSentResult.count ?? 0,
 				company_billing_drafts: billingDraftsResult.count ?? 0,
 				company_billing_archived: billingArchivedResult.count ?? 0,
+				team_general: teamGeneralCount,
+				team_sales: teamSalesCount,
+				team_support: teamSupportCount,
+				team_technicians: teamTechniciansCount,
+				team_management: teamManagementCount,
 			},
 		};
 	} catch (error) {

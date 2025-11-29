@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { CommunicationSidebar } from "@/components/communication/communication-sidebar";
 import { ComposeTypeSelector } from "@/components/communication/compose-type-selector";
+import { CreateTeamChannelDialog } from "@/components/communication/create-team-channel-dialog";
 import type { Sidebar } from "@/components/ui/sidebar";
 import {
 	getUnifiedCommunicationSidebarConfig,
@@ -24,6 +25,7 @@ export function UnifiedCommunicationSidebar(
 		getUnifiedCommunicationSidebarConfig(),
 	);
 	const [showComposeSelector, setShowComposeSelector] = useState(false);
+	const [showCreateChannelDialog, setShowCreateChannelDialog] = useState(false);
 
 	// Fetch communication counts
 	const fetchCounts = useCallback(async () => {
@@ -120,12 +122,31 @@ export function UnifiedCommunicationSidebar(
 				// Call/voicemail counts from communications table
 				call: commCounts?.call ?? 0,
 				voicemail: commCounts?.voicemail ?? 0,
+
+				// Team channel unread counts
+				team_general: unifiedCounts?.team_general ?? 0,
+				team_sales: unifiedCounts?.team_sales ?? 0,
+				team_support: unifiedCounts?.team_support ?? 0,
+				team_technicians: unifiedCounts?.team_technicians ?? 0,
+				team_management: unifiedCounts?.team_management ?? 0,
 			};
 
 			// Use actual total from communications table
 			counts.all = commCounts?.all ?? 0;
 
-			setConfig(getUnifiedCommunicationSidebarConfig(counts));
+			const sidebarConfig = getUnifiedCommunicationSidebarConfig(counts);
+			
+			// Add onAddClick handler to Teams group
+			const teamsGroupIndex = sidebarConfig.navGroups.findIndex(
+				(group) => group.label === "Teams",
+			);
+			if (teamsGroupIndex !== -1) {
+				sidebarConfig.navGroups[teamsGroupIndex].onAddClick = () => {
+					setShowCreateChannelDialog(true);
+				};
+			}
+
+			setConfig(sidebarConfig);
 		} catch (error) {
 			console.error("Failed to fetch unified communication counts:", error);
 		}
@@ -179,6 +200,14 @@ export function UnifiedCommunicationSidebar(
 			<ComposeTypeSelector
 				open={showComposeSelector}
 				onOpenChange={setShowComposeSelector}
+			/>
+			<CreateTeamChannelDialog
+				open={showCreateChannelDialog}
+				onOpenChange={setShowCreateChannelDialog}
+				onChannelCreated={() => {
+					// Refresh counts after channel creation
+					fetchCounts();
+				}}
 			/>
 		</>
 	);

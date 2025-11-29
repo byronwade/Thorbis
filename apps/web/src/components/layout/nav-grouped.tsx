@@ -1,7 +1,6 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, Plus, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
 	Collapsible,
@@ -40,6 +39,7 @@ type NavGroup = {
 	badge?: number | string; // Badge for collapsible group header
 	collapsible?: boolean; // Whether the group is collapsible
 	defaultOpen?: boolean; // Default open state
+	onAddClick?: () => void; // Handler for add button (e.g., create channel)
 	items: NavItem[];
 };
 
@@ -132,6 +132,76 @@ export function NavGrouped({
 				});
 
 				// If group is collapsible, render with Collapsible
+				// If collapsible is false, render as always-open group
+				if (group.collapsible === false) {
+					return (
+						<SidebarGroup
+							key={`${group.label || "group"}-${groupIndex}`}
+							className={className}
+						>
+							{group.label && (
+								<SidebarGroupLabel className="flex items-center justify-between">
+									<span>{group.label}</span>
+									{group.badge !== undefined && group.badge > 0 && (
+										<SidebarMenuBadge>
+											{typeof group.badge === "number"
+												? group.badge.toLocaleString()
+												: group.badge}
+										</SidebarMenuBadge>
+									)}
+								</SidebarGroupLabel>
+							)}
+							<SidebarGroupContent>
+								<SidebarMenu>
+									{group.items.map((item) => {
+										// ... (same item rendering logic as below)
+										const itemUrl = new URL(item.url, "http://localhost");
+										const itemPathname = itemUrl.pathname;
+										const itemSearchParams = itemUrl.searchParams;
+
+										const pathnameMatches = safePathname === itemPathname;
+										let queryParamsMatch = true;
+										if (itemSearchParams.toString() && searchParams) {
+											for (const [key, value] of itemSearchParams.entries()) {
+												if (searchParams.get(key) !== value) {
+													queryParamsMatch = false;
+													break;
+												}
+											}
+										} else if (itemSearchParams.toString() && !searchParams) {
+											queryParamsMatch = false;
+										}
+
+										const isActive = pathnameMatches && queryParamsMatch;
+
+										return (
+											<SidebarMenuItem key={item.title}>
+												<SidebarMenuButton
+													asChild
+													isActive={isActive}
+													tooltip={item.title}
+												>
+													<Link href={item.url}>
+														{item.icon && <item.icon className="shrink-0" />}
+														<span>{item.title}</span>
+													</Link>
+												</SidebarMenuButton>
+												{item.badge !== undefined && item.badge > 0 && (
+													<SidebarMenuBadge>
+														{typeof item.badge === "number"
+															? item.badge.toLocaleString()
+															: item.badge}
+													</SidebarMenuBadge>
+												)}
+											</SidebarMenuItem>
+										);
+									})}
+								</SidebarMenu>
+							</SidebarGroupContent>
+						</SidebarGroup>
+					);
+				}
+
 				if (group.collapsible) {
 					return (
 						<SidebarGroup
@@ -144,19 +214,42 @@ export function NavGrouped({
 							>
 								<CollapsibleTrigger asChild>
 									<SidebarGroupLabel
-										className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm cursor-pointer"
+										className="group/label cursor-pointer"
 										asChild
 									>
 										<button type="button" className="flex items-center w-full">
 											<span>{group.label}</span>
-											<ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-											{group.badge !== undefined && group.badge > 0 && (
-												<SidebarMenuBadge>
-													{typeof group.badge === "number"
-														? group.badge.toLocaleString()
-														: group.badge}
-												</SidebarMenuBadge>
-											)}
+											<div className="ml-auto flex items-center gap-2">
+												{group.onAddClick && (
+													<span
+														className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-6 w-6 cursor-pointer outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+														onClick={(e) => {
+															e.stopPropagation();
+															group.onAddClick?.();
+														}}
+														onKeyDown={(e) => {
+															if (e.key === "Enter" || e.key === " ") {
+																e.preventDefault();
+																e.stopPropagation();
+																group.onAddClick?.();
+															}
+														}}
+														role="button"
+														tabIndex={0}
+														aria-label="Add item"
+													>
+														<Plus className="size-4" />
+													</span>
+												)}
+												<ChevronRight className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+												{group.badge !== undefined && group.badge > 0 && (
+													<SidebarMenuBadge>
+														{typeof group.badge === "number"
+															? group.badge.toLocaleString()
+															: group.badge}
+													</SidebarMenuBadge>
+												)}
+											</div>
 										</button>
 									</SidebarGroupLabel>
 								</CollapsibleTrigger>

@@ -3,46 +3,22 @@
 /**
  * Tools Sidebar Navigation - Client Component
  *
- * Client-side features:
- * - Active link state management
- * - Smooth navigation transitions
- * - Mobile responsive menu
+ * Uses unified NavGrouped component for consistent design and behavior.
  */
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuBadge,
-	SidebarMenuButton,
-	SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { NavGrouped } from "@/components/layout/nav-grouped";
 
-type SidebarGroup = {
-	label: string;
-	items: SidebarItem[];
-};
-
-type SidebarItem = {
-	title: string;
-	href: string;
-	badge?: string;
-};
-
-const sidebarGroups: SidebarGroup[] = [
+const sidebarGroups = [
 	{
 		label: "Sections",
 		items: [
-			{ title: "Overview", href: "/tools" },
-			{ title: "Marketing", href: "/tools/marketing" },
-			{ title: "Business Setup", href: "/tools/business" },
-			{ title: "Financing", href: "/tools/financing" },
-			{ title: "Networks", href: "/tools/networks" },
-			{ title: "Training", href: "/tools/training" },
-			{ title: "Calculators", href: "/tools/calculators" },
+			{ title: "Overview", url: "/tools" },
+			{ title: "Marketing", url: "/tools/marketing" },
+			{ title: "Business Setup", url: "/tools/business" },
+			{ title: "Financing", url: "/tools/financing" },
+			{ title: "Networks", url: "/tools/networks" },
+			{ title: "Training", url: "/tools/training" },
+			{ title: "Calculators", url: "/tools/calculators" },
 		],
 	},
 	{
@@ -50,18 +26,18 @@ const sidebarGroups: SidebarGroup[] = [
 		items: [
 			{
 				title: "Google Business Profile",
-				href: "/tools/marketing/google-business",
+				url: "/tools/marketing/google-business",
 				badge: "Essential",
 			},
 			{
 				title: "Local Services Ads",
-				href: "/tools/marketing/local-services",
+				url: "/tools/marketing/local-services",
 				badge: "Recommended",
 			},
-			{ title: "Facebook Business", href: "/tools/marketing/facebook" },
-			{ title: "Instagram", href: "/tools/marketing/instagram" },
-			{ title: "X (Twitter)", href: "/tools/marketing/twitter" },
-			{ title: "LinkedIn", href: "/tools/marketing/linkedin" },
+			{ title: "Facebook Business", url: "/tools/marketing/facebook" },
+			{ title: "Instagram", url: "/tools/marketing/instagram" },
+			{ title: "X (Twitter)", url: "/tools/marketing/twitter" },
+			{ title: "LinkedIn", url: "/tools/marketing/linkedin" },
 		],
 	},
 	{
@@ -69,21 +45,21 @@ const sidebarGroups: SidebarGroup[] = [
 		items: [
 			{
 				title: "Business Registration",
-				href: "/tools/business/registration",
+				url: "/tools/business/registration",
 				badge: "Required",
 			},
 			{
 				title: "Licensing & Permits",
-				href: "/tools/business/licensing",
+				url: "/tools/business/licensing",
 				badge: "Required",
 			},
 			{
 				title: "Business Insurance",
-				href: "/tools/business/insurance",
+				url: "/tools/business/insurance",
 				badge: "Essential",
 			},
-			{ title: "Banking & Payroll", href: "/tools/business/banking" },
-			{ title: "Legal Resources", href: "/tools/business/legal" },
+			{ title: "Banking & Payroll", url: "/tools/business/banking" },
+			{ title: "Legal Resources", url: "/tools/business/legal" },
 		],
 	},
 	{
@@ -91,12 +67,12 @@ const sidebarGroups: SidebarGroup[] = [
 		items: [
 			{
 				title: "Consumer Financing",
-				href: "/tools/financing/consumer",
+				url: "/tools/financing/consumer",
 				badge: "Popular",
 			},
-			{ title: "Business Loans", href: "/tools/financing/business-loans" },
-			{ title: "Equipment Financing", href: "/tools/financing/equipment" },
-			{ title: "Credit Card Processing", href: "/tools/financing/credit-card" },
+			{ title: "Business Loans", url: "/tools/financing/business-loans" },
+			{ title: "Equipment Financing", url: "/tools/financing/equipment" },
+			{ title: "Credit Card Processing", url: "/tools/financing/credit-card" },
 		],
 	},
 	{
@@ -104,30 +80,30 @@ const sidebarGroups: SidebarGroup[] = [
 		items: [
 			{
 				title: "Nexstar Network",
-				href: "/tools/networks/nexstar",
+				url: "/tools/networks/nexstar",
 				badge: "Premium",
 			},
 			{
 				title: "Service Nation",
-				href: "/tools/networks/service-nation",
+				url: "/tools/networks/service-nation",
 				badge: "Premium",
 			},
-			{ title: "ACCA", href: "/tools/networks/acca" },
-			{ title: "PHCC", href: "/tools/networks/phcc" },
-			{ title: "NECA", href: "/tools/networks/neca" },
+			{ title: "ACCA", url: "/tools/networks/acca" },
+			{ title: "PHCC", url: "/tools/networks/phcc" },
+			{ title: "NECA", url: "/tools/networks/neca" },
 		],
 	},
 	{
 		label: "Training & Certification",
 		items: [
-			{ title: "Trade Certifications", href: "/tools/training/certifications" },
+			{ title: "Trade Certifications", url: "/tools/training/certifications" },
 			{
 				title: "OSHA Safety Training",
-				href: "/tools/training/osha",
+				url: "/tools/training/osha",
 				badge: "Required",
 			},
-			{ title: "EPA Certifications", href: "/tools/training/epa" },
-			{ title: "Business Management", href: "/tools/training/business" },
+			{ title: "EPA Certifications", url: "/tools/training/epa" },
+			{ title: "Business Management", url: "/tools/training/business" },
 		],
 	},
 	{
@@ -135,24 +111,24 @@ const sidebarGroups: SidebarGroup[] = [
 		items: [
 			{
 				title: "Hourly Rate Calculator",
-				href: "/tools/calculators/hourly-rate",
+				url: "/tools/calculators/hourly-rate",
 				badge: "Popular",
 			},
 			{
 				title: "Job Pricing Calculator",
-				href: "/tools/calculators/job-pricing",
+				url: "/tools/calculators/job-pricing",
 				badge: "Essential",
 			},
 			{
 				title: "Profit & Loss Calculator",
-				href: "/tools/calculators/profit-loss",
+				url: "/tools/calculators/profit-loss",
 				badge: "Popular",
 			},
-			{ title: "Commission Calculator", href: "/tools/calculators/commission" },
-			{ title: "Break-Even Calculator", href: "/tools/calculators/break-even" },
+			{ title: "Commission Calculator", url: "/tools/calculators/commission" },
+			{ title: "Break-Even Calculator", url: "/tools/calculators/break-even" },
 			{
 				title: "Industry Pricing Standards",
-				href: "/tools/calculators/industry-pricing",
+				url: "/tools/calculators/industry-pricing",
 				badge: "Premium",
 			},
 		],
@@ -160,48 +136,13 @@ const sidebarGroups: SidebarGroup[] = [
 	{
 		label: "Resources",
 		items: [
-			{ title: "Industry News", href: "/tools/resources/news" },
-			{ title: "Vendor Directories", href: "/tools/resources/vendors" },
-			{ title: "Emergency Services", href: "/tools/resources/emergency" },
+			{ title: "Industry News", url: "/tools/resources/news" },
+			{ title: "Vendor Directories", url: "/tools/resources/vendors" },
+			{ title: "Emergency Services", url: "/tools/resources/emergency" },
 		],
 	},
 ];
 
 export function ToolsSidebar() {
-	const pathname = usePathname();
-
-	return (
-		<>
-			{sidebarGroups.map((group) => (
-				<SidebarGroup key={group.label}>
-					<SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{group.items.map((item) => {
-								const isActive = pathname === item.href;
-								return (
-									<SidebarMenuItem key={item.href}>
-										<SidebarMenuButton
-											asChild
-											isActive={isActive}
-											tooltip={item.title}
-										>
-											<Link href={item.href}>
-												<span>{item.title}</span>
-												{item.badge && (
-													<SidebarMenuBadge>
-														{item.badge}
-													</SidebarMenuBadge>
-												)}
-											</Link>
-										</SidebarMenuButton>
-									</SidebarMenuItem>
-								);
-							})}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-			))}
-		</>
-	);
+	return <NavGrouped groups={sidebarGroups} />;
 }

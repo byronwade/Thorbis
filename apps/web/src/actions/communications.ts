@@ -343,26 +343,30 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			)
 			.eq("company_id", payload.companyId)
 			.is("deleted_at", null)
-			.order("created_at", { ascending: false })
-			.limit(payload.limit);
+			// Exclude Teams channel messages from All Messages view
+			// Teams messages have channel = "teams" and are internal chat messages
+			.neq("channel", "teams");
 
 		// Apply inbox type filtering first (personal vs company)
 		if (payload.inboxType === "personal") {
 			// Personal inbox: filter by mailbox_owner_id for emails, or no category for other types
-			if (payload.type === "email" || !payload.type) {
-				// For emails or all types, use mailbox_owner_id if provided
+			if (payload.type === "email") {
+				// For emails, use mailbox_owner_id if provided, otherwise use team member's mailbox
 				if (payload.mailboxOwnerId) {
 					query = query.eq("mailbox_owner_id", payload.mailboxOwnerId);
-				} else if (payload.folder === "inbox") {
-					// For personal inbox folder, default to current team member's mailbox
-					query = query.eq("mailbox_owner_id", payload.teamMemberId);
 				} else {
-					// For other personal folders, use no category (personal messages)
-					query = query.is("category", null);
+					// For personal email folders, use team member's mailbox
+					query = query.eq("mailbox_owner_id", payload.teamMemberId);
 				}
-			} else {
-				// For other types (SMS, call, voicemail), personal = no category
+			} else if (payload.type) {
+				// For other specific types (SMS, call, voicemail), personal = no category
 				query = query.is("category", null);
+			} else {
+				// For "all" types in personal inbox, show messages with:
+				// - mailbox_owner_id = teamMemberId (personal emails) OR
+				// - category IS NULL (personal SMS, calls, voicemails)
+				// Use OR filter to combine both conditions
+				query = query.or(`mailbox_owner_id.eq.${payload.teamMemberId},category.is.null`);
 			}
 		} else if (payload.inboxType === "company") {
 			// Company inbox: mailbox_owner_id IS NULL (shared emails)
@@ -407,23 +411,33 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 		
 		// Handle "inbox" folder - show inbound, not archived, not draft
 		// Only apply if not already filtered by draft or archived
-		if (payload.folder === "inbox" && payload.isDraft === undefined && payload.isArchived === undefined) {
-			query = query.eq("direction", "inbound");
-			query = query.eq("is_archived", false);
-			query = query.neq("status", "draft");
+		if (payload.folder === "inbox") {
+			if (payload.isDraft === undefined && payload.isArchived === undefined) {
+				query = query.eq("direction", "inbound");
+				query = query.eq("is_archived", false);
+				query = query.neq("status", "draft");
+			}
 		}
 		if (payload.searchQuery) {
 			query = query.or(
 				`subject.ilike.%${payload.searchQuery}%,body.ilike.%${payload.searchQuery}%,from_address.ilike.%${payload.searchQuery}%,to_address.ilike.%${payload.searchQuery}%`,
 			);
 		}
+		// Apply sorting
 		if (payload.sortBy) {
 			query = query.order(payload.sortBy, {
 				ascending: payload.sortOrder === "asc",
 			});
+		} else {
+			// Default sorting by created_at desc
+			query = query.order("created_at", { ascending: false });
 		}
+		
+		// Apply limit and offset
 		if (payload.offset > 0) {
 			query = query.range(payload.offset, payload.offset + payload.limit - 1);
+		} else {
+			query = query.limit(payload.limit);
 		}
 
 		const { data, error } = await query;
@@ -462,6 +476,7 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			assignedTo: comm.assigned_to,
 			visibilityScope: comm.visibility_scope,
 			emailCategory: comm.category,
+			tags: comm.tags as string[] | null | undefined, // Include tags for starred filtering
 			createdAt: comm.created_at,
 			customer: comm.customer
 				? {

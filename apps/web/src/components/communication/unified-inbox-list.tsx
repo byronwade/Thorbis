@@ -328,70 +328,84 @@ function CommunicationListItem({
 
 	const callStatus = getCallStatus();
 
-	// Get type-specific icon and color
+	// Get type-specific icon and color (theme-aware)
 	const getTypeConfig = () => {
 		switch (communication.type) {
 			case "email":
-				return { icon: Mail, color: "text-blue-500", bg: "bg-blue-500/10" };
+				return { 
+					icon: Mail, 
+					bg: "bg-blue-500 dark:bg-blue-600",
+					iconColor: "text-white"
+				};
 			case "sms":
 				return {
 					icon: MessageSquare,
-					color: "text-green-500",
-					bg: "bg-green-500/10",
+					bg: "bg-green-500 dark:bg-green-600",
+					iconColor: "text-white"
 				};
 			case "call":
-				// Use direction-specific icon for calls with status indicators
-				const isInbound = communication.direction === "inbound";
+				// Always show direction-specific icon for calls
+				const callDirection = communication.direction;
+				const isInbound = callDirection === "inbound";
+				const isOutbound = callDirection === "outbound";
 				const isMissed =
 					communication.hangupCause === "no_answer" ||
 					communication.status === "missed";
 				const wentToVoicemail = communication.answeringMachineDetected;
-				
-				// If call went to voicemail, show voicemail icon
-				if (wentToVoicemail) {
-					return {
-						icon: Voicemail,
-						color: "text-orange-500",
-						bg: "bg-orange-500/10",
-					};
-				}
-				
-				// If missed, show missed icon
-				if (isMissed) {
-					return {
-						icon: PhoneMissed,
-						color: "text-red-500",
-						bg: "bg-red-500/10",
-					};
-				}
+				const isAnswered = communication.callDuration && communication.callDuration > 0;
 				
 				// Show incoming/outgoing icon based on direction
-				// Green for answered calls, purple/indigo for others
-				const isAnswered = communication.callDuration && communication.callDuration > 0;
-				if (isInbound) {
+				// Use PhoneIncoming for inbound, PhoneOutgoing for outbound
+				if (isOutbound) {
+					// Outbound calls: use PhoneOutgoing
+					return {
+						icon: PhoneOutgoing,
+						bg: isAnswered 
+							? "bg-green-500 dark:bg-green-600" 
+							: "bg-indigo-500 dark:bg-indigo-600",
+						iconColor: "text-white"
+					};
+				}
+				
+				// Inbound calls (or default if direction not set): use PhoneIncoming
+				// Color based on status: green if answered, red if missed, orange if voicemail, purple otherwise
+				if (wentToVoicemail) {
 					return {
 						icon: PhoneIncoming,
-						color: isAnswered ? "text-green-500" : "text-purple-500",
-						bg: isAnswered ? "bg-green-500/10" : "bg-purple-500/10",
+						bg: "bg-orange-500 dark:bg-orange-600",
+						iconColor: "text-white"
+					};
+				}
+				if (isMissed) {
+					return {
+						icon: PhoneIncoming,
+						bg: "bg-red-500 dark:bg-red-600",
+						iconColor: "text-white"
 					};
 				}
 				return {
-					icon: PhoneOutgoing,
-					color: isAnswered ? "text-green-500" : "text-indigo-500",
-					bg: isAnswered ? "bg-green-500/10" : "bg-indigo-500/10",
+					icon: PhoneIncoming,
+					bg: isAnswered 
+						? "bg-green-500 dark:bg-green-600" 
+						: "bg-purple-500 dark:bg-purple-600",
+					iconColor: "text-white"
 				};
 			case "voicemail":
 				return {
 					icon: Voicemail,
-					color: "text-orange-500",
-					bg: "bg-orange-500/10",
+					bg: "bg-orange-500 dark:bg-orange-600",
+					iconColor: "text-white"
 				};
 			default:
-				return { icon: Mail, color: "text-gray-500", bg: "bg-gray-500/10" };
+				return { 
+					icon: Mail, 
+					bg: "bg-gray-500 dark:bg-gray-600",
+					iconColor: "text-white"
+				};
 		}
 	};
 
-	const { icon: TypeIcon, color, bg } = getTypeConfig();
+	const { icon: TypeIcon, bg, iconColor } = getTypeConfig();
 
 	// Get sender/recipient display
 	const displayAddress =
@@ -477,9 +491,13 @@ function CommunicationListItem({
 						</AvatarFallback>
 					</Avatar>
 					<div
-						className={cn("absolute -bottom-1 -right-1 rounded-full p-1", bg)}
+						className={cn(
+							"absolute -bottom-1 -right-1 rounded-full p-1.5 flex items-center justify-center",
+							bg,
+							"shadow-sm ring-1 ring-background/50"
+						)}
 					>
-						<TypeIcon className={cn("h-3 w-3", color)} />
+						<TypeIcon className="h-4 w-4" style={{ color: 'white', strokeWidth: 2 }} />
 					</div>
 				</div>
 

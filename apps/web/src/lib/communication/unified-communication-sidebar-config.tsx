@@ -8,15 +8,11 @@ import {
     Mail,
     MessageSquare,
     Phone,
-    PhoneIncoming,
-    PhoneOutgoing,
-    PhoneMissed,
     Plus,
     Send,
     Star,
     TrendingUp,
-    Users,
-    Voicemail
+    Users
 } from "lucide-react";
 
 /**
@@ -45,13 +41,13 @@ export type UnifiedCommunicationCounts = {
 	personal_drafts?: number;
 	personal_archived?: number;
 
-	// Email-specific company inbox (single unified inbox)
-	company_inbox?: number; // Company inbox count (all categories combined)
+	// Company inbox (aggregated across all categories)
+	company_inbox?: number;
+	company_starred?: number;
 	company_sent?: number;
 	company_drafts?: number;
 	company_archived?: number;
-	company_starred?: number;
-	
+
 	// Legacy company category counts (for backwards compatibility)
 	company_support?: number;
 	company_sales?: number;
@@ -90,6 +86,13 @@ export type UnifiedCommunicationCounts = {
 
 	// Assigned
 	assignedToMe?: number;
+
+	// Team channel unread counts
+	team_general?: number;
+	team_sales?: number;
+	team_support?: number;
+	team_technicians?: number;
+	team_management?: number;
 };
 
 /**
@@ -103,13 +106,19 @@ export function getUnifiedCommunicationSidebarConfig(
 	counts?: UnifiedCommunicationCounts,
 	activeType?: string,
 ): CommunicationSidebarConfig {
+	const totalAllMessages = (counts?.email ?? 0) + (counts?.call ?? 0) + (counts?.sms ?? 0) + (counts?.voicemail ?? 0);
+	const totalTeamsUnread = (counts?.team_general ?? 0) + (counts?.team_sales ?? 0) + (counts?.team_support ?? 0) + (counts?.team_technicians ?? 0) + (counts?.team_management ?? 0);
+
 	return {
+		topLevelItem: {
+			title: "All Messages",
+			url: "/dashboard/communication?inbox=personal",
+			icon: Inbox,
+			badge: totalAllMessages,
+		},
 		navGroups: [
 			{
-				label: "All Messages",
-				collapsible: true,
-				defaultOpen: true,
-				badge: (counts?.email ?? 0) + (counts?.call ?? 0) + (counts?.sms ?? 0) + (counts?.voicemail ?? 0),
+				label: undefined, // No label - just individual menu items
 				items: [
 					{
 						title: "Emails",
@@ -129,19 +138,13 @@ export function getUnifiedCommunicationSidebarConfig(
 						icon: MessageSquare,
 						badge: counts?.sms ?? 0,
 					},
-					{
-						title: "Teams",
-						url: "/dashboard/communication?channel=general",
-						icon: MessageSquare,
-						badge: 0, // TODO: Add team message count
-					},
 				],
 			},
 			{
-				label: "MY INBOX",
+				label: "My Inbox",
 				collapsible: true,
 				defaultOpen: true,
-				badge: counts?.personal_email_inbox ?? 0, // Show unread inbox count
+				badge: counts?.personal_email_inbox ?? 0, // Show unread inbox count on header
 				items: [
 					{
 						title: "Inbox",
@@ -182,10 +185,10 @@ export function getUnifiedCommunicationSidebarConfig(
 				],
 			},
 			{
-				label: "COMPANY INBOX",
+				label: "Company Inbox",
 				collapsible: true,
 				defaultOpen: false,
-				badge: counts?.company_inbox ?? 0,
+				badge: counts?.company_inbox ?? 0, // Show aggregated unread inbox count on header
 				items: [
 					{
 						title: "Inbox",
@@ -220,35 +223,40 @@ export function getUnifiedCommunicationSidebarConfig(
 				],
 			},
 			{
-				label: "TEAMS",
+				label: "Teams",
 				collapsible: true,
 				defaultOpen: false,
-				badge: 0, // TODO: Add team unread count
+				badge: totalTeamsUnread, // Show total unread team messages on header
 				items: [
 					{
 						title: "General",
 						url: "/dashboard/communication?channel=general",
 						icon: MessageSquare,
+						badge: counts?.team_general ?? 0,
 					},
 					{
 						title: "Sales",
 						url: "/dashboard/communication?channel=sales",
 						icon: MessageSquare,
+						badge: counts?.team_sales ?? 0,
 					},
 					{
 						title: "Support",
 						url: "/dashboard/communication?channel=support",
 						icon: MessageSquare,
+						badge: counts?.team_support ?? 0,
 					},
 					{
 						title: "Technicians",
 						url: "/dashboard/communication?channel=technicians",
 						icon: MessageSquare,
+						badge: counts?.team_technicians ?? 0,
 					},
 					{
 						title: "Management",
 						url: "/dashboard/communication?channel=management",
 						icon: MessageSquare,
+						badge: counts?.team_management ?? 0,
 					},
 				],
 			},

@@ -31,8 +31,15 @@ const sendChannelMessageSchema = z.object({
 		.default([]),
 });
 
+const createTeamChannelSchema = z.object({
+	name: z.string().min(1).max(100),
+	description: z.string().max(500).optional(),
+	type: z.enum(["public", "private"]).default("public"),
+});
+
 export type GetChannelMessagesInput = z.infer<typeof getChannelMessagesSchema>;
 export type SendChannelMessageInput = z.infer<typeof sendChannelMessageSchema>;
+export type CreateTeamChannelInput = z.infer<typeof createTeamChannelSchema>;
 
 export type ChannelMessage = {
 	id: string;
@@ -46,9 +53,24 @@ export type ChannelMessage = {
 		id: string;
 		name: string | null;
 		avatar: string | null;
+		email: string | null;
 	} | null;
 	provider_metadata: Record<string, unknown> | null;
 };
+
+/**
+ * Get user display name from user data
+ * Note: This is a utility function, not a server action
+ * It's kept here for backwards compatibility but should be moved to a utils file
+ */
+function getUserDisplayName(user: {
+	name?: string | null;
+	email?: string | null;
+}): string {
+	if (user.name) return user.name;
+	if (user.email) return user.email.split("@")[0];
+	return "Unknown User";
+}
 
 /**
  * Get messages for a team channel
@@ -96,7 +118,7 @@ export async function getTeamChannelMessagesAction(
         sent_by,
         provider_metadata,
         tags,
-        sent_by_user:users!sent_by(id, name, avatar)
+        sent_by_user:users!sent_by(id, name, avatar, email)
       `)
 			.eq("company_id", companyId)
 			.eq("type", "sms") // Using SMS type for team messages
@@ -129,11 +151,26 @@ export async function getTeamChannelMessagesAction(
 			return { success: false, error: error.message };
 		}
 
-		const messages = (filteredData || []).map((msg) => ({
-			...msg,
-			provider_metadata:
-				(msg.provider_metadata as Record<string, unknown>) || null,
-		})) as ChannelMessage[];
+		const messages = (filteredData || []).map((msg) => {
+			// Handle sent_by_user - it might be an array or single object
+			const userData = Array.isArray(msg.sent_by_user)
+				? msg.sent_by_user[0]
+				: msg.sent_by_user;
+
+			return {
+				...msg,
+				sent_by_user: userData
+					? {
+							id: userData.id,
+							name: userData.name || null,
+							avatar: userData.avatar || null,
+							email: userData.email || null,
+						}
+					: null,
+				provider_metadata:
+					(msg.provider_metadata as Record<string, unknown>) || null,
+			};
+		}) as ChannelMessage[];
 
 		return { success: true, messages };
 	} catch (error) {
@@ -231,6 +268,77 @@ export async function sendTeamChannelMessageAction(
 		return { success: true, messageId: message.id };
 	} catch (error) {
 		console.error("Error in sendTeamChannelMessageAction:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Create a new team channel
+ */
+export async function createTeamChannelAction(
+	input: CreateTeamChannelInput,
+): Promise<{
+	success: boolean;
+	channelId?: string;
+	error?: string;
+}> {
+	try {
+		const parseResult = createTeamChannelSchema.safeParse(input);
+
+		if (!parseResult.success) {
+			return {
+				success: false,
+				error: `Invalid input: ${parseResult.error.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ")}`,
+			};
+		}
+
+		const validatedInput = parseResult.data;
+		const companyId = await getActiveCompanyId();
+
+		if (!companyId) {
+			return { success: false, error: "No active company found" };
+		}
+
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		// Check if channel with same name already exists
+		const { data: existingChannel } = await supabase
+			.from("team_channels")
+			.select("id")
+			.eq("company_id", companyId)
+			.eq("name", validatedInput.name.toLowerCase())
+			.single();
+
+		if (existingChannel) {
+			return { success: false, error: "A channel with this name already exists" };
+		}
+
+		// Create new channel
+		const { data: newChannel, error: insertError } = await supabase
+			.from("team_channels")
+			.insert({
+				company_id: companyId,
+				name: validatedInput.name.toLowerCase(),
+				description: validatedInput.description || null,
+				type: validatedInput.type,
+			})
+			.select()
+			.single();
+
+		if (insertError) {
+			console.error("Error creating team channel:", insertError);
+			return { success: false, error: insertError.message };
+		}
+
+		return { success: true, channelId: newChannel.id };
+	} catch (error) {
+		console.error("Error in createTeamChannelAction:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

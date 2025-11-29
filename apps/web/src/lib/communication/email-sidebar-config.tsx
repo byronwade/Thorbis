@@ -122,7 +122,7 @@ export function getEmailSidebarConfig(
 	return {
 		navGroups: [
 			{
-				label: "MY INBOX",
+				label: "My Inbox",
 				items: [
 					{
 						title: "Inbox",
@@ -172,7 +172,7 @@ export function getEmailSidebarConfig(
 				],
 			},
 			{
-				label: "COMPANY INBOX",
+				label: "Company Inbox",
 				items: [
 					{
 						title: "Support",
