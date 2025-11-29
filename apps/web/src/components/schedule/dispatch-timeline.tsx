@@ -3109,22 +3109,23 @@ export function DispatchTimeline() {
 		if (!shouldScrollToNow) return;
 
 		const container = scrollContainerRef.current;
-		if (!container || currentTimePosition === null) {
+		const timeline = timelineRef.current;
+		if (!container || !timeline || currentTimePosition === null) {
 			setShouldScrollToNow(false);
 			return;
 		}
 
-		// Center timeline on current time - account for fixed UI elements:
-		// - Technician sidebar (SIDEBAR_WIDTH = 220px on the left)
-		// - Unassigned jobs panel (320px when open, 48px when collapsed on the right)
-		const unassignedPanelWidth = unassignedPanelOpen ? 320 : 48;
-		const visibleTimelineWidth = container.clientWidth - SIDEBAR_WIDTH - unassignedPanelWidth;
+		// Center the current time marker in the absolute center of the browser viewport
+		// The timeline content (where currentTimePosition is measured from) may have offsets
+		const timelineRect = timeline.getBoundingClientRect();
+		const viewportCenter = window.innerWidth / 2;
 		
-		// Center the current time in the actual visible timeline area
-		const centerOffset = visibleTimelineWidth / 2 + SIDEBAR_WIDTH;
-		const targetScrollLeft = currentTimePosition - centerOffset;
+		// Calculate how far the current time position is from the left edge of the timeline content
+		// Then adjust scroll so this position appears at viewport center
+		const currentTimeAbsoluteX = timelineRect.left + currentTimePosition;
+		const scrollAdjustment = currentTimeAbsoluteX - viewportCenter;
 		
-		container.scrollLeft = Math.max(0, targetScrollLeft);
+		container.scrollLeft = Math.max(0, container.scrollLeft + scrollAdjustment);
 
 		setShouldScrollToNow(false);
 		
@@ -3137,7 +3138,6 @@ export function DispatchTimeline() {
 		currentTimePosition,
 		setShouldScrollToNow,
 		updateVisibleDateFromCurrentScroll,
-		unassignedPanelOpen,
 	]);
 
 	// Infinite scroll: Extend buffer when scrolling near edges
