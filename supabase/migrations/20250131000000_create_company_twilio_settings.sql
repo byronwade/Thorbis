@@ -104,3 +104,4 @@ CREATE TRIGGER update_company_twilio_settings_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_company_twilio_settings_updated_at();
 
+

@@ -1,45 +1,25 @@
 /**
  * Auto-Link Suggestions Component
  *
- * Displays suggested customer/job/property matches for unlinked communications
- * Shows confidence scores and allows CSRs to accept or reject suggestions
+ * Automatically links communications to customers/jobs/properties when high-confidence
+ * matches are found (>= 95% confidence). Works silently in the background - no UI shown.
  *
  * Features:
- * - Match suggestions based on email/phone
- * - Confidence score indicators
- * - One-click linking with optimistic updates
- * - Dismissible suggestions
+ * - Automatic linking for high-confidence matches (>= 95%)
+ * - Silent operation - no dialogs or alerts
+ * - Customer name appears via CustomerInfoPill in communication header
+ * - Users can unlink/link different customers via customer info component
  */
 
 "use client";
 
-import {
-	AlertCircle,
-	Briefcase,
-	Check,
-	Link2,
-	MapPin,
-	User,
-	X,
-} from "lucide-react";
 import { useEffect, useState } from "react";
 import {
 	autoLinkCommunicationAction,
 	getAutoLinkSuggestionsAction,
 	type MatchSuggestion,
 } from "@/actions/communications";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import type { Communication } from "@/lib/queries/communications";
-import { cn } from "@/lib/utils";
 
 interface AutoLinkSuggestionsProps {
 	communication: Communication;
@@ -52,12 +32,39 @@ export function AutoLinkSuggestions({
 	companyId,
 	onLinked,
 }: AutoLinkSuggestionsProps) {
-	const [suggestions, setSuggestions] = useState<MatchSuggestion[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [linking, setLinking] = useState<string | null>(null);
-	const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
-	// Fetch suggestions on mount
+	// Helper function to find the best high-confidence match
+	const findBestHighConfidenceMatch = (
+		suggestions: MatchSuggestion[],
+	): MatchSuggestion | null => {
+		const highConfidenceMatches = suggestions.filter(
+			(s) => s.confidence >= 0.95,
+		);
+
+		if (highConfidenceMatches.length === 0) {
+			return null;
+		}
+
+		// Sort by: 1) confidence (desc), 2) customer type preferred, 3) first match
+		return highConfidenceMatches.sort((a, b) => {
+			// First, sort by confidence (descending)
+			if (b.confidence !== a.confidence) {
+				return b.confidence - a.confidence;
+			}
+			// Then, prefer customer type
+			if (a.type === "customer" && b.type !== "customer") {
+				return -1;
+			}
+			if (b.type === "customer" && a.type !== "customer") {
+				return 1;
+			}
+			// Otherwise, keep original order
+			return 0;
+		})[0];
+	};
+
+	// Fetch suggestions on mount and auto-link high-confidence matches
 	useEffect(() => {
 		async function fetchSuggestions() {
 			if (!companyId) return;
@@ -70,7 +77,38 @@ export function AutoLinkSuggestions({
 				});
 
 				if (result.success && result.suggestions) {
-					setSuggestions(result.suggestions);
+					// Check for high-confidence match and auto-link silently
+					const bestMatch = findBestHighConfidenceMatch(
+						result.suggestions,
+					);
+
+					if (bestMatch) {
+						try {
+							const linkResult = await autoLinkCommunicationAction({
+								communicationId: communication.id,
+								customerId:
+									bestMatch.type === "customer"
+										? bestMatch.id
+										: undefined,
+								jobId: bestMatch.type === "job" ? bestMatch.id : undefined,
+								propertyId:
+									bestMatch.type === "property"
+										? bestMatch.id
+										: undefined,
+								linkConfidence: bestMatch.confidence,
+								linkMethod: bestMatch.matchMethod,
+							});
+
+							if (linkResult.success) {
+								// Successfully auto-linked, refresh communication list
+								// Customer name will appear via CustomerInfoPill component
+								onLinked?.();
+							}
+						} catch (error) {
+							console.error("Failed to auto-link communication:", error);
+							// Silently fail - user can manually link via customer info component
+						}
+					}
 				}
 			} catch (error) {
 				console.error("Failed to fetch suggestions:", error);
@@ -80,203 +118,10 @@ export function AutoLinkSuggestions({
 		}
 
 		fetchSuggestions();
-	}, [communication.id, companyId]);
+	}, [communication.id, companyId, onLinked]);
 
-	// Don't show if already linked
-	if (
-		communication.customerId ||
-		communication.jobId ||
-		communication.propertyId
-	) {
-		return null;
-	}
-
-	// Filter out dismissed suggestions
-	const activeSuggestions = suggestions.filter((s) => !dismissed.has(s.id));
-
-	// Show loading state
-	if (loading) {
-		return (
-			<Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
-				<CardHeader className="pb-3">
-					<div className="flex items-center gap-2">
-						<Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-						<CardTitle className="text-sm font-semibold">
-							Looking for matches...
-						</CardTitle>
-					</div>
-				</CardHeader>
-			</Card>
-		);
-	}
-
-	if (activeSuggestions.length === 0) {
-		return null;
-	}
-
-	const handleAccept = async (suggestion: MatchSuggestion) => {
-		setLinking(suggestion.id);
-
-		try {
-			const result = await autoLinkCommunicationAction({
-				communicationId: communication.id,
-				customerId: suggestion.type === "customer" ? suggestion.id : undefined,
-				jobId: suggestion.type === "job" ? suggestion.id : undefined,
-				propertyId: suggestion.type === "property" ? suggestion.id : undefined,
-				linkConfidence: suggestion.confidence,
-				linkMethod: suggestion.matchMethod,
-			});
-
-			if (result.success) {
-				// Remove accepted suggestion and related ones
-				setSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id));
-				onLinked?.();
-			}
-		} catch (error) {
-			console.error("Failed to link communication:", error);
-		} finally {
-			setLinking(null);
-		}
-	};
-
-	const handleDismiss = (suggestionId: string) => {
-		setDismissed((prev) => new Set([...prev, suggestionId]));
-	};
-
-	const getTypeConfig = (type: MatchSuggestion["type"]) => {
-		switch (type) {
-			case "customer":
-				return {
-					icon: User,
-					color: "text-blue-500",
-					bg: "bg-blue-500/10",
-					label: "Customer",
-				};
-			case "job":
-				return {
-					icon: Briefcase,
-					color: "text-purple-500",
-					bg: "bg-purple-500/10",
-					label: "Job",
-				};
-			case "property":
-				return {
-					icon: MapPin,
-					color: "text-green-500",
-					bg: "bg-green-500/10",
-					label: "Property",
-				};
-		}
-	};
-
-	const getConfidenceBadge = (confidence: number) => {
-		if (confidence >= 0.9) {
-			return (
-				<Badge variant="default" className="gap-1">
-					<Check className="h-3 w-3" />
-					{Math.round(confidence * 100)}% match
-				</Badge>
-			);
-		}
-		if (confidence >= 0.7) {
-			return (
-				<Badge variant="secondary" className="gap-1">
-					{Math.round(confidence * 100)}% match
-				</Badge>
-			);
-		}
-		return (
-			<Badge variant="outline" className="gap-1">
-				<AlertCircle className="h-3 w-3" />
-				{Math.round(confidence * 100)}% match
-			</Badge>
-		);
-	};
-
-	return (
-		<Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
-			<CardHeader className="pb-3">
-				<div className="flex items-center gap-2">
-					<Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-					<CardTitle className="text-sm font-semibold">
-						Suggested Matches
-					</CardTitle>
-				</div>
-				<CardDescription className="text-xs">
-					We found {activeSuggestions.length} potential{" "}
-					{activeSuggestions.length === 1 ? "match" : "matches"} for this
-					communication
-				</CardDescription>
-			</CardHeader>
-			<CardContent className="space-y-2 pt-0">
-				{activeSuggestions.map((suggestion, index) => {
-					const typeConfig = getTypeConfig(suggestion.type);
-					const TypeIcon = typeConfig.icon;
-					const isLinking = linking === suggestion.id;
-
-					return (
-						<div key={suggestion.id}>
-							{index > 0 && <Separator className="my-2" />}
-							<div className="flex items-start gap-3">
-								{/* Type Icon */}
-								<div className={cn("rounded-full p-2", typeConfig.bg)}>
-									<TypeIcon className={cn("h-4 w-4", typeConfig.color)} />
-								</div>
-
-								{/* Content */}
-								<div className="flex-1 min-w-0 space-y-1">
-									<div className="flex items-center gap-2">
-										<p className="font-medium text-sm truncate">
-											{suggestion.name}
-										</p>
-										<Badge variant="outline" className="text-xs shrink-0">
-											{typeConfig.label}
-										</Badge>
-									</div>
-
-									{suggestion.subtitle && (
-										<p className="text-xs text-muted-foreground truncate">
-											{suggestion.subtitle}
-										</p>
-									)}
-
-									<div className="flex items-center gap-2 flex-wrap">
-										{getConfidenceBadge(suggestion.confidence)}
-										{suggestion.matchDetails && (
-											<span className="text-xs text-muted-foreground">
-												{suggestion.matchDetails}
-											</span>
-										)}
-									</div>
-								</div>
-
-								{/* Actions */}
-								<div className="flex gap-1 shrink-0">
-									<Button
-										size="sm"
-										variant="default"
-										onClick={() => handleAccept(suggestion)}
-										disabled={isLinking}
-										className="h-8 gap-1"
-									>
-										<Check className="h-3 w-3" />
-										Link
-									</Button>
-									<Button
-										size="sm"
-										variant="ghost"
-										onClick={() => handleDismiss(suggestion.id)}
-										disabled={isLinking}
-										className="h-8 w-8 p-0"
-									>
-										<X className="h-3 w-3" />
-									</Button>
-								</div>
-							</div>
-						</div>
-					);
-				})}
-			</CardContent>
-		</Card>
-	);
+	// Component renders nothing - works silently in background
+	// Customer name will appear via CustomerInfoPill in communication header
+	// Users can hover over customer info to unlink/link a different customer if needed
+	return null;
 }

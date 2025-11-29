@@ -70,7 +70,9 @@ async function createSendGridClient(
 
 	const settings = await getCompanySendGridSettings(companyId);
 	if (!settings || !settings.sendgrid_api_key) {
-		console.error(`No SendGrid API key found for company ${companyId}`);
+		console.error(
+			`No SendGrid API key found for company ${companyId}. Please configure SendGrid in Settings > Communications > Email Provider.`,
+		);
 		return null;
 	}
 
@@ -124,7 +126,6 @@ export async function isCompanySendGridConfigured(companyId: string): Promise<bo
 // Note: 'from' is now company-specific and retrieved from database
 export const sendgridConfig = {
 	// from removed - use company-specific from addresses from database via getCompanyEmailIdentity
-	isDevelopment: process.env.NODE_ENV === "development",
 	siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000",
 	appUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000",
 };
@@ -151,7 +152,10 @@ export async function sendSendGridEmail(params: {
 
 	const client = await createSendGridClient(companyId);
 	if (!client) {
-		return { success: false, error: "SendGrid not configured for this company" };
+		return {
+			success: false,
+			error: "SendGrid not configured for this company. Please add a SendGrid API key in your company settings (Settings > Communications > Email Provider).",
+		};
 	}
 
 	const settings = await getCompanySendGridSettings(companyId);

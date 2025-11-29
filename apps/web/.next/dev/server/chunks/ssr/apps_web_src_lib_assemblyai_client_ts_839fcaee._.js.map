@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/byronwade/Stratos/apps/web/src/lib/assemblyai/client.ts"],"sourcesContent":["/**\n * AssemblyAI Client - Stub\n *\n * Placeholder for AssemblyAI transcription service integration.\n * TODO: Implement actual AssemblyAI integration when needed.\n */\n\ninterface TranscriptionParams {\n\taudio_url: string;\n\tspeaker_labels?: boolean;\n\twebhook_url?: string;\n}\n\ninterface TranscriptionResult {\n\tid: string;\n\tstatus: string;\n}\n\n/**\n * Submit audio for transcription to AssemblyAI\n */\nexport async function submitTranscription(\n\t_params: TranscriptionParams,\n): Promise<TranscriptionResult> {\n\tconsole.warn(\"AssemblyAI client not configured - transcription unavailable\");\n\treturn {\n\t\tid: \"stub-transcription-id\",\n\t\tstatus: \"unavailable\",\n\t};\n}\n"],"names":[],"mappings":"AAAA;;;;;CAKC;;;;AAgBM,eAAe,oBACrB,OAA4B;IAE5B,QAAQ,IAAI,CAAC;IACb,OAAO;QACN,IAAI;QACJ,QAAQ;IACT;AACD"}}]
-}

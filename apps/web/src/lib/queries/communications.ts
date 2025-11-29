@@ -12,14 +12,14 @@
  * @see /src/lib/email/email-permissions.ts
  */
 
-import { cache } from "react";
 import {
-	canViewCommunication,
-	type EmailCategory,
-	getEmailCategories,
-	type VisibilityScope,
+    canViewCommunication,
+    type EmailCategory,
+    getEmailCategories,
+    type VisibilityScope,
 } from "@/lib/email/email-permissions";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { cache } from "react";
 
 // =============================================================================
 // TYPES
@@ -37,6 +37,7 @@ export interface Communication {
 	toName?: string;
 	subject?: string;
 	body?: string;
+	bodyHtml?: string;
 	customerId?: string;
 	jobId?: string;
 	propertyId?: string;
@@ -91,6 +92,7 @@ export interface CommunicationsFilters {
 	searchQuery?: string;
 	limit?: number;
 	offset?: number;
+	channel?: string;
 }
 
 // =============================================================================
@@ -122,7 +124,7 @@ const getCommunications = cache(
 			.select(
 				`
 			*,
-			customer:customers(id, first_name, last_name, email)
+			customer:customers(id, first_name, last_name, email, phone)
 		`,
 			)
 			.eq("company_id", companyId);
@@ -146,6 +148,15 @@ const getCommunications = cache(
 
 		if (filters.assignedTo) {
 			query = query.eq("assigned_to", filters.assignedTo);
+		}
+
+		if (filters.channel) {
+			// For teams channels, we filter by the channel column
+			query = query.eq("channel", filters.channel);
+		} else {
+			// By default, exclude internal channel messages unless specifically requested
+			// This keeps the main inbox clean of team chat messages
+			query = query.neq("channel", "teams");
 		}
 
 		if (filters.mailboxOwnerId) {
@@ -219,6 +230,7 @@ const getCommunications = cache(
 					toAddress: comm.to_address || undefined,
 					subject: comm.subject || undefined,
 					body: comm.body || undefined,
+					bodyHtml: comm.body_html || undefined,
 					customerId: comm.customer_id || undefined,
 					mailboxOwnerId: comm.mailbox_owner_id,
 					assignedTo: comm.assigned_to,
@@ -234,6 +246,7 @@ const getCommunications = cache(
 								firstName: comm.customer.first_name || undefined,
 								lastName: comm.customer.last_name || undefined,
 								email: comm.customer.email || undefined,
+								phone: comm.customer.phone || undefined,
 							}
 						: undefined,
 				});
@@ -350,6 +363,7 @@ async function getSharedCommunications(
 					toAddress: comm.to_address || undefined,
 					subject: comm.subject || undefined,
 					body: comm.body || undefined,
+					bodyHtml: comm.body_html || undefined,
 					customerId: comm.customer_id || undefined,
 					mailboxOwnerId: comm.mailbox_owner_id,
 					assignedTo: comm.assigned_to,
@@ -365,6 +379,7 @@ async function getSharedCommunications(
 								firstName: comm.customer.first_name || undefined,
 								lastName: comm.customer.last_name || undefined,
 								email: comm.customer.email || undefined,
+								phone: comm.customer.phone || undefined,
 							}
 						: undefined,
 				});
@@ -415,7 +430,7 @@ const getCommunicationById = cache(
 			.select(
 				`
 			*,
-			customer:customers(id, first_name, last_name, email)
+			customer:customers(id, first_name, last_name, email, phone)
 		`,
 			)
 			.eq("id", communicationId)
@@ -447,6 +462,7 @@ const getCommunicationById = cache(
 			toAddress: comm.to_address || undefined,
 			subject: comm.subject || undefined,
 			body: comm.body || undefined,
+			bodyHtml: comm.body_html || undefined,
 			customerId: comm.customer_id || undefined,
 			mailboxOwnerId: comm.mailbox_owner_id,
 			assignedTo: comm.assigned_to,
@@ -462,6 +478,7 @@ const getCommunicationById = cache(
 						firstName: comm.customer.first_name || undefined,
 						lastName: comm.customer.last_name || undefined,
 						email: comm.customer.email || undefined,
+						phone: comm.customer.phone || undefined,
 					}
 				: undefined,
 		};
@@ -540,7 +557,7 @@ const getCommunicationsFilteredRpc = cache(
 		const totalCount = data?.[0]?.total_count || 0;
 
 		const communications: Communication[] = (data || []).map(
-			(row: Record<string, unknown>) => ({
+			(row: any) => ({
 				id: row.id as string,
 				companyId: row.company_id as string,
 				type: row.type as "email" | "sms" | "call" | "voicemail",
@@ -550,6 +567,7 @@ const getCommunicationsFilteredRpc = cache(
 				toAddress: (row.to_address as string) || undefined,
 				subject: (row.subject as string) || undefined,
 				body: (row.body as string) || undefined,
+				bodyHtml: (row.body_html as string) || undefined,
 				customerId: (row.customer_id as string) || undefined,
 				jobId: (row.job_id as string) || undefined,
 				propertyId: (row.property_id as string) || undefined,
@@ -602,7 +620,7 @@ export const getCompanyCommunications = cache(
 			.select(
 				`
 			*,
-			customer:customers(id, first_name, last_name, email)
+			customer:customers(id, first_name, last_name, email, phone)
 		`,
 			)
 			.eq("company_id", companyId)
@@ -674,6 +692,7 @@ export const getCompanyCommunications = cache(
 			toName: comm.to_name || undefined,
 			subject: comm.subject || undefined,
 			body: comm.body || undefined,
+			bodyHtml: comm.body_html || undefined,
 			customerId: comm.customer_id || undefined,
 			jobId: comm.job_id || undefined,
 			propertyId: comm.property_id || undefined,
@@ -709,6 +728,7 @@ export const getCompanyCommunications = cache(
 						firstName: comm.customer.first_name || undefined,
 						lastName: comm.customer.last_name || undefined,
 						email: comm.customer.email || undefined,
+						phone: comm.customer.phone || undefined,
 					}
 				: undefined,
 		}));
@@ -727,7 +747,10 @@ export interface CommunicationCounts {
 	email: number;
 	sms: number;
 	call: number;
+	call: number;
 	voicemail: number;
+	assignedToMe?: number;
+	[key: string]: number | undefined;
 }
 
 /**
@@ -740,48 +763,87 @@ export interface CommunicationCounts {
  * @returns Promise<CommunicationCounts>
  */
 export const getCompanyCommunicationCounts = cache(
-	async (companyId: string): Promise<CommunicationCounts> => {
+	async (
+		companyId: string,
+		teamMemberId?: string,
+	): Promise<CommunicationCounts> => {
 		const supabase = await createServiceSupabaseClient();
 
-		// Get counts for each type using parallel queries
-		const [allResult, emailResult, smsResult, callResult, voicemailResult] = await Promise.all([
-			supabase
-				.from("communications")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId)
-				.is("deleted_at", null),
-			supabase
-				.from("communications")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId)
-				.eq("type", "email")
-				.is("deleted_at", null),
-			supabase
-				.from("communications")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId)
-				.eq("type", "sms")
-				.is("deleted_at", null),
-			supabase
-				.from("communications")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId)
-				.eq("type", "call")
-				.is("deleted_at", null),
-			supabase
-				.from("communications")
-				.select("id", { count: "exact", head: true })
-				.eq("company_id", companyId)
-				.eq("type", "voicemail")
-				.is("deleted_at", null),
-		]);
+		// Get all active communications for the company
+		const { data: communications, error } = await supabase
+			.from("communications")
+			.select("type, status, direction, category")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
 
-		return {
-			all: allResult.count ?? 0,
-			email: emailResult.count ?? 0,
-			sms: smsResult.count ?? 0,
-			call: callResult.count ?? 0,
-			voicemail: voicemailResult.count ?? 0,
+		if (error) {
+			console.error("Error fetching communication counts:", error);
+			return {
+				all: 0,
+				email: 0,
+				sms: 0,
+				call: 0,
+				voicemail: 0,
+				inbox: 0,
+				sent: 0,
+				archive: 0,
+				trash: 0,
+				starred: 0,
+				personal_inbox: 0,
+				personal_sent: 0,
+				personal_drafts: 0,
+				company_support: 0,
+				company_sales: 0,
+				company_billing: 0,
+				company_general: 0,
+				sms_inbox: 0,
+				sms_sent: 0,
+				sms_archive: 0,
+				assignedToMe: 0,
+			};
+		}
+
+		// Initialize counts
+		const counts: CommunicationCounts = {
+			all: 0,
+			email: 0,
+			sms: 0,
+			call: 0,
+			voicemail: 0,
+			inbox: 0,
+			sent: 0,
+			archive: 0,
+			trash: 0,
+			starred: 0,
+			personal_inbox: 0,
+			personal_sent: 0,
+			personal_drafts: 0,
+			company_support: 0,
+			company_sales: 0,
+			company_billing: 0,
+			company_general: 0,
+			sms_inbox: 0,
+			sms_sent: 0,
+			sms_archive: 0,
+			assignedToMe: 0,
 		};
+
+		if (!communications) return counts;
+
+		// Aggregate counts
+		communications.forEach((comm) => {
+			// Type counts
+		if (comm.type === "email") counts.email = (counts.email || 0) + 1;
+		if (comm.type === "sms") counts.sms = (counts.sms || 0) + 1;
+		if (comm.type === "call") counts.call = (counts.call || 0) + 1;
+		if (comm.type === "voicemail")
+			counts.voicemail = (counts.voicemail || 0) + 1;
+		counts.all = (counts.all || 0) + 1;
+
+		// TODO: Add assigned_to and read_at columns to database schema
+		// Then implement assignedToMe counting logic
+	});
+
+		return counts;
 	},
 );

@@ -106,6 +106,7 @@ type UIActions = {
 	// Call actions
 	setIncomingCall: (caller: CallState["caller"]) => void;
 	answerCall: () => void;
+	activateCall: () => void;
 	endCall: () => void;
 	toggleMute: () => void;
 	toggleHold: () => void;
@@ -291,6 +292,19 @@ export const useUIStore = create<UIStore>()(
 						},
 						false,
 						"setIncomingCall",
+					),
+
+				activateCall: () =>
+					set(
+						(state) => {
+							// Set call to active, setting startTime if not already set
+							state.call.status = "active";
+							if (!state.call.startTime) {
+								state.call.startTime = Date.now();
+							}
+						},
+						false,
+						"activateCall",
 					),
 
 				answerCall: () =>

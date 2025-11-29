@@ -26,3 +26,4 @@ echo "✅ Changes pushed! Vercel will automatically deploy both apps:"
 echo "   - Web app: https://vercel.com/wades-web-dev/thorbis"
 echo "   - Admin app: https://vercel.com/wades-web-dev/thorbis-admin"
 
+

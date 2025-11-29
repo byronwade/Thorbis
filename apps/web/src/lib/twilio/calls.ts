@@ -76,16 +76,6 @@ export async function initiateCall(params: InitiateCallParams): Promise<Initiate
 			timeout,
 		});
 
-		// Store call record
-		await storeCallRecord({
-			companyId,
-			callSid: call.sid,
-			from: fromNumber,
-			to,
-			direction: "outbound",
-			status: call.status,
-			customerId,
-		});
 
 		return {
 			success: true,

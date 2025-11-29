@@ -24,3 +24,4 @@ echo "Check deployment status at:"
 echo "  Web: https://vercel.com/wades-web-dev/thorbis"
 echo "  Admin: https://vercel.com/wades-web-dev/thorbis-admin"
 
+

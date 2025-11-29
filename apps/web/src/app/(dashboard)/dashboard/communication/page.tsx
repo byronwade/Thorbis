@@ -131,7 +131,7 @@ export default async function UnifiedInboxPage({
 	searchParams: SearchParams;
 }) {
 	return (
-		<div className="flex h-full w-full">
+		<div className="flex flex-1 h-full w-full">
 			<Suspense fallback={<UnifiedInboxSkeleton />}>
 				<UnifiedInboxData searchParams={searchParams} />
 			</Suspense>

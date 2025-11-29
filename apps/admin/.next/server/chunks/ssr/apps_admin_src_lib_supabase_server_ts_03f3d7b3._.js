@@ -1,3 +1,0 @@
-module.exports=[64044,a=>{"use strict";var b=a.i(8574),c=a.i(93097),d=a.i(35234);a.s(["createAdminClient",()=>c.createAdminClient,"createClient",()=>b.createClient,"getWebReaderClient",()=>d.getWebReaderClient])}];
-
-//# sourceMappingURL=apps_admin_src_lib_supabase_server_ts_03f3d7b3._.js.map

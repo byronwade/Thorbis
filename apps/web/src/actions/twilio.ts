@@ -97,13 +97,11 @@ async function getBaseAppUrl(): Promise<string | undefined> {
 	return undefined;
 }
 
-async function getTwilioWebhookUrl(companyId?: string): Promise<string | undefined> {
+async function getTwilioWebhookUrl(): Promise<string | undefined> {
 	const base = await getBaseAppUrl();
 	if (!base) return undefined;
 
-	if (companyId) {
-		return `${base}/api/webhooks/twilio?company=${companyId}`;
-	}
+	// Single webhook URL for all phone numbers - company is resolved from phone number in webhook handler
 	return `${base}/api/webhooks/twilio`;
 }
 
@@ -244,7 +242,7 @@ export async function purchasePhoneNumber(params: {
 		const formattedNumber = formatDisplayPhoneNumber(normalizedPhoneNumber);
 		const areaCode = extractAreaCode(normalizedPhoneNumber);
 
-		const webhookUrl = await getTwilioWebhookUrl(params.companyId);
+		const webhookUrl = await getTwilioWebhookUrl();
 
 		// Purchase number from Twilio
 		const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
@@ -378,6 +376,67 @@ async function deletePhoneNumber(phoneNumberId: string) {
 	}
 }
 
+/**
+ * Update webhook URLs for an existing phone number
+ */
+export async function updatePhoneNumberWebhooks(params: {
+	phoneNumberId: string;
+	companyId: string;
+}) {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Service unavailable" };
+		}
+
+		// Get phone number details
+		const { data: phoneNumber } = await supabase
+			.from("phone_numbers")
+			.select("twilio_phone_number_sid, company_id")
+			.eq("id", params.phoneNumberId)
+			.eq("company_id", params.companyId)
+			.is("deleted_at", null)
+			.single();
+
+		if (!phoneNumber) {
+			return { success: false, error: "Phone number not found" };
+		}
+
+		if (!phoneNumber.twilio_phone_number_sid) {
+			return {
+				success: false,
+				error: "Phone number does not have a Twilio SID. It may not be a Twilio number.",
+			};
+		}
+
+		// Import and call the lib function
+		const { updatePhoneNumberWebhooks: updateWebhooks } = await import(
+			"@/lib/twilio/numbers"
+		);
+
+		const result = await updateWebhooks(
+			params.companyId,
+			phoneNumber.twilio_phone_number_sid,
+		);
+
+		if (!result.success) {
+			return result;
+		}
+
+		revalidatePath("/dashboard/settings/communications/phone-numbers");
+
+		return {
+			success: true,
+			message: "Webhook URLs updated successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to update webhook URLs",
+		};
+	}
+}
+
 // =====================================================================================
 // CALL OPERATIONS ACTIONS
 // =====================================================================================
@@ -455,7 +514,7 @@ export async function makeCall(params: {
 				property_id: params.propertyId ?? null,
 				invoice_id: params.invoiceId ?? null,
 				estimate_id: params.estimateId ?? null,
-				type: "phone",
+				type: "call",
 				channel: "twilio",
 				direction: "outbound",
 				from_address: fromAddress,
@@ -494,7 +553,7 @@ export async function makeCall(params: {
 /**
  * End an active call
  */
-async function endActiveCall(params: {
+export async function endActiveCall(params: {
 	companyId: string;
 	callSid: string;
 }) {

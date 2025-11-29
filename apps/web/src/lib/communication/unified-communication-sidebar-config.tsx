@@ -1,20 +1,15 @@
-import {
-	Archive,
-	CreditCard,
-	HelpCircle,
-	Inbox,
-	Info,
-	Mail,
-	MessageSquare,
-	Phone,
-	Plus,
-	Send,
-	Star,
-	TrendingUp,
-	Users,
-	Voicemail,
-} from "lucide-react";
 import type { CommunicationSidebarConfig } from "@/components/communication/communication-sidebar";
+import {
+    CreditCard,
+    HelpCircle,
+    Inbox,
+    MessageSquare,
+    Plus,
+    Send,
+    Star,
+    TrendingUp,
+    Users
+} from "lucide-react";
 
 /**
  * Unified Communication Counts
@@ -50,6 +45,9 @@ export type UnifiedCommunicationCounts = {
 	sms_inbox?: number;
 	sms_sent?: number;
 	sms_archive?: number;
+
+	// Assigned
+	assignedToMe?: number;
 };
 
 /**
@@ -66,89 +64,90 @@ export function getUnifiedCommunicationSidebarConfig(
 	return {
 		navGroups: [
 			{
-				label: "ALL COMMUNICATIONS",
+				label: "MY INBOX",
 				items: [
 					{
 						title: "All Messages",
-						url: "/dashboard/communication",
+						url: "/dashboard/communication?inbox=personal",
 						icon: Inbox,
-						badge: counts?.all ?? 0,
+						badge: counts?.personal_inbox ?? 0,
+					},
+					{
+						title: "Assigned to Me",
+						url: "/dashboard/communication?inbox=personal&assigned=me",
+						icon: Users,
+						badge: counts?.assignedToMe ?? 0,
 					},
 					{
 						title: "Starred",
-						url: "/dashboard/communication?folder=starred",
+						url: "/dashboard/communication?inbox=personal&folder=starred",
 						icon: Star,
 						badge: counts?.starred ?? 0,
 					},
 					{
 						title: "Sent",
-						url: "/dashboard/communication?folder=sent",
+						url: "/dashboard/communication?inbox=personal&folder=sent",
 						icon: Send,
-						badge: counts?.sent ?? 0,
-					},
-					{
-						title: "Archive",
-						url: "/dashboard/communication?folder=archive",
-						icon: Archive,
-						badge: counts?.archive ?? 0,
+						badge: counts?.personal_sent ?? 0,
 					},
 				],
 			},
 			{
-				label: "BY TYPE",
+				label: "COMPANY INBOXES",
 				items: [
 					{
-						title: "Emails",
-						url: "/dashboard/communication?type=email",
-						icon: Mail,
-						badge: counts?.email ?? 0,
-					},
-					{
-						title: "Text Messages",
-						url: "/dashboard/communication?type=sms",
-						icon: MessageSquare,
-						badge: counts?.sms ?? 0,
-					},
-					{
-						title: "Phone Calls",
-						url: "/dashboard/communication?type=call",
-						icon: Phone,
-						badge: counts?.call ?? 0,
-					},
-					{
-						title: "Voicemails",
-						url: "/dashboard/communication?type=voicemail",
-						icon: Voicemail,
-						badge: counts?.voicemail ?? 0,
-					},
-				],
-			},
-			{
-				label: "COMPANY INBOX",
-				items: [
-					{
-						title: "Support",
-						url: "/dashboard/communication?category=support",
-						icon: HelpCircle,
-						badge: counts?.company_support ?? 0,
+						title: "General",
+						url: "/dashboard/communication?inbox=company&category=general",
+						icon: Inbox,
+						badge: counts?.company_general ?? 0,
 					},
 					{
 						title: "Sales",
-						url: "/dashboard/communication?category=sales",
+						url: "/dashboard/communication?inbox=company&category=sales",
 						icon: TrendingUp,
 						badge: counts?.company_sales ?? 0,
 					},
 					{
+						title: "Support",
+						url: "/dashboard/communication?inbox=company&category=support",
+						icon: HelpCircle,
+						badge: counts?.company_support ?? 0,
+					},
+					{
 						title: "Billing",
-						url: "/dashboard/communication?category=billing",
+						url: "/dashboard/communication?inbox=company&category=billing",
 						icon: CreditCard,
 						badge: counts?.company_billing ?? 0,
 					},
+				],
+			},
+			{
+				label: "TEAMS",
+				items: [
 					{
 						title: "General",
-						url: "/dashboard/communication?category=general",
-						icon: Info,
-						badge: counts?.company_general ?? 0,
+						url: "/dashboard/communication?channel=general",
+						icon: MessageSquare,
+					},
+					{
+						title: "Sales",
+						url: "/dashboard/communication?channel=sales",
+						icon: MessageSquare,
+					},
+					{
+						title: "Support",
+						url: "/dashboard/communication?channel=support",
+						icon: MessageSquare,
+					},
+					{
+						title: "Technicians",
+						url: "/dashboard/communication?channel=technicians",
+						icon: MessageSquare,
+					},
+					{
+						title: "Management",
+						url: "/dashboard/communication?channel=management",
+						icon: MessageSquare,
 					},
 				],
 			},
@@ -167,29 +166,5 @@ export function getUnifiedCommunicationSidebarConfig(
 				}
 			},
 		},
-		additionalSections: [
-			{
-				label: "Quick Access",
-				items: [
-					{
-						title: "My Email",
-						icon: Mail,
-						url: "/dashboard/communication/email?inbox=personal&folder=inbox",
-					},
-					{
-						title: "My SMS",
-						icon: MessageSquare,
-						url: "/dashboard/communication/sms?folder=inbox",
-					},
-					{
-						title: "Team Chats",
-						icon: Users,
-						url: "/dashboard/communication/teams?channel=general",
-					},
-				],
-				scrollable: false,
-				defaultOpen: true,
-			},
-		],
 	};
 }

@@ -131,17 +131,6 @@ export async function sendEmail({
 	let activeDomain: Awaited<ReturnType<typeof getCompanyActiveDomain>> = null;
 
 	try {
-		// In development, log email instead of sending
-		if (sendgridConfig.isDevelopment) {
-			return {
-				success: true,
-				data: {
-					id: `dev-mode-${Date.now()}`,
-					message: "Email logged in development mode (not actually sent)",
-				},
-			};
-		}
-
 		// Check if at least one email provider is configured
 		// We support SendGrid (primary) and Postmark (fallback)
 		const providerInfo = getProviderSetupInfo();
@@ -149,7 +138,7 @@ export async function sendEmail({
 			return {
 				success: false,
 				error:
-					"Email service not configured. Please add SENDGRID_API_KEY or POSTMARK_API_KEY to environment variables.",
+					"Email service not configured. Please configure SendGrid in Settings > Communications > Email Provider, or add SENDGRID_API_KEY to environment variables.",
 			};
 		}
 		console.log(
@@ -165,7 +154,7 @@ export async function sendEmail({
 				return {
 					success: false,
 					error:
-						"No active email domain configured for this company. Please set up email in settings.",
+						"No active email domain configured for this company. Please set up an email domain in Settings > Communications > Email Provider.",
 				};
 			}
 

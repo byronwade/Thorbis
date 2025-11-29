@@ -689,6 +689,7 @@ export function EmailFullComposer({
 					</Button>
 				</div>
 
+
 				{/* Recipients Section - Clean layout matching reply composer */}
 				<div className="px-3 py-2 space-y-2 border-b border-border/50">
 					{/* To Field */}

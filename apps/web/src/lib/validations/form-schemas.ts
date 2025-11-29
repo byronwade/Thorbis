@@ -256,3 +256,4 @@ export type CreateEstimateInput = z.infer<typeof createEstimateSchema>;
 export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>;
 export type WaitlistInput = z.infer<typeof waitlistSchema>;
 
+

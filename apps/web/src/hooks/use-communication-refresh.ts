@@ -89,18 +89,22 @@ export function useCommunicationRefresh(
 	// Track if refresh is in progress to prevent concurrent calls
 	const refreshingRef = useRef(false);
 	const initialRef = useRef(true);
+	
+	// Store fetchFn in a ref to avoid re-creating callbacks when it changes
+	const fetchFnRef = useRef(fetchFn);
+	fetchFnRef.current = fetchFn;
 
-	// Wrapped fetch function that tracks refresh state
+	// Wrapped fetch function that tracks refresh state (stable reference)
 	const doRefresh = useCallback(async () => {
 		if (refreshingRef.current || disabled) return;
 
 		refreshingRef.current = true;
 		try {
-			await fetchFn();
+			await fetchFnRef.current();
 		} finally {
 			refreshingRef.current = false;
 		}
-	}, [fetchFn, disabled]);
+	}, [disabled]);
 
 	// Manual refresh function for user-triggered refreshes
 	const manualRefresh = useCallback(() => {
@@ -132,9 +136,10 @@ export function useCommunicationRefresh(
 	useEffect(() => {
 		if (events.length === 0) return;
 
+		let debounceTimeout: NodeJS.Timeout;
 		const handleRefresh = () => {
-			// Debounce event-triggered refreshes
-			setTimeout(() => {
+			clearTimeout(debounceTimeout);
+			debounceTimeout = setTimeout(() => {
 				if (!refreshingRef.current) {
 					doRefresh();
 				}
@@ -147,6 +152,7 @@ export function useCommunicationRefresh(
 		});
 
 		return () => {
+			clearTimeout(debounceTimeout);
 			events.forEach((event) => {
 				window.removeEventListener(event, handleRefresh);
 			});

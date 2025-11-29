@@ -8,64 +8,57 @@
 
 "use client";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { toggleStarCommunicationAction } from "@/actions/communications";
 import {
-	AlertCircle,
-	AlertTriangle,
-	Archive,
-	ArrowLeft,
-	Briefcase,
-	CheckCheck,
-	ChevronRight,
-	Clock,
-	Download,
-	Eye,
-	Filter,
-	Flag,
-	Forward,
-	Link as LinkIcon,
-	Loader2,
-	Mail,
-	MapPin,
-	MessageSquare,
-	MoreHorizontal,
-	MousePointerClick,
-	PanelLeft,
-	Paperclip,
-	Phone,
-	Plus,
-	Printer,
-	RefreshCw,
-	Reply,
-	ReplyAll,
-	Send,
-	Star,
-	StickyNote,
-	Trash2,
-	User,
-	UserPlus,
-	Voicemail,
-	X,
+    archiveEmailAction,
+    bulkDeleteEmailsAction,
+    fetchEmailContentAction,
+    markEmailAsReadAction,
+    retryFailedEmailAction,
+    toggleSpamEmailAction,
+} from "@/actions/email-actions";
+import type {
+    CompanySms,
+    SmsTemplateContext,
+} from "@/actions/sms-actions";
+import { useCommunicationRefresh } from "@/hooks/use-communication-refresh";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
+import { formatDistanceToNow } from "date-fns";
+import {
+    AlertCircle,
+    AlertTriangle,
+    Archive,
+    ArrowLeft,
+    Briefcase,
+    CheckCheck,
+    Clock,
+    Download,
+    Flag,
+    Forward,
+    Loader2,
+    Mail,
+    MessageSquare,
+    MoreHorizontal,
+    PanelLeft,
+    Paperclip,
+    Phone,
+    Plus,
+    Printer,
+    RefreshCw,
+    Reply,
+    ReplyAll,
+    Star,
+    StickyNote,
+    Trash2,
+    User,
+    UserPlus,
+    Voicemail,
+    X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { useDebouncedSearch } from "@/hooks/use-debounced-search";
-import { useCommunicationRefresh } from "@/hooks/use-communication-refresh";
-import {
-	archiveEmailAction,
-	bulkDeleteEmailsAction,
-	fetchEmailContentAction,
-	markEmailAsReadAction,
-	retryFailedEmailAction,
-	toggleSpamEmailAction,
-} from "@/actions/email-actions";
-import { toggleStarCommunicationAction } from "@/actions/communications";
-import type {
-	CompanySms,
-	SmsTemplateContext,
-} from "@/actions/sms-actions";
 
 // Type for message attachments stored in provider_metadata
 type MessageAttachment = {
@@ -75,20 +68,25 @@ type MessageAttachment = {
 };
 
 import {
-	getCompanyContextAction,
-	getSmsConversationAction,
-	markSmsAsReadAction,
-	markSmsConversationAsReadAction,
+    getCompanyContextAction,
+    getSmsConversationAction,
+    markSmsAsReadAction,
+    markSmsConversationAsReadAction,
 } from "@/actions/sms-actions";
+import {
+    getTeamChannelMessagesAction,
+    markTeamChannelAsReadAction,
+    sendTeamChannelMessageAction,
+    type ChannelMessage,
+} from "@/actions/teams-actions";
 import { sendTextMessage } from "@/actions/twilio";
 import { AutoLinkSuggestions } from "@/components/communication/auto-link-suggestions";
 import { CallDetailView } from "@/components/communication/call-detail-view";
-import { CustomerInfoPill } from "@/components/communication/customer-info-pill";
 import { EmailContent } from "@/components/communication/email-content";
 import { EmailFullComposer } from "@/components/communication/email-full-composer";
 import {
-	EmailReplyComposer,
-	type EmailReplyMode,
+    EmailReplyComposer,
+    type EmailReplyMode,
 } from "@/components/communication/email-reply-composer";
 import { SmsMessageInput } from "@/components/communication/sms-message-input";
 import { TransferDialog } from "@/components/communication/transfer-dialog";
@@ -97,35 +95,38 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+    TooltipProvider
 } from "@/components/ui/tooltip";
+import { type EmailCategory } from "@/lib/email/email-permissions";
 import type { Communication, CommunicationCounts } from "@/lib/queries/communications";
 import { cn } from "@/lib/utils";
-import { getCustomerDisplayName } from "@/lib/utils/customer-display";
 
+import { Hash } from "lucide-react";
+
+// Types
+type InboxType = "personal" | "company";
+type ViewMode = "list" | "grid";
 type CommunicationType = "all" | "email" | "sms" | "call" | "voicemail";
 
 /**
@@ -157,11 +158,13 @@ function getContactDisplayName(
 		return communication.toName;
 	}
 
-	// Priority 3: Address as fallback
+	// Priority 3: Address as fallback (always show email/phone, never "Unknown")
 	const address = effectiveDirection === "from"
 		? communication.fromAddress
 		: communication.toAddress;
 
+	// Always show the actual email/phone address if available
+	// Only show "Unknown" if there's truly no address
 	return address || (effectiveDirection === "from" ? "Unknown sender" : "Unknown recipient");
 }
 
@@ -170,10 +173,10 @@ interface UnifiedInboxPageClientProps {
 	initialCounts?: CommunicationCounts;
 	companyId: string;
 	teamMemberId: string;
-	selectedId?: string | null;
-	activeType?: string | null;
-	activeFolder?: string | null;
-	activeCategory?: string | null;
+	initialInboxType?: InboxType;
+	initialFolder?: string;
+	initialCategory?: string;
+	initialCommunicationId?: string;
 }
 
 export function UnifiedInboxPageClient({
@@ -181,30 +184,42 @@ export function UnifiedInboxPageClient({
 	initialCounts,
 	companyId,
 	teamMemberId,
-	selectedId: initialSelectedId,
-	activeType: initialActiveType,
-	activeFolder: initialActiveFolder,
-	activeCategory: initialActiveCategory,
+	initialInboxType = "personal",
+	initialFolder = "inbox",
+	initialCategory = "primary",
+	initialCommunicationId,
 }: UnifiedInboxPageClientProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const { toggleSidebar } = useSidebar();
-	const [isPending, startTransition] = useTransition();
+
+	const inboxType: InboxType =
+		(searchParams?.get("inbox") as InboxType) || initialInboxType;
+	const folder = searchParams?.get("folder") || initialFolder;
+	const category = searchParams?.get("category") || initialCategory;
+	const channelId = searchParams?.get("channel");
+	const assignedFilter = searchParams?.get("assigned");
 
 	const communicationIdFromQuery = searchParams?.get("id");
-	const communicationId = communicationIdFromQuery || initialSelectedId;
+	const communicationId = communicationIdFromQuery || initialCommunicationId;
+	const [isPending, startTransition] = useTransition();
 
 	// Core communication state
 	const [communications, setCommunications] = useState<Communication[]>(
 		initialCommunications,
 	);
+	// Teams state
+	const [channelMessages, setChannelMessages] = useState<ChannelMessage[]>([]);
+	const [loadingChannelMessages, setLoadingChannelMessages] = useState(false);
+	const conversationScrollRef = useRef<HTMLDivElement>(null);
+
 	const [refreshing, setRefreshing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [selectedCommunication, setSelectedCommunication] =
 		useState<Communication | null>(() => {
-			if (initialSelectedId && initialCommunications) {
+			if (communicationId && initialCommunications) {
 				return (
-					initialCommunications.find((c) => c.id === initialSelectedId) || null
+					initialCommunications.find((c) => c.id === communicationId) || null
 				);
 			}
 			return null;
@@ -212,9 +227,7 @@ export function UnifiedInboxPageClient({
 
 	// Search and filter state - using debounced search hook
 	const { searchInput, searchQuery, setSearchInput, clearSearch } = useDebouncedSearch();
-	const [typeFilter, setTypeFilter] = useState<CommunicationType>(
-		(initialActiveType as CommunicationType) || "all",
-	);
+	const [typeFilter, setTypeFilter] = useState<CommunicationType>("all");
 
 	// Notes state
 	const [notesOpen, setNotesOpen] = useState(false);
@@ -234,6 +247,10 @@ export function UnifiedInboxPageClient({
 	// SMS state
 	const [conversationMessages, setConversationMessages] = useState<CompanySms[]>([]);
 	const [loadingConversation, setLoadingConversation] = useState(false);
+	
+	// Cache for fast switching between communications
+	const emailContentCache = useRef<Map<string, { html?: string | null; text?: string | null }>>(new Map());
+	const smsConversationCache = useRef<Map<string, CompanySms[]>>(new Map());
 	const [messageInput, setMessageInput] = useState("");
 	const [sendingMessage, setSendingMessage] = useState(false);
 	const [attachments, setAttachments] = useState<File[]>([]);
@@ -247,7 +264,7 @@ export function UnifiedInboxPageClient({
 	const selectedCommunicationRef = useRef<Communication | null>(selectedCommunication);
 	const refreshingRef = useRef(refreshing);
 	refreshingRef.current = refreshing;
-	const conversationScrollRef = useRef<HTMLDivElement>(null);
+	// const conversationScrollRef = useRef<HTMLDivElement>(null); // Moved up
 
 	// Handle compose=true query param from navigation
 	useEffect(() => {
@@ -305,53 +322,55 @@ export function UnifiedInboxPageClient({
 		});
 	}, []);
 
-	// Update selected communication when URL changes
+	// Track the last loaded communication ID to prevent re-fetching on list refresh
+	const lastLoadedCommIdRef = useRef<string | null>(null);
+
+	// Handle initial load from URL or when URL changes externally (e.g., back button)
 	useEffect(() => {
+		// Skip if we already handled this ID or if selection was triggered by click
+		if (communicationId === lastLoadedCommIdRef.current) {
+			return;
+		}
+		
 		if (communicationId && communications) {
 			const comm = communications.find((c) => c.id === communicationId);
-			if (comm) {
+			if (comm && selectedCommunicationRef.current?.id !== comm.id) {
+				lastLoadedCommIdRef.current = communicationId;
+				// Set basic state for initial load
 				setSelectedCommunication(comm);
 				setInternalNotes(comm.internalNotes || "");
 				selectedCommunicationRef.current = comm;
-
-				// Load email content if needed
+				setReplyMode(null);
+				
+				// Load content based on type using cache
 				if (comm.type === "email") {
-					const hasContent = comm.body;
-					if (hasContent) {
-						setEmailContent({
-							html: null,
-							text: comm.body || null,
-						});
-					} else {
-						setLoadingContent(true);
-						fetchEmailContentAction(comm.id)
-							.then((result) => {
-								if (result.success) {
-									setEmailContent({
-										html: result.html || null,
-										text: result.text || null,
-									});
-								}
-							})
-							.finally(() => setLoadingContent(false));
+					const cached = emailContentCache.current.get(comm.id);
+					if (cached) {
+						setEmailContent(cached);
+					} else if (comm.body || comm.bodyHtml) {
+						const content = { html: comm.bodyHtml || null, text: comm.body || null };
+						setEmailContent(content);
+						emailContentCache.current.set(comm.id, content);
 					}
-				}
-
-				// Load SMS conversation if needed
-				if (comm.type === "sms") {
-					const phoneNumber = comm.direction === "inbound"
-						? comm.fromAddress
-						: comm.toAddress;
+					setConversationMessages([]);
+				} else if (comm.type === "sms") {
+					const phoneNumber = comm.direction === "inbound" ? comm.fromAddress : comm.toAddress;
 					if (phoneNumber) {
-						fetchConversation(phoneNumber);
+						const cached = smsConversationCache.current.get(phoneNumber);
+						if (cached) {
+							setConversationMessages(cached);
+						}
 					}
+					setEmailContent(null);
 				}
 			}
-		} else {
+		} else if (!communicationId) {
+			lastLoadedCommIdRef.current = null;
 			setSelectedCommunication(null);
 			selectedCommunicationRef.current = null;
 			setEmailContent(null);
 			setConversationMessages([]);
+			setReplyMode(null);
 		}
 	}, [communicationId, communications]);
 
@@ -363,15 +382,59 @@ export function UnifiedInboxPageClient({
 
 			startTransition(async () => {
 				try {
+					// If viewing a Teams channel, fetch channel messages instead of communications list
+					if (channelId) {
+						setLoadingChannelMessages(true);
+						const result = await getTeamChannelMessagesAction({
+							channel: channelId,
+							limit: 50,
+							offset: 0,
+							search: searchQuery || undefined,
+						});
+
+						if (result.success && result.messages) {
+							setChannelMessages(result.messages);
+							
+							// Mark as read logic
+							const unreadMessages = result.messages.filter(
+								(msg) => !msg.read_at && msg.direction === "inbound",
+							);
+							if (unreadMessages.length > 0) {
+								markTeamChannelAsReadAction(channelId).catch(console.error);
+							}
+						} else {
+							setError(result.error || "Failed to load channel messages");
+						}
+						setLoadingChannelMessages(false);
+						setRefreshing(false);
+						return;
+					}
+
 					const { getCommunicationsAction } = await import(
 						"@/actions/communications"
 					);
 					const result = await getCommunicationsAction({
 						teamMemberId,
 						companyId,
-						type: typeFilter !== "all" ? typeFilter : undefined,
-						limit: 100,
+						limit: 50,
 						offset: 0,
+						type: typeFilter !== "all" ? typeFilter : undefined,
+						// If viewing company inbox, filter by category
+						category:
+							inboxType === "company" ? (category as EmailCategory) : undefined,
+						// If viewing personal inbox, filter by folder (unless it's "all")
+						// For "sent", "archive", "trash", etc.
+						status:
+							folder && ["archive", "trash", "spam"].includes(folder)
+								? folder
+								: undefined,
+						// Special handling for "sent" folder - filter by direction
+						direction: folder === "sent" ? "outbound" : undefined,
+						// Filter by assigned user if needed
+						assignedTo: assignedFilter === "me" ? "me" : undefined,
+						searchQuery: searchQuery || undefined,
+						sortBy: "created_at",
+						sortOrder: "desc",
 					});
 
 					if (result.success && result.data) {
@@ -404,7 +467,7 @@ export function UnifiedInboxPageClient({
 				}
 			});
 		},
-		[teamMemberId, companyId, typeFilter],
+		[searchQuery, folder, inboxType, category, typeFilter, channelId, teamMemberId, companyId, assignedFilter],
 	);
 
 	// Fetch SMS conversation
@@ -454,14 +517,6 @@ export function UnifiedInboxPageClient({
 		}
 	}, []);
 
-	// Sync type filter with prop from URL params (sidebar navigation)
-	useEffect(() => {
-		const newType = (initialActiveType as CommunicationType) || "all";
-		if (newType !== typeFilter) {
-			setTypeFilter(newType);
-		}
-	}, [initialActiveType]);
-
 	// Refetch when type filter changes
 	useEffect(() => {
 		fetchCommunications();
@@ -475,80 +530,130 @@ export function UnifiedInboxPageClient({
 	}, [searchQuery]);
 
 	// Auto-refresh using consolidated hook
-	useCommunicationRefresh(fetchCommunications, {
-		interval: 30000,
-		disabled: composeMode || refreshingRef.current,
-	});
+	// useCommunicationRefresh(fetchCommunications, {
+	// 	interval: 30000,
+	// 	disabled: composeMode,
+	// });
 
-	// Handle communication selection
+	// Store searchParams in ref to avoid re-creating callback
+	const searchParamsRef = useRef(searchParams);
+	searchParamsRef.current = searchParams;
+
+	// Handle communication selection - optimized for fast switching
 	const handleCommunicationSelect = useCallback(
 		(communication: Communication) => {
+			// Skip if already selected
+			if (selectedCommunicationRef.current?.id === communication.id) return;
+			
+			// Immediate state updates for instant UI response
 			setSelectedCommunication(communication);
 			setInternalNotes(communication.internalNotes || "");
 			selectedCommunicationRef.current = communication;
 			setReplyMode(null);
-			setConversationMessages([]);
+			lastLoadedCommIdRef.current = communication.id;
 
-			const params = new URLSearchParams(searchParams?.toString() || "");
+			// Update URL instantly using native API (no React overhead, preserves Next.js state)
+			const params = new URLSearchParams(searchParamsRef.current?.toString() || "");
 			params.set("id", communication.id);
-			router.push(`/dashboard/communication?${params.toString()}`, {
-				scroll: false,
-			});
+			const newUrl = `/dashboard/communication?${params.toString()}`;
+			window.history.replaceState(
+				{ ...window.history.state, as: newUrl, url: newUrl },
+				"",
+				newUrl
+			);
 
-			// Mark as read if unread
+			// Mark as read in background (non-blocking)
 			if (communication.status === "unread" || communication.status === "new") {
-				if (communication.type === "email") {
-					markEmailAsReadAction({ emailId: communication.id }).catch((err) => {
-						console.error("Failed to mark as read:", err);
-					});
-				} else if (communication.type === "sms") {
-					markSmsAsReadAction({ smsId: communication.id }).catch((err) => {
-						console.error("Failed to mark as read:", err);
-					});
-				}
-				// Optimistically update local state
 				setCommunications((prev) =>
 					prev.map((c) =>
 						c.id === communication.id ? { ...c, status: "read" } : c,
 					),
 				);
-				window.dispatchEvent(new CustomEvent("communication-updated"));
+				// Fire and forget - don't await
+				if (communication.type === "email") {
+					markEmailAsReadAction({ emailId: communication.id }).catch(() => {});
+				} else if (communication.type === "sms") {
+					markSmsAsReadAction({ smsId: communication.id }).catch(() => {});
+				}
 			}
 
-			// Load email content
+			// Handle content based on type - use cache for instant display
 			if (communication.type === "email") {
-				const hasContent = communication.body;
-				if (hasContent) {
-					setEmailContent({
-						html: null,
+				// Check cache first
+				const cached = emailContentCache.current.get(communication.id);
+				if (cached) {
+					setEmailContent(cached);
+					setConversationMessages([]);
+					return;
+				}
+				
+				// Use inline content if available
+				if (communication.body || communication.bodyHtml) {
+					const content = {
+						html: communication.bodyHtml || null,
 						text: communication.body || null,
-					});
+					};
+					setEmailContent(content);
+					emailContentCache.current.set(communication.id, content);
+					setConversationMessages([]);
 				} else {
+					// Fetch in background
+					setEmailContent(null);
+					setConversationMessages([]);
 					setLoadingContent(true);
 					fetchEmailContentAction(communication.id)
 						.then((result) => {
-							if (result.success) {
-								setEmailContent({
+							if (result.success && selectedCommunicationRef.current?.id === communication.id) {
+								const content = {
 									html: result.html || null,
 									text: result.text || null,
-								});
+								};
+								setEmailContent(content);
+								emailContentCache.current.set(communication.id, content);
 							}
 						})
 						.finally(() => setLoadingContent(false));
 				}
-			}
-
-			// Load SMS conversation
-			if (communication.type === "sms") {
+			} else if (communication.type === "sms") {
 				const phoneNumber = communication.direction === "inbound"
 					? communication.fromAddress
 					: communication.toAddress;
+				
 				if (phoneNumber) {
-					fetchConversation(phoneNumber);
+					// Check cache first
+					const cached = smsConversationCache.current.get(phoneNumber);
+					if (cached) {
+						setConversationMessages(cached);
+						setEmailContent(null);
+						return;
+					}
+					
+					// Fetch conversation
+					setEmailContent(null);
+					setConversationMessages([]);
+					setLoadingConversation(true);
+					getSmsConversationAction(phoneNumber)
+						.then((result) => {
+							if (result.success && result.messages && selectedCommunicationRef.current?.id === communication.id) {
+								setConversationMessages(result.messages);
+								smsConversationCache.current.set(phoneNumber, result.messages);
+								
+								// Mark unread as read
+								const unread = result.messages.filter(m => !m.read_at && m.direction === "inbound");
+								if (unread.length > 0) {
+									markSmsConversationAsReadAction(phoneNumber).catch(() => {});
+								}
+							}
+						})
+						.finally(() => setLoadingConversation(false));
 				}
+			} else {
+				// Call or voicemail - just clear other states
+				setEmailContent(null);
+				setConversationMessages([]);
 			}
 		},
-		[router, searchParams, fetchConversation],
+		[], // No dependencies - uses refs for all external values
 	);
 
 	// Save internal notes
@@ -881,6 +986,29 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 		fetchCommunications,
 	]);
 
+	// Placeholder for handleSendSms for Teams channel
+	const handleSendSms = useCallback(async (text: string, attachments: any[]) => {
+		if (!channelId) {
+			toast.error("Channel ID not found.");
+			return;
+		}
+		const result = await sendTeamChannelMessageAction({
+			channel: channelId,
+			text,
+			attachments: attachments.map((a) => ({
+				file: a.file,
+				type: a.type === "image" ? "image" : "file",
+			})),
+		});
+
+		if (result.success) {
+			fetchCommunications();
+		} else {
+			toast.error("Failed to send message");
+		}
+	}, [channelId, fetchCommunications]);
+
+
 	// Format timestamp for SMS messages
 	const formatMessageTime = (date: string) => {
 		const messageDate = new Date(date);
@@ -955,21 +1083,93 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 		}
 	};
 
-	return (
-		<div className="flex h-full w-full flex-col overflow-hidden bg-sidebar">
-			<div className="flex flex-1 overflow-hidden min-h-0 md:gap-2">
+	// Render content based on view mode (Teams vs Email/SMS)
+	const renderContent = () => {
+		if (channelId) {
+			// Teams Channel View
+			return (
+				<div className="flex flex-col h-full">
+					<div className="flex items-center justify-between px-4 py-2 border-b h-14 shrink-0">
+						<div className="flex items-center gap-2">
+							<Hash className="h-5 w-5 text-muted-foreground" />
+							<h2 className="text-lg font-semibold capitalize">{channelId}</h2>
+						</div>
+					</div>
+					
+					<ScrollArea className="flex-1 p-4">
+						<div className="flex flex-col gap-4 max-w-3xl mx-auto">
+							{loadingChannelMessages ? (
+								<div className="flex flex-col gap-4">
+									{[1, 2, 3].map((i) => (
+										<div key={i} className="flex items-start gap-3">
+											<Skeleton className="h-10 w-10 rounded-full" />
+											<div className="space-y-2">
+												<Skeleton className="h-4 w-[200px]" />
+												<Skeleton className="h-16 w-[300px]" />
+											</div>
+										</div>
+									))}
+								</div>
+							) : channelMessages.length === 0 ? (
+								<div className="text-center py-10 text-muted-foreground">
+									No messages in this channel yet. Start the conversation!
+								</div>
+							) : (
+								channelMessages.map((msg) => (
+									<div key={msg.id} className="flex items-start gap-3 group">
+										<Avatar className="h-8 w-8 mt-1">
+											<AvatarFallback>
+												{msg.sent_by_user?.name?.[0] || "?"}
+											</AvatarFallback>
+										</Avatar>
+										<div className="flex flex-col gap-1 min-w-0 flex-1">
+											<div className="flex items-baseline gap-2">
+												<span className="font-semibold text-sm">
+													{msg.sent_by_user?.name || "Unknown User"}
+												</span>
+												<span className="text-xs text-muted-foreground">
+													{formatDistanceToNow(new Date(msg.created_at), {
+														addSuffix: true,
+													})}
+												</span>
+											</div>
+											<div className="text-sm text-foreground/90 whitespace-pre-wrap">
+												{msg.body}
+											</div>
+											{/* Attachments would go here */}
+										</div>
+									</div>
+								))
+							)}
+							<div ref={conversationScrollRef} />
+						</div>
+					</ScrollArea>
+
+					<div className="p-4 border-t bg-background">
+						<div className="max-w-3xl mx-auto">
+							<SmsMessageInput
+								onSend={handleSendSms}
+								placeholder={`Message #${channelId}`}
+								disabled={isPending}
+							/>
+						</div>
+					</div>
+				</div>
+			);
+		}
+
+		// Standard Email/SMS View
+		return (
+			<div className="flex flex-1 h-full w-full flex-col overflow-hidden bg-sidebar">
+			<div className="flex flex-row flex-1 w-full overflow-hidden min-h-0 md:gap-2">
 				{/* Left Panel - Communications List */}
 				<div
 					className={cn(
-						"bg-card mb-1 shadow-sm flex flex-col overflow-hidden",
-						"w-full h-full",
-						"md:w-[400px] lg:w-[480px] md:rounded-tr-2xl",
-						showListOnMobile ? "flex" : "hidden md:flex",
+						"flex w-full flex-col bg-card md:w-[350px] lg:w-[400px] md:shrink-0 md:rounded-tr-2xl overflow-hidden",
+						selectedCommunication ? "hidden md:flex" : "flex",
 					)}
 				>
-					<div className="w-full h-full flex flex-col">
-						{/* Header with search and filters */}
-						<div className="sticky top-0 z-15 flex flex-col gap-2 p-2 pb-0 transition-colors bg-card">
+						<div className="sticky top-0 z-15 flex flex-col gap-2 p-2 pb-0 transition-colors bg-card md:rounded-tr-2xl">
 							<div className="grid grid-cols-12 gap-2 mt-1">
 								<div className="col-span-12 flex gap-2">
 									{/* Sidebar toggle */}
@@ -1246,16 +1446,15 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 							</div>
 						</div>
 					</div>
-				</div>
 
 				{/* Right Panel - Communication Detail or Compose */}
 				{composeMode ? (
 					/* Email Composer */
 					<div
 						className={cn(
-							"bg-card mb-1 shadow-sm flex flex-col min-w-0 overflow-hidden",
-							"w-full h-full",
-							"md:rounded-tl-2xl md:flex-1",
+							"bg-card mb-1 shadow-sm flex flex-col overflow-hidden",
+							"w-full h-full flex-1 min-w-0",
+							"md:rounded-tl-2xl",
 							showDetailOnMobile ? "flex" : "hidden md:flex",
 						)}
 					>
@@ -1272,14 +1471,14 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 				) : selectedCommunication ? (
 					<div
 						className={cn(
-							"bg-card mb-1 shadow-sm flex flex-col min-w-0 overflow-hidden",
-							"w-full h-full",
-							"md:rounded-tl-2xl md:flex-1",
+							"bg-card mb-1 shadow-sm flex flex-col overflow-hidden",
+							"w-full h-full flex-1 min-w-0",
+							"md:rounded-tl-2xl",
 							showDetailOnMobile ? "flex" : "hidden md:flex",
 						)}
 					>
-						<div className="relative flex-1 min-h-0 flex flex-col">
-							<div className="bg-card relative flex flex-col overflow-hidden transition-all duration-300 h-full flex-1 min-h-0">
+						<div className="relative flex-1 min-h-0 flex flex-col w-full">
+							<div className="bg-card relative flex flex-col overflow-hidden transition-all duration-300 h-full flex-1 min-h-0 w-full">
 								{/* Communication Header Toolbar */}
 								<div className="sticky top-0 z-15 flex shrink-0 items-center justify-between gap-1.5 p-2 pb-0 transition-colors bg-card">
 									<div className="flex flex-1 items-center gap-2">
@@ -1488,8 +1687,8 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 								</div>
 
 								{/* Communication Content */}
-								<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-									<div className="relative overflow-hidden flex-1 h-full min-h-0 flex flex-col">
+								<div className="flex min-h-0 flex-1 flex-col overflow-hidden w-full">
+									<div className="relative overflow-hidden flex-1 h-full min-h-0 flex flex-col w-full">
 										<TooltipProvider delayDuration={100}>
 											{/* Header section with subject and sender info */}
 											<div className="border-b border-border/50 px-2 py-4 space-y-3">
@@ -1599,8 +1798,8 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 											{/* Content area - different for email vs SMS */}
 											{selectedCommunication.type === "email" ? (
 												/* Email Content */
-												<div className="flex-1 overflow-hidden flex flex-col min-h-0">
-													<div className="flex-1 overflow-y-auto px-2 py-4">
+												<div className="flex-1 overflow-hidden flex flex-col min-h-0 w-full">
+													<div className="flex-1 overflow-y-auto px-2 py-4 w-full">
 														{loadingContent ? (
 															<div className="flex items-center justify-center py-12">
 																<div className="text-center">
@@ -1968,7 +2167,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 					/* Empty State */
 					<div
 						className={cn(
-							"bg-card mb-1 shadow-sm hidden md:flex md:flex-col md:items-center md:justify-center md:rounded-tl-2xl md:flex-1",
+							"bg-card mb-1 shadow-sm hidden md:flex md:flex-col md:items-center md:justify-center md:rounded-tl-2xl flex-1 min-w-0",
 						)}
 					>
 						<Mail className="h-16 w-16 text-muted-foreground mb-4" />
@@ -1988,7 +2187,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 					</div>
 				)}
 			</div>
+		</div>
+		);
+	};
 
+	return (
+		<div className="flex flex-1 h-full w-full flex-col">
+			{renderContent()}
 			{/* Transfer Dialog - Available for all communication types */}
 			{selectedCommunication && (
 				<TransferDialog

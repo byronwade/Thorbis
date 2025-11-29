@@ -276,7 +276,7 @@ export function PhoneDropdown({
 
 				// Open call window
 				const params = new URLSearchParams({
-					callControlId: result.callControlId || "",
+					callId: result.callSid || "",
 					companyId,
 					to,
 					from: fromNumber,

@@ -1,10 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { PlainTextEmail } from "@/emails/plain-text-email";
 import { sendEmail } from "@/lib/email/email-sender";
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 const COMMUNICATIONS_PATH = "/dashboard/communication";
 
@@ -320,10 +320,15 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			return { success: false, error: "Unable to access database", data: [] };
 		}
 
-		// Build query
+		// Build query with customer join
 		let query = supabase
 			.from("communications")
-			.select("*")
+			.select(
+				`
+				*,
+				customer:customers(id, first_name, last_name, email, phone)
+			`,
+			)
 			.eq("company_id", payload.companyId)
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })
@@ -349,7 +354,40 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			return { success: false, error: error.message, data: [] };
 		}
 
-		return { success: true, data: data || [] };
+		// Transform data to Communication type format
+		const communications = (data || []).map((comm: any) => ({
+			id: comm.id,
+			companyId: comm.company_id,
+			type: comm.type as "email" | "sms" | "call" | "voicemail",
+			direction: comm.direction as "inbound" | "outbound",
+			status: comm.status,
+			fromAddress: comm.from_address || undefined,
+			fromName: comm.from_name || undefined,
+			toAddress: comm.to_address || undefined,
+			toName: comm.to_name || undefined,
+			subject: comm.subject || undefined,
+			body: comm.body || undefined,
+			bodyHtml: comm.body_html || undefined,
+			customerId: comm.customer_id || undefined,
+			jobId: comm.job_id || undefined,
+			propertyId: comm.property_id || undefined,
+			mailboxOwnerId: comm.mailbox_owner_id,
+			assignedTo: comm.assigned_to,
+			visibilityScope: comm.visibility_scope,
+			emailCategory: comm.category,
+			createdAt: comm.created_at,
+			customer: comm.customer
+				? {
+						id: comm.customer.id,
+						firstName: comm.customer.first_name || undefined,
+						lastName: comm.customer.last_name || undefined,
+						email: comm.customer.email || undefined,
+						phone: comm.customer.phone || undefined,
+					}
+				: undefined,
+		}));
+
+		return { success: true, data: communications };
 	} catch (error) {
 		return {
 			success: false,
@@ -488,13 +526,13 @@ export async function getAutoLinkSuggestionsAction(
 
 		const suggestions: MatchSuggestion[] = [];
 
-		// Search for customer matches by email
+		// Search for customer matches by email (exact match)
 		if (emailToMatch && emailToMatch.includes("@")) {
 			const { data: customersByEmail } = await supabase
 				.from("customers")
 				.select("id, first_name, last_name, email, phone")
 				.eq("company_id", payload.companyId)
-				.ilike("email", `%${emailToMatch}%`)
+				.ilike("email", emailToMatch)
 				.limit(3);
 
 			if (customersByEmail && customersByEmail.length > 0) {
@@ -757,6 +795,102 @@ export async function toggleStarCommunicationAction(communicationId: string): Pr
 		return { success: true, isStarred: !isCurrentlyStarred };
 	} catch (error) {
 		console.error("Error toggling star on communication:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Diagnostic tool to check email configuration status
+ * Returns detailed information about SendGrid setup and potential issues
+ */
+export async function checkEmailConfigurationAction(companyId: string): Promise<{
+	success: boolean;
+	error?: string;
+		data?: {
+		hasSendGridApiKey: boolean;
+		hasActiveDomain: boolean;
+		sendGridConfigured: boolean;
+		issues: string[];
+		warnings: string[];
+		recommendations: string[];
+	};
+}> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return {
+				success: false,
+				error: "Unable to access database",
+			};
+		}
+
+		const issues: string[] = [];
+		const warnings: string[] = [];
+		const recommendations: string[] = [];
+
+		// Check SendGrid API key in database
+		const { data: twilioSettings, error: twilioError } = await supabase
+			.from("company_twilio_settings")
+			.select("sendgrid_api_key, sendgrid_from_email, is_active")
+			.eq("company_id", companyId)
+			.eq("is_active", true)
+			.single();
+
+		const hasSendGridApiKey = !!(twilioSettings?.sendgrid_api_key);
+		if (!hasSendGridApiKey) {
+			issues.push(
+				"SendGrid API key not configured. Add it in Settings > Communications > Email Provider.",
+			);
+		}
+
+		// Check for active email domain
+		const { data: emailDomain } = await supabase
+			.from("company_email_domains")
+			.select("id, domain_name, status, sending_enabled, is_suspended")
+			.eq("company_id", companyId)
+			.eq("status", "verified")
+			.eq("sending_enabled", true)
+			.eq("is_suspended", false)
+			.limit(1)
+			.maybeSingle();
+
+		const hasActiveDomain = !!emailDomain;
+		if (!hasActiveDomain) {
+			issues.push(
+				"No active email domain configured. Set up an email domain in Settings > Communications > Email Provider.",
+			);
+		}
+
+		// Recommendations
+		if (!hasSendGridApiKey) {
+			recommendations.push(
+				"Configure SendGrid: Go to Settings > Communications > Email Provider and add your SendGrid API key.",
+			);
+		}
+
+		if (!hasActiveDomain) {
+			recommendations.push(
+				"Set up an email domain: Go to Settings > Communications > Email Provider and verify a domain.",
+			);
+		}
+
+		const sendGridConfigured = hasSendGridApiKey && hasActiveDomain;
+
+		return {
+			success: true,
+			data: {
+				hasSendGridApiKey,
+				hasActiveDomain,
+				sendGridConfigured,
+				issues,
+				warnings,
+				recommendations,
+			},
+		};
+	} catch (error) {
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

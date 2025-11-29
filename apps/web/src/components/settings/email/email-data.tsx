@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
+import { SendGridDomainSetup } from "@/components/settings/communications/sendgrid-domain-setup";
 
 export async function UemailData() {
 	const supabase = await createClient();
@@ -20,7 +21,9 @@ export async function UemailData() {
 		return notFound();
 	}
 
-	// TODO: Move data fetching logic from original page
-
-	return <div>Data component for email</div>;
+	return (
+		<div className="space-y-8">
+			<SendGridDomainSetup />
+		</div>
+	);
 }

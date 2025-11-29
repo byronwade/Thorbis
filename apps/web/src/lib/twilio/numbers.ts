@@ -132,15 +132,14 @@ export async function purchaseNumber(
 			return { success: false, error: "Twilio not configured for company" };
 		}
 
-		// Construct webhook URLs for voice and SMS
+		// Construct webhook URL (single URL for all phone numbers - company resolved from phone number)
 		const baseUrl = settings.webhook_url || TWILIO_ADMIN_CONFIG.webhookBaseUrl;
-		const voiceUrl = `${baseUrl}/api/webhooks/twilio/voice?companyId=${companyId}`;
-		const smsUrl = `${baseUrl}/api/webhooks/twilio/sms?companyId=${companyId}`;
+		const webhookUrl = `${baseUrl}/api/webhooks/twilio`;
 
 		const purchased = await client.incomingPhoneNumbers.create({
 			phoneNumber,
-			voiceUrl,
-			smsUrl,
+			voiceUrl: webhookUrl,
+			smsUrl: webhookUrl,
 			voiceMethod: "POST",
 			smsMethod: "POST",
 		});
@@ -180,6 +179,44 @@ export async function releaseNumber(
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to release number",
+		};
+	}
+}
+
+/**
+ * Update webhook URLs for an existing phone number
+ * Uses a single webhook URL for all numbers - company is resolved from phone number
+ */
+export async function updatePhoneNumberWebhooks(
+	companyId: string,
+	phoneNumberSid: string
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const client = await createTwilioClient(companyId);
+		const settings = await getCompanyTwilioSettings(companyId);
+
+		if (!client || !settings) {
+			return { success: false, error: "Twilio not configured for company" };
+		}
+
+		// Single webhook URL for all phone numbers (company resolved from phone number in webhook handler)
+		const baseUrl = settings.webhook_url || TWILIO_ADMIN_CONFIG.webhookBaseUrl;
+		const webhookUrl = `${baseUrl}/api/webhooks/twilio`;
+
+		// Update the phone number in Twilio
+		await client.incomingPhoneNumbers(phoneNumberSid).update({
+			voiceUrl: webhookUrl,
+			smsUrl: webhookUrl,
+			voiceMethod: "POST",
+			smsMethod: "POST",
+		});
+
+		return { success: true };
+	} catch (error) {
+		console.error("[Twilio Numbers] Update webhooks error:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Failed to update webhook URLs",
 		};
 	}
 }

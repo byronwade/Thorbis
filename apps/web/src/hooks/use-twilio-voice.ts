@@ -471,17 +471,26 @@ export function useTwilioVoice(
 	const connect = useCallback(async () => {
 		try {
 			debugLog("Starting connection...");
-			setIsConnecting(true);
-			setConnectionError(null);
-
 			const device = await initializeDevice();
 
 			// If device is null (no token), silently fail
 			if (!device) {
 				debugWarn("No access token available, aborting connection");
-				setIsConnecting(false);
 				return;
 			}
+
+			// Don't try to register if we are already registered or in the process of registering
+			if (device.state !== "unregistered") {
+				debugLog(`Skipping registration, device state is: ${device.state}`);
+				if (device.state === "registered") {
+					setIsConnected(true);
+					setIsConnecting(false);
+				}
+				return;
+			}
+
+			setIsConnecting(true);
+			setConnectionError(null);
 
 			debugLog("Device initialized, calling register()...");
 			await device.register();

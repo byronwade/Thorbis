@@ -1596,6 +1596,17 @@ export function IncomingCallNotification() {
 	const [showTransferModal, setShowTransferModal] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
 
+	// Connect to Twilio Voice SDK when component mounts (to listen for incoming calls)
+	useEffect(() => {
+		if (voiceCredentials?.accessToken) {
+			webrtc.connect();
+		}
+
+		return () => {
+			// Don't disconnect on unmount - we want to keep listening for calls
+		};
+	}, [voiceCredentials?.accessToken, webrtc.connect]);
+
 	// Map WebRTC call state to UI format (real Twilio calls only)
 	const call = webrtc.currentCall
 		? {
@@ -1863,6 +1874,7 @@ export function IncomingCallNotification() {
 					callId,
 					...(companyId && { companyId }),
 					...(call.caller?.number && { from: call.caller.number }),
+					...(fetchedCustomerData?.customer?.id && { customerId: fetchedCustomerData.customer.id }),
 					direction: "inbound",
 				});
 

@@ -1,3 +1,0 @@
-module.exports=[93695,(a,b,c)=>{b.exports=a.x("next/dist/shared/lib/no-fallback-error.external.js",()=>require("next/dist/shared/lib/no-fallback-error.external.js"))},19858,a=>{a.n(a.i(23227))},87845,a=>{a.n(a.i(45043))},6187,a=>{a.n(a.i(72013))},49386,a=>{a.n(a.i(39730))},68279,a=>{a.n(a.i(14898))},36585,a=>{a.n(a.i(49655))},6230,a=>{"use strict";a.i(82214);var b=a.i(28504);async function c({params:a}){let{companyId:c}=await a;(0,b.redirect)(`/admin/dashboard/view-as/${c}/work/jobs`)}a.s(["default",()=>c])}];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__57b5fcd7._.js.map

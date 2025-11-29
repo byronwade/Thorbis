@@ -2798,23 +2798,19 @@ export function DispatchTimeline() {
 			}
 
 			hoverRaf.current = requestAnimationFrame(() => {
-				// Calculate time at cursor position using the exact same system as hour slots
-				// Hour slots are positioned at: index * HOUR_WIDTH pixels
-				// Each slot represents one hour, starting from hourlySlotData.startTs (midnight)
-				// x is relative to timeline container, scrollLeft is scroll offset
+				// Calculate time - badge aligns perfectly at x, matching hour labels
+				// Use exact reverse of currentTimePosition calculation for consistency
+				// x is position in timeline, need absolute: scrollLeft + x
 				const absoluteX = Math.min(
 					Math.max(0, scrollLeft + x),
 					totalWidth,
 				);
-				// Calculate which hour slot index (same as how hour labels are positioned)
-				const hourIndex = Math.floor(absoluteX / HOUR_WIDTH);
-				const pixelOffsetInHour = absoluteX % HOUR_WIDTH;
-				// Get the exact hour start time from the slot system (same as hour labels use)
-				const hourStartTime = hourlySlotData.getSlot(hourIndex);
-				// Calculate minutes within that hour
-				const minutesInHour = (pixelOffsetInHour / HOUR_WIDTH) * 60;
-				// Create the exact time
-				const hoverDate = new Date(hourStartTime.getTime() + minutesInHour * 60 * 1000);
+				// Reverse currentTimePosition: position = (minutes / totalMinutes) * totalWidth
+				// So: minutes = (position / totalWidth) * totalMinutes
+				const totalMinutes =
+					(timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
+				const minutesFromStart = (absoluteX / totalWidth) * totalMinutes;
+				const hoverDate = new Date(timeRange.start.getTime() + minutesFromStart * 60 * 1000);
 
 				const nextTime = format(hoverDate, "h:mm a");
 				// Skip updates if position/time haven't materially changed (reduces rerenders)

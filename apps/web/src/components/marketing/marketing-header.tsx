@@ -1,31 +1,31 @@
 "use client";
 
 import {
-	ArrowRight,
-	BookOpen,
-	Bot,
-	Building2,
-	Calculator,
-	Calendar,
-	CircleDollarSign,
-	FileText,
-	Flame,
-	Hammer,
-	HelpCircle,
-	Home,
-	Layers,
-	type LucideIcon,
-	Mail,
-	Menu,
-	Newspaper,
-	Rocket,
-	Shield,
-	Smartphone,
-	Sparkles,
-	Users,
-	Video,
-	Wrench,
-	Zap,
+    ArrowRight,
+    BookOpen,
+    Bot,
+    Building2,
+    Calculator,
+    Calendar,
+    CircleDollarSign,
+    FileText,
+    Flame,
+    Hammer,
+    HelpCircle,
+    Home,
+    Layers,
+    type LucideIcon,
+    Mail,
+    Menu,
+    Newspaper,
+    Rocket,
+    Shield,
+    Smartphone,
+    Sparkles,
+    Users,
+    Video,
+    Wrench,
+    Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,21 +34,20 @@ import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	NavigationMenuTrigger,
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Separator } from "@/components/ui/separator";
 import {
-	Sheet,
-	SheetClose,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -128,31 +127,7 @@ const company: NavItem[] = [
 	{ title: "Contact", href: "/contact", description: "Get in touch", icon: Mail },
 ];
 
-// Nav Item Component
-function NavLink({ item }: { item: NavItem }) {
-	const Icon = item.icon;
-	return (
-		<Link
-			href={item.href}
-			className="group flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-accent"
-		>
-			<div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/10">
-				<Icon className="size-4 text-muted-foreground transition-colors group-hover:text-primary" />
-			</div>
-			<div className="flex-1 min-w-0">
-				<div className="flex items-center gap-1.5">
-					<span className="text-sm font-medium">{item.title}</span>
-					{item.badge && (
-						<Badge variant="secondary" className="h-4 px-1 text-[9px]">
-							{item.badge}
-						</Badge>
-					)}
-				</div>
-				<p className="text-xs text-muted-foreground truncate">{item.description}</p>
-			</div>
-		</Link>
-	);
-}
+
 
 // Simple list item for compact menus
 function NavLinkCompact({ item }: { item: NavItem }) {
@@ -160,9 +135,9 @@ function NavLinkCompact({ item }: { item: NavItem }) {
 	return (
 		<Link
 			href={item.href}
-			className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-accent"
+			className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
 		>
-			<Icon className="size-4 text-muted-foreground" />
+			<Icon className="size-4" />
 			<span>{item.title}</span>
 		</Link>
 	);
@@ -183,77 +158,81 @@ function MobileNav() {
 					<Menu className="size-5" />
 				</Button>
 			</SheetTrigger>
-			<SheetContent side="right" className="w-80 overflow-y-auto">
-				<SheetHeader>
-					<SheetTitle className="flex items-center gap-2">
-						<Image src="/ThorbisLogo.webp" alt="Thorbis" width={24} height={24} />
-						Thorbis
-					</SheetTitle>
-				</SheetHeader>
+			<SheetContent side="right" className="w-80 border-l border-border bg-background p-0">
+				<div className="flex h-full flex-col overflow-y-auto">
+					<SheetHeader className="border-b border-border px-6 py-5">
+						<SheetTitle className="flex items-center gap-3">
+							<Image src="/ThorbisLogo.webp" alt="Thorbis" width={28} height={28} className="object-contain" />
+							<span className="text-xl font-bold tracking-tight">Thorbis</span>
+						</SheetTitle>
+					</SheetHeader>
 
-				<nav className="mt-6 space-y-1">
-					<MobileSection title="Platform" id="platform" open={open} onToggle={toggle}>
-						{platformFeatures.map((item) => (
-							<SheetClose key={item.href} asChild>
-								<NavLinkCompact item={item} />
-							</SheetClose>
-						))}
-					</MobileSection>
-
-					<MobileSection title="Industries" id="industries" open={open} onToggle={toggle}>
-						<div className="grid grid-cols-2 gap-1">
-							{industries.map((item) => (
+					<nav className="flex-1 space-y-1 px-4 py-6">
+						<MobileSection title="Platform" id="platform" open={open} onToggle={toggle}>
+							{platformFeatures.map((item) => (
 								<SheetClose key={item.href} asChild>
 									<NavLinkCompact item={item} />
 								</SheetClose>
 							))}
+						</MobileSection>
+
+						<MobileSection title="Industries" id="industries" open={open} onToggle={toggle}>
+							<div className="grid grid-cols-2 gap-1">
+								{industries.map((item) => (
+									<SheetClose key={item.href} asChild>
+										<NavLinkCompact item={item} />
+									</SheetClose>
+								))}
+							</div>
+						</MobileSection>
+
+						<MobileSection title="Resources" id="resources" open={open} onToggle={toggle}>
+							{resources.map((item) => (
+								<SheetClose key={item.href} asChild>
+									<NavLinkCompact item={item} />
+								</SheetClose>
+							))}
+						</MobileSection>
+
+						<MobileSection title="Company" id="company" open={open} onToggle={toggle}>
+							{company.map((item) => (
+								<SheetClose key={item.href} asChild>
+									<NavLinkCompact item={item} />
+								</SheetClose>
+							))}
+						</MobileSection>
+
+						<div className="my-6 border-t border-border" />
+
+						<SheetClose asChild>
+							<Link
+								href="/pricing"
+								className="flex items-center justify-between rounded-lg bg-accent px-4 py-3.5 transition-colors hover:bg-accent/80"
+							>
+								<span className="text-sm font-semibold">Pricing</span>
+								<Badge variant="secondary" className="text-xs font-medium">
+									$200/mo + usage
+								</Badge>
+							</Link>
+						</SheetClose>
+
+						<div className="mt-6 space-y-3">
+							<SheetClose asChild>
+								<Button asChild className="w-full rounded-lg bg-primary text-base font-medium shadow-sm">
+									<Link href="/waitlist">
+										Join Waitlist
+										<ArrowRight className="ml-2 size-4" />
+									</Link>
+								</Button>
+							</SheetClose>
+							<SheetClose asChild>
+								<Button asChild variant="outline" className="w-full rounded-lg text-base">
+									<Link href="/login">Sign In</Link>
+								</Button>
+							</SheetClose>
 						</div>
-					</MobileSection>
-
-					<MobileSection title="Resources" id="resources" open={open} onToggle={toggle}>
-						{resources.map((item) => (
-							<SheetClose key={item.href} asChild>
-								<NavLinkCompact item={item} />
-							</SheetClose>
-						))}
-					</MobileSection>
-
-					<MobileSection title="Company" id="company" open={open} onToggle={toggle}>
-						{company.map((item) => (
-							<SheetClose key={item.href} asChild>
-								<NavLinkCompact item={item} />
-							</SheetClose>
-						))}
-					</MobileSection>
-
-					<Separator className="my-4" />
-
-					<SheetClose asChild>
-						<Link
-							href="/pricing"
-							className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2.5"
-						>
-							<span className="text-sm font-medium">Pricing</span>
-							<Badge>$200/mo</Badge>
-						</Link>
-					</SheetClose>
-
-					<div className="pt-4 space-y-2">
-						<SheetClose asChild>
-							<Button asChild className="w-full">
-								<Link href="/waitlist">
-									Join Waitlist
-									<ArrowRight className="ml-2 size-4" />
-								</Link>
-							</Button>
-						</SheetClose>
-						<SheetClose asChild>
-							<Button asChild variant="outline" className="w-full">
-								<Link href="/login">Sign In</Link>
-							</Button>
-						</SheetClose>
-					</div>
-				</nav>
+					</nav>
+				</div>
 			</SheetContent>
 		</Sheet>
 	);
@@ -274,15 +253,15 @@ function MobileSection({
 }) {
 	const isOpen = open === id;
 	return (
-		<div className="border-b border-border/50">
+		<div className="border-b border-border last:border-0">
 			<button
 				type="button"
 				onClick={() => onToggle(id)}
-				className="flex w-full items-center justify-between py-3 text-sm font-medium"
+				className="flex w-full items-center justify-between py-4 text-sm font-medium text-foreground transition-colors hover:text-primary"
 			>
 				{title}
 				<svg
-					className={cn("size-4 text-muted-foreground transition-transform", isOpen && "rotate-180")}
+					className={cn("size-4 text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")}
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -290,7 +269,14 @@ function MobileSection({
 					<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
 				</svg>
 			</button>
-			{isOpen && <div className="pb-3">{children}</div>}
+			<div
+				className={cn(
+					"grid transition-all duration-200 ease-in-out",
+					isOpen ? "grid-rows-[1fr] pb-4 opacity-100" : "grid-rows-[0fr] opacity-0"
+				)}
+			>
+				<div className="overflow-hidden">{children}</div>
+			</div>
 		</div>
 	);
 }
@@ -298,75 +284,94 @@ function MobileSection({
 // Main Header
 export function MarketingHeader() {
 	return (
-		<header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-			<div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+		<header className="sticky top-0 z-50 w-full bg-background shadow-sm">
+			<div className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-8">
 				{/* Logo */}
-				<Link href="/" className="flex items-center gap-2.5 font-bold">
-					<div className="flex size-8 items-center justify-center rounded-lg border border-border/50 bg-muted/30">
-						<Image src="/ThorbisLogo.webp" alt="Thorbis" width={20} height={20} />
-					</div>
-					<span>Thorbis</span>
+				<Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+					<Image src="/ThorbisLogo.webp" alt="Thorbis" width={32} height={32} className="object-contain" />
+					<span className="text-xl font-bold tracking-tight">Thorbis</span>
 				</Link>
 
-				{/* Desktop Nav */}
+				{/* Desktop Nav - Centered */}
 				<NavigationMenu className="hidden lg:flex">
-					<NavigationMenuList>
+					<NavigationMenuList className="gap-2">
 						{/* Platform */}
 						<NavigationMenuItem>
-							<NavigationMenuTrigger>Platform</NavigationMenuTrigger>
+							<NavigationMenuTrigger className="h-10 rounded-lg bg-transparent px-4 text-base font-medium text-foreground transition-colors hover:bg-accent data-[state=open]:bg-accent">
+								Platform
+							</NavigationMenuTrigger>
 							<NavigationMenuContent>
-								<div className="w-[400px] p-3">
-									<div className="grid gap-1">
+								<div className="w-[520px] p-5">
+									<div className="mb-4 flex items-center justify-between px-3">
+										<h4 className="text-sm font-semibold text-foreground">Platform Features</h4>
+										<Link
+											href="/solutions"
+											className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+										>
+											View all
+											<ArrowRight className="size-3.5" />
+										</Link>
+									</div>
+									<div className="grid grid-cols-2 gap-2">
 										{platformFeatures.map((item) => (
 											<NavigationMenuLink key={item.href} asChild>
 												<NavLink item={item} />
 											</NavigationMenuLink>
 										))}
 									</div>
-									<Separator className="my-3" />
-									<Link
-										href="/solutions"
-										className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-									>
-										<Layers className="size-4" />
-										View all features
-										<ArrowRight className="ml-auto size-3" />
-									</Link>
 								</div>
 							</NavigationMenuContent>
 						</NavigationMenuItem>
 
 						{/* Industries */}
 						<NavigationMenuItem>
-							<NavigationMenuTrigger>Industries</NavigationMenuTrigger>
+							<NavigationMenuTrigger className="h-10 rounded-lg bg-transparent px-4 text-base font-medium text-foreground transition-colors hover:bg-accent data-[state=open]:bg-accent">
+								Industries
+							</NavigationMenuTrigger>
 							<NavigationMenuContent>
-								<div className="w-[480px] p-3">
-									<div className="grid grid-cols-2 gap-1">
+								<div className="w-[640px] p-5">
+									<div className="mb-4 px-3">
+										<h4 className="text-sm font-semibold text-foreground">Industries We Serve</h4>
+									</div>
+									<div className="grid grid-cols-2 gap-2">
 										{industries.map((item) => (
 											<NavigationMenuLink key={item.href} asChild>
 												<NavLink item={item} />
 											</NavigationMenuLink>
 										))}
 									</div>
-									<Separator className="my-3" />
-									<Link
-										href="/industries"
-										className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-									>
-										<Building2 className="size-4" />
-										View all industries
-										<ArrowRight className="ml-auto size-3" />
-									</Link>
+									<div className="mt-5 border-t border-border pt-4">
+										<Link
+											href="/industries"
+											className="group flex items-center justify-between rounded-lg bg-accent/50 px-5 py-4 transition-colors hover:bg-accent"
+										>
+											<div className="flex items-center gap-3">
+												<div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+													<Building2 className="size-5" />
+												</div>
+												<div>
+													<div className="text-sm font-semibold">View all industries</div>
+													<div className="text-xs text-muted-foreground">See how Thorbis works for your business</div>
+												</div>
+											</div>
+											<ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+										</Link>
+									</div>
 								</div>
 							</NavigationMenuContent>
 						</NavigationMenuItem>
 
 						{/* Resources */}
 						<NavigationMenuItem>
-							<NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+							<NavigationMenuTrigger className="h-10 rounded-lg bg-transparent px-4 text-base font-medium text-foreground transition-colors hover:bg-accent data-[state=open]:bg-accent">
+								Resources
+							</NavigationMenuTrigger>
 							<NavigationMenuContent>
-								<div className="w-[280px] p-3">
-									<div className="grid gap-1">
+								<div className="w-[340px] p-5">
+									<div className="mb-4 px-3">
+										<h4 className="text-sm font-semibold text-foreground">Resources</h4>
+									</div>
+									<div className="grid gap-2">
 										{resources.map((item) => (
 											<NavigationMenuLink key={item.href} asChild>
 												<NavLink item={item} />
@@ -379,10 +384,15 @@ export function MarketingHeader() {
 
 						{/* Company */}
 						<NavigationMenuItem>
-							<NavigationMenuTrigger>Company</NavigationMenuTrigger>
+							<NavigationMenuTrigger className="h-10 rounded-lg bg-transparent px-4 text-base font-medium text-foreground transition-colors hover:bg-accent data-[state=open]:bg-accent">
+								Company
+							</NavigationMenuTrigger>
 							<NavigationMenuContent>
-								<div className="w-[240px] p-3">
-									<div className="grid gap-1">
+								<div className="w-[300px] p-5">
+									<div className="mb-4 px-3">
+										<h4 className="text-sm font-semibold text-foreground">Company</h4>
+									</div>
+									<div className="grid gap-2">
 										{company.map((item) => (
 											<NavigationMenuLink key={item.href} asChild>
 												<NavLink item={item} />
@@ -393,32 +403,61 @@ export function MarketingHeader() {
 							</NavigationMenuContent>
 						</NavigationMenuItem>
 
-						{/* Pricing */}
+						{/* Pricing with Badge */}
 						<NavigationMenuItem>
 							<Link
 								href="/pricing"
-								className="inline-flex h-9 items-center gap-2 rounded-md px-4 text-sm font-medium text-foreground/70 transition-colors hover:bg-accent hover:text-foreground"
+								className="inline-flex h-10 items-center gap-2 rounded-lg bg-transparent px-4 text-base font-medium text-foreground transition-colors hover:bg-accent"
 							>
 								Pricing
+								<Badge variant="secondary" className="text-xs font-medium">
+									$200/mo + usage
+								</Badge>
 							</Link>
 						</NavigationMenuItem>
 					</NavigationMenuList>
 				</NavigationMenu>
 
 				{/* Actions */}
-				<div className="flex items-center gap-2">
-					<Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+				<div className="flex items-center gap-3">
+					<Button asChild variant="ghost" size="default" className="hidden rounded-lg text-base font-medium sm:inline-flex">
 						<Link href="/login">Sign in</Link>
 					</Button>
-					<Button asChild size="sm" className="hidden sm:inline-flex">
+					<Button asChild size="default" className="hidden rounded-lg bg-primary px-6 text-base font-medium shadow-sm transition-all hover:shadow-md sm:inline-flex">
 						<Link href="/waitlist">
 							Get Started
-							<ArrowRight className="ml-1.5 size-3.5" />
+							<ArrowRight className="ml-2 size-4" />
 						</Link>
 					</Button>
 					<MobileNav />
 				</div>
 			</div>
 		</header>
+	);
+}
+
+// Nav Item Component - Updated for larger, cleaner design
+function NavLink({ item }: { item: NavItem }) {
+	const Icon = item.icon;
+	return (
+		<Link
+			href={item.href}
+			className="group flex items-start gap-4 rounded-lg p-4 transition-colors hover:bg-accent"
+		>
+			<div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+				<Icon className="size-5" />
+			</div>
+			<div className="flex-1 min-w-0">
+				<div className="flex items-center gap-2">
+					<span className="text-sm font-semibold leading-none text-foreground">{item.title}</span>
+					{item.badge && (
+						<span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+							{item.badge}
+						</span>
+					)}
+				</div>
+				<p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{item.description}</p>
+			</div>
+		</Link>
 	);
 }

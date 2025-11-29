@@ -129,6 +129,9 @@ const envSchema = z.object({
 	TWILIO_MESSAGING_SERVICE_SID: z.string().optional(),
 	TWILIO_WEBHOOK_URL: optionalUrl,
 
+	// SendGrid (multi-tenant - single API key for all companies)
+	SENDGRID_API_KEY: z.string().optional(),
+
 	// Platform
 	PLATFORM_EMAIL_DOMAIN: z.string().optional(),
 	NEXT_PUBLIC_ADMIN_URL: optionalUrl,
@@ -141,6 +144,9 @@ const envSchema = z.object({
 
 	// Build
 	SKIP_ENV_VALIDATION: z.string().optional(),
+
+	// Email
+	FORCE_EMAIL_SEND: z.string().optional(),
 });
 
 // ============================================================================
@@ -261,6 +267,11 @@ export const env = {
 		fromName: parsedEnv.RESEND_FROM_NAME,
 		webhookSecret: parsedEnv.RESEND_WEBHOOK_SECRET,
 		waitlistAudienceId: parsedEnv.RESEND_WAITLIST_AUDIENCE_ID,
+	},
+
+	// SendGrid (multi-tenant - single API key for all companies)
+	sendgrid: {
+		apiKey: parsedEnv.SENDGRID_API_KEY,
 	},
 
 	// Plaid

@@ -7,32 +7,32 @@
 
 "use client";
 
-import {
-	ArrowUp,
-	Camera,
-	FileText,
-	ImageIcon,
-	Loader2,
-	MessageSquareText,
-	Plus,
-	Smile,
-	X,
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import {
+    ArrowUp,
+    Camera,
+    FileText,
+    ImageIcon,
+    Loader2,
+    MessageSquareText,
+    Plus,
+    Smile,
+    X,
+} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // =============================================================================
 // QUICK REPLY TEMPLATES - Builder Functions with Smart Defaults
@@ -161,9 +161,9 @@ type Attachment = {
 };
 
 type SmsMessageInputProps = {
-	value: string;
-	onChange: (value: string) => void;
-	onSend: () => void;
+	value?: string;
+	onChange?: (value: string) => void;
+	onSend: (text: string, attachments: Attachment[]) => void;
 	onAttach?: (files: File[]) => void;
 	sending?: boolean;
 	disabled?: boolean;
@@ -362,7 +362,7 @@ const EMOJI_CATEGORIES = [
 ];
 
 export function SmsMessageInput({
-	value,
+	value: controlledValue,
 	onChange,
 	onSend,
 	onAttach,
@@ -383,6 +383,18 @@ export function SmsMessageInput({
 	amount,
 	enableAiSuggestions = false,
 }: SmsMessageInputProps) {
+	const [internalValue, setInternalValue] = useState("");
+	const isControlled = controlledValue !== undefined;
+	const value = isControlled ? controlledValue : internalValue;
+
+	const handleChange = useCallback((newValue: string) => {
+		if (onChange) {
+			onChange(newValue);
+		} else {
+			setInternalValue(newValue);
+		}
+	}, [onChange]);
+
 	const [attachments, setAttachments] = useState<Attachment[]>([]);
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [isFocused, setIsFocused] = useState(false);
@@ -504,9 +516,11 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 						selection.removeAllRanges();
 						selection.addRange(newRange);
 
-						onChange(input.textContent || "");
+						selection.addRange(newRange);
+ 
+						handleChange(input.textContent || "");
 					} else {
-						onChange(value + emojiWithSpace);
+						handleChange(value + emojiWithSpace);
 						// Move cursor to end after state update
 						requestAnimationFrame(() => {
 							if (input) {
@@ -521,7 +535,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 						});
 					}
 				} else {
-					onChange(value + emojiWithSpace);
+					handleChange(value + emojiWithSpace);
 					requestAnimationFrame(() => {
 						if (input) {
 							input.focus();
@@ -536,7 +550,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 				}
 				input.focus();
 			} else {
-				onChange(value + emojiWithSpace);
+				handleChange(value + emojiWithSpace);
 			}
 			setShowEmojiPicker(false);
 		},
@@ -583,7 +597,12 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 	const handleSend = useCallback(() => {
 		if ((!value.trim() && attachments.length === 0) || sending || disabled)
 			return;
-		onSend();
+		onSend(value, attachments);
+		
+		if (!isControlled) {
+			setInternalValue("");
+		}
+		
 		// Clear attachments after sending
 		attachments.forEach((att) => {
 			if (att.preview) {
@@ -598,7 +617,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 			// Tab to accept AI suggestion
 			if (e.key === "Tab" && aiSuggestion) {
 				e.preventDefault();
-				onChange(value + aiSuggestion);
+				handleChange(value + aiSuggestion);
 				setAiSuggestion("");
 				// Update the contenteditable
 				if (inputRef.current) {
@@ -635,7 +654,7 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 				handleSend();
 			}
 		},
-		[handleSend, aiSuggestion, value, onChange],
+		[handleSend, aiSuggestion, value, handleChange],
 	);
 
 	// Handle paste - strip formatting and insert plain text
@@ -657,10 +676,12 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 				selection.removeAllRanges();
 				selection.addRange(newRange);
 
-				onChange(inputRef.current?.textContent || "");
+				selection.addRange(newRange);
+ 
+				handleChange(inputRef.current?.textContent || "");
 			}
 		},
-		[onChange],
+		[handleChange],
 	);
 
 	// Insert text at cursor position (for templates and merge fields)
@@ -668,13 +689,13 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 		(text: string, replace: boolean = false) => {
 			const input = inputRef.current;
 			if (!input) {
-				onChange(replace ? text : value + text);
+				handleChange(replace ? text : value + text);
 				return;
 			}
 
 			if (replace) {
 				// Replace entire content
-				onChange(text);
+				handleChange(text);
 				input.textContent = text;
 				// Move cursor to end
 				requestAnimationFrame(() => {
@@ -702,12 +723,14 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 						selection.removeAllRanges();
 						selection.addRange(newRange);
 
-						onChange(input.textContent || "");
+						selection.addRange(newRange);
+ 
+						handleChange(input.textContent || "");
 					} else {
-						onChange(value + text);
+						handleChange(value + text);
 					}
 				} else {
-					onChange(value + text);
+					handleChange(value + text);
 				}
 				input.focus();
 			}
@@ -945,7 +968,9 @@ IMPORTANT: Only return the completion text (what comes AFTER what the user typed
 								spellCheck
 								onInput={(e) => {
 									const text = e.currentTarget.textContent || "";
-									onChange(text);
+									if (onChange) {
+										onChange(text);
+									}
 								}}
 								onKeyDown={handleKeyDown}
 								onPaste={handlePaste}

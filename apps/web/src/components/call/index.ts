@@ -45,6 +45,7 @@ export {
 export { CallToolbar } from "./call-toolbar";
 export { CallWrapUpDialog } from "./call-wrap-up-dialog";
 export { CSRScheduleView } from "./csr-schedule-view";
+export { OutgoingCallRinging } from "./outgoing-call-ringing";
 
 // Enhanced Phase 1 components
 export { CustomerAlertBanner } from "./customer-alert-banner";

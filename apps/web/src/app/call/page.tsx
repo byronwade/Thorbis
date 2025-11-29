@@ -21,17 +21,31 @@
 
 import type { WebRTCCall } from "@/hooks/use-twilio-voice";
 import { AlertCircle, CalendarDays, MessageSquare } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
 	getCustomerCallData,
 	getCustomerCallDataById,
 } from "@/actions/call-customer-data";
+import { endActiveCall } from "@/actions/twilio";
 import {
 	CallToolbar,
 	CallWrapUpDialog,
 	KeyboardShortcutsHelp,
+	OutgoingCallRinging,
 } from "@/components/call";
+
+// Dynamically import video conference to reduce bundle size
+const VideoConferenceView = dynamic(
+	() =>
+		import("@/components/layout/video-conference").then((mod) => ({
+			default: mod.VideoConferenceView,
+		})),
+	{
+		loading: () => null,
+	},
+);
 import { CallWindowSkeleton } from "@/components/call/call-skeleton";
 import { CSRScheduleView } from "@/components/call/csr-schedule-view";
 import { CustomerSidebar } from "@/components/call/customer-sidebar";
@@ -65,12 +79,18 @@ function CallWindowContent() {
 	const {
 		call,
 		answerCall,
+		activateCall,
 		endCall,
 		toggleMute,
 		toggleHold,
 		toggleRecording,
 		requestVideo,
 		endVideo,
+		toggleLocalVideo,
+		toggleScreenShare,
+		toggleVirtualBackground,
+		addReaction,
+		sendChatMessage,
 		setCustomerData,
 		setCallMetadata,
 		setTwilioCallState,
@@ -106,11 +126,14 @@ function CallWindowContent() {
 	// Enhanced state for Phase 1 & 2 components
 	const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 	const [showWrapUpDialog, setShowWrapUpDialog] = useState(false);
+	const [showTransferModal, setShowTransferModal] = useState(false);
 	const [holdStartTime, setHoldStartTime] = useState<number | undefined>();
 	const [recordingStartTime, setRecordingStartTime] = useState<
 		number | undefined
 	>();
 	const [callNotes, setCallNotes] = useState("");
+	const [ringingStartTime] = useState<number>(Date.now());
+	const [ringingElapsed, setRingingElapsed] = useState(0);
 
 	// Refs for focus management
 	const mainContentRef = useRef<HTMLDivElement>(null);
@@ -286,6 +309,22 @@ function CallWindowContent() {
 		companyId,
 	]);
 
+	// Sync WebRTC call state to UI store
+	useEffect(() => {
+		if (!webrtc.currentCall) {
+			return;
+		}
+
+		// Map WebRTC call state to UI store call status
+		if (webrtc.currentCall.state === "active" && call.status !== "active") {
+			// Call was just answered - activate the call
+			activateCall();
+			setTwilioCallState("active");
+		} else if (webrtc.currentCall.state === "ended" && call.status !== "ended") {
+			setTwilioCallState("ended");
+		}
+	}, [webrtc.currentCall?.state, call.status, activateCall, setTwilioCallState]);
+
 	// Update call timer
 	useEffect(() => {
 		if (call.status !== "active" || !call.startTime) {
@@ -298,6 +337,19 @@ function CallWindowContent() {
 
 		return () => clearInterval(interval);
 	}, [call.status, call.startTime]);
+
+	// Update ringing timer for outbound calls
+	useEffect(() => {
+		if (call.status === "active" || direction !== "outbound") {
+			return;
+		}
+
+		const interval = setInterval(() => {
+			setRingingElapsed(Math.floor((Date.now() - ringingStartTime) / 1000));
+		}, 1000);
+
+		return () => clearInterval(interval);
+	}, [call.status, direction, ringingStartTime]);
 
 	// Handle messages from main window
 	useEffect(() => {
@@ -351,7 +403,7 @@ function CallWindowContent() {
 
 	// Call action handlers
 	const handleCallAction = useCallback(
-		(action: string) => {
+		async (action: string) => {
 			if (!callId) {
 				return;
 			}
@@ -409,6 +461,25 @@ function CallWindowContent() {
 
 				case "force_end":
 					// Force end without wrap-up (used after completing wrap-up)
+					try {
+						// Try to disconnect WebRTC call first
+						await webrtc.endCall();
+					} catch (error) {
+						console.debug("WebRTC endCall error (may be normal if not connected):", error);
+					}
+					
+					// End the call on Twilio's servers
+					if (companyId && callId) {
+						try {
+							await endActiveCall({
+								companyId,
+								callSid: callId,
+							});
+						} catch (error) {
+							console.error("Failed to end call on Twilio:", error);
+						}
+					}
+					
 					endCall();
 					clearTranscript();
 					sendToMain({
@@ -432,6 +503,7 @@ function CallWindowContent() {
 			toggleRecording,
 			endCall,
 			clearTranscript,
+			webrtc,
 		],
 	);
 
@@ -490,9 +562,41 @@ function CallWindowContent() {
 	}, [callId, call.videoStatus, requestVideo, endVideo]);
 
 	const handleTransfer = useCallback(() => {
-		setShowTransfer(true);
-		// Transfer functionality would be implemented here
+		setShowTransferModal(true);
 	}, []);
+
+	const handleCancelCall = useCallback(async () => {
+		try {
+			// Try to disconnect WebRTC call first
+			await webrtc.endCall();
+		} catch (error) {
+			console.debug("WebRTC endCall error (may be normal if not connected):", error);
+		}
+		
+		// End the call on Twilio's servers
+		if (companyId && callId) {
+			try {
+				await endActiveCall({
+					companyId,
+					callSid: callId,
+				});
+			} catch (error) {
+				console.error("Failed to end call on Twilio:", error);
+			}
+		}
+		
+		endCall();
+		clearTranscript();
+		if (callId) {
+			sendToMain({
+				type: "CALL_ACTION",
+				callId,
+				action: "end",
+				timestamp: Date.now(),
+			});
+		}
+		setTimeout(() => window.close(), 500);
+	}, [callId, endCall, clearTranscript, webrtc, companyId]);
 
 	const handleClose = useCallback(() => {
 		window.close();
@@ -539,6 +643,7 @@ function CallWindowContent() {
 	}
 
 	const isActive = call.status === "active";
+	const isOutboundRinging = direction === "outbound" && !isActive;
 	const customerData = call.customerData as CustomerCallData | null;
 
 	// Get caller name from customer data or call data
@@ -552,6 +657,57 @@ function CallWindowContent() {
 	// Get caller number from customer data or call data
 	const callerNumber =
 		customerData?.customer?.phone || call.caller?.number || "No number";
+
+	// Get the "to" number from URL params for outbound calls
+	const toNumber = searchParams?.get("to") || "";
+	const fromNumber = searchParams?.get("from") || "";
+
+	// Show Skype-style ringing screen for outbound calls that haven't connected
+	if (isOutboundRinging) {
+		return (
+			<OutgoingCallRinging
+				toNumber={toNumber}
+				fromNumber={fromNumber}
+				customerData={customerData}
+				isLoadingCustomer={isLoadingCustomer}
+				onCancel={handleCancelCall}
+				onTransfer={handleTransfer}
+				onVideoCall={handleVideoToggle}
+				elapsedTime={ringingElapsed}
+			/>
+		);
+	}
+
+	// Show video conference view when video is active
+	if (
+		isActive &&
+		(call.videoStatus === "requesting" ||
+			call.videoStatus === "ringing" ||
+			call.videoStatus === "connected")
+	) {
+		return (
+			<VideoConferenceView
+				addReaction={addReaction}
+				call={call}
+				callDuration={formatDuration(currentTime)}
+				caller={{
+					name: callerName,
+					number: callerNumber,
+					avatar: customerData?.customer?.avatar_url,
+				}}
+				onEndCall={() => handleCallAction("end")}
+				onEndVideo={endVideo}
+				onToggleLocalVideo={toggleLocalVideo}
+				sendChatMessage={sendChatMessage}
+				toggleMute={() => handleCallAction(call.isMuted ? "unmute" : "mute")}
+				toggleRecording={() =>
+					handleCallAction(call.isRecording ? "record_stop" : "record_start")
+				}
+				toggleScreenShare={toggleScreenShare}
+				toggleVirtualBackground={toggleVirtualBackground}
+			/>
+		);
+	}
 
 	return (
 		<div className="bg-background flex h-screen flex-col">
