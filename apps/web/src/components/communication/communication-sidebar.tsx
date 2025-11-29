@@ -4,7 +4,6 @@ import { ChevronRight, type LucideIcon, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ComponentProps } from "react";
-import { CommunicationSwitcher } from "@/components/communication/communication-switcher";
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,9 @@ import {
 	SidebarMenuBadge,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
@@ -53,6 +55,11 @@ export type CommunicationAdditionalSection = {
 		badge?: number | string;
 		folderId?: string; // For delete functionality
 		onDelete?: (folderId: string) => void; // Delete handler
+		items?: Array<{
+			title: string;
+			url?: string;
+			badge?: number | string;
+		}>; // Nested sub-items
 	}>;
 	onAddClick?: () => void;
 	addButton?: React.ReactNode; // Custom add button component (e.g., CreateFolderDialog)
@@ -159,7 +166,6 @@ export function CommunicationSidebar({
 	return (
 		<Sidebar collapsible="offcanvas" variant="inset" {...props}>
 			<SidebarHeader className="gap-3 px-3 pt-4 md:pt-0 pb-2">
-				<CommunicationSwitcher />
 				{primaryAction && (
 					<Button
 						className="w-full h-11 md:h-9 font-medium text-base md:text-sm"
@@ -200,27 +206,31 @@ export function CommunicationSidebar({
 					>
 						<SidebarGroup>
 							<CollapsibleTrigger asChild>
-								<div className="flex items-center justify-between px-2 cursor-pointer hover:bg-sidebar-accent/50 rounded-md transition-colors">
-									<SidebarGroupLabel className="flex items-center gap-2">
+								<Button
+									variant="ghost"
+									className="w-full justify-start px-2 h-auto py-1.5 hover:bg-sidebar-accent/50"
+									type="button"
+								>
+									<SidebarGroupLabel className="flex items-center gap-2 w-full">
 										<ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-										{section.label}
+										<span className="flex-1 text-left">{section.label}</span>
+										{section.addButton ||
+											(section.onAddClick && (
+												<Button
+													variant="ghost"
+													size="icon"
+													className="h-6 w-6"
+													onClick={(e) => {
+														e.stopPropagation();
+														section.onAddClick?.();
+													}}
+													type="button"
+												>
+													<Plus className="size-4" />
+												</Button>
+											))}
 									</SidebarGroupLabel>
-									{section.addButton ||
-										(section.onAddClick && (
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-6 w-6"
-												onClick={(e) => {
-													e.stopPropagation();
-													section.onAddClick?.();
-												}}
-												type="button"
-											>
-												<Plus className="size-4" />
-											</Button>
-										))}
-								</div>
+								</Button>
 							</CollapsibleTrigger>
 							<CollapsibleContent>
 								<SidebarMenu>
@@ -228,17 +238,124 @@ export function CommunicationSidebar({
 										<ScrollArea
 											className={section.scrollHeight || "h-[200px] w-full"}
 										>
-											{section.items.map((item, itemIndex) => (
+											{section.items.map((item, itemIndex) => {
+												const isActive = item.url ? isUrlActive(item.url) : false;
+												const hasSubItems = item.items && item.items.length > 0;
+
+												return (
+													<SidebarMenuItem key={itemIndex}>
+														<div className="group/item flex items-center w-full">
+															{item.url ? (
+																<SidebarMenuButton
+																	asChild
+																	className="flex-1"
+																	isActive={isActive}
+																>
+																	<Link href={item.url}>
+																		{item.icon && (
+																			<item.icon className="size-4" />
+																		)}
+																		<span>{item.title}</span>
+																		{item.badge !== undefined && (
+																			<SidebarMenuBadge>
+																				{typeof item.badge === "number"
+																					? item.badge.toLocaleString()
+																					: item.badge}
+																			</SidebarMenuBadge>
+																		)}
+																	</Link>
+																</SidebarMenuButton>
+															) : (
+																<SidebarMenuButton
+																	onClick={item.onClick}
+																	type={item.onClick ? "button" : undefined}
+																	className="flex-1"
+																>
+																	{item.icon && <item.icon className="size-4" />}
+																	<span>{item.title}</span>
+																	{item.badge !== undefined && item.badge > 0 && (
+																		<SidebarMenuBadge>
+																			{typeof item.badge === "number"
+																				? item.badge.toLocaleString()
+																				: item.badge}
+																		</SidebarMenuBadge>
+																	)}
+																</SidebarMenuButton>
+															)}
+															{item.folderId && item.onDelete && (
+																<Button
+																	variant="ghost"
+																	size="icon"
+																	className="h-6 w-6 opacity-0 group-hover/item:opacity-100 transition-opacity ml-auto"
+																	onClick={(e) => {
+																		e.preventDefault();
+																		e.stopPropagation();
+																		if (
+																			confirm(
+																				`Are you sure you want to delete "${item.title}"?`,
+																			)
+																		) {
+																			item.onDelete?.(item.folderId!);
+																		}
+																	}}
+																	title="Delete folder"
+																>
+																	<Trash2 className="h-3.5 w-3.5 text-destructive" />
+																</Button>
+															)}
+														</div>
+														{hasSubItems && (
+															<SidebarMenuSub>
+																{item.items!.map((subItem, subIndex) => {
+																	const isSubActive = subItem.url
+																		? isUrlActive(subItem.url)
+																		: false;
+																	return (
+																		<SidebarMenuSubItem key={subIndex}>
+																			<SidebarMenuSubButton
+																				asChild
+																				isActive={isSubActive}
+																			>
+																				<Link href={subItem.url || "#"}>
+																					<span>{subItem.title}</span>
+																					{subItem.badge !== undefined &&
+																						subItem.badge > 0 && (
+																							<SidebarMenuBadge>
+																								{typeof subItem.badge ===
+																								"number"
+																									? subItem.badge.toLocaleString()
+																									: subItem.badge}
+																							</SidebarMenuBadge>
+																						)}
+																				</Link>
+																			</SidebarMenuSubButton>
+																		</SidebarMenuSubItem>
+																	);
+																})}
+															</SidebarMenuSub>
+														)}
+													</SidebarMenuItem>
+												);
+											})}
+										</ScrollArea>
+									) : (
+										section.items.map((item, itemIndex) => {
+											const isActive = item.url ? isUrlActive(item.url) : false;
+											const hasSubItems = item.items && item.items.length > 0;
+
+											return (
 												<SidebarMenuItem key={itemIndex}>
 													<div className="group/item flex items-center w-full">
 														{item.url ? (
-															<SidebarMenuButton asChild className="flex-1">
+															<SidebarMenuButton
+																asChild
+																className="flex-1"
+																isActive={isActive}
+															>
 																<Link href={item.url}>
-																	{item.icon && (
-																		<item.icon className="size-4" />
-																	)}
+																	{item.icon && <item.icon className="size-4" />}
 																	<span>{item.title}</span>
-																	{item.badge !== undefined && (
+																	{item.badge !== undefined && item.badge > 0 && (
 																		<SidebarMenuBadge>
 																			{typeof item.badge === "number"
 																				? item.badge.toLocaleString()
@@ -255,12 +372,10 @@ export function CommunicationSidebar({
 															>
 																{item.icon && <item.icon className="size-4" />}
 																<span>{item.title}</span>
-																{item.badge !== undefined && item.badge > 0 && (
-																	<SidebarMenuBadge>
-																		{typeof item.badge === "number"
-																			? item.badge.toLocaleString()
-																			: item.badge}
-																	</SidebarMenuBadge>
+																{item.badge !== undefined && (
+																	<span className="ml-auto text-xs text-muted-foreground">
+																		{item.badge}
+																	</span>
 																)}
 															</SidebarMenuButton>
 														)}
@@ -286,66 +401,39 @@ export function CommunicationSidebar({
 															</Button>
 														)}
 													</div>
+													{hasSubItems && (
+														<SidebarMenuSub>
+															{item.items!.map((subItem, subIndex) => {
+																const isSubActive = subItem.url
+																	? isUrlActive(subItem.url)
+																	: false;
+																return (
+																	<SidebarMenuSubItem key={subIndex}>
+																		<SidebarMenuSubButton
+																			asChild
+																			isActive={isSubActive}
+																		>
+																			<Link href={subItem.url || "#"}>
+																				<span>{subItem.title}</span>
+																				{subItem.badge !== undefined &&
+																					subItem.badge > 0 && (
+																						<SidebarMenuBadge>
+																							{typeof subItem.badge ===
+																							"number"
+																								? subItem.badge.toLocaleString()
+																								: subItem.badge}
+																						</SidebarMenuBadge>
+																					)}
+																			</Link>
+																		</SidebarMenuSubButton>
+																	</SidebarMenuSubItem>
+																);
+															})}
+														</SidebarMenuSub>
+													)}
 												</SidebarMenuItem>
-											))}
-										</ScrollArea>
-									) : (
-										section.items.map((item, itemIndex) => (
-											<SidebarMenuItem key={itemIndex}>
-												<div className="group/item flex items-center w-full">
-													{item.url ? (
-														<SidebarMenuButton asChild className="flex-1">
-															<Link href={item.url}>
-																{item.icon && <item.icon className="size-4" />}
-																<span>{item.title}</span>
-																{item.badge !== undefined && item.badge > 0 && (
-																	<SidebarMenuBadge>
-																		{typeof item.badge === "number"
-																			? item.badge.toLocaleString()
-																			: item.badge}
-																	</SidebarMenuBadge>
-																)}
-															</Link>
-														</SidebarMenuButton>
-													) : (
-														<SidebarMenuButton
-															onClick={item.onClick}
-															type={item.onClick ? "button" : undefined}
-															className="flex-1"
-														>
-															{item.icon && <item.icon className="size-4" />}
-															<span>{item.title}</span>
-															{item.badge !== undefined && (
-																<span className="ml-auto text-xs text-muted-foreground">
-																	{item.badge}
-																</span>
-															)}
-														</SidebarMenuButton>
-													)}
-													{item.folderId && item.onDelete && (
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-6 w-6 opacity-0 group-hover/item:opacity-100 transition-opacity ml-auto"
-															onClick={(e) => {
-																e.preventDefault();
-																e.stopPropagation();
-																if (
-																	confirm(
-																		`Are you sure you want to delete "${item.title}"?`,
-																	)
-																) {
-																	item.onDelete?.(item.folderId!);
-																}
-															}}
-															title="Delete folder"
-														>
-															<Trash2 className="h-3.5 w-3.5 text-destructive" />
-														</Button>
-													)}
-												</div>
-											</SidebarMenuItem>
-										))
+											);
+										})
 									)}
 								</SidebarMenu>
 							</CollapsibleContent>

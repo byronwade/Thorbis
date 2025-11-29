@@ -413,6 +413,22 @@ export function UnifiedInboxPageClient({
 					const { getCommunicationsAction } = await import(
 						"@/actions/communications"
 					);
+					// Build filters based on folder
+					let statusFilter: string | undefined;
+					let directionFilter: "inbound" | "outbound" | undefined;
+					let isArchivedFilter: boolean | undefined;
+					let isDraftFilter: boolean | undefined;
+
+					if (folder === "draft") {
+						isDraftFilter = true;
+					} else if (folder === "archived") {
+						isArchivedFilter = true;
+					} else if (folder === "sent") {
+						directionFilter = "outbound";
+					} else if (folder && ["archive", "trash", "spam"].includes(folder)) {
+						statusFilter = folder;
+					}
+
 					const result = await getCommunicationsAction({
 						teamMemberId,
 						companyId,
@@ -422,19 +438,18 @@ export function UnifiedInboxPageClient({
 						// If viewing company inbox, filter by category
 						category:
 							inboxType === "company" ? (category as EmailCategory) : undefined,
-						// If viewing personal inbox, filter by folder (unless it's "all")
-						// For "sent", "archive", "trash", etc.
-						status:
-							folder && ["archive", "trash", "spam"].includes(folder)
-								? folder
-								: undefined,
+						// Status filter for archive, trash, spam
+						status: statusFilter,
 						// Special handling for "sent" folder - filter by direction
-						direction: folder === "sent" ? "outbound" : undefined,
+						direction: directionFilter,
 						// Filter by assigned user if needed
 						assignedTo: assignedFilter === "me" ? "me" : undefined,
 						searchQuery: searchQuery || undefined,
 						sortBy: "created_at",
 						sortOrder: "desc",
+						// Add draft and archived filters
+						isDraft: isDraftFilter,
+						isArchived: isArchivedFilter,
 					});
 
 					if (result.success && result.data) {
@@ -517,17 +532,22 @@ export function UnifiedInboxPageClient({
 		}
 	}, []);
 
+	// Refetch when URL params change (folder, inboxType, category, etc.)
+	useEffect(() => {
+		fetchCommunications();
+	}, [folder, inboxType, category, assignedFilter, fetchCommunications]);
+
 	// Refetch when type filter changes
 	useEffect(() => {
 		fetchCommunications();
-	}, [typeFilter]);
+	}, [typeFilter, fetchCommunications]);
 
 	// Refetch when search changes
 	useEffect(() => {
 		if (searchQuery) {
 			fetchCommunications();
 		}
-	}, [searchQuery]);
+	}, [searchQuery, fetchCommunications]);
 
 	// Auto-refresh using consolidated hook
 	// useCommunicationRefresh(fetchCommunications, {

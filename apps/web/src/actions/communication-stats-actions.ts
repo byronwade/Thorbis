@@ -31,6 +31,327 @@ export async function getCommunicationCountsAction(): Promise<{
 }
 
 /**
+ * Get unified communication counts for drafts and archived across all types
+ * Returns counts for personal and company inboxes with sub-folders
+ */
+export async function getUnifiedCommunicationCountsAction(): Promise<{
+	success: boolean;
+	counts?: {
+		personal_drafts?: number;
+		personal_archived?: number;
+		company_general_inbox?: number;
+		company_general_starred?: number;
+		company_general_sent?: number;
+		company_general_drafts?: number;
+		company_general_archived?: number;
+		company_sales_inbox?: number;
+		company_sales_starred?: number;
+		company_sales_sent?: number;
+		company_sales_drafts?: number;
+		company_sales_archived?: number;
+		company_support_inbox?: number;
+		company_support_starred?: number;
+		company_support_sent?: number;
+		company_support_drafts?: number;
+		company_support_archived?: number;
+		company_billing_inbox?: number;
+		company_billing_starred?: number;
+		company_billing_sent?: number;
+		company_billing_drafts?: number;
+		company_billing_archived?: number;
+	};
+	error?: string;
+}> {
+	try {
+		const companyId = await getActiveCompanyId();
+		if (!companyId) {
+			return { success: false, error: "No active company found" };
+		}
+
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Database connection failed" };
+		}
+
+		// Fetch all counts in parallel
+		const [
+			personalDraftsResult,
+			personalArchivedResult,
+			generalInboxResult,
+			generalStarredResult,
+			generalSentResult,
+			generalDraftsResult,
+			generalArchivedResult,
+			salesInboxResult,
+			salesStarredResult,
+			salesSentResult,
+			salesDraftsResult,
+			salesArchivedResult,
+			supportInboxResult,
+			supportStarredResult,
+			supportSentResult,
+			supportDraftsResult,
+			supportArchivedResult,
+			billingInboxResult,
+			billingStarredResult,
+			billingSentResult,
+			billingDraftsResult,
+			billingArchivedResult,
+		] = await Promise.all([
+			// Personal drafts - all communication types with status='draft'
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("status", "draft")
+				.is("deleted_at", null),
+			
+			// Personal archived - all communication types with is_archived=true
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("is_archived", true)
+				.is("deleted_at", null),
+			
+			// Company General - Inbox
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "general")
+				.eq("direction", "inbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company General - Starred
+			supabase
+				.from("communications")
+				.select("tags")
+				.eq("company_id", companyId)
+				.eq("category", "general")
+				.is("deleted_at", null),
+			
+			// Company General - Sent
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "general")
+				.eq("direction", "outbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company General - Drafts
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "general")
+				.eq("status", "draft")
+				.is("deleted_at", null),
+			
+			// Company General - Archived
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "general")
+				.eq("is_archived", true)
+				.is("deleted_at", null),
+			
+			// Company Sales - Inbox
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "sales")
+				.eq("direction", "inbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Sales - Starred
+			supabase
+				.from("communications")
+				.select("tags")
+				.eq("company_id", companyId)
+				.eq("category", "sales")
+				.is("deleted_at", null),
+			
+			// Company Sales - Sent
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "sales")
+				.eq("direction", "outbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Sales - Drafts
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "sales")
+				.eq("status", "draft")
+				.is("deleted_at", null),
+			
+			// Company Sales - Archived
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "sales")
+				.eq("is_archived", true)
+				.is("deleted_at", null),
+			
+			// Company Support - Inbox
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "support")
+				.eq("direction", "inbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Support - Starred
+			supabase
+				.from("communications")
+				.select("tags")
+				.eq("company_id", companyId)
+				.eq("category", "support")
+				.is("deleted_at", null),
+			
+			// Company Support - Sent
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "support")
+				.eq("direction", "outbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Support - Drafts
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "support")
+				.eq("status", "draft")
+				.is("deleted_at", null),
+			
+			// Company Support - Archived
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "support")
+				.eq("is_archived", true)
+				.is("deleted_at", null),
+			
+			// Company Billing - Inbox
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "billing")
+				.eq("direction", "inbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Billing - Starred
+			supabase
+				.from("communications")
+				.select("tags")
+				.eq("company_id", companyId)
+				.eq("category", "billing")
+				.is("deleted_at", null),
+			
+			// Company Billing - Sent
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "billing")
+				.eq("direction", "outbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft"),
+			
+			// Company Billing - Drafts
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "billing")
+				.eq("status", "draft")
+				.is("deleted_at", null),
+			
+			// Company Billing - Archived
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("category", "billing")
+				.eq("is_archived", true)
+				.is("deleted_at", null),
+		]);
+
+		// Count starred items in memory (items with "starred" tag)
+		const countStarred = (data: any[]) => {
+			return (data ?? []).filter((comm) => {
+				const tags = comm.tags as string[] | null;
+				return Array.isArray(tags) && tags.includes("starred");
+			}).length;
+		};
+
+		return {
+			success: true,
+			counts: {
+				personal_drafts: personalDraftsResult.count ?? 0,
+				personal_archived: personalArchivedResult.count ?? 0,
+				company_general_inbox: generalInboxResult.count ?? 0,
+				company_general_starred: countStarred(generalStarredResult.data ?? []),
+				company_general_sent: generalSentResult.count ?? 0,
+				company_general_drafts: generalDraftsResult.count ?? 0,
+				company_general_archived: generalArchivedResult.count ?? 0,
+				company_sales_inbox: salesInboxResult.count ?? 0,
+				company_sales_starred: countStarred(salesStarredResult.data ?? []),
+				company_sales_sent: salesSentResult.count ?? 0,
+				company_sales_drafts: salesDraftsResult.count ?? 0,
+				company_sales_archived: salesArchivedResult.count ?? 0,
+				company_support_inbox: supportInboxResult.count ?? 0,
+				company_support_starred: countStarred(supportStarredResult.data ?? []),
+				company_support_sent: supportSentResult.count ?? 0,
+				company_support_drafts: supportDraftsResult.count ?? 0,
+				company_support_archived: supportArchivedResult.count ?? 0,
+				company_billing_inbox: billingInboxResult.count ?? 0,
+				company_billing_starred: countStarred(billingStarredResult.data ?? []),
+				company_billing_sent: billingSentResult.count ?? 0,
+				company_billing_drafts: billingDraftsResult.count ?? 0,
+				company_billing_archived: billingArchivedResult.count ?? 0,
+			},
+		};
+	} catch (error) {
+		console.error("Error getting unified communication counts:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
  * Get comprehensive communication statistics
  */
 export async function getCommunicationStatsAction(days: number = 30): Promise<{

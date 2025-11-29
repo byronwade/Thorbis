@@ -68,6 +68,8 @@ const config = {
 					"slide-out-to-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1)",
 				"fade-in": "fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1)",
 				"fade-out": "fade-out 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+				"pulse-slow": "pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+				"pulse-ring": "pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
 			},
 			keyframes: {
 				"spring-in": {
@@ -94,6 +96,14 @@ const config = {
 				"fade-out": {
 					from: { opacity: "1" },
 					to: { opacity: "0" },
+				},
+				"pulse-slow": {
+					"0%, 100%": { opacity: "0.4" },
+					"50%": { opacity: "0.8" },
+				},
+				"pulse-ring": {
+					"0%": { transform: "scale(1)", opacity: "0.8" },
+					"100%": { transform: "scale(1.5)", opacity: "0" },
 				},
 			},
 			transitionDuration: {

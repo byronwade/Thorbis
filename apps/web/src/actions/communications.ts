@@ -305,6 +305,15 @@ const getCommunicationsSchema = z.object({
 	type: z.enum(["email", "sms", "call", "voicemail"]).optional(),
 	customerId: z.string().uuid().optional(),
 	jobId: z.string().uuid().optional(),
+	category: z.enum(["support", "sales", "billing", "general"]).optional(),
+	status: z.string().optional(),
+	direction: z.enum(["inbound", "outbound"]).optional(),
+	assignedTo: z.string().optional(),
+	searchQuery: z.string().optional(),
+	sortBy: z.string().optional(),
+	sortOrder: z.enum(["asc", "desc"]).optional(),
+	isDraft: z.boolean().optional(),
+	isArchived: z.boolean().optional(),
 	limit: z.number().min(1).max(200).default(100),
 	offset: z.number().min(0).default(0),
 });
@@ -343,6 +352,41 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 		}
 		if (payload.jobId) {
 			query = query.eq("job_id", payload.jobId);
+		}
+		if (payload.category) {
+			query = query.eq("category", payload.category);
+		}
+		if (payload.status) {
+			query = query.eq("status", payload.status);
+		}
+		if (payload.direction) {
+			query = query.eq("direction", payload.direction);
+		}
+		if (payload.assignedTo === "me") {
+			// Filter by assigned_to matching teamMemberId
+			query = query.eq("assigned_to", payload.teamMemberId);
+		} else if (payload.assignedTo) {
+			query = query.eq("assigned_to", payload.assignedTo);
+		}
+		if (payload.isDraft !== undefined) {
+			if (payload.isDraft) {
+				query = query.eq("status", "draft");
+			} else {
+				query = query.neq("status", "draft");
+			}
+		}
+		if (payload.isArchived !== undefined) {
+			query = query.eq("is_archived", payload.isArchived);
+		}
+		if (payload.searchQuery) {
+			query = query.or(
+				`subject.ilike.%${payload.searchQuery}%,body.ilike.%${payload.searchQuery}%,from_address.ilike.%${payload.searchQuery}%,to_address.ilike.%${payload.searchQuery}%`,
+			);
+		}
+		if (payload.sortBy) {
+			query = query.order(payload.sortBy, {
+				ascending: payload.sortOrder === "asc",
+			});
 		}
 		if (payload.offset > 0) {
 			query = query.range(payload.offset, payload.offset + payload.limit - 1);

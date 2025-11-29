@@ -93,6 +93,8 @@ export interface CommunicationsFilters {
 	limit?: number;
 	offset?: number;
 	channel?: string;
+	isDraft?: boolean;
+	isArchived?: boolean;
 }
 
 // =============================================================================
@@ -165,6 +167,20 @@ const getCommunications = cache(
 
 		if (filters.visibilityScope) {
 			query = query.eq("visibility_scope", filters.visibilityScope);
+		}
+
+		// Filter by draft status
+		if (filters.isDraft !== undefined) {
+			if (filters.isDraft) {
+				query = query.eq("status", "draft");
+			} else {
+				query = query.neq("status", "draft");
+			}
+		}
+
+		// Filter by archived status
+		if (filters.isArchived !== undefined) {
+			query = query.eq("is_archived", filters.isArchived);
 		}
 
 		if (filters.searchQuery) {
