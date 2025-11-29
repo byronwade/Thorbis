@@ -30,8 +30,8 @@ export function PricingBackground() {
 				}}
 			/>
 
-			{/* Floating Price Tags */}
-			<div className="absolute inset-0">
+			{/* Floating Price Tags - Hidden on mobile to reduce clutter */}
+			<div className="absolute inset-0 hidden md:block">
 				{/* Savings tag - Left */}
 				<div
 					className="absolute left-[8%] top-[20%] flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1.5 shadow-lg backdrop-blur-sm"

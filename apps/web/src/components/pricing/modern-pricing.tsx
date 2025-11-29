@@ -370,64 +370,67 @@ export function ModernPricing() {
 					showSticky ? "translate-y-0" : "translate-y-full"
 				}`}
 			>
-				<div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-					<div className="flex items-center gap-4">
+				<div className="mx-auto flex max-w-7xl flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-4 sm:px-6 py-3">
+					<div className="flex items-center gap-3 sm:gap-4">
 						<div>
-							<div className="text-sm text-muted-foreground">
+							<div className="text-xs sm:text-sm text-muted-foreground">
 								Your estimated monthly cost
 							</div>
-							<div className="text-2xl font-bold">
+							<div className="text-xl sm:text-2xl font-bold">
 								${totalMonthlyCost.toFixed(2)}
+							</div>
+							<div className="text-xs text-muted-foreground sm:hidden">
+								$200 base + ${totalUsageCost.toFixed(2)} usage
 							</div>
 						</div>
 						<div className="hidden text-xs text-muted-foreground sm:block">
 							$200 base + ${totalUsageCost.toFixed(2)} usage
 						</div>
 					</div>
-					<Button asChild>
+					<Button asChild className="w-full sm:w-auto">
 						<Link href="/waitlist">Get Started</Link>
 					</Button>
 				</div>
 			</div>
 
 			{/* Hero Section */}
-			<section className="relative overflow-hidden py-20 sm:py-32">
+			<section className="relative overflow-hidden py-12 sm:py-20 lg:py-32">
 				<PricingBackground />
-				<div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+				<div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
-						<Badge className="mb-4" variant="outline">
+						<Badge className="mb-4 text-xs sm:text-sm" variant="outline">
 							Transparent Usage-Based Pricing
 						</Badge>
-						<h1 className="text-5xl font-bold tracking-tight sm:text-7xl">
-							$200<span className="text-3xl font-normal">/month</span>
+						<h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-7xl">
+							$200<span className="text-2xl sm:text-3xl font-normal">/month</span>
 						</h1>
-						<p className="text-muted-foreground mt-6 text-xl">
+						<p className="text-muted-foreground mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl px-4">
 							Plus pay only for what you use — no per-user fees, no minimums, no
 							surprises
 						</p>
-						<div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
-							<div className="flex items-center gap-2">
-								<Check className="text-primary h-5 w-5" />
+						<div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-8 gap-y-2 text-xs sm:text-sm px-4">
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
 								<span>No per-user pricing</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="text-primary h-5 w-5" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
 								<span>No contracts</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="text-primary h-5 w-5" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
 								<span>No usage caps</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Infinity className="text-primary h-5 w-5" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Infinity className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
 								<span>Unlimited everything</span>
 							</div>
 						</div>
-						<div className="mt-10 flex items-center justify-center gap-4">
-							<Button asChild size="lg">
+						<div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 px-4">
+							<Button asChild size="lg" className="w-full sm:w-auto">
 								<Link href="/waitlist">Join Waitlist</Link>
 							</Button>
-							<Button asChild size="lg" variant="outline">
+							<Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
 								<Link href="/demo">Watch Demo</Link>
 							</Button>
 						</div>
@@ -436,29 +439,29 @@ export function ModernPricing() {
 			</section>
 
 			{/* Video Explainer */}
-			<section className="border-b py-12">
-				<div className="mx-auto max-w-4xl px-6 lg:px-8">
-					<div className="relative overflow-hidden rounded-2xl border bg-muted/30">
+			<section className="border-b py-8 sm:py-12">
+				<div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+					<div className="relative overflow-hidden rounded-xl sm:rounded-2xl border bg-muted/30">
 						<div className="aspect-video flex items-center justify-center">
-							<div className="text-center">
-								<div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 transition-transform hover:scale-105">
-									<PlayCircle className="h-10 w-10 text-primary" />
+							<div className="text-center px-4">
+								<div className="mx-auto mb-3 sm:mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-primary/10 transition-transform hover:scale-105">
+									<PlayCircle className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
 								</div>
-								<h3 className="text-lg font-semibold">
+								<h3 className="text-base sm:text-lg font-semibold">
 									See How Pay-As-You-Go Works
 								</h3>
-								<p className="mt-1 text-sm text-muted-foreground">
+								<p className="mt-1 text-xs sm:text-sm text-muted-foreground">
 									60-second explainer on our transparent pricing model
 								</p>
 							</div>
 						</div>
-						<div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-lg bg-card/90 px-4 py-2 backdrop-blur-sm">
-							<div className="flex items-center gap-2 text-sm">
+						<div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 rounded-lg bg-card/90 px-3 sm:px-4 py-2 backdrop-blur-sm">
+							<div className="flex items-center gap-2 text-xs sm:text-sm">
 								<span className="font-medium">How Thorbis Pricing Works</span>
-								<span className="text-muted-foreground">• 1:02</span>
+								<span className="text-muted-foreground hidden sm:inline">• 1:02</span>
 							</div>
-							<Button size="sm" variant="ghost">
-								<PlayCircle className="mr-1 h-4 w-4" />
+							<Button size="sm" variant="ghost" className="h-7 sm:h-auto text-xs sm:text-sm">
+								<PlayCircle className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
 								Play
 							</Button>
 						</div>
@@ -467,20 +470,20 @@ export function ModernPricing() {
 			</section>
 
 			{/* What's Included */}
-			<section className="py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-2xl text-center">
-						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
 							Everything included in $200/month
 						</h2>
-						<p className="text-muted-foreground mt-4 text-lg">
+						<p className="text-muted-foreground mt-3 sm:mt-4 text-base sm:text-lg">
 							Full platform access with unlimited users and data
 						</p>
 					</div>
-					<div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="mx-auto mt-8 sm:mt-12 grid max-w-4xl grid-cols-1 gap-x-4 sm:gap-x-8 gap-y-3 sm:gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
 						{BASE_FEATURES.map((feature) => (
-							<div key={feature} className="flex items-start gap-3">
-								<Check className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+							<div key={feature} className="flex items-start gap-2 sm:gap-3">
+								<Check className="text-primary mt-0.5 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
 								<span className="text-sm">{feature}</span>
 							</div>
 						))}
@@ -489,29 +492,29 @@ export function ModernPricing() {
 			</section>
 
 			{/* Testimonials */}
-			<section className="border-y bg-muted/20 py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="border-y bg-muted/20 py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-2xl text-center">
-						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
 							What contractors are saying
 						</h2>
-						<p className="text-muted-foreground mt-4 text-lg">
+						<p className="text-muted-foreground mt-3 sm:mt-4 text-base sm:text-lg">
 							Real businesses, real savings
 						</p>
 					</div>
-					<div className="mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-3">
+					<div className="mx-auto mt-8 sm:mt-12 grid max-w-6xl gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 						{TESTIMONIALS.map((testimonial) => (
 							<Card key={testimonial.author} className="relative">
 								<CardHeader className="pb-2">
-									<Quote className="h-8 w-8 text-primary/20" />
+									<Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary/20" />
 								</CardHeader>
 								<CardContent className="space-y-4">
 									<p className="text-sm leading-relaxed">
 										"{testimonial.quote}"
 									</p>
-									<div className="flex items-center justify-between border-t pt-4">
-										<div>
-											<div className="font-semibold">{testimonial.author}</div>
+									<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 border-t pt-4">
+										<div className="flex-1">
+											<div className="font-semibold text-sm sm:text-base">{testimonial.author}</div>
 											<div className="text-xs text-muted-foreground">
 												{testimonial.role}, {testimonial.company}
 											</div>
@@ -519,8 +522,8 @@ export function ModernPricing() {
 												{testimonial.location}
 											</div>
 										</div>
-										<div className="text-right">
-											<div className="text-lg font-bold text-green-500">
+										<div className="text-left sm:text-right">
+											<div className="text-base sm:text-lg font-bold text-green-500">
 												{testimonial.savings}
 											</div>
 											<div className="text-xs text-muted-foreground">
@@ -536,17 +539,17 @@ export function ModernPricing() {
 			</section>
 
 			{/* Real-World Costs by Team Size */}
-			<section className="bg-muted/30 py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="bg-muted/30 py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-2xl text-center">
-						<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
 							Real-world costs by team size
 						</h2>
-						<p className="text-muted-foreground mt-4 text-lg">
+						<p className="text-muted-foreground mt-3 sm:mt-4 text-base sm:text-lg">
 							See what teams like yours typically spend each month
 						</p>
 					</div>
-					<div className="mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-4">
+					<div className="mx-auto mt-8 sm:mt-12 grid max-w-7xl grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4 lg:gap-8">
 						{TEAM_SIZE_EXAMPLES.map((team) => {
 							const Icon = team.icon;
 							const usageCost = calculateTeamCost(team.expectedUsage);
@@ -559,23 +562,23 @@ export function ModernPricing() {
 										team.popular ? "border-primary ring-2 ring-primary" : ""
 									}
 								>
-									<CardHeader>
+									<CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
 										{team.popular && (
-											<Badge className="mb-2 w-fit" variant="default">
+											<Badge className="mb-2 w-fit text-xs" variant="default">
 												Most Common
 											</Badge>
 										)}
 										<div className="flex items-center gap-2">
-											<Icon className="h-6 w-6" />
-											<CardTitle className="text-xl">{team.name}</CardTitle>
+											<Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+											<CardTitle className="text-lg sm:text-xl">{team.name}</CardTitle>
 										</div>
-										<CardDescription>{team.description}</CardDescription>
-										<div className="mt-4">
+										<CardDescription className="text-xs sm:text-sm">{team.description}</CardDescription>
+										<div className="mt-3 sm:mt-4">
 											<div className="flex items-baseline gap-1">
-												<span className="text-4xl font-bold">
+												<span className="text-3xl sm:text-4xl font-bold">
 													${Math.round(total)}
 												</span>
-												<span className="text-muted-foreground text-base">
+												<span className="text-muted-foreground text-sm sm:text-base">
 													/mo
 												</span>
 											</div>
@@ -584,7 +587,7 @@ export function ModernPricing() {
 											</p>
 										</div>
 									</CardHeader>
-									<CardContent>
+									<CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
 										<div className="space-y-2 text-xs">
 											<div className="text-muted-foreground font-semibold">
 												Typical monthly usage:
@@ -597,15 +600,15 @@ export function ModernPricing() {
 													return (
 														<div
 															key={key}
-															className="text-muted-foreground flex justify-between"
+															className="text-muted-foreground flex justify-between gap-2"
 														>
-															<span>
+															<span className="truncate">
 																{item.name.replace(
 																	/Transactional |Minutes/g,
 																	"",
 																)}
 															</span>
-															<span>{value}</span>
+															<span className="shrink-0">{value.toLocaleString()}</span>
 														</div>
 													);
 												})}
@@ -616,9 +619,9 @@ export function ModernPricing() {
 						})}
 					</div>
 
-					<Alert className="mx-auto mt-8 max-w-4xl">
-						<Infinity className="h-4 w-4" />
-						<AlertDescription>
+					<Alert className="mx-auto mt-6 sm:mt-8 max-w-4xl">
+						<Infinity className="h-4 w-4 shrink-0" />
+						<AlertDescription className="text-xs sm:text-sm">
 							<strong>No caps or limits:</strong> These are typical usage
 							examples. Use as much or as little as you need — you only pay for
 							actual usage. Scale up or down anytime with no penalties.
@@ -628,20 +631,20 @@ export function ModernPricing() {
 			</section>
 
 			{/* Simple Pricing Calculator */}
-			<section id="pricing-calculator" className="py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section id="pricing-calculator" className="py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-2xl text-center">
-						<Calculator className="mx-auto h-12 w-12" />
-						<h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+						<Calculator className="mx-auto h-10 w-10 sm:h-12 sm:w-12" />
+						<h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
 							What will you pay?
 						</h2>
-						<p className="text-muted-foreground mt-4 text-lg">
+						<p className="text-muted-foreground mt-3 sm:mt-4 text-base sm:text-lg px-4">
 							Select a team size preset or customize with sliders
 						</p>
 					</div>
 
 					{/* Team Size Presets */}
-					<div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-2">
+					<div className="mx-auto mt-6 sm:mt-8 flex max-w-3xl flex-wrap justify-center gap-2 px-4">
 						{TEAM_SIZE_EXAMPLES.map((team, index) => (
 							<Button
 								key={team.name}
@@ -666,33 +669,33 @@ export function ModernPricing() {
 					</div>
 
 					<Card className="mx-auto mt-8 max-w-5xl">
-						<CardHeader>
-							<div className="flex items-center justify-between">
+						<CardHeader className="px-4 sm:px-6">
+							<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 								<div>
-									<CardTitle>Your Monthly Bill</CardTitle>
-									<CardDescription>
+									<CardTitle className="text-lg sm:text-xl">Your Monthly Bill</CardTitle>
+									<CardDescription className="text-sm">
 										$200 base fee + what you actually use
 									</CardDescription>
 								</div>
-								<div className="text-right">
-									<div className="text-4xl font-bold">
+								<div className="text-left sm:text-right">
+									<div className="text-3xl sm:text-4xl font-bold">
 										${totalMonthlyCost.toFixed(2)}
 									</div>
-									<div className="text-muted-foreground text-sm">per month</div>
+									<div className="text-muted-foreground text-xs sm:text-sm">per month</div>
 								</div>
 							</div>
 						</CardHeader>
-						<CardContent className="space-y-8">
+						<CardContent className="space-y-6 sm:space-y-8 px-4 sm:px-6">
 							{/* Base Price */}
-							<div className="border-b pb-6">
-								<div className="flex items-center justify-between">
-									<div>
-										<div className="font-semibold">Monthly Base Fee</div>
-										<div className="text-muted-foreground text-sm">
+							<div className="border-b pb-4 sm:pb-6">
+								<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+									<div className="flex-1">
+										<div className="font-semibold text-sm sm:text-base">Monthly Base Fee</div>
+										<div className="text-muted-foreground text-xs sm:text-sm">
 											Unlimited users, all features, unlimited data
 										</div>
 									</div>
-									<div className="text-xl font-semibold">$200.00</div>
+									<div className="text-lg sm:text-xl font-semibold">$200.00</div>
 								</div>
 							</div>
 
@@ -706,11 +709,11 @@ export function ModernPricing() {
 									const cost = currentUsage * item.ourCost;
 
 									return (
-										<div key={item.id} className="space-y-3">
-											<div className="flex items-start justify-between gap-4">
-												<div className="flex-1">
-													<div className="font-semibold">{item.name}</div>
-													<div className="text-muted-foreground text-sm">
+										<div key={item.id} className="space-y-2 sm:space-y-3">
+											<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+												<div className="flex-1 min-w-0">
+													<div className="font-semibold text-sm sm:text-base">{item.name}</div>
+													<div className="text-muted-foreground text-xs sm:text-sm">
 														{item.description}
 													</div>
 													<div className="text-muted-foreground mt-1 text-xs">
@@ -718,8 +721,8 @@ export function ModernPricing() {
 														{item.unit}
 													</div>
 												</div>
-												<div className="text-right">
-													<div className="font-semibold">
+												<div className="text-left sm:text-right shrink-0">
+													<div className="font-semibold text-sm sm:text-base">
 														${cost.toFixed(2)}
 													</div>
 													<div className="text-muted-foreground text-xs">
@@ -727,7 +730,7 @@ export function ModernPricing() {
 													</div>
 												</div>
 											</div>
-											<div className="flex items-center gap-4">
+											<div className="flex items-center gap-2 sm:gap-4">
 												<Slider
 													value={[currentUsage]}
 													onValueChange={([value]) =>
@@ -737,7 +740,7 @@ export function ModernPricing() {
 													step={item.step}
 													className="flex-1"
 												/>
-												<div className="text-muted-foreground w-24 text-right text-sm tabular-nums">
+												<div className="text-muted-foreground w-16 sm:w-24 text-right text-xs sm:text-sm tabular-nums shrink-0">
 													{currentUsage.toLocaleString()}
 												</div>
 											</div>
@@ -747,17 +750,17 @@ export function ModernPricing() {
 							</div>
 
 							{/* Total */}
-							<div className="border-t pt-6">
-								<div className="flex items-center justify-between">
-									<div>
-										<div className="text-lg font-semibold">
+							<div className="border-t pt-4 sm:pt-6">
+								<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+									<div className="flex-1">
+										<div className="text-base sm:text-lg font-semibold">
 											Your Total Monthly Bill
 										</div>
-										<div className="text-muted-foreground text-sm">
+										<div className="text-muted-foreground text-xs sm:text-sm">
 											$200 base + ${totalUsageCost.toFixed(2)} usage
 										</div>
 									</div>
-									<div className="text-3xl font-bold">
+									<div className="text-2xl sm:text-3xl font-bold">
 										${totalMonthlyCost.toFixed(2)}
 									</div>
 								</div>
@@ -765,11 +768,11 @@ export function ModernPricing() {
 						</CardContent>
 					</Card>
 
-					<div className="mt-8 text-center">
-						<p className="text-muted-foreground mb-4 text-sm">
+					<div className="mt-6 sm:mt-8 text-center px-4">
+						<p className="text-muted-foreground mb-4 text-xs sm:text-sm">
 							Try it free for 14 days. No credit card required.
 						</p>
-						<Button asChild size="lg">
+						<Button asChild size="lg" className="w-full sm:w-auto">
 							<Link href="/waitlist">Join Waitlist</Link>
 						</Button>
 					</div>
@@ -777,20 +780,20 @@ export function ModernPricing() {
 			</section>
 
 			{/* No Caps, No Limits */}
-			<section className="bg-muted/30 py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="bg-muted/30 py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
-						<Infinity className="mx-auto h-16 w-16" />
-						<h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">
+						<Infinity className="mx-auto h-12 w-12 sm:h-16 sm:w-16" />
+						<h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
 							No caps. No limits. No surprises.
 						</h2>
-						<p className="text-muted-foreground mt-6 text-lg leading-8">
+						<p className="text-muted-foreground mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 px-4">
 							Unlike competitors who charge per user or enforce usage caps, we
 							believe in transparent usage-based pricing. Add unlimited team
 							members, send unlimited emails, make unlimited calls — you only
 							pay for actual consumption at our published rates.
 						</p>
-						<div className="mt-8 grid gap-4 sm:grid-cols-3">
+						<div className="mt-6 sm:mt-8 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
 							<div className="rounded-lg border bg-card p-6">
 								<div className="text-2xl font-bold">∞</div>
 								<div className="mt-2 font-semibold">Unlimited Users</div>
@@ -818,21 +821,21 @@ export function ModernPricing() {
 			</section>
 
 			{/* Comprehensive Competitor Comparison */}
-			<section className="py-16">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="py-12 sm:py-16">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-6xl">
-						<div className="rounded-lg border bg-card p-8">
-							<h3 className="text-center text-2xl font-bold">
+						<div className="rounded-lg border bg-card p-4 sm:p-6 lg:p-8">
+							<h3 className="text-center text-xl sm:text-2xl font-bold">
 								Compare real-world costs
 							</h3>
-							<p className="text-muted-foreground mx-auto mt-2 max-w-2xl text-center text-sm">
+							<p className="text-muted-foreground mx-auto mt-2 max-w-2xl text-center text-xs sm:text-sm">
 								Based on actual published pricing from leading field service
 								software providers
 							</p>
 
 							{/* Pricing Table */}
-							<div className="mt-8 overflow-x-auto">
-								<table className="w-full text-sm">
+							<div className="mt-6 sm:mt-8 -mx-4 sm:mx-0 overflow-x-auto">
+								<table className="w-full text-xs sm:text-sm min-w-[600px]">
 									<thead>
 										<tr className="border-b">
 											<th className="text-muted-foreground pb-4 text-left font-semibold">
@@ -858,72 +861,72 @@ export function ModernPricing() {
 									<tbody className="divide-y">
 										{COMPETITOR_DATA.map((competitor) => (
 											<tr key={competitor.name}>
-												<td className="py-4">
-													<div className="font-semibold">{competitor.name}</div>
-													<div className="text-muted-foreground text-xs">
+												<td className="py-3 sm:py-4 px-2 sm:px-4">
+													<div className="font-semibold text-xs sm:text-sm">{competitor.name}</div>
+													<div className="text-muted-foreground text-[10px] sm:text-xs">
 														${competitor.perUser}/user{" "}
 														{competitor.setupFee !== "$0" &&
 															`+ ${competitor.setupFee} setup`}
 													</div>
 												</td>
-												<td className="py-4 text-right">
+												<td className="py-3 sm:py-4 px-2 sm:px-4 text-right text-xs sm:text-sm">
 													${competitor.perUser}/user
 												</td>
-												<td className="py-4 text-right font-semibold">
+												<td className="py-3 sm:py-4 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm">
 													${(competitor.perUser * 7).toLocaleString()}
 												</td>
-												<td className="py-4 text-right font-semibold text-red-500">
+												<td className="py-3 sm:py-4 px-2 sm:px-4 text-right font-semibold text-red-500 text-xs sm:text-sm">
 													$
 													{(
 														competitor.perUser * 7 * 12 +
 														(competitor.setupFee === "$0" ? 0 : 2500)
 													).toLocaleString()}
 												</td>
-												<td className="hidden py-4 text-center sm:table-cell">
+												<td className="hidden py-3 sm:py-4 px-2 sm:px-4 text-center sm:table-cell">
 													<div className="flex flex-wrap justify-center gap-1">
 														{competitor.hiddenFees.slice(0, 2).map((fee) => (
 															<span
 																key={fee}
-																className="inline-flex rounded bg-red-500/10 px-1.5 py-0.5 text-xs text-red-500"
+																className="inline-flex rounded bg-red-500/10 px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs text-red-500"
 															>
 																{fee}
 															</span>
 														))}
 														{competitor.hiddenFees.length > 2 && (
-															<span className="text-xs text-muted-foreground">
+															<span className="text-[10px] sm:text-xs text-muted-foreground">
 																+{competitor.hiddenFees.length - 2} more
 															</span>
 														)}
 													</div>
 												</td>
-												<td className="py-4 text-center">
-													<X className="mx-auto h-5 w-5 text-red-500" />
+												<td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
+													<X className="mx-auto h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
 												</td>
 											</tr>
 										))}
 										<tr className="bg-primary/5">
-											<td className="py-4">
-												<div className="text-primary font-bold">Thorbis</div>
-												<div className="text-muted-foreground text-xs">
+											<td className="py-3 sm:py-4 px-2 sm:px-4">
+												<div className="text-primary font-bold text-xs sm:text-sm">Thorbis</div>
+												<div className="text-muted-foreground text-[10px] sm:text-xs">
 													$200 base + usage only
 												</div>
 											</td>
-											<td className="py-4 text-right font-semibold">
+											<td className="py-3 sm:py-4 px-2 sm:px-4 text-right font-semibold text-xs sm:text-sm">
 												$200 flat
 											</td>
-											<td className="text-primary py-4 text-right font-bold">
+											<td className="text-primary py-3 sm:py-4 px-2 sm:px-4 text-right font-bold text-xs sm:text-sm">
 												$368
 											</td>
-											<td className="py-4 text-right font-bold text-green-500">
+											<td className="py-3 sm:py-4 px-2 sm:px-4 text-right font-bold text-green-500 text-xs sm:text-sm">
 												$4,416
 											</td>
-											<td className="hidden py-4 text-center sm:table-cell">
-												<span className="inline-flex rounded bg-green-500/10 px-2 py-0.5 text-xs text-green-500">
+											<td className="hidden py-3 sm:py-4 px-2 sm:px-4 text-center sm:table-cell">
+												<span className="inline-flex rounded bg-green-500/10 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs text-green-500">
 													None
 												</span>
 											</td>
-											<td className="py-4 text-center">
-												<Check className="mx-auto h-5 w-5 text-green-500" />
+											<td className="py-3 sm:py-4 px-2 sm:px-4 text-center">
+												<Check className="mx-auto h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
 											</td>
 										</tr>
 									</tbody>
@@ -931,26 +934,26 @@ export function ModernPricing() {
 							</div>
 
 							{/* Year 1 Savings Highlight */}
-							<div className="mt-6 rounded-lg bg-green-500/10 p-4 text-center">
-								<div className="text-sm font-semibold text-green-600">
+							<div className="mt-4 sm:mt-6 rounded-lg bg-green-500/10 p-3 sm:p-4 text-center">
+								<div className="text-xs sm:text-sm font-semibold text-green-600">
 									Year 1 Savings with Thorbis (7-tech team)
 								</div>
-								<div className="mt-1 flex items-center justify-center gap-4">
+								<div className="mt-2 sm:mt-1 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
 									<div>
-										<span className="text-2xl font-bold text-green-500">
+										<span className="text-xl sm:text-2xl font-bold text-green-500">
 											$17,340
 										</span>
-										<span className="text-muted-foreground text-sm">
+										<span className="text-muted-foreground text-xs sm:text-sm block sm:inline">
 											{" "}
 											vs ServiceTitan
 										</span>
 									</div>
 									<div className="hidden sm:block text-muted-foreground">|</div>
-									<div className="hidden sm:block">
-										<span className="text-2xl font-bold text-green-500">
+									<div>
+										<span className="text-xl sm:text-2xl font-bold text-green-500">
 											$9,780
 										</span>
-										<span className="text-muted-foreground text-sm">
+										<span className="text-muted-foreground text-xs sm:text-sm block sm:inline">
 											{" "}
 											vs Housecall Pro
 										</span>
@@ -959,44 +962,44 @@ export function ModernPricing() {
 							</div>
 
 							{/* Savings Breakdown */}
-							<div className="mt-8 border-t pt-6">
-								<div className="text-center text-sm font-semibold">
+							<div className="mt-6 sm:mt-8 border-t pt-4 sm:pt-6">
+								<div className="text-center text-xs sm:text-sm font-semibold">
 									Your potential savings vs competitors:
 								</div>
-								<div className="mt-4 grid gap-4 sm:grid-cols-4">
-									<div className="rounded-lg bg-primary/10 p-4 text-center">
-										<div className="text-xs font-semibold">3-Tech Team</div>
-										<div className="text-primary mt-1 text-lg font-bold">
+								<div className="mt-3 sm:mt-4 grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-4">
+									<div className="rounded-lg bg-primary/10 p-3 sm:p-4 text-center">
+										<div className="text-[10px] sm:text-xs font-semibold">3-Tech Team</div>
+										<div className="text-primary mt-1 text-base sm:text-lg font-bold">
 											Save 31-65%
 										</div>
-										<div className="text-muted-foreground text-xs">
+										<div className="text-muted-foreground text-[10px] sm:text-xs">
 											$118-508/month
 										</div>
 									</div>
-									<div className="rounded-lg bg-primary/10 p-4 text-center">
-										<div className="text-xs font-semibold">7-Tech Team</div>
-										<div className="text-primary mt-1 text-lg font-bold">
+									<div className="rounded-lg bg-primary/10 p-3 sm:p-4 text-center">
+										<div className="text-[10px] sm:text-xs font-semibold">7-Tech Team</div>
+										<div className="text-primary mt-1 text-base sm:text-lg font-bold">
 											Save 59-80%
 										</div>
-										<div className="text-muted-foreground text-xs">
+										<div className="text-muted-foreground text-[10px] sm:text-xs">
 											$535-1,445/month
 										</div>
 									</div>
-									<div className="rounded-lg bg-primary/10 p-4 text-center">
-										<div className="text-xs font-semibold">30-Tech Team</div>
-										<div className="text-primary mt-1 text-lg font-bold">
+									<div className="rounded-lg bg-primary/10 p-3 sm:p-4 text-center">
+										<div className="text-[10px] sm:text-xs font-semibold">30-Tech Team</div>
+										<div className="text-primary mt-1 text-base sm:text-lg font-bold">
 											Save 73-86%
 										</div>
-										<div className="text-muted-foreground text-xs">
+										<div className="text-muted-foreground text-[10px] sm:text-xs">
 											$2,807-6,707/month
 										</div>
 									</div>
-									<div className="rounded-lg bg-primary/10 p-4 text-center">
-										<div className="text-xs font-semibold">100-Tech Team</div>
-										<div className="text-primary mt-1 text-lg font-bold">
+									<div className="rounded-lg bg-primary/10 p-3 sm:p-4 text-center">
+										<div className="text-[10px] sm:text-xs font-semibold">100-Tech Team</div>
+										<div className="text-primary mt-1 text-base sm:text-lg font-bold">
 											Save 70-85%
 										</div>
-										<div className="text-muted-foreground text-xs">
+										<div className="text-muted-foreground text-[10px] sm:text-xs">
 											$9,003-22,003/month
 										</div>
 									</div>
@@ -1004,13 +1007,13 @@ export function ModernPricing() {
 							</div>
 
 							{/* Key Differentiators */}
-							<div className="mt-8 border-t pt-6">
-								<div className="grid gap-6 sm:grid-cols-2">
+							<div className="mt-6 sm:mt-8 border-t pt-4 sm:pt-6">
+								<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
 									<div>
-										<div className="text-muted-foreground text-xs font-semibold uppercase">
+										<div className="text-muted-foreground text-[10px] sm:text-xs font-semibold uppercase">
 											What competitors charge extra for
 										</div>
-										<ul className="mt-3 space-y-2 text-sm">
+										<ul className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
 											<li className="flex items-start gap-2">
 												<span className="text-muted-foreground">•</span>
 												<span>Per-user seat fees ($129-259/user/month)</span>
@@ -1040,10 +1043,10 @@ export function ModernPricing() {
 										</ul>
 									</div>
 									<div>
-										<div className="text-primary text-xs font-semibold uppercase">
+										<div className="text-primary text-[10px] sm:text-xs font-semibold uppercase">
 											What's included in Thorbis $200
 										</div>
-										<ul className="mt-3 space-y-2 text-sm">
+										<ul className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
 											<li className="flex items-start gap-2">
 												<Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
 												<span>Unlimited users (add your entire team)</span>
@@ -1078,39 +1081,40 @@ export function ModernPricing() {
 			</section>
 
 			{/* Why We're Different - No Sales Pressure Section */}
-			<section className="border-y bg-gradient-to-b from-primary/5 to-transparent py-20">
-				<div className="mx-auto max-w-7xl px-6 lg:px-8">
+			<section className="border-y bg-gradient-to-b from-primary/5 to-transparent py-12 sm:py-16 lg:py-20">
+				<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl">
-						<div className="mb-12 text-center">
-							<Badge className="mb-4 border-primary/30 bg-primary/10 text-primary">
+						<div className="mb-8 sm:mb-12 text-center">
+							<Badge className="mb-3 sm:mb-4 border-primary/30 bg-primary/10 text-primary text-xs sm:text-sm">
 								<Zap className="mr-2 h-3 w-3" />
 								Why Service Businesses Choose Thorbis
 							</Badge>
-							<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+							<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight px-4">
 								No Sales Pressure. No Lock-Ins.
-								<br />
+								<br className="hidden sm:block" />
+								<span className="sm:hidden"> </span>
 								Just Software That Works.
 							</h2>
-							<p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+							<p className="text-muted-foreground mx-auto mt-3 sm:mt-4 max-w-2xl text-base sm:text-lg px-4">
 								Unlike traditional FSM companies, we let our product speak for
 								itself. Try it, love it, or leave—no hard feelings, no
 								contracts, no hassle.
 							</p>
 						</div>
 
-						<div className="grid gap-6 sm:grid-cols-2 mb-8">
+						<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 mb-6 sm:mb-8">
 							<Card className="transition-all hover:border-primary/30">
-								<CardHeader>
-									<div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-										<Users className="h-6 w-6" />
+								<CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+									<div className="mb-2 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+										<Users className="h-5 w-5 sm:h-6 sm:w-6" />
 									</div>
-									<CardTitle>No Pushy Sales Teams</CardTitle>
-									<CardDescription>
+									<CardTitle className="text-lg sm:text-xl">No Pushy Sales Teams</CardTitle>
+									<CardDescription className="text-xs sm:text-sm">
 										Try the full platform yourself in 60 seconds
 									</CardDescription>
 								</CardHeader>
-								<CardContent>
-									<p className="text-sm text-muted-foreground">
+								<CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+									<p className="text-xs sm:text-sm text-muted-foreground">
 										Self-service signup. No demos required. No sales calls
 										unless YOU ask for one. Start your free trial and explore
 										every feature without anyone breathing down your neck.
@@ -1119,23 +1123,23 @@ export function ModernPricing() {
 							</Card>
 
 							<Card className="transition-all hover:border-primary/30">
-								<CardHeader>
-									<div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-										<Check className="h-6 w-6" />
+								<CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+									<div className="mb-2 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+										<Check className="h-5 w-5 sm:h-6 sm:w-6" />
 									</div>
-									<CardTitle>No Contracts or Lock-Ins</CardTitle>
-									<CardDescription>
+									<CardTitle className="text-lg sm:text-xl">No Contracts or Lock-Ins</CardTitle>
+									<CardDescription className="text-xs sm:text-sm">
 										Cancel anytime with one click
 									</CardDescription>
 								</CardHeader>
-								<CardContent>
-									<p className="text-sm text-muted-foreground mb-3">
+								<CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+									<p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
 										Month-to-month billing. Export your data anytime. We earn
 										your business every single month, not through long-term
 										contracts. If we're not delivering value, leave—no
 										penalties.
 									</p>
-									<ul className="space-y-2 text-xs text-muted-foreground">
+									<ul className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs text-muted-foreground">
 										<li className="flex items-center gap-2">
 											<Check className="h-3 w-3 text-primary shrink-0" />
 											<span>Usage alerts at 80% of estimate</span>
@@ -1153,17 +1157,17 @@ export function ModernPricing() {
 							</Card>
 
 							<Card className="transition-all hover:border-primary/30">
-								<CardHeader>
-									<div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-										<Zap className="h-6 w-6" />
+								<CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+									<div className="mb-2 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+										<Zap className="h-5 w-5 sm:h-6 sm:w-6" />
 									</div>
-									<CardTitle>5-Minute Intelligent Setup</CardTitle>
-									<CardDescription>
+									<CardTitle className="text-lg sm:text-xl">5-Minute Intelligent Setup</CardTitle>
+									<CardDescription className="text-xs sm:text-sm">
 										No lengthy operational assessments
 									</CardDescription>
 								</CardHeader>
-								<CardContent>
-									<p className="text-sm text-muted-foreground">
+								<CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+									<p className="text-xs sm:text-sm text-muted-foreground">
 										Our smart onboarding asks the right questions for YOUR
 										business. No expensive consultants. No month-long
 										implementation projects. Setup in 5 minutes, running jobs
@@ -1173,15 +1177,15 @@ export function ModernPricing() {
 							</Card>
 
 							<Card className="transition-all hover:border-primary/30">
-								<CardHeader>
-									<div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-										<MessageSquare className="h-6 w-6" />
+								<CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6">
+									<div className="mb-2 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+										<MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
 									</div>
-									<CardTitle>Top-Tier Support Included</CardTitle>
-									<CardDescription>Real humans, not chatbots</CardDescription>
+									<CardTitle className="text-lg sm:text-xl">Top-Tier Support Included</CardTitle>
+									<CardDescription className="text-xs sm:text-sm">Real humans, not chatbots</CardDescription>
 								</CardHeader>
-								<CardContent>
-									<p className="text-sm text-muted-foreground">
+								<CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+									<p className="text-xs sm:text-sm text-muted-foreground">
 										2-hour response time. Phone support included. We help with
 										anything—setup, training, custom workflows. No "premium
 										support" tiers. Everyone gets the same great service.
@@ -1191,9 +1195,9 @@ export function ModernPricing() {
 						</div>
 
 						<Alert className="border-primary/30 bg-card">
-							<Sparkles className="h-4 w-4 text-primary" />
-							<AlertTitle>30-Day Money-Back Guarantee</AlertTitle>
-							<AlertDescription>
+							<Sparkles className="h-4 w-4 text-primary shrink-0" />
+							<AlertTitle className="text-sm sm:text-base">30-Day Money-Back Guarantee</AlertTitle>
+							<AlertDescription className="text-xs sm:text-sm">
 								If Thorbis doesn't save you money vs. your current software,
 								we'll refund you 100%—no questions asked. 14-day free trial, no
 								credit card required. Found a bug? Need a feature? Most requests
@@ -1202,25 +1206,25 @@ export function ModernPricing() {
 							</AlertDescription>
 						</Alert>
 
-						<div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-							<div className="flex items-center gap-2">
-								<Check className="h-4 w-4 text-primary" />
+						<div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground px-4">
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
 								<span>14-day free trial</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="h-4 w-4 text-primary" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
 								<span>No credit card required</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="h-4 w-4 text-primary" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
 								<span>100% money back guarantee</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="h-4 w-4 text-primary" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
 								<span>Setup in 5 min, jobs same day</span>
 							</div>
-							<div className="flex items-center gap-2">
-								<Check className="h-4 w-4 text-primary" />
+							<div className="flex items-center gap-1.5 sm:gap-2">
+								<Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
 								<span>Export data anytime</span>
 							</div>
 							<div className="flex items-center gap-2">

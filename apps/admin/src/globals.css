@@ -401,6 +401,11 @@
 }
 
 @layer utilities {
+	/* Force text-white to always be white regardless of theme */
+	.text-white {
+		color: #ffffff !important;
+	}
+
 	/* Hairline borders for retina displays */
 	@supports (border-width: 0.5px) {
 		@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {

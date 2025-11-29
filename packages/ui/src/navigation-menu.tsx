@@ -104,7 +104,7 @@ function NavigationMenuViewport({
 	...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
 	return (
-		<div className="absolute top-full left-0 flex w-full justify-center pt-1">
+		<div className="absolute top-full left-0 flex w-full justify-center pt-1 [.marketing-nav_&]:justify-start">
 			<NavigationMenuPrimitive.Viewport
 				className={cn(
 					"relative h-[var(--radix-navigation-menu-viewport-height)] w-full origin-top overflow-hidden rounded-xl border border-border/60 bg-popover text-popover-foreground shadow-lg md:w-[var(--radix-navigation-menu-viewport-width)]",

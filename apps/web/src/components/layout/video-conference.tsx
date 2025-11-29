@@ -664,7 +664,7 @@ export function VideoConferenceView({
 														"max-w-[80%] rounded-lg px-3 py-2",
 														msg.sender === "me"
 															? "bg-[#0070F3] text-white"
-															: "bg-foreground text-muted-foreground border border-white/10",
+															: "bg-foreground text-white border border-white/10",
 													)}
 												>
 													<p className="text-sm">{msg.message}</p>

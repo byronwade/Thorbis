@@ -97,7 +97,7 @@ function MessageBubble({ message, isFirst, isLast, showAvatar }: { message: SmsM
 			<div
 				className={cn(
 					"max-w-[75%] px-3 py-2 text-sm",
-					isOutbound ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
+					isOutbound ? "bg-primary text-white" : "bg-muted text-white",
 					// Rounded corners based on position in group
 					isFirst && isLast && "rounded-2xl",
 					isFirst && !isLast && (isOutbound ? "rounded-2xl rounded-br-md" : "rounded-2xl rounded-bl-md"),

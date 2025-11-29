@@ -242,17 +242,14 @@ export function LinearHomepage() {
 
 					{/* Hero Product Image */}
 					<div className="hero-text-animate animate-delay-600 relative pb-20">
-						<div className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5">
-							<div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-blue-500/5 opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-							<div className="relative aspect-[16/10] bg-muted/20">
-								<Image
-									alt="Thorbis scheduling and dispatch dashboard"
-									className="object-contain"
-									fill
-									priority
-									src="/image.png"
-								/>
-							</div>
+						<div className="relative aspect-video rounded-xl shadow-2xl">
+							<Image
+								alt="Thorbis scheduling and dispatch dashboard"
+								className="object-contain rounded-xl"
+								fill
+								priority
+								src="/dispatch-timeline.png"
+							/>
 						</div>
 					</div>
 				</div>
@@ -440,14 +437,64 @@ export function LinearHomepage() {
 							</ul>
 						</div>
 						<div className="relative">
-							<div className="overflow-hidden rounded-xl border border-border/40 bg-card/50">
-								<div className="aspect-[4/3] bg-muted/20">
-									{/* Job tracking screenshot */}
-									<div className="flex size-full items-center justify-center">
-										<MapPin className="size-16 text-muted-foreground opacity-20" />
-									</div>
-								</div>
+							<div className="relative aspect-video rounded-xl shadow-2xl">
+								<Image
+									alt="Thorbis job tracking and GPS monitoring"
+									className="object-contain rounded-xl"
+									fill
+									src="/dispatch-timeline.png"
+								/>
 							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Unified Communication Section */}
+			<section className="border-b border-border/40 py-32">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="grid items-center gap-16 lg:grid-cols-2">
+						<div className="order-2 lg:order-1">
+							<div className="relative aspect-video w-full rounded-xl shadow-2xl">
+								<Image
+									alt="Thorbis unified messaging platform"
+									className="object-contain rounded-xl"
+									fill
+									src="/messaging-platform.png"
+								/>
+							</div>
+						</div>
+						<div className="order-1 lg:order-2">
+							<Badge variant="outline" className="mb-4 border-primary/30">
+								Unified communication
+							</Badge>
+							<h2 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl">
+								All your conversations
+								<br />
+								in one place
+							</h2>
+							<p className="mb-8 text-lg leading-relaxed text-muted-foreground">
+								Manage SMS, email, phone calls, and customer messages from a
+								single unified inbox. Never miss a customer inquiry and respond
+								faster with context at your fingertips.
+							</p>
+							<ul className="space-y-4">
+								<FeatureListItem
+									icon={MessageSquare}
+									title="Unified inbox"
+									description="All customer communications in one view"
+								/>
+								<FeatureListItem
+									icon={Smartphone}
+									title="SMS & email"
+									description="Send and receive messages from any channel"
+								/>
+								<FeatureListItem
+									icon={Users}
+									title="Team collaboration"
+									description="Assign conversations and work together seamlessly"
+								/>
+							</ul>
 						</div>
 					</div>
 				</div>
@@ -458,13 +505,13 @@ export function LinearHomepage() {
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid items-center gap-16 lg:grid-cols-2">
 						<div className="order-2 lg:order-1">
-							<div className="overflow-hidden rounded-xl border border-border/40 bg-card/50">
-								<div className="aspect-[4/3] bg-muted/20">
-									{/* Communication screenshot */}
-									<div className="flex size-full items-center justify-center">
-										<MessageSquare className="size-16 text-muted-foreground opacity-20" />
-									</div>
-								</div>
+							<div className="relative aspect-video rounded-xl shadow-2xl">
+								<Image
+									alt="Thorbis integrations and collaboration tools"
+									className="object-contain rounded-xl"
+									fill
+									src="/messaging-platform.png"
+								/>
 							</div>
 						</div>
 						<div className="order-1 lg:order-2">
@@ -651,15 +698,13 @@ function WorkflowSection({
 				</ul>
 			</div>
 			<div className={cn(reverse && "lg:col-start-1")}>
-				<div className="overflow-hidden rounded-xl border border-border/40 bg-card/50">
-					<div className="aspect-[4/3] bg-muted/20">
-						{/* Workflow screenshot placeholder */}
-						<div className="flex size-full items-center justify-center">
-							<span className="text-6xl font-bold text-muted-foreground opacity-10">
-								{step}
-							</span>
-						</div>
-					</div>
+				<div className="relative aspect-video rounded-xl shadow-2xl">
+					<Image
+						alt={`Thorbis workflow step ${step}`}
+						className="object-contain rounded-xl"
+						fill
+						src={parseInt(step) % 2 === 0 ? "/dispatch-timeline.png" : "/messaging-platform.png"}
+					/>
 				</div>
 			</div>
 		</div>
