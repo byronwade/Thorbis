@@ -24,6 +24,8 @@ type ScheduleViewStore = {
 	// Infinite scroll buffer state
 	bufferStartDate: Date;
 	bufferEndDate: Date;
+	// Scroll trigger for Today button
+	shouldScrollToNow: boolean;
 	setViewMode: (mode: TimelineViewMode) => void;
 	setCurrentDate: (date: Date) => void;
 	setCurrentDatePreserveBuffer: (date: Date) => void;
@@ -31,6 +33,7 @@ type ScheduleViewStore = {
 	toggleTravelTime: () => void;
 	toggleCapacity: () => void;
 	goToToday: () => void;
+	setShouldScrollToNow: (value: boolean) => void;
 	navigatePrevious: () => void;
 	navigateNext: () => void;
 	// Buffer management for infinite scroll
@@ -72,6 +75,7 @@ const initialState = {
 	showCapacity: true,
 	bufferStartDate,
 	bufferEndDate,
+	shouldScrollToNow: false,
 };
 
 export const useScheduleViewStore = create<ScheduleViewStore>()(
@@ -122,8 +126,11 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 							state.bufferEndDate > bufferEndDate
 								? state.bufferEndDate
 								: bufferEndDate,
+						shouldScrollToNow: true,
 					}));
 				},
+
+				setShouldScrollToNow: (value) => set({ shouldScrollToNow: value }),
 
 				navigatePrevious: () => {
 					const { currentDate, viewMode } = get();
@@ -259,6 +266,7 @@ export const useScheduleViewStore = create<ScheduleViewStore>()(
 					zoomLevel: state.zoomLevel,
 					showTravelTime: state.showTravelTime,
 					showCapacity: state.showCapacity,
+					// Don't persist shouldScrollToNow - it's a one-time trigger
 				}),
 			},
 		),

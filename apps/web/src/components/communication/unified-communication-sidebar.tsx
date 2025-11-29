@@ -1,15 +1,15 @@
 "use client";
 
-import type { ComponentProps } from "react";
-import { useCallback, useEffect, useState } from "react";
 import { CommunicationSidebar } from "@/components/communication/communication-sidebar";
 import { ComposeTypeSelector } from "@/components/communication/compose-type-selector";
 import { CreateTeamChannelDialog } from "@/components/communication/create-team-channel-dialog";
 import type { Sidebar } from "@/components/ui/sidebar";
 import {
-	getUnifiedCommunicationSidebarConfig,
-	type UnifiedCommunicationCounts,
+    getUnifiedCommunicationSidebarConfig,
+    type UnifiedCommunicationCounts,
 } from "@/lib/communication/unified-communication-sidebar-config";
+import type { ComponentProps } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * UnifiedCommunicationSidebar - Unified communication hub sidebar
@@ -60,7 +60,7 @@ export function UnifiedCommunicationSidebar(
 				personal_inbox: unifiedCounts?.personal_inbox ?? emailResult.counts?.personal_inbox ?? 0,
 				// Personal email inbox - emails specifically sent to user's email
 				personal_email_inbox: unifiedCounts?.personal_email_inbox ?? 0,
-				personal_sent: emailResult.counts?.personal_sent ?? 0,
+				personal_sent: unifiedCounts?.personal_sent ?? emailResult.counts?.personal_sent ?? 0,
 				// Use unified counts for drafts and archived (all communication types)
 				personal_drafts: unifiedCounts?.personal_drafts ?? emailResult.counts?.drafts ?? 0,
 				personal_archived: unifiedCounts?.personal_archived ?? emailResult.counts?.archive ?? 0,

@@ -1,8 +1,8 @@
 "use server";
 
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
 import { getCompanyCommunicationCounts, type CommunicationCounts } from "@/lib/queries/communications";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Get communication counts by type for sidebar badges
@@ -39,6 +39,7 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 	counts?: {
 		personal_inbox?: number;
 		personal_email_inbox?: number;
+		personal_sent?: number;
 		personal_drafts?: number;
 		personal_archived?: number;
 		company_inbox?: number;
@@ -93,6 +94,7 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 		const [
 			personalInboxResult,
 			personalEmailInboxResult,
+			personalSentResult,
 			personalDraftsResult,
 			personalArchivedResult,
 			generalInboxResult,
@@ -143,22 +145,35 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 						.or("category.is.null,category.neq.spam")
 						.or("snoozed_until.is.null,snoozed_until.lt.now()")
 				: Promise.resolve({ count: 0, error: null, data: null } as { count: number | null; error: null; data: null }),
+
+			// Personal sent - all communication types, outbound, no category
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("direction", "outbound")
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft")
+				.is("category", null),
 			
-			// Personal drafts - all communication types with status='draft'
+			// Personal drafts - all communication types with status='draft' AND no category
 			supabase
 				.from("communications")
 				.select("*", { count: "exact", head: true })
 				.eq("company_id", companyId)
 				.eq("status", "draft")
-				.is("deleted_at", null),
+				.is("deleted_at", null)
+				.is("category", null),
 			
-			// Personal archived - all communication types with is_archived=true
+			// Personal archived - all communication types with is_archived=true AND no category
 			supabase
 				.from("communications")
 				.select("*", { count: "exact", head: true })
 				.eq("company_id", companyId)
 				.eq("is_archived", true)
-				.is("deleted_at", null),
+				.is("deleted_at", null)
+				.is("category", null),
 			
 			// Company General - Inbox
 			supabase
@@ -427,6 +442,7 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			counts: {
 				personal_inbox: personalInboxResult.count ?? 0,
 				personal_email_inbox: personalEmailInboxResult.count ?? 0,
+				personal_sent: personalSentResult.count ?? 0,
 				personal_drafts: personalDraftsResult.count ?? 0,
 				personal_archived: personalArchivedResult.count ?? 0,
 				company_inbox: companyInboxTotal,

@@ -1,9 +1,7 @@
 import type { CommunicationSidebarConfig } from "@/components/communication/communication-sidebar";
 import {
     Archive,
-    CreditCard,
     FileText,
-    HelpCircle,
     Inbox,
     Mail,
     MessageSquare,
@@ -11,7 +9,6 @@ import {
     Plus,
     Send,
     Star,
-    TrendingUp,
     Users
 } from "lucide-react";
 
@@ -112,7 +109,7 @@ export function getUnifiedCommunicationSidebarConfig(
 	return {
 		topLevelItem: {
 			title: "All Messages",
-			url: "/dashboard/communication?inbox=personal",
+			url: "/dashboard/communication?inbox=all",
 			icon: Inbox,
 			badge: totalAllMessages,
 		},
@@ -122,19 +119,19 @@ export function getUnifiedCommunicationSidebarConfig(
 				items: [
 					{
 						title: "Emails",
-						url: "/dashboard/communication?inbox=personal&type=email",
+						url: "/dashboard/communication?inbox=all&type=email",
 						icon: Mail,
 						badge: counts?.email ?? 0,
 					},
 					{
 						title: "Calls",
-						url: "/dashboard/communication?inbox=personal&type=call",
+						url: "/dashboard/communication?inbox=all&type=call",
 						icon: Phone,
 						badge: counts?.call ?? 0,
 					},
 					{
 						title: "Text Messages",
-						url: "/dashboard/communication?inbox=personal&type=sms",
+						url: "/dashboard/communication?inbox=all&type=sms",
 						icon: MessageSquare,
 						badge: counts?.sms ?? 0,
 					},

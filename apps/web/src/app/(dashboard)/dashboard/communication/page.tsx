@@ -62,6 +62,7 @@ async function UnifiedInboxData({
 	const activeType = params?.type || null;
 	const activeFolder = params?.folder || null;
 	const activeCategory = params?.category || null;
+	const activeChannelId = params?.channel || null;
 
 	// Get authenticated user and company
 	const supabase = await createClient();
@@ -117,10 +118,8 @@ async function UnifiedInboxData({
 			initialCounts={counts}
 			companyId={companyId}
 			teamMemberId={teamMemberId}
-			selectedId={selectedId}
-			activeType={activeType}
-			activeFolder={activeFolder}
-			activeCategory={activeCategory}
+			initialCommunicationId={selectedId}
+			initialChannelId={activeChannelId}
 		/>
 	);
 }

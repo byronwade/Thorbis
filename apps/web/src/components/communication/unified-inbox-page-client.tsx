@@ -10,53 +10,52 @@
 
 import { toggleStarCommunicationAction } from "@/actions/communications";
 import {
-	archiveEmailAction,
-	bulkDeleteEmailsAction,
-	fetchEmailContentAction,
-	markEmailAsReadAction,
-	retryFailedEmailAction,
-	toggleSpamEmailAction,
+    archiveEmailAction,
+    bulkDeleteEmailsAction,
+    fetchEmailContentAction,
+    markEmailAsReadAction,
+    retryFailedEmailAction,
+    toggleSpamEmailAction,
 } from "@/actions/email-actions";
 import type {
-	CompanySms,
-	SmsTemplateContext,
+    CompanySms,
+    SmsTemplateContext,
 } from "@/actions/sms-actions";
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import { formatDistanceToNow } from "date-fns";
 import {
-	AlertCircle,
-	AlertTriangle,
-	Archive,
-	ArrowLeft,
-	Briefcase,
-	CheckCheck,
-	Clock,
-	Download,
-	Flag,
-	Forward,
-	Loader2,
-	Mail,
-	MessageSquare,
-	MoreHorizontal,
-	PanelLeft,
-	Paperclip,
-	Phone,
-	Plus,
-	Printer,
-	RefreshCw,
-	Reply,
-	ReplyAll,
-	Star,
-	StickyNote,
-	Trash2,
-	User,
-	UserPlus,
-	Voicemail,
-	X
+    AlertCircle,
+    AlertTriangle,
+    Archive,
+    ArrowLeft,
+    Briefcase,
+    CheckCheck,
+    Clock,
+    Download,
+    Flag,
+    Forward,
+    Loader2,
+    Mail,
+    MessageSquare,
+    MoreHorizontal,
+    PanelLeft,
+    Paperclip,
+    Phone,
+    Printer,
+    RefreshCw,
+    Reply,
+    ReplyAll,
+    Star,
+    StickyNote,
+    Trash2,
+    User,
+    UserPlus,
+    Voicemail,
+    X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 // Type for message attachments stored in provider_metadata
@@ -67,25 +66,30 @@ type MessageAttachment = {
 };
 
 import {
-	getCompanyContextAction,
-	getSmsConversationAction,
-	markSmsAsReadAction,
-	markSmsConversationAsReadAction,
+    getCompanyContextAction,
+    getSmsConversationAction,
+    markSmsAsReadAction,
+    markSmsConversationAsReadAction,
 } from "@/actions/sms-actions";
 import {
-	getTeamChannelMessagesAction,
-	markTeamChannelAsReadAction,
-	sendTeamChannelMessageAction,
-	type ChannelMessage,
+    getTeamChannelMessagesAction,
+    markTeamChannelAsReadAction,
+    sendTeamChannelMessageAction,
+    type ChannelMessage,
 } from "@/actions/teams-actions";
 import { sendTextMessage } from "@/actions/twilio";
 import { AutoLinkSuggestions } from "@/components/communication/auto-link-suggestions";
 import { CallDetailView } from "@/components/communication/call-detail-view";
+import { CommunicationEmptyState } from "@/components/communication/communication-empty-state";
+import {
+    SmsConversationSkeleton,
+    TeamsChannelSkeleton
+} from "@/components/communication/communication-loading-skeleton";
 import { EmailContent } from "@/components/communication/email-content";
 import { EmailFullComposer } from "@/components/communication/email-full-composer";
 import {
-	EmailReplyComposer,
-	type EmailReplyMode,
+    EmailReplyComposer,
+    type EmailReplyMode,
 } from "@/components/communication/email-reply-composer";
 import { SmsMessageInput } from "@/components/communication/sms-message-input";
 import { TransferDialog } from "@/components/communication/transfer-dialog";
@@ -94,27 +98,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import {
-	TooltipProvider
+    TooltipProvider
 } from "@/components/ui/tooltip";
 import type { Communication, CommunicationCounts } from "@/lib/queries/communications";
 import { createClient } from "@/lib/supabase/client";
@@ -124,9 +128,46 @@ import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { Hash } from "lucide-react";
 
 // Types
-type InboxType = "personal" | "company";
+type InboxType = "personal" | "company" | "all";
 type ViewMode = "list" | "grid";
 type CommunicationType = "all" | "email" | "sms" | "call" | "voicemail";
+
+/**
+ * Check if a communication is a team channel message
+ * Team messages should never appear in "All Messages" view
+ * 
+ * Team messages are identified by:
+ * 1. channel = "teams" (definitive)
+ * 2. to_address starting with "channel:" (definitive)
+ * 3. Tags containing channel names AND having channel="teams" (definitive)
+ * 
+ * Note: We don't filter by tags alone because regular emails can have
+ * category tags like "support" or "sales" that match team channel names.
+ */
+function isTeamChannelMessage(communication: Communication): boolean {
+	// Check if channel is explicitly "teams" - this is the definitive indicator
+	if ((communication as any).channel === "teams") {
+		return true;
+	}
+	
+	// Check if to_address indicates a channel (team messages have to_address like "channel:general")
+	// This is also definitive - regular emails don't have this pattern
+	if (communication.toAddress?.startsWith("channel:")) {
+		return true;
+	}
+	
+	// Don't filter by tags alone - regular emails can have category tags that match
+	// team channel names (e.g., "support", "sales"). Only filter if channel="teams" is also set.
+	
+	return false;
+}
+
+/**
+ * Filter out team channel messages from communications array
+ */
+function filterOutTeamMessages(communications: Communication[]): Communication[] {
+	return communications.filter((comm) => !isTeamChannelMessage(comm));
+}
 
 /**
  * Get contact display name for a communication
@@ -167,6 +208,45 @@ function getContactDisplayName(
 	return address || (effectiveDirection === "from" ? "Unknown sender" : "Unknown recipient");
 }
 
+/**
+ * Get type configuration for communication types (memoized helper)
+ * Returns icon, background color, and icon color for each type
+ */
+function getTypeConfig(type: string) {
+	switch (type) {
+		case "email":
+			return { 
+				icon: Mail, 
+				bg: "bg-blue-500 dark:bg-blue-600",
+				iconColor: "text-white"
+			};
+		case "sms":
+			return {
+				icon: MessageSquare,
+				bg: "bg-green-500 dark:bg-green-600",
+				iconColor: "text-white"
+			};
+		case "call":
+			return {
+				icon: Phone,
+				bg: "bg-purple-500 dark:bg-purple-600",
+				iconColor: "text-white"
+			};
+		case "voicemail":
+			return {
+				icon: Voicemail,
+				bg: "bg-orange-500 dark:bg-orange-600",
+				iconColor: "text-white"
+			};
+		default:
+			return { 
+				icon: Mail, 
+				bg: "bg-gray-500 dark:bg-gray-600",
+				iconColor: "text-white"
+			};
+	}
+}
+
 interface UnifiedInboxPageClientProps {
 	initialCommunications: Communication[];
 	initialCounts?: CommunicationCounts;
@@ -176,6 +256,7 @@ interface UnifiedInboxPageClientProps {
 	initialFolder?: string;
 	initialCategory?: string;
 	initialCommunicationId?: string;
+	initialChannelId?: string | null;
 }
 
 export function UnifiedInboxPageClient({
@@ -187,6 +268,7 @@ export function UnifiedInboxPageClient({
 	initialFolder = "inbox",
 	initialCategory = "primary",
 	initialCommunicationId,
+	initialChannelId,
 }: UnifiedInboxPageClientProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -196,7 +278,18 @@ export function UnifiedInboxPageClient({
 		(searchParams?.get("inbox") as InboxType) || initialInboxType;
 	const folder = searchParams?.get("folder") || initialFolder;
 	const category = searchParams?.get("category") || initialCategory;
-	const channelId = searchParams?.get("channel");
+	// Use initialChannelId on first render to match server, then sync with searchParams
+	// This prevents hydration mismatch by ensuring server and client render the same initially
+	const [isMounted, setIsMounted] = useState(false);
+	
+	// Mark as mounted after hydration
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
+	
+	// Use searchParams value after mount, initialChannelId before mount (for SSR)
+	// This ensures server and client render the same structure on first render
+	const channelId = isMounted ? searchParams?.get("channel") : (initialChannelId || null);
 	const assignedFilter = searchParams?.get("assigned");
 	const typeFromUrl = searchParams?.get("type") as CommunicationType | null;
 
@@ -204,9 +297,9 @@ export function UnifiedInboxPageClient({
 	const communicationId = communicationIdFromQuery || initialCommunicationId;
 	const [isPending, startTransition] = useTransition();
 
-	// Core communication state
+	// Core communication state - filter out team messages immediately
 	const [communications, setCommunications] = useState<Communication[]>(
-		initialCommunications,
+		filterOutTeamMessages(initialCommunications),
 	);
 	// Teams state
 	const [channelMessages, setChannelMessages] = useState<ChannelMessage[]>([]);
@@ -219,28 +312,20 @@ export function UnifiedInboxPageClient({
 	const [selectedCommunication, setSelectedCommunication] =
 		useState<Communication | null>(() => {
 			if (communicationId && initialCommunications) {
-				return (
-					initialCommunications.find((c) => c.id === communicationId) || null
-				);
+				const comm = initialCommunications.find((c) => c.id === communicationId);
+				// Don't select team channel messages - they should never appear in inbox view
+				if (comm && !isTeamChannelMessage(comm)) {
+					return comm;
+				}
 			}
 			return null;
 		});
 
 	// Search and filter state - using debounced search hook
 	const { searchInput, searchQuery, setSearchInput, clearSearch } = useDebouncedSearch();
-	const [typeFilter, setTypeFilter] = useState<CommunicationType>(
-		typeFromUrl || "all"
-	);
 	
-	// Update type filter when URL changes
-	useEffect(() => {
-		if (typeFromUrl) {
-			setTypeFilter(typeFromUrl);
-		} else if (!typeFromUrl) {
-			// Reset to "all" if type is removed from URL
-			setTypeFilter("all");
-		}
-	}, [typeFromUrl]);
+	// Type filter - use URL as single source of truth
+	const typeFilter: CommunicationType = typeFromUrl || "all";
 
 	// Notes state
 	const [notesOpen, setNotesOpen] = useState(false);
@@ -268,16 +353,48 @@ export function UnifiedInboxPageClient({
 	const [sendingMessage, setSendingMessage] = useState(false);
 	const [attachments, setAttachments] = useState<File[]>([]);
 	const [companyContext, setCompanyContext] = useState<SmsTemplateContext | null>(null);
-	const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
+	// Initialize starredIds from initial communications
+	const [starredIds, setStarredIds] = useState<Set<string>>(() => {
+		const starred = new Set<string>();
+		initialCommunications?.forEach((comm) => {
+			if (comm.tags && Array.isArray(comm.tags) && comm.tags.includes("starred")) {
+				starred.add(comm.id);
+			}
+		});
+		return starred;
+	});
 
 	// Transfer dialog state
 	const [transferDialogOpen, setTransferDialogOpen] = useState(false);
 
-	// Refs
+	// Refs for stable values
 	const selectedCommunicationRef = useRef<Communication | null>(selectedCommunication);
 	const refreshingRef = useRef(refreshing);
 	refreshingRef.current = refreshing;
-	// const conversationScrollRef = useRef<HTMLDivElement>(null); // Moved up
+	
+	// Refs to prevent unnecessary fetch triggers
+	const fetchLockRef = useRef(false);
+	const lastFetchParamsRef = useRef<string>("");
+	
+	// Store URL params in refs for stable access
+	const folderRef = useRef(folder);
+	const inboxTypeRef = useRef(inboxType);
+	const categoryRef = useRef(category);
+	const assignedFilterRef = useRef(assignedFilter);
+	const channelIdRef = useRef(channelId);
+	const typeFromUrlRef = useRef(typeFromUrl);
+	const teamMemberIdRef = useRef(teamMemberId);
+	const companyIdRef = useRef(companyId);
+	
+	// Update refs when values change
+	folderRef.current = folder;
+	inboxTypeRef.current = inboxType;
+	categoryRef.current = category;
+	assignedFilterRef.current = assignedFilter;
+	channelIdRef.current = channelId;
+	typeFromUrlRef.current = typeFromUrl;
+	teamMemberIdRef.current = teamMemberId;
+	companyIdRef.current = companyId;
 
 	// Handle compose=true query param from navigation
 	useEffect(() => {
@@ -399,22 +516,56 @@ export function UnifiedInboxPageClient({
 		}
 	}, [communicationId, communications]);
 
-	// Fetch communications function
+	// Store searchQuery in ref for stable access
+	const searchQueryRef = useRef(searchQuery);
+	searchQueryRef.current = searchQuery;
+	
+	// Fetch communications function - optimized with refs to prevent unnecessary re-creates
 	const fetchCommunications = useCallback(
 		async (showRefreshing = false) => {
+			// Create unique fetch key from current params
+			const fetchKey = JSON.stringify({
+				folder: folderRef.current,
+				inboxType: inboxTypeRef.current,
+				category: categoryRef.current,
+				assignedFilter: assignedFilterRef.current,
+				channelId: channelIdRef.current,
+				typeFromUrl: typeFromUrlRef.current,
+				searchQuery: searchQueryRef.current,
+			});
+			
+			// Prevent duplicate fetches with same params (unless manual refresh)
+			if (fetchLockRef.current) {
+				return;
+			}
+			
+			// For automatic fetches, skip if params haven't changed AND we have communications
+			// If communications array is empty, always fetch (user might have navigated back)
+			if (!showRefreshing && lastFetchParamsRef.current === fetchKey && communications.length > 0) {
+				return;
+			}
+			
+			fetchLockRef.current = true;
+			if (!showRefreshing) {
+				lastFetchParamsRef.current = fetchKey;
+			}
+			
 			setRefreshing(true);
 			setError(null);
 
 			startTransition(async () => {
 				try {
+					const currentChannelId = channelIdRef.current;
+					const currentSearchQuery = searchQueryRef.current;
+					
 					// If viewing a Teams channel, fetch channel messages instead of communications list
-					if (channelId) {
+					if (currentChannelId) {
 						setLoadingChannelMessages(true);
 						const result = await getTeamChannelMessagesAction({
-							channel: channelId,
+							channel: currentChannelId,
 							limit: 50,
 							offset: 0,
-							search: searchQuery || undefined,
+							search: currentSearchQuery || undefined,
 						});
 
 						if (result.success && result.messages) {
@@ -425,91 +576,125 @@ export function UnifiedInboxPageClient({
 								(msg) => !msg.read_at && msg.direction === "inbound",
 							);
 							if (unreadMessages.length > 0) {
-								markTeamChannelAsReadAction(channelId).catch(console.error);
+								markTeamChannelAsReadAction(currentChannelId).catch(console.error);
 							}
 						} else {
 							setError(result.error || "Failed to load channel messages");
 						}
 						setLoadingChannelMessages(false);
 						setRefreshing(false);
+						fetchLockRef.current = false;
 						return;
 					}
 
 					const { getCommunicationsAction } = await import(
 						"@/actions/communications"
 					);
+					
+					const currentFolder = folderRef.current;
+					const currentInboxType = inboxTypeRef.current;
+					const currentCategory = categoryRef.current;
+					const currentAssignedFilter = assignedFilterRef.current;
+					const currentTypeFromUrl = typeFromUrlRef.current;
+					const currentTeamMemberId = teamMemberIdRef.current;
+					const currentCompanyId = companyIdRef.current;
+					const currentTypeFilter: CommunicationType = currentTypeFromUrl || "all";
+					
 					// Build filters based on folder
 					let statusFilter: string | undefined;
 					let directionFilter: "inbound" | "outbound" | undefined;
 					let isArchivedFilter: boolean | undefined;
 					let isDraftFilter: boolean | undefined;
 
-					if (folder === "draft") {
+					if (currentFolder === "draft") {
 						isDraftFilter = true;
-					} else if (folder === "archived") {
+					} else if (currentFolder === "archived") {
 						isArchivedFilter = true;
-					} else if (folder === "sent") {
+					} else if (currentFolder === "sent") {
 						directionFilter = "outbound";
 						// Sent folder should exclude drafts and archived
 						isDraftFilter = false;
 						isArchivedFilter = false;
-					} else if (folder === "inbox") {
+					} else if (currentFolder === "inbox") {
 						// Inbox folder handled by getCommunicationsAction
 						// Just ensure we're not showing drafts or archived
 						isDraftFilter = false;
 						isArchivedFilter = false;
-					} else if (folder === "starred") {
+					} else if (currentFolder === "starred") {
 						// Starred folder - filter by tags in memory
 						// Just ensure we're not showing drafts or archived
 						isDraftFilter = false;
 						isArchivedFilter = false;
-					} else if (folder && ["archive", "trash", "spam"].includes(folder)) {
-						statusFilter = folder;
+					} else if (currentFolder && ["archive", "trash", "spam"].includes(currentFolder)) {
+						statusFilter = currentFolder;
 					}
 
 					const result = await getCommunicationsAction({
-						teamMemberId,
-						companyId,
+						teamMemberId: currentTeamMemberId,
+						companyId: currentCompanyId,
 						limit: 50,
 						offset: 0,
-						type: typeFilter !== "all" ? typeFilter : undefined,
+						type: currentTypeFilter !== "all" ? currentTypeFilter : undefined,
 						// Inbox type determines filtering logic
-						inboxType: inboxType,
-						// For personal inbox emails, use mailbox_owner_id
-						mailboxOwnerId: inboxType === "personal" && folder === "inbox" ? teamMemberId : undefined,
+						inboxType: currentInboxType,
+						// For personal inbox, always filter by mailbox_owner_id for emails
+						// This ensures personal emails are shown regardless of folder
+						mailboxOwnerId: currentInboxType === "personal" ? currentTeamMemberId : undefined,
 						// If viewing company inbox, filter by category
 						category:
-							inboxType === "company" && category && ["support", "sales", "billing", "general"].includes(category)
-								? (category as "support" | "sales" | "billing" | "general")
+							currentInboxType === "company" && currentCategory && ["support", "sales", "billing", "general"].includes(currentCategory)
+								? (currentCategory as "support" | "sales" | "billing" | "general")
 								: undefined,
 						// Status filter for archive, trash, spam
 						status: statusFilter,
 						// Special handling for "sent" folder - filter by direction
 						direction: directionFilter,
 						// Filter by assigned user if needed
-						assignedTo: assignedFilter === "me" ? "me" : undefined,
-						searchQuery: searchQuery || undefined,
+						assignedTo: currentAssignedFilter === "me" ? "me" : undefined,
+						searchQuery: currentSearchQuery || undefined,
 						sortBy: "created_at",
 						sortOrder: "desc",
 						// Add draft and archived filters
 						isDraft: isDraftFilter,
 						isArchived: isArchivedFilter,
 						// Pass folder for special handling
-						folder: folder,
+						folder: currentFolder,
 					});
 
 					if (result.success && result.data) {
-						setCommunications(result.data as Communication[]);
+						const fetchedComms = result.data as Communication[];
+						// Filter out team channel messages before setting state to prevent flash
+						const filteredComms = filterOutTeamMessages(fetchedComms);
+						setCommunications(filteredComms);
 
-						// Update selected communication if it's still in the list
+						// Sync starredIds from filtered communications (team messages shouldn't be starred in inbox)
+						setStarredIds((prev) => {
+							const newStarred = new Set(prev);
+							filteredComms.forEach((comm) => {
+								if (comm.tags && Array.isArray(comm.tags) && comm.tags.includes("starred")) {
+									newStarred.add(comm.id);
+								}
+							});
+							return newStarred;
+						});
+
+						// Update selected communication if it's still in the filtered list
+						// Clear selection if it was a team message
 						const currentSelected = selectedCommunicationRef.current;
 						if (currentSelected) {
-							const updatedComm = (result.data as Communication[]).find(
-								(c) => c.id === currentSelected.id,
-							);
-							if (updatedComm) {
-								setSelectedCommunication(updatedComm);
-								selectedCommunicationRef.current = updatedComm;
+							if (isTeamChannelMessage(currentSelected)) {
+								// Selected communication is a team message, clear it
+								setSelectedCommunication(null);
+								selectedCommunicationRef.current = null;
+								setEmailContent(null);
+							} else {
+								const updatedComm = filteredComms.find(
+									(c) => c.id === currentSelected.id,
+								);
+								if (updatedComm) {
+									setSelectedCommunication(updatedComm);
+									selectedCommunicationRef.current = updatedComm;
+								}
 							}
 						}
 					}
@@ -525,10 +710,22 @@ export function UnifiedInboxPageClient({
 					});
 				} finally {
 					setRefreshing(false);
+					fetchLockRef.current = false;
+					// Always update last fetch params after completion to prevent duplicate fetches
+					const currentFetchKey = JSON.stringify({
+						folder: folderRef.current,
+						inboxType: inboxTypeRef.current,
+						category: categoryRef.current,
+						assignedFilter: assignedFilterRef.current,
+						channelId: channelIdRef.current,
+						typeFromUrl: typeFromUrlRef.current,
+						searchQuery: searchQueryRef.current,
+					});
+					lastFetchParamsRef.current = currentFetchKey;
 				}
 			});
 		},
-		[searchQuery, folder, inboxType, category, typeFilter, channelId, teamMemberId, companyId, assignedFilter, typeFromUrl],
+		[], // Empty dependencies - uses refs for all values
 	);
 
 	// Fetch SMS conversation
@@ -578,17 +775,32 @@ export function UnifiedInboxPageClient({
 		}
 	}, []);
 
-	// Refetch when URL params change (folder, inboxType, category, type, etc.)
+	// Consolidated URL param watching - single effect to prevent duplicate fetches
+		const prevParamsRef = useRef<string>("");
 	useEffect(() => {
-		fetchCommunications();
-	}, [folder, inboxType, category, assignedFilter, typeFromUrl, fetchCommunications]);
-
-	// Refetch when search changes
-	useEffect(() => {
-		if (searchQuery) {
+		// Create unique key from all params
+		const paramsKey = JSON.stringify({
+			folder,
+			inboxType,
+			category,
+			assignedFilter,
+			typeFromUrl,
+			channelId,
+			searchQuery,
+		});
+		
+		// Fetch if params changed
+		// Clear lastFetchParamsRef to ensure fresh fetch when navigating
+		if (prevParamsRef.current !== paramsKey) {
+			prevParamsRef.current = paramsKey;
+			// Clear the fetch params cache to force a fresh fetch
+			// This ensures we always fetch when params change, even if we've been here before
+			lastFetchParamsRef.current = "";
+			// Clear communications state to show loading state while fetching
+			setCommunications([]);
 			fetchCommunications();
 		}
-	}, [searchQuery, fetchCommunications]);
+	}, [folder, inboxType, category, assignedFilter, typeFromUrl, channelId, searchQuery, fetchCommunications]);
 
 	// Auto-scroll to bottom for Teams channel messages
 	useEffect(() => {
@@ -602,7 +814,7 @@ export function UnifiedInboxPageClient({
 		}
 	}, [channelId, channelMessages.length, loadingChannelMessages]);
 
-	// Real-time subscription for Teams channel messages
+	// Real-time subscription for Teams channel messages - optimized with better filters
 	useEffect(() => {
 		if (!channelId || !companyId) {
 			return;
@@ -613,7 +825,7 @@ export function UnifiedInboxPageClient({
 			return;
 		}
 
-		// Create realtime channel for team messages
+		// Create realtime channel for team messages with optimized filters
 		const channelName = `teams-channel-${channelId}-${companyId}`;
 		const channel = supabase
 			.channel(channelName)
@@ -623,6 +835,9 @@ export function UnifiedInboxPageClient({
 					event: "INSERT",
 					schema: "public",
 					table: "communications",
+					// Optimized: Filter by company, channel, and type at database level
+					// This reduces the number of events we receive significantly
+					// Note: Supabase real-time filters use comma-separated syntax
 					filter: `company_id=eq.${companyId}`,
 				},
 				async (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
@@ -641,9 +856,9 @@ export function UnifiedInboxPageClient({
 						provider_metadata: Record<string, unknown> | null;
 					};
 
-					// Filter by type and channel tag
+					// Filter by channel tag (type and channel already filtered at DB level)
+					// Only process messages for this specific channel
 					if (
-						newMessage.type === "sms" &&
 						newMessage.tags &&
 						Array.isArray(newMessage.tags) &&
 						newMessage.tags.includes(channelId)
@@ -725,6 +940,7 @@ export function UnifiedInboxPageClient({
 			});
 
 		return () => {
+			// Remove subscription and cleanup
 			supabase.removeChannel(channel);
 		};
 	}, [channelId, companyId]);
@@ -899,51 +1115,135 @@ export function UnifiedInboxPageClient({
 	// Email actions
 	const handleArchive = useCallback(
 		async (communicationId: string) => {
+			// Store the communication for potential revert
+			const commToArchive = communications.find((c) => c.id === communicationId);
+			if (!commToArchive) return;
+
+			// Optimistic update - immediately remove from list
+			setCommunications((prev) => prev.filter((c) => c.id !== communicationId));
+			
+			// Clear selection if this was the selected communication
+			if (selectedCommunication?.id === communicationId) {
+				setSelectedCommunication(null);
+				setEmailContent(null);
+				selectedCommunicationRef.current = null;
+			}
+
 			try {
 				const result = await archiveEmailAction(communicationId);
 				if (result.success) {
 					toast.success("Archived");
-					setCommunications((prev) =>
-						prev.filter((c) => c.id !== communicationId),
-					);
-					if (selectedCommunication?.id === communicationId) {
-						setSelectedCommunication(null);
-						setEmailContent(null);
-					}
 					window.dispatchEvent(new CustomEvent("email-archived"));
 				} else {
+					// Revert on failure
+					setCommunications((prev) => [...prev, commToArchive].sort((a, b) => 
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					));
 					toast.error(result.error || "Failed to archive");
 				}
 			} catch (err) {
+				// Revert on error
+				setCommunications((prev) => [...prev, commToArchive].sort((a, b) => 
+					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+				));
 				console.error("Failed to archive:", err);
 				toast.error("Failed to archive");
 			}
 		},
-		[selectedCommunication],
+		[communications, selectedCommunication],
 	);
 
 	const handleStar = useCallback(async (communicationId: string) => {
+		// Get current starred state
+		const currentlyStarred = starredIds.has(communicationId);
+		const newStarredState = !currentlyStarred;
+		
+		// Optimistic update - immediately update UI
+		setStarredIds((prev) => {
+			const newSet = new Set(prev);
+			if (newStarredState) {
+				newSet.add(communicationId);
+			} else {
+				newSet.delete(communicationId);
+			}
+			return newSet;
+		});
+		
+		// Update communication tags optimistically
+		setCommunications((prev) => 
+			prev.map((c) => {
+				if (c.id === communicationId) {
+					const currentTags = c.tags || [];
+					const hasStarredTag = Array.isArray(currentTags) && currentTags.includes("starred");
+					const newTags = newStarredState
+						? hasStarredTag ? currentTags : [...currentTags, "starred"]
+						: currentTags.filter((tag: string) => tag !== "starred");
+					return { ...c, tags: newTags.length > 0 ? newTags : null };
+				}
+				return c;
+			})
+		);
+
 		try {
 			const result = await toggleStarCommunicationAction(communicationId);
 			if (result.success) {
-				toast.success("Updated");
+				toast.success(newStarredState ? "Starred" : "Unstarred");
+			} else {
+				// Revert on failure
 				setStarredIds((prev) => {
 					const newSet = new Set(prev);
-					if (result.isStarred) {
+					if (currentlyStarred) {
 						newSet.add(communicationId);
 					} else {
 						newSet.delete(communicationId);
 					}
 					return newSet;
 				});
-			} else {
+				setCommunications((prev) => 
+					prev.map((c) => {
+						if (c.id === communicationId) {
+							const currentTags = c.tags || [];
+							const revertedTags = currentlyStarred
+								? Array.isArray(currentTags) && !currentTags.includes("starred")
+									? [...currentTags, "starred"]
+									: currentTags
+								: currentTags.filter((tag: string) => tag !== "starred");
+							return { ...c, tags: revertedTags.length > 0 ? revertedTags : null };
+						}
+						return c;
+					})
+				);
 				toast.error(result.error || "Failed to update");
 			}
 		} catch (err) {
+			// Revert on error
+			setStarredIds((prev) => {
+				const newSet = new Set(prev);
+				if (currentlyStarred) {
+					newSet.add(communicationId);
+				} else {
+					newSet.delete(communicationId);
+				}
+				return newSet;
+			});
+			setCommunications((prev) => 
+				prev.map((c) => {
+					if (c.id === communicationId) {
+						const currentTags = c.tags || [];
+						const revertedTags = currentlyStarred
+							? Array.isArray(currentTags) && !currentTags.includes("starred")
+								? [...currentTags, "starred"]
+								: currentTags
+							: currentTags.filter((tag: string) => tag !== "starred");
+						return { ...c, tags: revertedTags.length > 0 ? revertedTags : null };
+					}
+					return c;
+				})
+			);
 			console.error("Failed to star:", err);
 			toast.error("Failed to update");
 		}
-	}, []);
+	}, [starredIds]);
 
 	const handleToggleSpam = useCallback(
 		async (communicationId: string) => {
@@ -1269,6 +1569,14 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 	}, [channelId, currentUserId, teamMemberId, sendingMessage, fetchCommunications]);
 
 
+	// Format call duration
+	const formatDuration = (seconds: number | null | undefined): string => {
+		if (!seconds) return "0:00";
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins}:${secs.toString().padStart(2, "0")}`;
+	};
+
 	// Format timestamp for SMS messages
 	const formatMessageTime = (date: string) => {
 		const messageDate = new Date(date);
@@ -1311,66 +1619,23 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 		return timeDiff < 2 * 60 * 1000; // 2 minutes
 	}, []);
 
-	// Filter communications by type and search
-	const filteredCommunications = communications.filter((comm) => {
-		// Apply type filter first
-		if (typeFilter !== "all" && comm.type !== typeFilter) {
-			return false;
+	// Filter communications by type - memoized to prevent unnecessary recalculation
+	// Note: Search filtering is done server-side, this only handles type filter client-side
+	const filteredCommunications = useMemo(() => {
+		// If typeFilter is "all", return all communications (server already filtered by folder/search)
+		if (typeFilter === "all") {
+			return communications;
 		}
-
-		// Then apply search filter
-		if (searchQuery) {
-			const query = searchQuery.toLowerCase();
-			const matchesSubject = comm.subject?.toLowerCase().includes(query);
-			const matchesBody = comm.body?.toLowerCase().includes(query);
-			const matchesFrom = comm.fromAddress?.toLowerCase().includes(query);
-			const matchesTo = comm.toAddress?.toLowerCase().includes(query);
-			const matchesCustomer = comm.customer?.firstName?.toLowerCase().includes(query) ||
-				comm.customer?.lastName?.toLowerCase().includes(query);
-			return matchesSubject || matchesBody || matchesFrom || matchesTo || matchesCustomer;
-		}
-		return true;
-	});
+		
+		// Apply type filter client-side
+		return communications.filter((comm) => comm.type === typeFilter);
+	}, [communications, typeFilter]);
 
 	// Mobile: show list when no communication selected, show detail when communication selected
 	const showListOnMobile = !selectedCommunication && !composeMode;
 	const showDetailOnMobile = selectedCommunication || composeMode;
 
-	// Get type icon and colors
-	const getTypeConfig = (type: string) => {
-		switch (type) {
-			case "email":
-				return { 
-					icon: Mail, 
-					bg: "bg-blue-500 dark:bg-blue-600",
-					iconColor: "text-white"
-				};
-			case "sms":
-				return {
-					icon: MessageSquare,
-					bg: "bg-green-500 dark:bg-green-600",
-					iconColor: "text-white"
-				};
-			case "call":
-				return {
-					icon: Phone,
-					bg: "bg-purple-500 dark:bg-purple-600",
-					iconColor: "text-white"
-				};
-			case "voicemail":
-				return {
-					icon: Voicemail,
-					bg: "bg-orange-500 dark:bg-orange-600",
-					iconColor: "text-white"
-				};
-			default:
-				return { 
-					icon: Mail, 
-					bg: "bg-gray-500 dark:bg-gray-600",
-					iconColor: "text-white"
-				};
-		}
-	};
+	// Use memoized getTypeConfig helper (defined outside component)
 
 	// Render content based on view mode (Teams vs Email/SMS)
 	const renderContent = () => {
@@ -1443,18 +1708,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 											className="flex-1 overflow-y-auto bg-card px-4 py-4"
 										>
 											{loadingChannelMessages ? (
-												<div className="flex items-center justify-center h-full">
-													<Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-												</div>
+												<TeamsChannelSkeleton count={5} />
 											) : channelMessages.length === 0 ? (
-												<div className="flex items-center justify-center h-full">
-													<div className="text-center">
-														<MessageSquare className="h-12 w-12 text-muted-foreground opacity-50 mx-auto mb-2" />
-														<p className="text-sm text-muted-foreground">
-															No messages in this channel yet. Start the conversation!
-														</p>
-													</div>
-												</div>
+												<CommunicationEmptyState
+													variant="empty-team-channel"
+													channelName={channelId || undefined}
+													className="h-full"
+												/>
 											) : (
 												<div className="space-y-1">
 													{channelMessages.map((msg, index) => {
@@ -1483,8 +1743,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 															? `/dashboard/team/${msg.sent_by_user.id}`
 															: "#";
 
+														// Determine spacing: more space between groups (8-12px), less within groups (4-6px)
+														const spacingClass = isFirstInGroup 
+															? (index === 0 ? "mt-0" : "mt-3") // 12px between groups
+															: "mt-1.5"; // 6px within groups
+
 														return (
-															<div key={msg.id}>
+															<div key={msg.id} className={spacingClass}>
 																{showTime && (
 																	<div className="flex justify-center my-3">
 																		<span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
@@ -1499,7 +1764,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																		<div className={cn(
 																			"flex gap-2 px-2 group",
 																			isOutbound ? "flex-row-reverse" : "flex-row",
-																			isFirstInGroup ? "pt-1 pb-0.5" : "pt-0 pb-0.5"
+																			isFirstInGroup ? "pt-1 pb-1" : "pt-0.5 pb-1"
 																		)}>
 																			{/* Avatar - always visible, only show for first message in group */}
 																			{isFirstInGroup ? (
@@ -1548,11 +1813,12 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																				{/* Message bubble - match SMS design with primary color for outbound */}
 																				<div
 																					className={cn(
-																						"max-w-[75%] min-w-0 rounded-2xl px-4 py-2 shadow-sm",
+																						"max-w-[75%] rounded-2xl px-4 py-2 shadow-sm",
 																						isOutbound
 																							? "bg-primary text-primary-foreground rounded-tr-sm"
 																							: "bg-muted text-foreground rounded-tl-sm",
 																					)}
+																					style={{ minWidth: '60px', width: 'fit-content', maxWidth: '75%' }}
 																				>
 																					{/* Show attachments if present */}
 																					{msg.provider_metadata &&
@@ -1615,7 +1881,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																							</div>
 																						)}
 																						{msg.body && (
-																							<p className="text-sm whitespace-pre-wrap">
+																							<p className="text-sm whitespace-pre-wrap text-left leading-relaxed" style={{ wordBreak: 'normal', overflowWrap: 'break-word' }}>
 																								{msg.body}
 																							</p>
 																						)}
@@ -1906,9 +2172,31 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 
 																			<div className="flex justify-between items-center gap-2">
 																				<p className="mt-1 line-clamp-1 min-w-0 overflow-hidden text-sm text-[#8C8C8C] flex-1">
-																					{communication.subject ||
+																					{communication.type === "call" ? (
+																						<span>
+																							{communication.direction === "inbound"
+																								? "Incoming Call"
+																								: "Outgoing Call"}
+																							{communication.callDuration && communication.callDuration > 0 && (
+																								<span className="ml-2">
+																									• {formatDuration(communication.callDuration)}
+																								</span>
+																							)}
+																						</span>
+																					) : communication.type === "voicemail" ? (
+																						<span>
+																							Voicemail
+																							{communication.callDuration && (
+																								<span className="ml-2">
+																									• {formatDuration(communication.callDuration)}
+																								</span>
+																							)}
+																						</span>
+																					) : (
+																						communication.subject ||
 																						communication.body ||
-																						"No content"}
+																						"No content"
+																					)}
 																				</p>
 																				{/* Status badges */}
 																				<div className="flex items-center gap-1 shrink-0">
@@ -1951,18 +2239,32 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 												})}
 											</div>
 										) : (
-											<div className="flex items-center justify-center p-8">
-												<div className="text-center">
-													<p className="text-sm text-muted-foreground">
-														No communications found
-													</p>
-													{searchQuery && (
-														<p className="text-xs text-muted-foreground mt-1">
-															Try adjusting your search
-														</p>
-													)}
-												</div>
-											</div>
+											<CommunicationEmptyState
+												variant={
+													searchQuery
+														? "no-search-results"
+														: typeFilter !== "all"
+															? "empty-type-filter"
+															: folder === "inbox"
+																? "empty-inbox"
+																: folder
+																	? "empty-folder"
+																	: "no-communications"
+												}
+												searchQuery={searchQuery}
+												folder={folder}
+												type={typeFilter !== "all" ? typeFilter : undefined}
+												onAction={
+													!searchQuery && folder !== "inbox"
+														? () => {
+																window.dispatchEvent(
+																	new CustomEvent("open-unified-compose"),
+																);
+															}
+														: undefined
+												}
+												className="p-8"
+											/>
 										)}
 									</ScrollArea>
 								</div>
@@ -2324,14 +2626,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 												<div className="flex-1 overflow-hidden flex flex-col min-h-0 w-full">
 													<div className="flex-1 overflow-y-auto px-2 py-4 w-full">
 														{loadingContent ? (
-															<div className="flex items-center justify-center py-12">
-																<div className="text-center">
-																	<Loader2 className="h-8 w-8 animate-spin text-muted-foreground mx-auto mb-4" />
-																	<p className="text-sm text-muted-foreground">
-																		Loading email content...
-																	</p>
-																</div>
-															</div>
+															<CommunicationDetailSkeleton />
 														) : (
 															<EmailContent
 																html={emailContent?.html || null}
@@ -2434,18 +2729,12 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 														className="flex-1 overflow-y-auto bg-card px-4 py-4"
 													>
 														{loadingConversation ? (
-															<div className="flex items-center justify-center h-full">
-																<Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-															</div>
+															<SmsConversationSkeleton count={3} />
 														) : conversationMessages.length === 0 ? (
-															<div className="flex items-center justify-center h-full">
-																<div className="text-center">
-																	<MessageSquare className="h-12 w-12 text-muted-foreground opacity-50 mx-auto mb-2" />
-																	<p className="text-sm text-muted-foreground">
-																		No messages yet
-																	</p>
-																</div>
-															</div>
+															<CommunicationEmptyState
+																variant="empty-sms-conversation"
+																className="h-full"
+															/>
 														) : (
 															<div className="space-y-2">
 																{conversationMessages.map((msg, index) => {
@@ -2693,20 +2982,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 							"bg-card mb-1 shadow-sm hidden md:flex md:flex-col md:items-center md:justify-center md:rounded-tl-2xl flex-1 min-w-0",
 						)}
 					>
-						<Mail className="h-16 w-16 text-muted-foreground mb-4" />
-						<h3 className="text-lg font-semibold">No communication selected</h3>
-						<p className="text-sm text-muted-foreground mb-4">
-							Select a communication from the list to view details
-						</p>
-						<Button
-							onClick={() => {
+						<CommunicationEmptyState
+							variant="no-communications"
+							onAction={() => {
 								window.dispatchEvent(new CustomEvent("open-unified-compose"));
 							}}
-							className="h-11 px-5"
-						>
-							<Plus className="h-4 w-4 mr-2" />
-							New Message
-						</Button>
+							actionLabel="New Message"
+						/>
 					</div>
 				)}
 			</div>

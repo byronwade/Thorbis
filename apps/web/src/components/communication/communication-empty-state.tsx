@@ -38,9 +38,9 @@ const variantConfig: Record<
 	EmptyStateVariant,
 	{
 		icon: typeof Mail;
-		title: string;
+		title: string | ((props: CommunicationEmptyStateProps) => string);
 		description: (props: CommunicationEmptyStateProps) => string;
-		showAction?: boolean;
+		showAction?: boolean | ((props: CommunicationEmptyStateProps) => boolean);
 		defaultActionLabel?: string;
 	}
 > = {
@@ -69,7 +69,15 @@ const variantConfig: Record<
 	},
 	"empty-folder": {
 		icon: Archive,
-		title: `No ${"folder"} items`,
+		title: (props) => {
+			const folderTitles: Record<string, string> = {
+				draft: "No drafts",
+				sent: "No sent messages",
+				archived: "No archived items",
+				starred: "No starred items",
+			};
+			return folderTitles[props.folder || ""] || "No items";
+		},
 		description: (props) => {
 			const folderNames: Record<string, string> = {
 				draft: "drafts",
@@ -80,7 +88,7 @@ const variantConfig: Record<
 			const folderName = folderNames[props.folder || ""] || "items";
 			return `You don't have any ${folderName} yet.`;
 		},
-		showAction: props => props.folder === "draft",
+		showAction: (props) => props.folder === "draft",
 		defaultActionLabel: "New Message",
 	},
 	"empty-type-filter": {
@@ -137,9 +145,7 @@ export function CommunicationEmptyState({
 	actionLabel,
 	className,
 }: CommunicationEmptyStateProps) {
-	const config = variantConfig[variant];
-	const Icon = config.icon;
-	const description = config.description({
+	const props = {
 		variant,
 		searchQuery,
 		folder,
@@ -148,7 +154,13 @@ export function CommunicationEmptyState({
 		onAction,
 		actionLabel,
 		className,
-	});
+	};
+	
+	const config = variantConfig[variant];
+	const Icon = config.icon;
+	const title = typeof config.title === "function" ? config.title(props) : config.title;
+	const description = config.description(props);
+	const showAction = typeof config.showAction === "function" ? config.showAction(props) : config.showAction;
 
 	return (
 		<div
@@ -161,9 +173,9 @@ export function CommunicationEmptyState({
 				<Icon className="h-8 w-8 text-muted-foreground" />
 			</div>
 			<div className="space-y-2 max-w-md">
-				<h3 className="text-lg font-semibold">{config.title}</h3>
+				<h3 className="text-lg font-semibold">{title}</h3>
 				<p className="text-sm text-muted-foreground">{description}</p>
-				{config.showAction && onAction && (
+				{showAction && onAction && (
 					<div className="flex justify-center pt-4">
 						<Button onClick={onAction} className="h-11 px-5">
 							<Plus className="h-4 w-4 mr-2" />

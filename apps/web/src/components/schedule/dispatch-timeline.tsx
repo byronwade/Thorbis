@@ -1,110 +1,108 @@
 "use client";
 
 import {
-	arriveAppointment,
-	assignJobToTechnician,
-	completeAppointment,
-	dispatchAppointment,
-	updateAppointmentTimes,
+    arriveAppointment,
+    assignJobToTechnician,
+    completeAppointment,
+    dispatchAppointment,
+    updateAppointmentTimes,
 } from "@/actions/schedule-assignments";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSchedule, useScheduleRealtime } from "@/hooks/use-schedule";
 import { useJobTimezone } from "@/hooks/use-job-timezone";
+import { useSchedule, useScheduleRealtime } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { useUIStore } from "@/lib/stores/ui-store";
 import { cn } from "@/lib/utils";
 import {
-	DndContext,
-	DragOverlay,
-	MouseSensor,
-	pointerWithin,
-	TouchSensor,
-	useDraggable,
-	useDroppable,
-	useSensor,
-	useSensors
+    DndContext,
+    DragOverlay,
+    MouseSensor,
+    pointerWithin,
+    TouchSensor,
+    useDraggable,
+    useDroppable,
+    useSensor,
+    useSensors
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { format } from "date-fns";
+import { format, isSameDay, isToday, isTomorrow } from "date-fns";
 import {
-	AlertTriangle,
-	ArrowLeft,
-	Briefcase,
-	Calendar,
-	Car,
-	Check,
-	ChevronRight,
-	ClipboardCheck,
-	Clock,
-	HardHat,
-	MapPin,
-	Mail,
-	MessageSquare,
-	MoreVertical,
-	Phone,
-	Play,
-	Repeat,
-	Search,
-	Send,
-	Settings,
-	Star,
-	User,
-	Users,
-	Wrench,
-	X,
-	Zap
+    AlertTriangle,
+    ArrowLeft,
+    Briefcase,
+    Calendar,
+    Car,
+    Check,
+    ChevronRight,
+    ClipboardCheck,
+    Clock,
+    HardHat,
+    Mail,
+    MapPin,
+    MessageSquare,
+    MoreVertical,
+    Phone,
+    Play,
+    Repeat,
+    Search,
+    Send,
+    Settings,
+    Star,
+    User,
+    Users,
+    Wrench,
+    Zap
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-	memo,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-	useTransition,
+    memo,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    useTransition,
 } from "react";
 import { toast } from "sonner";
 import { TechnicianRouteTrackingMap } from "./dispatch-map/technician-route-tracking-map";
 import {
-	DRAG_UNASSIGNED_DROP_ID,
-	type DragPreview,
-	useScheduleDrag,
+    DRAG_UNASSIGNED_DROP_ID,
+    type DragPreview,
+    useScheduleDrag,
 } from "./hooks/use-schedule-drag";
 import {
-	QuickAppointmentDialog,
-	type TechnicianOption,
+    QuickAppointmentDialog,
+    type TechnicianOption,
 } from "./quick-appointment-dialog";
 import { ScheduleJobContextMenu } from "./schedule-job-context-menu";
 import type {
-	AppointmentCategory,
-	Job,
-	JobType,
-	Technician,
+    AppointmentCategory,
+    Job,
+    JobType,
+    Technician,
 } from "./schedule-types";
 import { getAppointmentCategory } from "./schedule-types";
-import { TeamAvatarGroup } from "./team-avatar-manager";
 import { UnassignedPanel } from "./unassigned-panel";
 
 const HOUR_WIDTH = 80;
@@ -338,11 +336,6 @@ function calculateTravelGaps(
 		const currentJob = sortedJobs[i];
 		const nextJob = sortedJobs[i + 1];
 
-		// Skip if jobs overlap (lane stacking)
-		if (currentJob.left + currentJob.width > nextJob.left) {
-			continue;
-		}
-
 		const currentEnd =
 			currentJob.job.endTime instanceof Date
 				? currentJob.job.endTime
@@ -371,8 +364,8 @@ function calculateTravelGaps(
 			continue;
 		}
 
-		// Only show gaps >= 15 minutes (significant travel opportunity)
-		if (gapMinutes < 15) continue;
+		// Include all gaps, even if touching (0 minutes) or overlapping (negative)
+		// This allows travel badges to show above jobs that are close together
 
 		// Calculate estimated travel time based on distance
 		let estimatedTravelMinutes = 15; // Default minimum
@@ -395,6 +388,7 @@ function calculateTravelGaps(
 		}
 
 		const leftPosition = currentJob.left + currentJob.width;
+		// Width can be negative if jobs overlap, zero if touching
 		const width = nextJob.left - leftPosition;
 
 		gaps.push({
@@ -465,9 +459,6 @@ const TravelTimeIndicator = memo(function TravelTimeIndicator({
 }: {
 	gap: TravelGap;
 }) {
-	// Only show if gap is at least 30 pixels wide (to fit content)
-	if (gap.width < 30) return null;
-
 	const formatDuration = (minutes: number): string => {
 		if (minutes < 60) return `${minutes}m`;
 		const hours = Math.floor(minutes / 60);
@@ -476,19 +467,127 @@ const TravelTimeIndicator = memo(function TravelTimeIndicator({
 	};
 
 	// Calculate vertical center based on job card positions
-	// Job cards use: topOffset = (top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top
+	// Job cards use: topOffset = (top === 0 ? BASE_CENTER_OFFSET : BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP + (top - (JOB_HEIGHT + STACK_GAP)))
 	// Center of job = topOffset + JOB_HEIGHT / 2
 	const fromJobTopOffset =
-		(gap.fromJobTop > 0 || gap.fromJobHasOverlap
-			? STACK_GAP
-			: BASE_CENTER_OFFSET) + gap.fromJobTop;
+		gap.fromJobTop === 0
+			? BASE_CENTER_OFFSET
+			: BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP + (gap.fromJobTop - (JOB_HEIGHT + STACK_GAP));
 	const toJobTopOffset =
-		(gap.toJobTop > 0 || gap.toJobHasOverlap
-			? STACK_GAP
-			: BASE_CENTER_OFFSET) + gap.toJobTop;
+		gap.toJobTop === 0
+			? BASE_CENTER_OFFSET
+			: BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP + (gap.toJobTop - (JOB_HEIGHT + STACK_GAP));
 
 	const fromJobCenterY = fromJobTopOffset + JOB_HEIGHT / 2;
 	const toJobCenterY = toJobTopOffset + JOB_HEIGHT / 2;
+
+	// Determine if jobs are close together, touching, or overlapping
+	// Show badge above jobs when gap is too small to display badge clearly
+	// Always show above when touching (width <= 0) or close together (width <= 100)
+	const isCloseTogether = gap.width <= 100;
+	const isTouchingOrOverlapping = gap.width <= 0;
+	
+	// When jobs are close together, touching, or overlapping, position badge above them
+	// Otherwise, show in the gap as before
+	if (isCloseTogether || isTouchingOrOverlapping) {
+		// Position badge centered between the two jobs, overlapping both
+		// For touching/overlapping jobs, center at the boundary between them
+		// For close jobs, center in the gap
+		const fromJobRight = gap.fromJobLeft + gap.fromJobWidth;
+		const toJobLeft = gap.toJobLeft;
+		// When touching or overlapping, center at the boundary
+		// Otherwise, center in the gap
+		const badgeX = isTouchingOrOverlapping
+			? (fromJobRight + toJobLeft) / 2
+			: (fromJobRight + toJobLeft) / 2;
+		
+		// Position badge so it overlaps the top portion of both jobs
+		// Use the minimum top offset and position it slightly into the jobs
+		const badgeY = Math.min(fromJobTopOffset, toJobTopOffset) + 6; // 6px into the jobs, so it overlaps them
+		
+		return (
+			<TooltipProvider>
+				<Tooltip delayDuration={100}>
+					<TooltipTrigger asChild>
+						<div className="absolute inset-0" style={{ zIndex: 15, pointerEvents: "none" }}>
+							{/* Time badge positioned above jobs, halfway onto both */}
+							<div
+								className="absolute flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-medium text-emerald-800 shadow-sm dark:bg-emerald-900 dark:text-emerald-200 pointer-events-auto"
+								style={{
+									left: `${badgeX}px`,
+									top: `${badgeY}px`,
+									transform: "translate(-50%, -50%)",
+									zIndex: 15,
+								}}
+							>
+								<Car className="size-3" />
+								<span>{formatDuration(gap.estimatedTravelMinutes)}</span>
+								{gap.isInsufficient && (
+									<span className="text-[9px] font-semibold text-red-500">
+										Tight
+									</span>
+								)}
+							</div>
+						</div>
+					</TooltipTrigger>
+					<TooltipContent className="max-w-64" side="top" sideOffset={4}>
+						<div className="space-y-1.5 text-xs">
+							<div className="font-semibold">Travel Time Gap</div>
+							<div className="text-muted-foreground">
+								<span className="font-medium text-foreground">
+									{formatDuration(gap.gapMinutes)}
+								</span>{" "}
+								available between jobs
+							</div>
+							<div className="text-muted-foreground">
+								Est. travel:{" "}
+								<span className="font-medium text-foreground">
+									{formatDuration(gap.estimatedTravelMinutes)}
+								</span>
+							</div>
+							{gap.isInsufficient && (
+								<div className="text-red-600 dark:text-red-400 font-medium">
+									⚠ Insufficient travel time
+								</div>
+							)}
+							{gap.isTight && !gap.isInsufficient && (
+								<div className="text-orange-600 dark:text-orange-400 font-medium">
+									⚠ Tight schedule
+								</div>
+							)}
+							<div className="border-t pt-1.5 mt-1.5 text-muted-foreground">
+								<div>
+									From: {gap.fromJob.customer?.name || "Unknown"} (ends{" "}
+									{format(
+										gap.fromJob.endTime instanceof Date
+											? gap.fromJob.endTime
+											: new Date(gap.fromJob.endTime),
+										"h:mm a",
+									)}
+									)
+								</div>
+								<div>
+									To: {gap.toJob.customer?.name || "Unknown"} (starts{" "}
+									{format(
+										gap.toJob.startTime instanceof Date
+											? gap.toJob.startTime
+											: new Date(gap.toJob.startTime),
+										"h:mm a",
+									)}
+									)
+								</div>
+							</div>
+						</div>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
+		);
+	}
+
+	// Original behavior for jobs with sufficient gap (> 100px)
+	// Only show gap-based indicator if gap is at least 30 pixels wide (to fit content)
+	// Note: gaps with width <= 100 are handled above (shown above jobs as badge)
+	if (gap.width < 30) return null;
 
 	// Calculate horizontal positions with offset from job edges
 	const OFFSET = 12; // Space between job edge and vertical line
@@ -508,7 +607,7 @@ const TravelTimeIndicator = memo(function TravelTimeIndicator({
 		<TooltipProvider>
 			<Tooltip delayDuration={100}>
 				<TooltipTrigger asChild>
-					<div className="pointer-events-none absolute inset-0">
+					<div className="pointer-events-none absolute inset-0" style={{ zIndex: 15 }}>
 						{/* Vertical line from first job center (with offset from right edge) to middle */}
 						<div
 							className="absolute bg-emerald-500/70 shadow-[0_0_0_1px_rgba(16,185,129,0.25)]"
@@ -931,8 +1030,13 @@ const JobCard = memo(
 
 		const quickAction = getQuickAction();
 
+		// Calculate topOffset with proper spacing:
+		// - Lane 0 (top === 0): Use BASE_CENTER_OFFSET
+		// - Lane 1+ (top > 0): Use BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP, then add spacing for additional lanes
 		const topOffset =
-			(top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top;
+			top === 0
+				? BASE_CENTER_OFFSET
+				: BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP + (top - (JOB_HEIGHT + STACK_GAP));
 
 			const style = {
 				left: `${left}px`,
@@ -1498,34 +1602,29 @@ const TechnicianLane = memo(
 		// Calculate which row the Y position corresponds to
 		const calculateRowTop = useCallback(
 			(y: number): number => {
-				// Check if there are overlaps or jobs in stacked rows
-				const hasOverlapsOrStacked = jobs.some((j) => j.hasOverlap || j.top > 0);
-				
-				// Determine base offset (same logic as job positioning)
-				const baseOffset = hasOverlapsOrStacked ? STACK_GAP : BASE_CENTER_OFFSET;
-				
-				// Calculate which row index (0, 1, 2, etc.) based on Y position
-				// Each row is JOB_HEIGHT + STACK_GAP tall
 				const yFromTop = Math.max(0, y);
 				
-				// For first row with no overlaps, use BASE_CENTER_OFFSET
-				// For subsequent rows or when overlaps exist, calculate from STACK_GAP
-				let rowIndex: number;
-				if (!hasOverlapsOrStacked && yFromTop < BASE_CENTER_OFFSET + JOB_HEIGHT) {
-					// First row, no overlaps
+				// Row 0 starts at BASE_CENTER_OFFSET
+				if (yFromTop < BASE_CENTER_OFFSET + JOB_HEIGHT) {
+					// First row (row 0)
 					return BASE_CENTER_OFFSET;
-				} else {
-					// Calculate row index from STACK_GAP
-					rowIndex = Math.floor(
-						(yFromTop - STACK_GAP) / (JOB_HEIGHT + STACK_GAP),
-					);
-					// Clamp to valid row (0 or higher)
-					rowIndex = Math.max(0, rowIndex);
-					// Calculate the top position for this row
-					return STACK_GAP + rowIndex * (JOB_HEIGHT + STACK_GAP);
 				}
+				
+				// For stacked rows, calculate which row index based on position
+				// Row 1 starts at BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP
+				const row1Start = BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP;
+				if (yFromTop < row1Start + JOB_HEIGHT) {
+					// Row 1
+					return row1Start;
+				}
+				
+				// For row 2+, calculate from row 1 position
+				const yFromRow1 = yFromTop - row1Start;
+				const rowIndex = Math.floor(yFromRow1 / (JOB_HEIGHT + STACK_GAP));
+				const clampedRowIndex = Math.max(0, rowIndex);
+				return row1Start + clampedRowIndex * (JOB_HEIGHT + STACK_GAP);
 			},
-			[jobs],
+			[],
 		);
 
 		// Convert pixel position to time (multi-day buffer support)
@@ -1918,6 +2017,10 @@ export function DispatchTimeline() {
 		(s) => s.setCurrentDatePreserveBuffer,
 	);
 	const goToToday = useScheduleViewStore((s) => s.goToToday);
+	const shouldScrollToNow = useScheduleViewStore((s) => s.shouldScrollToNow);
+	const setShouldScrollToNow = useScheduleViewStore(
+		(s) => s.setShouldScrollToNow,
+	);
 	const extendBufferLeft = useScheduleViewStore((s) => s.extendBufferLeft);
 	const extendBufferRight = useScheduleViewStore((s) => s.extendBufferRight);
 	const focusedTechnicianId = searchParams.get("technician");
@@ -2799,18 +2902,31 @@ export function DispatchTimeline() {
 
 			hoverRaf.current = requestAnimationFrame(() => {
 				// Calculate time - badge aligns perfectly at x, matching hour labels
-				// Use exact reverse of currentTimePosition calculation for consistency
-				// x is position in timeline, need absolute: scrollLeft + x
-				const absoluteX = Math.min(
-					Math.max(0, scrollLeft + x),
-					totalWidth,
-				);
-				// Reverse currentTimePosition: position = (minutes / totalMinutes) * totalWidth
-				// So: minutes = (position / totalWidth) * totalMinutes
-				const totalMinutes =
-					(timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
-				const minutesFromStart = (absoluteX / totalWidth) * totalMinutes;
-				const hoverDate = new Date(timeRange.start.getTime() + minutesFromStart * 60 * 1000);
+				// x is position relative to timeline container, need absolute position accounting for scroll
+				const absoluteX = Math.max(0, Math.min(x, totalWidth - 1));
+				
+				// Calculate which hour slot the cursor is in (each slot is HOUR_WIDTH wide)
+				// Use the same hourlySlots array that's rendered in the header
+				const slotIndex = Math.max(0, Math.min(
+					Math.floor(absoluteX / HOUR_WIDTH),
+					hourlySlots.length - 1
+				));
+				
+				// Get the start time of this hour slot (same slot used in header rendering)
+				const slotStartDate = hourlySlots[slotIndex];
+				if (!slotStartDate) {
+					return;
+				}
+				
+				// Calculate minutes within the current hour slot (0-60 minutes)
+				const positionInSlot = absoluteX % HOUR_WIDTH;
+				const minutesInHour = Math.max(0, Math.min(
+					(positionInSlot / HOUR_WIDTH) * 60,
+					60
+				));
+				
+				// Create the exact time by adding minutes to the slot's start time
+				const hoverDate = new Date(slotStartDate.getTime() + minutesInHour * 60 * 1000);
 
 				const nextTime = format(hoverDate, "h:mm a");
 				// Skip updates if position/time haven't materially changed (reduces rerenders)
@@ -2838,7 +2954,7 @@ export function DispatchTimeline() {
 				}
 			});
 		},
-		[totalWidth, timeRange, isJobHovered, activeJobId, hourlySlotData],
+		[totalWidth, timeRange, isJobHovered, activeJobId, hourlySlots],
 	);
 
 	const handleMouseLeave = useCallback(() => {
@@ -2895,6 +3011,9 @@ export function DispatchTimeline() {
 
 	// Scroll to current time/date on mount and when current date changes
 	const hasInitialScrolled = useRef(false);
+	const isUserScrolling = useRef(false);
+	const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	
 	useEffect(() => {
 		const container = scrollContainerRef.current;
 		if (!container) return;
@@ -2904,8 +3023,14 @@ export function DispatchTimeline() {
 			return;
 		}
 
-		// On initial load or date change, scroll to center the current date
-		if (!hasInitialScrolled.current || currentTimePosition !== null) {
+		// Don't auto-scroll if user is actively scrolling
+		if (isUserScrolling.current) {
+			return;
+		}
+
+		// Only scroll on initial load, not when currentTimePosition recalculates
+		// currentTimePosition recalculates when timeRange/totalWidth change during infinite scroll
+		if (!hasInitialScrolled.current) {
 			const targetPosition =
 				currentTimePosition !== null
 					? currentTimePosition
@@ -2971,12 +3096,48 @@ export function DispatchTimeline() {
 				updateVisibleDateFromCurrentScroll();
 			});
 		}
-		lastLoadingRef.current = isLoading;
+				lastLoadingRef.current = isLoading;
 	}, [
 		isLoading,
 		currentTimePosition,
 		currentDateOffset,
+		updateVisibleDateFromCurrentScroll		],
+	);
+
+	// Scroll to current time when Today button is clicked
+	useEffect(() => {
+		if (!shouldScrollToNow) return;
+
+		const container = scrollContainerRef.current;
+		if (!container || currentTimePosition === null) {
+			setShouldScrollToNow(false);
+			return;
+		}
+
+		// Center timeline on current time - account for fixed UI elements:
+		// - Technician sidebar (SIDEBAR_WIDTH = 220px on the left)
+		// - Unassigned jobs panel (320px when open, 48px when collapsed on the right)
+		const unassignedPanelWidth = unassignedPanelOpen ? 320 : 48;
+		const visibleTimelineWidth = container.clientWidth - SIDEBAR_WIDTH - unassignedPanelWidth;
+		
+		// Center the current time in the actual visible timeline area
+		const centerOffset = visibleTimelineWidth / 2 + SIDEBAR_WIDTH;
+		const targetScrollLeft = currentTimePosition - centerOffset;
+		
+		container.scrollLeft = Math.max(0, targetScrollLeft);
+
+		setShouldScrollToNow(false);
+		
+		// Update the visible date after scrolling
+		requestAnimationFrame(() => {
+			updateVisibleDateFromCurrentScroll();
+		});
+	}, [
+		shouldScrollToNow,
+		currentTimePosition,
+		setShouldScrollToNow,
 		updateVisibleDateFromCurrentScroll,
+		unassignedPanelOpen,
 	]);
 
 	// Infinite scroll: Extend buffer when scrolling near edges
@@ -3030,6 +3191,19 @@ export function DispatchTimeline() {
 	}, [extendBufferLeft, extendBufferRight]);
 
 	const handleScroll = useCallback(() => {
+		// Mark that user is actively scrolling
+		isUserScrolling.current = true;
+		
+		// Clear any existing timeout
+		if (scrollTimeoutRef.current) {
+			clearTimeout(scrollTimeoutRef.current);
+		}
+		
+		// Reset the flag after scrolling stops (500ms of no scroll events)
+		scrollTimeoutRef.current = setTimeout(() => {
+			isUserScrolling.current = false;
+		}, 500);
+		
 		handleInfiniteScroll();
 		updateVisibleDateFromCurrentScroll();
 	}, [handleInfiniteScroll, updateVisibleDateFromCurrentScroll]);
@@ -3042,7 +3216,13 @@ export function DispatchTimeline() {
 		container.addEventListener("scroll", handleScroll, {
 			passive: true,
 		});
-		return () => container.removeEventListener("scroll", handleScroll);
+		return () => {
+			container.removeEventListener("scroll", handleScroll);
+			// Cleanup scroll timeout on unmount
+			if (scrollTimeoutRef.current) {
+				clearTimeout(scrollTimeoutRef.current);
+			}
+		};
 	}, [handleScroll]);
 
 
@@ -3369,11 +3549,28 @@ export function DispatchTimeline() {
 								const isApprentice = technician.role
 									?.toLowerCase()
 									.includes("apprentice");
-								const hasJobs = jobs.length > 0;
+
+								// Filter jobs to only include those for the currently viewed date
+								const todaysJobs = jobs.filter((jobWithPos) => {
+									if (!jobWithPos?.job?.startTime) return false;
+									try {
+										const jobStart =
+											jobWithPos.job.startTime instanceof Date
+												? jobWithPos.job.startTime
+												: new Date(jobWithPos.job.startTime);
+										// Verify date is valid before comparing
+										if (isNaN(jobStart.getTime())) return false;
+										return isSameDay(jobStart, dateObj);
+									} catch {
+										return false;
+									}
+								});
+
+								const hasJobs = todaysJobs.length > 0;
 
 								// Calculate utilization (assuming 8 hour workday: 8am-5pm = 9 hours with lunch)
 								const WORK_DAY_MINUTES = 8 * 60; // 8 hours
-								const totalScheduledMinutes = jobs.reduce((acc, jobWithPos) => {
+								const totalScheduledMinutes = todaysJobs.reduce((acc, jobWithPos) => {
 									const start =
 										jobWithPos.job.startTime instanceof Date
 											? jobWithPos.job.startTime
@@ -3398,6 +3595,17 @@ export function DispatchTimeline() {
 											: utilizationPercent < 80
 												? "bg-amber-500 dark:bg-amber-400"
 												: "bg-red-500 dark:bg-red-400";
+
+								// Format date label for tooltip
+								const getDateLabel = () => {
+									if (isToday(dateObj)) {
+										return "Jobs Today:";
+									}
+									if (isTomorrow(dateObj)) {
+										return "Jobs Tomorrow:";
+									}
+									return `Jobs for ${format(dateObj, "MMM d, yyyy")}:`;
+								};
 
 								return (
 									<Tooltip key={technician.id}>
@@ -3448,19 +3656,29 @@ export function DispatchTimeline() {
 															)}
 														</div>
 														{/* Utilization bar */}
-														<div className="mt-1 flex items-center gap-2">
-															<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-																<div
-																	className={cn(
-																		"h-full rounded-full transition-[width] duration-200",
-																		utilizationColor,
-																	)}
-																	style={{ width: `${utilizationPercent}%` }}
-																/>
+														<div className="mt-1 space-y-0.5">
+															<div className="flex items-center gap-2">
+																<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+																	<div
+																		className={cn(
+																			"h-full rounded-full transition-[width] duration-200",
+																			utilizationColor,
+																		)}
+																		style={{ width: `${utilizationPercent}%` }}
+																	/>
+																</div>
+																<span className="text-muted-foreground text-[10px] tabular-nums">
+																	{todaysJobs.length} job{todaysJobs.length !== 1 ? "s" : ""}
+																</span>
 															</div>
-															<span className="text-muted-foreground text-[10px] tabular-nums">
-																{jobs.length} job{jobs.length !== 1 ? "s" : ""}
-															</span>
+															{/* Date indicator */}
+															<div className="text-muted-foreground text-[9px]">
+																{isToday(dateObj)
+																	? "Today"
+																	: isTomorrow(dateObj)
+																		? "Tomorrow"
+																		: format(dateObj, "MMM d, yyyy")}
+															</div>
 														</div>
 													</div>
 												</div>
@@ -3491,9 +3709,9 @@ export function DispatchTimeline() {
 												<div className="mt-1 border-t border-border pt-1">
 													<div className="flex justify-between">
 														<span className="text-muted-foreground">
-															Jobs Today:
+															{getDateLabel()}
 														</span>
-														<span className="font-medium">{jobs.length}</span>
+														<span className="font-medium">{todaysJobs.length}</span>
 													</div>
 													<div className="flex justify-between">
 														<span className="text-muted-foreground">
@@ -3595,7 +3813,9 @@ export function DispatchTimeline() {
 									ref={hoverIndicatorRef}
 									className="pointer-events-none absolute bottom-0 z-50 hidden -translate-x-1/2 translate-y-1/2"
 								>
-									<div className="rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-2.5 py-1 text-xs font-semibold whitespace-nowrap shadow-lg border border-gray-200 dark:border-gray-700">
+									<div 
+										className="rounded-md px-2.5 py-1 text-xs font-semibold whitespace-nowrap shadow-lg bg-white text-black"
+									>
 									</div>
 								</div>
 							</div>
@@ -3652,13 +3872,13 @@ export function DispatchTimeline() {
 								{/* Current Time Indicator - Blue Line */}
 								{currentTimePosition !== null && (
 									<div
-										className="absolute top-0 left-0 z-10 w-0.5 bg-blue-500 dark:bg-blue-400 shadow-lg"
+										className="absolute top-0 left-0 z-10 w-0.5 bg-blue-500 dark:bg-blue-600 shadow-lg"
 										style={{ 
 											left: currentTimePosition,
 											height: '100%',
 										}}
 									>
-										<div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-3 rounded-full bg-blue-500 dark:bg-blue-400 ring-2 ring-blue-200 dark:ring-blue-800" />
+										<div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-3 rounded-full bg-blue-500 dark:bg-blue-600 ring-2 ring-blue-200 dark:ring-blue-800" />
 									</div>
 								)}
 

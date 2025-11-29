@@ -13,6 +13,7 @@
  */
 
 import {
+    batchCanViewCommunications,
     canViewCommunication,
     type EmailCategory,
     getEmailCategories,
@@ -215,28 +216,23 @@ const getCommunications = cache(
 		// Filter by permissions (post-fetch)
 		// This is necessary because RLS policies can't easily express complex permission logic
 		//
-		// TODO: PERFORMANCE OPTIMIZATION NEEDED
-		// This loop has an N+1 query pattern - each iteration calls canViewCommunication()
-		// which makes 1-3 database queries. For 50 communications, this is 50-150 queries!
-		//
-		// Suggested fixes:
-		// 1. Batch fetch all team member permissions once before loop
-		// 2. Move permission logic to PostgreSQL RLS policies
-		// 3. Create a batch permission check function
-		//
-		// Impact: Low-Medium (only affects users with complex permission setups)
-		// React.cache() mitigates duplicate work across components
+		// OPTIMIZED: Uses batch permission checking to eliminate N+1 query pattern
+		// Instead of 50-150 queries for 50 communications, this makes only 2-3 queries total
+		const permissionChecks = communications.map((comm) => ({
+			mailboxOwnerId: comm.mailbox_owner_id,
+			assignedTo: comm.assigned_to,
+			visibilityScope: comm.visibility_scope as VisibilityScope | null,
+			emailCategory: comm.category as EmailCategory | undefined,
+		}));
+
+		// Batch check all permissions at once (only 2-3 database queries)
+		const canViewResults = await batchCanViewCommunications(teamMemberId, permissionChecks);
+
+		// Filter communications based on batch permission results
 		const filtered: Communication[] = [];
 
-		for (const comm of communications) {
-			const canView = await canViewCommunication(teamMemberId, {
-				mailboxOwnerId: comm.mailbox_owner_id,
-				assignedTo: comm.assigned_to,
-				visibilityScope: comm.visibility_scope as VisibilityScope | null,
-				emailCategory: comm.category as EmailCategory | undefined,
-			});
-
-			if (canView) {
+		communications.forEach((comm, index) => {
+			if (canViewResults[index]) {
 				filtered.push({
 					id: comm.id,
 					companyId: comm.company_id,
@@ -269,7 +265,7 @@ const getCommunications = cache(
 						: undefined,
 				});
 			}
-		}
+		});
 
 		return filtered;
 	},

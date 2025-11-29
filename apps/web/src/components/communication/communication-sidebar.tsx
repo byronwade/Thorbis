@@ -1,33 +1,33 @@
 "use client";
 
+import { NavGrouped } from "@/components/layout/nav-grouped";
+import { Button } from "@/components/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuBadge,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem,
+    SidebarRail,
+} from "@/components/ui/sidebar";
+import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
 import { ChevronRight, type LucideIcon, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ComponentProps } from "react";
-import { NavGrouped } from "@/components/layout/nav-grouped";
-import { Button } from "@/components/ui/button";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuBadge,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
-	SidebarRail,
-} from "@/components/ui/sidebar";
-import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
 
 /**
  * Navigation group configuration for communication sidebar
@@ -178,6 +178,16 @@ export function CommunicationSidebar({
 				if (searchParams.get(key) !== value) {
 					return false;
 				}
+			}
+		}
+
+		// Prevent partial matches for key navigation params
+		// If the link URL does NOT specify these params, but the current URL DOES,
+		// then this link should NOT be active.
+		const strictParams = ["type", "folder", "channel", "assigned"];
+		for (const param of strictParams) {
+			if (!urlSearchParams.has(param) && searchParams.has(param)) {
+				return false;
 			}
 		}
 

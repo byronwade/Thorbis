@@ -315,7 +315,7 @@ const getCommunicationsSchema = z.object({
 	isDraft: z.boolean().optional(),
 	isArchived: z.boolean().optional(),
 	mailboxOwnerId: z.string().uuid().optional(), // For personal inbox filtering
-	inboxType: z.enum(["personal", "company"]).optional(), // To determine filtering logic
+	inboxType: z.enum(["personal", "company", "all"]).optional(), // To determine filtering logic
 	folder: z.string().optional(), // Folder name (inbox, sent, starred, draft, archived)
 	limit: z.number().min(1).max(200).default(100),
 	offset: z.number().min(0).default(0),
@@ -344,7 +344,8 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			.eq("company_id", payload.companyId)
 			.is("deleted_at", null)
 			// Exclude Teams channel messages from All Messages view
-			// Teams messages have channel = "teams" and are internal chat messages
+			// Teams messages have channel = "teams" or tags containing channel names
+			// Client-side filtering provides additional safety net
 			.neq("channel", "teams");
 
 		// Apply inbox type filtering first (personal vs company)
@@ -371,6 +372,9 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 		} else if (payload.inboxType === "company") {
 			// Company inbox: mailbox_owner_id IS NULL (shared emails)
 			query = query.is("mailbox_owner_id", null);
+		} else if (payload.inboxType === "all") {
+			// All inbox: show everything (no mailbox_owner_id filter)
+			// This matches the "All Messages" sidebar count
 		}
 
 		// Apply filters

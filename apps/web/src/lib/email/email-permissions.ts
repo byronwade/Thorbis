@@ -330,6 +330,194 @@ async function checkDepartmentVisibility(
 }
 
 // =============================================================================
+// BATCH PERMISSION CHECKING (N+1 Query Optimization)
+// =============================================================================
+
+/**
+ * Permission context for batch checking
+ * Pre-fetched data to avoid N+1 queries
+ */
+interface BatchPermissionContext {
+	teamMemberId: string;
+	hasAllAccess: boolean;
+	categoryPermissions: Map<EmailCategory, boolean>;
+	teamMemberData: {
+		role?: string | null;
+		department?: string | null;
+	};
+	ownerDataCache: Map<string, { role?: string | null; department?: string | null }>;
+}
+
+/**
+ * Create a permission context for batch checking multiple communications
+ * This pre-fetches all necessary data to avoid N+1 queries
+ *
+ * @param teamMemberId - Team member ID to check permissions for
+ * @param ownerIds - Unique list of mailbox owner IDs that appear in the communications batch
+ * @returns Promise<BatchPermissionContext> - Pre-fetched permission context
+ */
+async function createBatchPermissionContext(
+	teamMemberId: string,
+	ownerIds: (string | null)[],
+): Promise<BatchPermissionContext> {
+	const supabase = await createServiceSupabaseClient();
+
+	// 1. Check if has "all" category permission (owner/admin)
+	const hasAllAccess = await hasAllCategoryPermission(teamMemberId, "read");
+
+	// 2. Fetch all email category permissions for this team member
+	const { data: permissions } = await supabase
+		.from("email_permissions")
+		.select("email_category, can_read")
+		.eq("team_member_id", teamMemberId)
+		.eq("can_read", true);
+
+	const categoryPermissions = new Map<EmailCategory, boolean>();
+	if (permissions) {
+		permissions.forEach((p) => {
+			categoryPermissions.set(p.email_category as EmailCategory, true);
+		});
+	}
+
+	// 3. Fetch team member's own role and department
+	const { data: viewerMember } = await supabase
+		.from("team_members")
+		.select("id, role, department")
+		.eq("id", teamMemberId)
+		.single();
+
+	// 4. Fetch all unique owner team member data in one query
+	const uniqueOwnerIds = [...new Set(ownerIds.filter((id): id is string => !!id))];
+	let ownerDataCache = new Map<string, { role?: string | null; department?: string | null }>();
+
+	if (uniqueOwnerIds.length > 0) {
+		const { data: ownerMembers } = await supabase
+			.from("team_members")
+			.select("id, role, department")
+			.in("id", uniqueOwnerIds);
+
+		if (ownerMembers) {
+			ownerMembers.forEach((member) => {
+				ownerDataCache.set(member.id, {
+					role: member.role,
+					department: member.department,
+				});
+			});
+		}
+	}
+
+	return {
+		teamMemberId,
+		hasAllAccess: hasAllAccess || false,
+		categoryPermissions,
+		teamMemberData: {
+			role: viewerMember?.role || null,
+			department: viewerMember?.department || null,
+		},
+		ownerDataCache,
+	};
+}
+
+/**
+ * Batch check if a team member can view multiple communications
+ * This eliminates N+1 queries by pre-fetching all necessary data
+ *
+ * @param teamMemberId - Team member ID to check permissions for
+ * @param communications - Array of communications to check
+ * @returns Promise<boolean[]> - Array of boolean results, one per communication
+ *
+ * @example
+ * const communications = [...]; // 50 communications
+ * const canView = await batchCanViewCommunications(teamMemberId, communications);
+ * // Returns [true, false, true, ...] - only 2-3 database queries total instead of 50-150
+ */
+export async function batchCanViewCommunications(
+	teamMemberId: string,
+	communications: Array<{
+		mailboxOwnerId?: string | null;
+		assignedTo?: string | null;
+		visibilityScope?: VisibilityScope | null;
+		emailCategory?: EmailCategory;
+	}>,
+): Promise<boolean[]> {
+	if (communications.length === 0) {
+		return [];
+	}
+
+	// Extract unique owner IDs for batch fetching
+	const ownerIds = communications
+		.map((comm) => comm.mailboxOwnerId)
+		.filter((id): id is string => id !== null && id !== undefined);
+
+	// Create permission context (pre-fetches all data)
+	const context = await createBatchPermissionContext(teamMemberId, ownerIds);
+
+	// Perform in-memory checks for all communications
+	return communications.map((comm) => {
+		// 1. Check if owner/admin (can see everything)
+		if (context.hasAllAccess) {
+			return true;
+		}
+
+		// 2. Check if mailbox owner (can always see own emails)
+		if (comm.mailboxOwnerId === teamMemberId) {
+			return true;
+		}
+
+		// 3. Check if assigned to this user
+		if (comm.assignedTo === teamMemberId) {
+			return true;
+		}
+
+		// 4. Check visibility scope
+		const scope = comm.visibilityScope;
+
+		if (!scope || scope === "company") {
+			// Company-wide or legacy emails (no scope) are visible to all
+			return true;
+		}
+
+		if (scope === "private") {
+			// Private emails only visible to owner
+			return false;
+		}
+
+		if (scope === "shared") {
+			// Shared emails require category permission
+			const category = comm.emailCategory || "support";
+			return context.categoryPermissions.has(category) || context.categoryPermissions.has("all");
+		}
+
+		if (scope === "team") {
+			// Team scope requires same role as owner
+			if (!comm.mailboxOwnerId) {
+				return false;
+			}
+			const ownerData = context.ownerDataCache.get(comm.mailboxOwnerId);
+			if (!ownerData) {
+				return false;
+			}
+			return context.teamMemberData.role === ownerData.role && context.teamMemberData.role !== null;
+		}
+
+		if (scope === "department") {
+			// Department scope requires same department as owner
+			if (!comm.mailboxOwnerId) {
+				return false;
+			}
+			const ownerData = context.ownerDataCache.get(comm.mailboxOwnerId);
+			if (!ownerData) {
+				return false;
+			}
+			return context.teamMemberData.department === ownerData.department && context.teamMemberData.department !== null;
+		}
+
+		// Default deny
+		return false;
+	});
+}
+
+// =============================================================================
 // PERMISSION MANAGEMENT
 // =============================================================================
 
