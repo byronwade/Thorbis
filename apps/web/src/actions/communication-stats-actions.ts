@@ -37,8 +37,15 @@ export async function getCommunicationCountsAction(): Promise<{
 export async function getUnifiedCommunicationCountsAction(): Promise<{
 	success: boolean;
 	counts?: {
+		personal_inbox?: number;
+		personal_email_inbox?: number;
 		personal_drafts?: number;
 		personal_archived?: number;
+		company_inbox?: number;
+		company_starred?: number;
+		company_sent?: number;
+		company_drafts?: number;
+		company_archived?: number;
 		company_general_inbox?: number;
 		company_general_starred?: number;
 		company_general_sent?: number;
@@ -73,8 +80,14 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			return { success: false, error: "Database connection failed" };
 		}
 
+		// Get team member ID for personal email inbox count
+		const { getActiveTeamMemberId } = await import("@/lib/auth/company-context");
+		const teamMemberId = await getActiveTeamMemberId();
+
 		// Fetch all counts in parallel
 		const [
+			personalInboxResult,
+			personalEmailInboxResult,
 			personalDraftsResult,
 			personalArchivedResult,
 			generalInboxResult,
@@ -98,6 +111,33 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			billingDraftsResult,
 			billingArchivedResult,
 		] = await Promise.all([
+			// Personal inbox - all communication types, not archived, not draft, not deleted, no category (personal)
+			// "All Messages" shows all personal messages (both inbound and outbound)
+			supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.eq("is_archived", false)
+				.is("deleted_at", null)
+				.neq("status", "draft")
+				.is("category", null), // Personal = no category (company inboxes have categories)
+			
+			// Personal email inbox - emails specifically sent to user's email (mailbox_owner_id = teamMemberId)
+			teamMemberId
+				? supabase
+						.from("communications")
+						.select("*", { count: "exact", head: true })
+						.eq("company_id", companyId)
+						.eq("type", "email")
+						.eq("mailbox_owner_id", teamMemberId)
+						.eq("direction", "inbound")
+						.eq("is_archived", false)
+						.is("deleted_at", null)
+						.neq("status", "draft")
+						.or("category.is.null,category.neq.spam")
+						.or("snoozed_until.is.null,snoozed_until.lt.now()")
+				: Promise.resolve({ count: 0, error: null, data: null } as { count: number | null; error: null; data: null }),
+			
 			// Personal drafts - all communication types with status='draft'
 			supabase
 				.from("communications")
@@ -315,11 +355,49 @@ export async function getUnifiedCommunicationCountsAction(): Promise<{
 			}).length;
 		};
 
+		// Calculate company inbox totals (sum of all categories)
+		const companyInboxTotal = 
+			(generalInboxResult.count ?? 0) +
+			(salesInboxResult.count ?? 0) +
+			(supportInboxResult.count ?? 0) +
+			(billingInboxResult.count ?? 0);
+		
+		const companyStarredTotal = 
+			countStarred(generalStarredResult.data ?? []) +
+			countStarred(salesStarredResult.data ?? []) +
+			countStarred(supportStarredResult.data ?? []) +
+			countStarred(billingStarredResult.data ?? []);
+		
+		const companySentTotal = 
+			(generalSentResult.count ?? 0) +
+			(salesSentResult.count ?? 0) +
+			(supportSentResult.count ?? 0) +
+			(billingSentResult.count ?? 0);
+		
+		const companyDraftsTotal = 
+			(generalDraftsResult.count ?? 0) +
+			(salesDraftsResult.count ?? 0) +
+			(supportDraftsResult.count ?? 0) +
+			(billingDraftsResult.count ?? 0);
+		
+		const companyArchivedTotal = 
+			(generalArchivedResult.count ?? 0) +
+			(salesArchivedResult.count ?? 0) +
+			(supportArchivedResult.count ?? 0) +
+			(billingArchivedResult.count ?? 0);
+
 		return {
 			success: true,
 			counts: {
+				personal_inbox: personalInboxResult.count ?? 0,
+				personal_email_inbox: personalEmailInboxResult.count ?? 0,
 				personal_drafts: personalDraftsResult.count ?? 0,
 				personal_archived: personalArchivedResult.count ?? 0,
+				company_inbox: companyInboxTotal,
+				company_starred: companyStarredTotal,
+				company_sent: companySentTotal,
+				company_drafts: companyDraftsTotal,
+				company_archived: companyArchivedTotal,
 				company_general_inbox: generalInboxResult.count ?? 0,
 				company_general_starred: countStarred(generalStarredResult.data ?? []),
 				company_general_sent: generalSentResult.count ?? 0,

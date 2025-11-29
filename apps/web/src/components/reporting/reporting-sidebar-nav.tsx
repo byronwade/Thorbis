@@ -21,6 +21,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
 	SidebarGroup,
+	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuAction,
@@ -87,7 +88,8 @@ export function ReportingSidebarNav() {
 			{/* Top Reports for Business Owners */}
 			<SidebarGroup>
 				<SidebarGroupLabel>Quick Access</SidebarGroupLabel>
-				<SidebarMenu>
+				<SidebarGroupContent>
+					<SidebarMenu>
 					{topReports.map((report) => {
 						const isActive = pathname === report.href;
 						return (
@@ -106,6 +108,7 @@ export function ReportingSidebarNav() {
 						);
 					})}
 				</SidebarMenu>
+				</SidebarGroupContent>
 			</SidebarGroup>
 
 			{/* Custom Reports Section - Takes Center Stage */}
@@ -121,7 +124,8 @@ export function ReportingSidebarNav() {
 						<Plus className="h-3.5 w-3.5" />
 					</button>
 				</SidebarGroupLabel>
-				<SidebarMenu>
+				<SidebarGroupContent>
+					<SidebarMenu>
 					{customReports.length === 0 ? (
 						<div className="px-2 py-8 text-center">
 							<p className="text-muted-foreground mb-2 text-sm">
@@ -160,6 +164,7 @@ export function ReportingSidebarNav() {
 						})
 					)}
 				</SidebarMenu>
+				</SidebarGroupContent>
 			</SidebarGroup>
 
 			{/* Quick Tips / Help Section */}

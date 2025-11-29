@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
+	SidebarGroupContent,
 	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -168,7 +169,9 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 			{normalizedGroups.map((group, index) => (
 				<SidebarGroup key={group.label || `group-${index}`}>
 					{group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
-					<SidebarMenu>{group.items.map(renderItem)}</SidebarMenu>
+					<SidebarGroupContent>
+						<SidebarMenu>{group.items.map(renderItem)}</SidebarMenu>
+					</SidebarGroupContent>
 				</SidebarGroup>
 			))}
 		</>

@@ -5,12 +5,18 @@ import {
     FileText,
     HelpCircle,
     Inbox,
+    Mail,
     MessageSquare,
+    Phone,
+    PhoneIncoming,
+    PhoneOutgoing,
+    PhoneMissed,
     Plus,
     Send,
     Star,
     TrendingUp,
-    Users
+    Users,
+    Voicemail
 } from "lucide-react";
 
 /**
@@ -34,11 +40,19 @@ export type UnifiedCommunicationCounts = {
 
 	// Email-specific personal inbox
 	personal_inbox?: number;
+	personal_email_inbox?: number; // Emails specifically sent to user's email (mailbox_owner_id)
 	personal_sent?: number;
 	personal_drafts?: number;
 	personal_archived?: number;
 
-	// Email-specific company inbox
+	// Email-specific company inbox (single unified inbox)
+	company_inbox?: number; // Company inbox count (all categories combined)
+	company_sent?: number;
+	company_drafts?: number;
+	company_archived?: number;
+	company_starred?: number;
+	
+	// Legacy company category counts (for backwards compatibility)
 	company_support?: number;
 	company_sales?: number;
 	company_billing?: number;
@@ -92,13 +106,48 @@ export function getUnifiedCommunicationSidebarConfig(
 	return {
 		navGroups: [
 			{
-				label: "MY INBOX",
+				label: "All Messages",
+				collapsible: true,
+				defaultOpen: true,
+				badge: (counts?.email ?? 0) + (counts?.call ?? 0) + (counts?.sms ?? 0) + (counts?.voicemail ?? 0),
 				items: [
 					{
-						title: "All Messages",
-						url: "/dashboard/communication?inbox=personal",
+						title: "Emails",
+						url: "/dashboard/communication?inbox=personal&type=email",
+						icon: Mail,
+						badge: counts?.email ?? 0,
+					},
+					{
+						title: "Calls",
+						url: "/dashboard/communication?inbox=personal&type=call",
+						icon: Phone,
+						badge: counts?.call ?? 0,
+					},
+					{
+						title: "Text Messages",
+						url: "/dashboard/communication?inbox=personal&type=sms",
+						icon: MessageSquare,
+						badge: counts?.sms ?? 0,
+					},
+					{
+						title: "Teams",
+						url: "/dashboard/communication?channel=general",
+						icon: MessageSquare,
+						badge: 0, // TODO: Add team message count
+					},
+				],
+			},
+			{
+				label: "MY INBOX",
+				collapsible: true,
+				defaultOpen: true,
+				badge: counts?.personal_email_inbox ?? 0, // Show unread inbox count
+				items: [
+					{
+						title: "Inbox",
+						url: "/dashboard/communication?inbox=personal&folder=inbox",
 						icon: Inbox,
-						badge: counts?.personal_inbox ?? 0,
+						badge: counts?.personal_email_inbox ?? 0,
 					},
 					{
 						title: "Assigned to Me",
@@ -133,144 +182,48 @@ export function getUnifiedCommunicationSidebarConfig(
 				],
 			},
 			{
-				label: "COMPANY INBOXES",
+				label: "COMPANY INBOX",
+				collapsible: true,
+				defaultOpen: false,
+				badge: counts?.company_inbox ?? 0,
 				items: [
 					{
-						title: "General",
-						url: "/dashboard/communication?inbox=company&category=general",
+						title: "Inbox",
+						url: "/dashboard/communication?inbox=company",
 						icon: Inbox,
-						badge: counts?.company_general_inbox ?? counts?.company_general ?? 0,
-						items: [
-							{
-								title: "Inbox",
-								url: "/dashboard/communication?inbox=company&category=general",
-								badge: counts?.company_general_inbox ?? 0,
-							},
-							{
-								title: "Starred",
-								url: "/dashboard/communication?inbox=company&category=general&folder=starred",
-								badge: counts?.company_general_starred ?? 0,
-							},
-							{
-								title: "Sent",
-								url: "/dashboard/communication?inbox=company&category=general&folder=sent",
-								badge: counts?.company_general_sent ?? 0,
-							},
-							{
-								title: "Draft",
-								url: "/dashboard/communication?inbox=company&category=general&folder=draft",
-								badge: counts?.company_general_drafts ?? 0,
-							},
-							{
-								title: "Archived",
-								url: "/dashboard/communication?inbox=company&category=general&folder=archived",
-								badge: counts?.company_general_archived ?? 0,
-							},
-						],
+						badge: counts?.company_inbox ?? 0,
 					},
 					{
-						title: "Sales",
-						url: "/dashboard/communication?inbox=company&category=sales",
-						icon: TrendingUp,
-						badge: counts?.company_sales_inbox ?? counts?.company_sales ?? 0,
-						items: [
-							{
-								title: "Inbox",
-								url: "/dashboard/communication?inbox=company&category=sales",
-								badge: counts?.company_sales_inbox ?? 0,
-							},
-							{
-								title: "Starred",
-								url: "/dashboard/communication?inbox=company&category=sales&folder=starred",
-								badge: counts?.company_sales_starred ?? 0,
-							},
-							{
-								title: "Sent",
-								url: "/dashboard/communication?inbox=company&category=sales&folder=sent",
-								badge: counts?.company_sales_sent ?? 0,
-							},
-							{
-								title: "Draft",
-								url: "/dashboard/communication?inbox=company&category=sales&folder=draft",
-								badge: counts?.company_sales_drafts ?? 0,
-							},
-							{
-								title: "Archived",
-								url: "/dashboard/communication?inbox=company&category=sales&folder=archived",
-								badge: counts?.company_sales_archived ?? 0,
-							},
-						],
+						title: "Starred",
+						url: "/dashboard/communication?inbox=company&folder=starred",
+						icon: Star,
+						badge: counts?.company_starred ?? 0,
 					},
 					{
-						title: "Support",
-						url: "/dashboard/communication?inbox=company&category=support",
-						icon: HelpCircle,
-						badge: counts?.company_support_inbox ?? counts?.company_support ?? 0,
-						items: [
-							{
-								title: "Inbox",
-								url: "/dashboard/communication?inbox=company&category=support",
-								badge: counts?.company_support_inbox ?? 0,
-							},
-							{
-								title: "Starred",
-								url: "/dashboard/communication?inbox=company&category=support&folder=starred",
-								badge: counts?.company_support_starred ?? 0,
-							},
-							{
-								title: "Sent",
-								url: "/dashboard/communication?inbox=company&category=support&folder=sent",
-								badge: counts?.company_support_sent ?? 0,
-							},
-							{
-								title: "Draft",
-								url: "/dashboard/communication?inbox=company&category=support&folder=draft",
-								badge: counts?.company_support_drafts ?? 0,
-							},
-							{
-								title: "Archived",
-								url: "/dashboard/communication?inbox=company&category=support&folder=archived",
-								badge: counts?.company_support_archived ?? 0,
-							},
-						],
+						title: "Sent",
+						url: "/dashboard/communication?inbox=company&folder=sent",
+						icon: Send,
+						badge: counts?.company_sent ?? 0,
 					},
 					{
-						title: "Billing",
-						url: "/dashboard/communication?inbox=company&category=billing",
-						icon: CreditCard,
-						badge: counts?.company_billing_inbox ?? counts?.company_billing ?? 0,
-						items: [
-							{
-								title: "Inbox",
-								url: "/dashboard/communication?inbox=company&category=billing",
-								badge: counts?.company_billing_inbox ?? 0,
-							},
-							{
-								title: "Starred",
-								url: "/dashboard/communication?inbox=company&category=billing&folder=starred",
-								badge: counts?.company_billing_starred ?? 0,
-							},
-							{
-								title: "Sent",
-								url: "/dashboard/communication?inbox=company&category=billing&folder=sent",
-								badge: counts?.company_billing_sent ?? 0,
-							},
-							{
-								title: "Draft",
-								url: "/dashboard/communication?inbox=company&category=billing&folder=draft",
-								badge: counts?.company_billing_drafts ?? 0,
-							},
-							{
-								title: "Archived",
-								url: "/dashboard/communication?inbox=company&category=billing&folder=archived",
-								badge: counts?.company_billing_archived ?? 0,
-							},
-						],
+						title: "Draft",
+						url: "/dashboard/communication?inbox=company&folder=draft",
+						icon: FileText,
+						badge: counts?.company_drafts ?? 0,
+					},
+					{
+						title: "Archived",
+						url: "/dashboard/communication?inbox=company&folder=archived",
+						icon: Archive,
+						badge: counts?.company_archived ?? 0,
 					},
 				],
 			},
 			{
 				label: "TEAMS",
+				collapsible: true,
+				defaultOpen: false,
+				badge: 0, // TODO: Add team unread count
 				items: [
 					{
 						title: "General",

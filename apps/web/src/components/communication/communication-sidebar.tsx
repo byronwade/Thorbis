@@ -34,11 +34,19 @@ import { useSidebarScroll } from "@/hooks/use-sidebar-scroll";
  */
 export type CommunicationNavGroup = {
 	label: string;
+	badge?: number | string; // Badge for the collapsible group header
+	collapsible?: boolean; // Whether the group is collapsible
+	defaultOpen?: boolean; // Default open state for collapsible groups
 	items: Array<{
 		title: string;
 		url: string;
 		icon: LucideIcon;
 		badge?: number | string;
+		items?: Array<{
+			title: string;
+			url: string;
+			badge?: number | string;
+		}>;
 	}>;
 };
 
@@ -86,9 +94,21 @@ export type CommunicationPrimaryAction = {
 };
 
 /**
+ * Navigation item configuration (for top-level items)
+ */
+export type CommunicationNavItem = {
+	title: string;
+	url: string;
+	icon: LucideIcon;
+	badge?: number | string;
+};
+
+/**
  * Communication sidebar configuration
  */
 export type CommunicationSidebarConfig = {
+	/** Top-level item (e.g., "All Messages") displayed right after primary action */
+	topLevelItem?: CommunicationNavItem;
 	/** Navigation groups to display */
 	navGroups: CommunicationNavGroup[];
 	/** Primary action button (e.g., "New email", "New text") */
@@ -138,7 +158,7 @@ export function CommunicationSidebar({
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const scrollRef = useSidebarScroll();
-	const { navGroups, primaryAction, additionalSections } = config;
+	const { topLevelItem, navGroups, primaryAction, additionalSections } = config;
 
 	// Helper to check if URL matches current pathname + searchParams
 	const isUrlActive = (url: string): boolean => {

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
+	SidebarGroupContent,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
@@ -35,7 +36,8 @@ export function NavMain({
 
 	return (
 		<SidebarGroup>
-			<SidebarMenu>
+			<SidebarGroupContent>
+				<SidebarMenu>
 				{items.map((item) => {
 					// Check if current path matches this item or its detail pages
 					const isExactMatch = safePathname === item.url;
@@ -110,6 +112,7 @@ export function NavMain({
 					);
 				})}
 			</SidebarMenu>
+			</SidebarGroupContent>
 		</SidebarGroup>
 	);
 }

@@ -11,7 +11,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import {
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuBadge,
+	SidebarMenuButton,
+	SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
 type SidebarGroup = {
 	label: string;
@@ -163,45 +171,37 @@ export function ToolsSidebar() {
 	const pathname = usePathname();
 
 	return (
-		<nav className="flex flex-col gap-2 py-2">
+		<>
 			{sidebarGroups.map((group) => (
-				<div
-					className="relative flex w-full min-w-0 flex-col p-2"
-					key={group.label}
-				>
-					<div className="text-muted-foreground flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium">
-						{group.label}
-					</div>
-					<ul className="flex w-full min-w-0 flex-col gap-0.5">
-						{group.items.map((item) => {
-							const isActive = pathname === item.href;
-							return (
-								<li className="group/menu-item relative" key={item.href}>
-									<Link
-										className={cn(
-											"flex items-center gap-2 rounded-md p-2 text-left outline-hidden transition-all",
-											"focus-visible:ring-ring focus-visible:ring-2",
-											"hover:bg-accent hover:text-accent-foreground",
-											"h-[30px] w-full border border-transparent text-[0.8rem] font-medium",
-											isActive &&
-												"border-accent bg-accent text-accent-foreground font-medium",
-										)}
-										href={item.href}
-									>
-										{item.title}
-										{item.badge && (
-											<span
-												className="bg-primary ml-auto flex size-2 rounded-full"
-												title={item.badge}
-											/>
-										)}
-									</Link>
-								</li>
-							);
-						})}
-					</ul>
-				</div>
+				<SidebarGroup key={group.label}>
+					<SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{group.items.map((item) => {
+								const isActive = pathname === item.href;
+								return (
+									<SidebarMenuItem key={item.href}>
+										<SidebarMenuButton
+											asChild
+											isActive={isActive}
+											tooltip={item.title}
+										>
+											<Link href={item.href}>
+												<span>{item.title}</span>
+												{item.badge && (
+													<SidebarMenuBadge>
+														{item.badge}
+													</SidebarMenuBadge>
+												)}
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
 			))}
-		</nav>
+		</>
 	);
 }

@@ -199,6 +199,7 @@ export function UnifiedInboxPageClient({
 	const category = searchParams?.get("category") || initialCategory;
 	const channelId = searchParams?.get("channel");
 	const assignedFilter = searchParams?.get("assigned");
+	const typeFromUrl = searchParams?.get("type") as CommunicationType | null;
 
 	const communicationIdFromQuery = searchParams?.get("id");
 	const communicationId = communicationIdFromQuery || initialCommunicationId;
@@ -227,7 +228,19 @@ export function UnifiedInboxPageClient({
 
 	// Search and filter state - using debounced search hook
 	const { searchInput, searchQuery, setSearchInput, clearSearch } = useDebouncedSearch();
-	const [typeFilter, setTypeFilter] = useState<CommunicationType>("all");
+	const [typeFilter, setTypeFilter] = useState<CommunicationType>(
+		typeFromUrl || "all"
+	);
+	
+	// Update type filter when URL changes
+	useEffect(() => {
+		if (typeFromUrl) {
+			setTypeFilter(typeFromUrl);
+		} else if (!typeFromUrl && typeFilter !== "all") {
+			// Reset to "all" if type is removed from URL
+			setTypeFilter("all");
+		}
+	}, [typeFromUrl]);
 
 	// Notes state
 	const [notesOpen, setNotesOpen] = useState(false);
@@ -425,6 +438,19 @@ export function UnifiedInboxPageClient({
 						isArchivedFilter = true;
 					} else if (folder === "sent") {
 						directionFilter = "outbound";
+						// Sent folder should exclude drafts and archived
+						isDraftFilter = false;
+						isArchivedFilter = false;
+					} else if (folder === "inbox") {
+						// Inbox folder handled by getCommunicationsAction
+						// Just ensure we're not showing drafts or archived
+						isDraftFilter = false;
+						isArchivedFilter = false;
+					} else if (folder === "starred") {
+						// Starred folder - filter by tags in memory
+						// Just ensure we're not showing drafts or archived
+						isDraftFilter = false;
+						isArchivedFilter = false;
 					} else if (folder && ["archive", "trash", "spam"].includes(folder)) {
 						statusFilter = folder;
 					}
@@ -435,6 +461,10 @@ export function UnifiedInboxPageClient({
 						limit: 50,
 						offset: 0,
 						type: typeFilter !== "all" ? typeFilter : undefined,
+						// Inbox type determines filtering logic
+						inboxType: inboxType,
+						// For personal inbox emails, use mailbox_owner_id
+						mailboxOwnerId: inboxType === "personal" && folder === "inbox" ? teamMemberId : undefined,
 						// If viewing company inbox, filter by category
 						category:
 							inboxType === "company" ? (category as EmailCategory) : undefined,
@@ -450,6 +480,8 @@ export function UnifiedInboxPageClient({
 						// Add draft and archived filters
 						isDraft: isDraftFilter,
 						isArchived: isArchivedFilter,
+						// Pass folder for special handling
+						folder: folder,
 					});
 
 					if (result.success && result.data) {

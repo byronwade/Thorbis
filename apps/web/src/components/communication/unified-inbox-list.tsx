@@ -340,11 +340,23 @@ function CommunicationListItem({
 					bg: "bg-green-500/10",
 				};
 			case "call":
-				// Use direction-specific icon for calls
+				// Use direction-specific icon for calls with status indicators
 				const isInbound = communication.direction === "inbound";
 				const isMissed =
 					communication.hangupCause === "no_answer" ||
 					communication.status === "missed";
+				const wentToVoicemail = communication.answeringMachineDetected;
+				
+				// If call went to voicemail, show voicemail icon
+				if (wentToVoicemail) {
+					return {
+						icon: Voicemail,
+						color: "text-orange-500",
+						bg: "bg-orange-500/10",
+					};
+				}
+				
+				// If missed, show missed icon
 				if (isMissed) {
 					return {
 						icon: PhoneMissed,
@@ -352,10 +364,21 @@ function CommunicationListItem({
 						bg: "bg-red-500/10",
 					};
 				}
+				
+				// Show incoming/outgoing icon based on direction
+				// Green for answered calls, purple/indigo for others
+				const isAnswered = communication.callDuration && communication.callDuration > 0;
+				if (isInbound) {
+					return {
+						icon: PhoneIncoming,
+						color: isAnswered ? "text-green-500" : "text-purple-500",
+						bg: isAnswered ? "bg-green-500/10" : "bg-purple-500/10",
+					};
+				}
 				return {
-					icon: isInbound ? PhoneIncoming : PhoneOutgoing,
-					color: isInbound ? "text-purple-500" : "text-indigo-500",
-					bg: isInbound ? "bg-purple-500/10" : "bg-indigo-500/10",
+					icon: PhoneOutgoing,
+					color: isAnswered ? "text-green-500" : "text-indigo-500",
+					bg: isAnswered ? "bg-green-500/10" : "bg-indigo-500/10",
 				};
 			case "voicemail":
 				return {

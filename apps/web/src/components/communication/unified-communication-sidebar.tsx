@@ -54,11 +54,21 @@ export function UnifiedCommunicationSidebar(
 			const counts: UnifiedCommunicationCounts = {
 				// Email counts - use actual counts from communications table
 				email: commCounts?.email ?? 0,
-				personal_inbox: emailResult.counts?.personal_inbox ?? 0,
+				// Use unified count for personal_inbox (all communication types)
+				personal_inbox: unifiedCounts?.personal_inbox ?? emailResult.counts?.personal_inbox ?? 0,
+				// Personal email inbox - emails specifically sent to user's email
+				personal_email_inbox: unifiedCounts?.personal_email_inbox ?? 0,
 				personal_sent: emailResult.counts?.personal_sent ?? 0,
 				// Use unified counts for drafts and archived (all communication types)
 				personal_drafts: unifiedCounts?.personal_drafts ?? emailResult.counts?.drafts ?? 0,
 				personal_archived: unifiedCounts?.personal_archived ?? emailResult.counts?.archive ?? 0,
+				// Company inbox (unified - all categories combined)
+				company_inbox: unifiedCounts?.company_inbox ?? 0,
+				company_starred: unifiedCounts?.company_starred ?? 0,
+				company_sent: unifiedCounts?.company_sent ?? 0,
+				company_drafts: unifiedCounts?.company_drafts ?? 0,
+				company_archived: unifiedCounts?.company_archived ?? 0,
+				// Legacy company category counts (for backwards compatibility)
 				company_support: emailResult.counts?.company_support ?? 0,
 				company_sales: emailResult.counts?.company_sales ?? 0,
 				company_billing: emailResult.counts?.company_billing ?? 0,

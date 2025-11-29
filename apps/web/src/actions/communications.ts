@@ -314,6 +314,9 @@ const getCommunicationsSchema = z.object({
 	sortOrder: z.enum(["asc", "desc"]).optional(),
 	isDraft: z.boolean().optional(),
 	isArchived: z.boolean().optional(),
+	mailboxOwnerId: z.string().uuid().optional(), // For personal inbox filtering
+	inboxType: z.enum(["personal", "company"]).optional(), // To determine filtering logic
+	folder: z.string().optional(), // Folder name (inbox, sent, starred, draft, archived)
 	limit: z.number().min(1).max(200).default(100),
 	offset: z.number().min(0).default(0),
 });
@@ -342,6 +345,29 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })
 			.limit(payload.limit);
+
+		// Apply inbox type filtering first (personal vs company)
+		if (payload.inboxType === "personal") {
+			// Personal inbox: filter by mailbox_owner_id for emails, or no category for other types
+			if (payload.type === "email" || !payload.type) {
+				// For emails or all types, use mailbox_owner_id if provided
+				if (payload.mailboxOwnerId) {
+					query = query.eq("mailbox_owner_id", payload.mailboxOwnerId);
+				} else if (payload.folder === "inbox") {
+					// For personal inbox folder, default to current team member's mailbox
+					query = query.eq("mailbox_owner_id", payload.teamMemberId);
+				} else {
+					// For other personal folders, use no category (personal messages)
+					query = query.is("category", null);
+				}
+			} else {
+				// For other types (SMS, call, voicemail), personal = no category
+				query = query.is("category", null);
+			}
+		} else if (payload.inboxType === "company") {
+			// Company inbox: mailbox_owner_id IS NULL (shared emails)
+			query = query.is("mailbox_owner_id", null);
+		}
 
 		// Apply filters
 		if (payload.type) {
@@ -378,6 +404,14 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 		if (payload.isArchived !== undefined) {
 			query = query.eq("is_archived", payload.isArchived);
 		}
+		
+		// Handle "inbox" folder - show inbound, not archived, not draft
+		// Only apply if not already filtered by draft or archived
+		if (payload.folder === "inbox" && payload.isDraft === undefined && payload.isArchived === undefined) {
+			query = query.eq("direction", "inbound");
+			query = query.eq("is_archived", false);
+			query = query.neq("status", "draft");
+		}
 		if (payload.searchQuery) {
 			query = query.or(
 				`subject.ilike.%${payload.searchQuery}%,body.ilike.%${payload.searchQuery}%,from_address.ilike.%${payload.searchQuery}%,to_address.ilike.%${payload.searchQuery}%`,
@@ -398,8 +432,17 @@ export async function getCommunicationsAction(input: GetCommunicationsInput) {
 			return { success: false, error: error.message, data: [] };
 		}
 
+		// Handle "starred" folder - filter by tags containing "starred" in memory
+		let filteredData = data || [];
+		if (payload.folder === "starred") {
+			filteredData = filteredData.filter((comm: any) => {
+				const tags = comm.tags as string[] | null;
+				return Array.isArray(tags) && tags.includes("starred");
+			});
+		}
+
 		// Transform data to Communication type format
-		const communications = (data || []).map((comm: any) => ({
+		const communications = filteredData.map((comm: any) => ({
 			id: comm.id,
 			companyId: comm.company_id,
 			type: comm.type as "email" | "sms" | "call" | "voicemail",
