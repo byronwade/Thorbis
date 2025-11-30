@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev --port 3001",
-		"build": "next build",
+		"build": "NODE_OPTIONS='--max-old-space-size=2048' next build",
+		"build:fast": "NODE_OPTIONS='--max-old-space-size=2048' SKIP_ENV_VALIDATION=true next build",
 		"start": "next start --port 3001",
 		"lint": "next lint",
 		"typecheck": "tsc --noEmit"

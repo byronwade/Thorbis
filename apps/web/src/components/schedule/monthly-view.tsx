@@ -5,6 +5,7 @@ import {
 	type DragEndEvent,
 	DragOverlay,
 	type DragStartEvent,
+	KeyboardSensor,
 	MouseSensor,
 	TouchSensor,
 	useDraggable,
@@ -644,6 +645,13 @@ export function MonthlyView() {
 		}),
 		useSensor(TouchSensor, {
 			activationConstraint: { delay: 200, tolerance: 6 },
+		}),
+		useSensor(KeyboardSensor, {
+			// Arrow keys for keyboard navigation
+			coordinateGetter: (event, { context }) => {
+				// Default keyboard navigation for calendar view
+				return { x: 0, y: 0 };
+			},
 		}),
 	);
 

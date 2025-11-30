@@ -17,8 +17,8 @@
  * ```
  */
 
-import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { STORAGE_PRICING } from "@/lib/billing/pricing";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 // ============================================
 // Types
@@ -526,7 +526,7 @@ export function formatBytes(bytes: number): string {
 // Exports
 // ============================================
 
-default {
+export default {
 	getStorageUsage,
 	getStorageUsageFromDatabase,
 	trackStorageSnapshot,

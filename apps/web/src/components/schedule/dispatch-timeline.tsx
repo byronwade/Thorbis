@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import {
     DndContext,
     DragOverlay,
+    KeyboardSensor,
     MouseSensor,
     pointerWithin,
     TouchSensor,
@@ -46,7 +47,8 @@ import {
     useSensors
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { format, isSameDay, isToday, isTomorrow } from "date-fns";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { format, isToday, isTomorrow } from "date-fns";
 import {
     AlertTriangle,
     ArrowLeft,
@@ -1039,11 +1041,12 @@ const JobCard = memo(
 				: BASE_CENTER_OFFSET + JOB_HEIGHT + STACK_GAP + (top - (JOB_HEIGHT + STACK_GAP));
 
 			const style = {
+				// Use left/top for initial positioning (maintains positioning context)
 				left: `${left}px`,
 				width: `${width}px`,
 				top: `${topOffset}px`,
 				height: `${JOB_HEIGHT}px`,
-				// Keep original width; only translate position on drag
+				// Use transform only for drag offset (hardware-accelerated movement during drag)
 				transform: CSS.Translate.toString({
 					x: transform?.x ?? 0,
 					y: transform?.y ?? 0,
@@ -1118,27 +1121,30 @@ const JobCard = memo(
 			Briefcase;
 
 		return (
-			<TooltipProvider>
-				<ScheduleJobContextMenu
-					job={job}
-					onOpenChange={setIsContextMenuOpen}
-				>
-					<Popover>
-						<PopoverTrigger asChild>
-							<div
-									className={cn(
-										"group absolute",
-										!isDragging &&
-											"transition-[left,top,width] duration-200 ease-out",
-									)}
-								data-job-card
-								ref={setNodeRef}
-								style={style}
-								{...attributes}
-								{...listeners}
-								onMouseEnter={() => onHover(true)}
-								onMouseLeave={() => onHover(false)}
-							>
+			<ScheduleJobContextMenu
+				job={job}
+				onOpenChange={setIsContextMenuOpen}
+			>
+				<Popover>
+					<PopoverTrigger asChild>
+						<div
+								className={cn(
+									"group absolute",
+									!isDragging &&
+										"transition-[left,top,width,transform] duration-200 ease-out",
+									"focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
+								)}
+							data-job-card
+							ref={setNodeRef}
+							style={style}
+							role="button"
+							aria-label={`Job: ${job.title || "Untitled"}. Drag to reschedule. Currently scheduled for ${format(startTime, "h:mm a")} to ${format(endTime, "h:mm a")}`}
+							tabIndex={0}
+							{...attributes}
+							{...listeners}
+							onMouseEnter={() => onHover(true)}
+							onMouseLeave={() => onHover(false)}
+						>
 								{/* Left resize handle */}
 								<div
 									className={cn(
@@ -1297,14 +1303,17 @@ const JobCard = memo(
 															type="button"
 															className="rounded border px-3 py-1 text-xs"
 															onClick={() => setShowOptimizationPopover(false)}
+															disabled={optimizationLoading}
 														>
 															Deny
 														</button>
 														<button
 															type="button"
-															className="rounded bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+															className="rounded bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground disabled:opacity-50 disabled:cursor-wait flex items-center gap-1.5"
 															onClick={async () => {
 																setShowOptimizationPopover(false);
+																setOptimizationLoading(true);
+																try {
 																const startTime =
 																	job.startTime instanceof Date
 																		? job.startTime
@@ -1319,9 +1328,20 @@ const JobCard = memo(
 																	endTime,
 																	job.technicianId,
 																);
+																} finally {
+																	setOptimizationLoading(false);
+																}
 															}}
+															disabled={optimizationLoading}
 														>
-															Confirm
+															{optimizationLoading ? (
+																<>
+																	<div className="size-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+																	Applying...
+																</>
+															) : (
+																"Confirm"
+															)}
 														</button>
 													</div>
 												</PopoverContent>
@@ -1491,7 +1511,38 @@ const JobCard = memo(
 								</div>
 
 								{job.jobId && (
-									<div className="border-t border-border p-3">
+									<div className="border-t border-border p-3 space-y-2">
+										{/* Quick Action Buttons */}
+										{quickAction && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													quickAction.onClick(e);
+												}}
+												disabled={isPending}
+												className={cn(
+													"w-full flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+													quickAction.className,
+													isPending && "opacity-50 cursor-wait"
+												)}
+											>
+												{isPending ? (
+													<>
+														<div className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+														{quickAction.label === "Dispatch" && "Dispatching..."}
+														{quickAction.label === "Arrive" && "Marking arrived..."}
+														{quickAction.label === "Start" && "Starting..."}
+														{quickAction.label === "Done" && "Completing..."}
+													</>
+												) : (
+													<>
+														<quickAction.icon className="size-4" />
+														{quickAction.label}
+													</>
+												)}
+											</button>
+										)}
 										<a
 											className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors"
 											href={`/dashboard/work/${job.jobId}`}
@@ -1506,7 +1557,6 @@ const JobCard = memo(
 						</PopoverContent>
 					</Popover>
 				</ScheduleJobContextMenu>
-			</TooltipProvider>
 		);
 	},
 	(prev, next) => {
@@ -1579,8 +1629,14 @@ const TechnicianLane = memo(
 		});
 
 		// Calculate travel gaps between consecutive jobs
+		// Skip travel gap calculation during drag for better performance (they're hidden anyway)
 		const travelGaps = useMemo(
-			() => calculateTravelGaps(jobs, HOUR_WIDTH, isDragActive),
+			() => {
+				if (isDragActive) {
+					return []; // Return empty array during drag - gaps are hidden anyway
+				}
+				return calculateTravelGaps(jobs, HOUR_WIDTH, isDragActive);
+			},
 			[jobs, isDragActive],
 		);
 
@@ -1946,17 +2002,50 @@ const TechnicianLane = memo(
 	},
 	(prev, next) => {
 		// Performance: Custom comparison to avoid re-renders from callback references
-		return (
-			prev.technician.id === next.technician.id &&
-			prev.height === next.height &&
-			prev.selectedJobId === next.selectedJobId &&
-			prev.isDragActive === next.isDragActive &&
-			prev.totalWidth === next.totalWidth &&
-			prev.timeRangeStart === next.timeRangeStart &&
-			prev.isSelectionMode === next.isSelectionMode &&
-			prev.selectedJobIds === next.selectedJobIds &&
-			prev.jobs === next.jobs // jobs array reference - will be new if positions changed
-		);
+		// Content-based comparison for jobs array instead of reference equality
+		if (
+			prev.technician.id !== next.technician.id ||
+			prev.height !== next.height ||
+			prev.selectedJobId !== next.selectedJobId ||
+			prev.isDragActive !== next.isDragActive ||
+			prev.totalWidth !== next.totalWidth ||
+			prev.timeRangeStart !== next.timeRangeStart ||
+			prev.isSelectionMode !== next.isSelectionMode ||
+			prev.selectedJobIds !== next.selectedJobIds
+		) {
+			return false;
+		}
+
+		// Content-based comparison for jobs array
+		if (prev.jobs.length !== next.jobs.length) {
+			return false;
+		}
+
+		// Compare each job's position and key properties
+		for (let i = 0; i < prev.jobs.length; i++) {
+			const prevJob = prev.jobs[i];
+			const nextJob = next.jobs[i];
+			if (
+				prevJob.job.id !== nextJob.job.id ||
+				prevJob.left !== nextJob.left ||
+				prevJob.width !== nextJob.width ||
+				prevJob.top !== nextJob.top ||
+				prevJob.lane !== nextJob.lane ||
+				prevJob.hasOverlap !== nextJob.hasOverlap ||
+				prevJob.job.status !== nextJob.job.status ||
+				prevJob.job.startTime !== nextJob.job.startTime ||
+				prevJob.job.endTime !== nextJob.job.endTime ||
+				(prevJob.overlapRange === null) !== (nextJob.overlapRange === null) ||
+				(prevJob.overlapRange !== null &&
+					nextJob.overlapRange !== null &&
+					(prevJob.overlapRange.left !== nextJob.overlapRange.left ||
+						prevJob.overlapRange.width !== nextJob.overlapRange.width))
+			) {
+				return false;
+			}
+		}
+
+		return true;
 	},
 );
 
@@ -1992,6 +2081,7 @@ export function DispatchTimeline() {
 	const setIncomingCall = useUIStore((state) => state.setIncomingCall);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const timelineRef = useRef<HTMLDivElement>(null);
+	const lanesContainerRef = useRef<HTMLDivElement>(null);
 	const {
 		technicians,
 		getJobsForTechnician,
@@ -2220,7 +2310,6 @@ export function DispatchTimeline() {
 			tolerance: 5, // Small movement tolerance during delay
 		},
 	});
-	const sensors = useSensors(mouseSensor, touchSensor);
 
 	useEffect(() => {
 		if (!showUnassignedPanel && unassignedPanelOpen) {
@@ -2232,6 +2321,13 @@ export function DispatchTimeline() {
 		() => (currentDate instanceof Date ? currentDate : new Date(currentDate)),
 		[currentDate],
 	);
+
+	// Optimize: Calculate date boundaries once per render, not per technician
+	const dateObjTs = dateObj.getTime();
+	const dateObjStartOfDay = new Date(dateObj);
+	dateObjStartOfDay.setHours(0, 0, 0, 0);
+	const dateObjStartTs = dateObjStartOfDay.getTime();
+	const dateObjEndTs = dateObjStartTs + 24 * 60 * 60 * 1000 - 1;
 
 	const skipAutoScrollRef = useRef(false);
 	const lastVisibleDateRef = useRef<string | null>(null);
@@ -2301,8 +2397,17 @@ export function DispatchTimeline() {
 		};
 	}, [bufferStart, bufferEnd]);
 
-	// For compatibility with existing code, create slots array lazily
-	const hourlySlots = useMemo(() => {
+	// Optimize timeRange calculation to use hourlySlotData directly (avoid creating full array)
+	const timeRange = useMemo(() => {
+		const start = hourlySlotData.getSlot(0);
+		const end = hourlySlotData.getSlot(hourlySlotData.totalHours - 1);
+		end.setHours(end.getHours(), 59, 59, 999);
+		return { start, end };
+	}, [hourlySlotData]);
+
+	// Lazy array creation - only create when actually needed for rendering
+	// Use a getter function that creates the array on-demand
+	const getHourlySlots = useCallback(() => {
 		const slots: Date[] = [];
 		for (let i = 0; i < hourlySlotData.totalHours; i++) {
 			slots.push(hourlySlotData.getSlot(i));
@@ -2310,13 +2415,17 @@ export function DispatchTimeline() {
 		return slots;
 	}, [hourlySlotData]);
 
-	const timeRange = useMemo(() => {
-		const start = hourlySlots[0] ?? new Date(bufferStart);
-		const lastSlot = hourlySlots.at(-1);
-		const end = lastSlot ? new Date(lastSlot) : new Date(bufferEnd);
-		end.setHours(end.getHours(), 59, 59, 999);
-		return { start, end };
-	}, [hourlySlots, bufferStart, bufferEnd]);
+	// For backward compatibility, create array only when needed (lazy evaluation)
+	// This will be created on first access in render, not in useMemo
+	const hourlySlots = useMemo(() => {
+		// Only create if we have a reasonable number of hours (avoid huge arrays)
+		// For very large ranges, components should use getHourlySlots() directly
+		if (hourlySlotData.totalHours > 1000) {
+			// Return empty array for very large ranges - components should use getSlot() directly
+			return [];
+		}
+		return getHourlySlots();
+	}, [hourlySlotData, getHourlySlots]);
 
 	// PERFORMANCE: Use pre-calculated totalHours instead of array length
 	const totalWidth = hourlySlotData.totalHours * HOUR_WIDTH;
@@ -2387,30 +2496,39 @@ export function DispatchTimeline() {
 	const lastLoadingRef = useRef(isLoading);
 	const initialCenterDoneRef = useRef(false);
 	const technicianLanes = useMemo(() => {
+		// Pre-calculate timestamps for timeRange to avoid repeated Date operations
+		const timeRangeStartTs = timeRange.start.getTime();
+		const timeRangeEndTs = timeRange.end.getTime();
+		const timeRangeStartMinutes = timeRangeStartTs / (1000 * 60);
+
 		const lanes = technicians.map((tech) => {
 			const allJobs = getJobsForTechnician(tech.id);
+			// Use timestamps for filtering - avoid Date object creation
 			const jobs = allJobs.filter((job) => {
-				const jobStart =
+				const jobStartTs =
 					job.startTime instanceof Date
-						? job.startTime
-						: new Date(job.startTime);
-				const jobEnd =
-					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
-				return jobStart <= timeRange.end && jobEnd >= timeRange.start;
+						? job.startTime.getTime()
+						: new Date(job.startTime).getTime();
+				const jobEndTs =
+					job.endTime instanceof Date
+						? job.endTime.getTime()
+						: new Date(job.endTime).getTime();
+				return jobStartTs <= timeRangeEndTs && jobEndTs >= timeRangeStartTs;
 			});
 
+			// Use timestamps for position calculations - avoid Date object creation
 			const jobPositions = jobs.map((job) => {
-				const jobStart =
+				const jobStartTs =
 					job.startTime instanceof Date
-						? job.startTime
-						: new Date(job.startTime);
-				const jobEnd =
-					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+						? job.startTime.getTime()
+						: new Date(job.startTime).getTime();
+				const jobEndTs =
+					job.endTime instanceof Date
+						? job.endTime.getTime()
+						: new Date(job.endTime).getTime();
 
-				const startMinutes =
-					(jobStart.getTime() - timeRange.start.getTime()) / (1000 * 60);
-				const endMinutes =
-					(jobEnd.getTime() - timeRange.start.getTime()) / (1000 * 60);
+				const startMinutes = (jobStartTs - timeRangeStartTs) / (1000 * 60);
+				const endMinutes = (jobEndTs - timeRangeStartTs) / (1000 * 60);
 				const durationMinutes = endMinutes - startMinutes;
 
 				const left = (startMinutes / 60) * HOUR_WIDTH;
@@ -2449,6 +2567,124 @@ export function DispatchTimeline() {
 			return { index, top, bottom, lane };
 		});
 	}, [technicianLanes]);
+
+	// Create keyboard coordinate getter with access to timeline context
+	// Must be created after timeRange, totalWidth, technicianLanes, and laneMeta are defined
+	const keyboardCoordinateGetter = useCallback(
+		(event: KeyboardEvent, { context }: { context: any }) => {
+			const activeId = context.active?.id;
+			if (!activeId) return { x: 0, y: 0 };
+
+			// Find the job being dragged
+			const job = jobs.find((j) => j.id === activeId);
+			if (!job) return { x: 0, y: 0 };
+
+			// Get current job position
+			const jobStartTime =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const jobEndTime =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const durationMinutes =
+				(jobEndTime.getTime() - jobStartTime.getTime()) / (1000 * 60);
+
+			// Calculate current position in pixels
+			const startMinutes =
+				(jobStartTime.getTime() - timeRange.start.getTime()) / (1000 * 60);
+			const currentLeft = (startMinutes / 60) * HOUR_WIDTH;
+
+			// Find current technician index
+			const currentTechIndex = technicians.findIndex(
+				(t) => t.id === job.technicianId,
+			);
+
+			// Calculate vertical position (technician lane)
+			// Get the lane's top position from technicianLanes
+			let currentTop = BASE_CENTER_OFFSET;
+			if (currentTechIndex >= 0 && technicianLanes[currentTechIndex]) {
+				// Find the job's position within its lane (top value from detectOverlaps)
+				const laneJobs = technicianLanes[currentTechIndex]?.jobs || [];
+				const jobWithPosition = laneJobs.find((j) => j.job.id === job.id);
+				if (jobWithPosition) {
+					const top = jobWithPosition.top;
+					currentTop =
+						top === 0
+							? BASE_CENTER_OFFSET
+							: BASE_CENTER_OFFSET +
+							  JOB_HEIGHT +
+							  STACK_GAP +
+							  (top - (JOB_HEIGHT + STACK_GAP));
+				}
+			}
+
+			// Calculate movement based on arrow key
+			let deltaX = 0;
+			let deltaY = 0;
+			const SNAP_MINUTES = 15; // 15-minute snap interval
+			const SNAP_PIXELS = (SNAP_MINUTES / 60) * HOUR_WIDTH;
+
+			switch (event.key) {
+				case "ArrowLeft":
+					// Move left by 15 minutes
+					deltaX = -SNAP_PIXELS;
+					break;
+				case "ArrowRight":
+					// Move right by 15 minutes
+					deltaX = SNAP_PIXELS;
+					break;
+				case "ArrowUp":
+					// Move to previous technician (or up one lane if same tech)
+					if (currentTechIndex > 0 && laneMeta.length > 0) {
+						// Move to previous technician's lane
+						const prevLaneTop = laneMeta[currentTechIndex - 1]?.top ?? 0;
+						const targetTop = prevLaneTop + BASE_CENTER_OFFSET;
+						deltaY = targetTop - currentTop;
+					} else {
+						// Already at first technician, move up one lane if possible
+						deltaY = -(JOB_HEIGHT + STACK_GAP);
+					}
+					break;
+				case "ArrowDown":
+					// Move to next technician (or down one lane if same tech)
+					if (
+						currentTechIndex < technicians.length - 1 &&
+						laneMeta.length > 0
+					) {
+						// Move to next technician's lane
+						const nextLaneTop = laneMeta[currentTechIndex + 1]?.top ?? 0;
+						const targetTop = nextLaneTop + BASE_CENTER_OFFSET;
+						deltaY = targetTop - currentTop;
+					} else {
+						// Already at last technician, move down one lane if possible
+						deltaY = JOB_HEIGHT + STACK_GAP;
+					}
+					break;
+				default:
+					return { x: 0, y: 0 };
+			}
+
+			// Clamp horizontal movement to time range
+			const newLeft = currentLeft + deltaX;
+			const minLeft = 0;
+			const maxLeft = totalWidth - (durationMinutes / 60) * HOUR_WIDTH;
+			const clampedX = Math.max(minLeft, Math.min(maxLeft, newLeft)) - currentLeft;
+
+			return { x: clampedX, y: deltaY };
+		},
+		[jobs, technicians, timeRange, totalWidth, technicianLanes, laneMeta],
+	);
+
+	const keyboardSensor = useSensor(KeyboardSensor, {
+		coordinateGetter: keyboardCoordinateGetter,
+	});
+	const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+
+	// Virtual scrolling for technician lanes - only render visible lanes
+	const lanesVirtualizer = useVirtualizer({
+		count: technicianLanes.length,
+		getScrollElement: () => scrollContainerRef.current,
+		estimateSize: (index) => technicianLanes[index]?.height ?? LANE_HEIGHT,
+		overscan: 3, // Render 3 extra lanes above/below viewport for smooth scrolling
+	});
 
 	useEffect(() => {
 		const container = scrollContainerRef.current;
@@ -2906,14 +3142,14 @@ export function DispatchTimeline() {
 				const absoluteX = Math.max(0, Math.min(x, totalWidth - 1));
 				
 				// Calculate which hour slot the cursor is in (each slot is HOUR_WIDTH wide)
-				// Use the same hourlySlots array that's rendered in the header
+				// Use hourlySlotData directly instead of array length for better performance
 				const slotIndex = Math.max(0, Math.min(
 					Math.floor(absoluteX / HOUR_WIDTH),
-					hourlySlots.length - 1
+					hourlySlotData.totalHours - 1
 				));
 				
-				// Get the start time of this hour slot (same slot used in header rendering)
-				const slotStartDate = hourlySlots[slotIndex];
+				// Get the start time of this hour slot using lazy getSlot() method
+				const slotStartDate = hourlySlotData.getSlot(slotIndex);
 				if (!slotStartDate) {
 					return;
 				}
@@ -3486,6 +3722,64 @@ export function DispatchTimeline() {
 				</div>
 			)}
 			<div className="bg-background m-0 flex h-full w-full overflow-hidden p-0">
+				{/* Bulk Action Toolbar - Shows when selection mode is active */}
+				{isSelectionMode && selectedJobIds.size > 0 && (
+					<div className="bg-primary/95 backdrop-blur-sm border-b sticky top-0 z-50 flex items-center justify-between px-4 py-2 shadow-lg">
+						<div className="flex items-center gap-3">
+							<Badge variant="secondary" className="text-sm font-semibold">
+								{selectedJobIds.size} job{selectedJobIds.size !== 1 ? "s" : ""} selected
+							</Badge>
+						</div>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={toggleSelectionMode}
+								disabled={isBulkActionPending}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="default"
+								size="sm"
+								onClick={handleBulkDispatch}
+								disabled={isBulkActionPending}
+								className="gap-2"
+							>
+								{isBulkActionPending ? (
+									<>
+										<div className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+										Dispatching...
+									</>
+								) : (
+									<>
+										<Send className="size-4" />
+										Dispatch Selected
+									</>
+								)}
+							</Button>
+							<Button
+								variant="default"
+								size="sm"
+								onClick={handleBulkComplete}
+								disabled={isBulkActionPending}
+								className="gap-2"
+							>
+								{isBulkActionPending ? (
+									<>
+										<div className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+										Completing...
+									</>
+								) : (
+									<>
+										<Check className="size-4" />
+										Complete Selected
+									</>
+								)}
+							</Button>
+						</div>
+					</div>
+				)}
 				{/* Unassigned Panel */}
 				{showUnassignedPanel && (
 					<div
@@ -3544,23 +3838,27 @@ export function DispatchTimeline() {
 								</div>
 							</div>
 
-							{/* Team Members */}
-							{technicianLanes.map(({ technician, jobs, height }) => {
+							{/* Team Members - Virtualized for Performance */}
+							<div style={{ height: lanesVirtualizer.getTotalSize(), position: "relative" }}>
+								{lanesVirtualizer.getVirtualItems().map((virtualItem) => {
+									const { technician, jobs, height } = technicianLanes[virtualItem.index];
 								const isApprentice = technician.role
 									?.toLowerCase()
 									.includes("apprentice");
 
 								// Filter jobs to only include those for the currently viewed date
+								// Optimize: Use timestamps for date comparison, avoid Date object creation
+
 								const todaysJobs = jobs.filter((jobWithPos) => {
 									if (!jobWithPos?.job?.startTime) return false;
 									try {
-										const jobStart =
+										const jobStartTs =
 											jobWithPos.job.startTime instanceof Date
-												? jobWithPos.job.startTime
-												: new Date(jobWithPos.job.startTime);
-										// Verify date is valid before comparing
-										if (isNaN(jobStart.getTime())) return false;
-										return isSameDay(jobStart, dateObj);
+												? jobWithPos.job.startTime.getTime()
+												: new Date(jobWithPos.job.startTime).getTime();
+										// Verify timestamp is valid and within the day range
+										if (isNaN(jobStartTs)) return false;
+										return jobStartTs >= dateObjStartTs && jobStartTs < dateObjEndTs;
 									} catch {
 										return false;
 									}
@@ -3569,17 +3867,18 @@ export function DispatchTimeline() {
 								const hasJobs = todaysJobs.length > 0;
 
 								// Calculate utilization (assuming 8 hour workday: 8am-5pm = 9 hours with lunch)
+								// Optimize: Use timestamps instead of Date objects
 								const WORK_DAY_MINUTES = 8 * 60; // 8 hours
 								const totalScheduledMinutes = todaysJobs.reduce((acc, jobWithPos) => {
-									const start =
+									const startTs =
 										jobWithPos.job.startTime instanceof Date
-											? jobWithPos.job.startTime
-											: new Date(jobWithPos.job.startTime);
-									const end =
+											? jobWithPos.job.startTime.getTime()
+											: new Date(jobWithPos.job.startTime).getTime();
+									const endTs =
 										jobWithPos.job.endTime instanceof Date
-											? jobWithPos.job.endTime
-											: new Date(jobWithPos.job.endTime);
-									return acc + (end.getTime() - start.getTime()) / (1000 * 60);
+											? jobWithPos.job.endTime.getTime()
+											: new Date(jobWithPos.job.endTime).getTime();
+									return acc + (endTs - startTs) / (1000 * 60);
 								}, 0);
 								const utilizationPercent = Math.min(
 									100,
@@ -3612,7 +3911,14 @@ export function DispatchTimeline() {
 										<TooltipTrigger asChild>
 											<div
 												className="flex cursor-pointer items-center border-b px-3 hover:bg-primary/5 active:bg-primary/10 transition-colors"
-												style={{ height, minHeight: height, maxHeight: height }}
+												style={{
+													position: "absolute",
+													top: 0,
+													left: 0,
+													width: "100%",
+													height: virtualItem.size,
+													transform: `translateY(${virtualItem.start}px)`,
+												}}
 												onClick={() => handleOpenTechnicianFocus(technician.id)}
 											>
 												<div className="flex w-full items-center gap-2.5">
@@ -3745,6 +4051,7 @@ export function DispatchTimeline() {
 									</Tooltip>
 								);
 							})}
+							</div>
 						</div>
 
 						{/* Timeline (Hours + Lanes) */}
@@ -3754,7 +4061,8 @@ export function DispatchTimeline() {
 						>
 							{/* Hour Header - sticky top, scrolls horizontally */}
 							<div className="bg-card sticky top-0 z-30 flex h-11 shrink-0 border-b relative">
-								{hourlySlots.map((slot, index) => {
+								{Array.from({ length: hourlySlotData.totalHours }, (_, index) => {
+									const slot = hourlySlotData.getSlot(index);
 									const hour = slot.getHours();
 									const isBusinessHours = hour >= 6 && hour < 18;
 									const isMidnight = hour === 0;
@@ -3830,7 +4138,8 @@ export function DispatchTimeline() {
 							>
 								{/* Hour Column Backgrounds with 15-min snap guides */}
 								<div className="absolute inset-0 flex">
-									{hourlySlots.map((slot, index) => {
+									{Array.from({ length: hourlySlotData.totalHours }, (_, index) => {
+										const slot = hourlySlotData.getSlot(index);
 										const hour = slot.getHours();
 										const isBusinessHours = hour >= 6 && hour < 18;
 										const isMidnight = hour === 0;

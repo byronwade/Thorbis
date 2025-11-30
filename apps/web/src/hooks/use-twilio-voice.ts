@@ -345,8 +345,12 @@ export function useTwilioVoice(
 			const { Device } = await import("@twilio/voice-sdk");
 
 			debugLog("Creating new Device instance...");
+			// Note: AudioContext warnings may appear in console. These are expected browser
+			// security behavior - browsers require user interaction before allowing audio contexts
+			// to start. Twilio SDK handles this internally and will resume audio contexts when
+			// a call is initiated. These warnings do not affect functionality.
 			const device = new Device(currentOptions.accessToken, {
-				logLevel: currentOptions.debug ? 1 : 0,
+				logLevel: 0, // Always 0 to suppress heartbeat and verbose logs
 				codecPreferences: ["opus", "pcmu"] as any,
 			});
 
@@ -805,4 +809,4 @@ export function useTwilioVoice(
 }
 
 // Re-export types for backwards compatibility
-export type { CallState as TwilioCallState, CallDirection as TwilioCallDirection };
+export type { CallDirection as TwilioCallDirection, CallState as TwilioCallState };

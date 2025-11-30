@@ -260,11 +260,15 @@ export function ListViewMobile() {
 		setSearchQuery("");
 	}, []);
 
+	// Loading state for job actions
+	const [pendingAction, setPendingAction] = useState<{ jobId: string; action: string } | null>(null);
+
 	// Job action handler
 	const handleJobAction = useCallback(
 		async (action: string, job: Job, ...args: unknown[]) => {
 			console.log("Job action:", action, job, args);
 			setSelectedJob(null);
+			setPendingAction({ jobId: job.id, action });
 
 			try {
 				switch (action) {

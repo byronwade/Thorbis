@@ -214,10 +214,14 @@ const UnassignedJobCard = memo(
 			<div
 				ref={isDragOverlay ? undefined : setNodeRef}
 				style={style}
+				role="button"
+				aria-label={`Unassigned job: ${job.title || "Untitled"}. Drag to schedule on timeline.`}
+				tabIndex={isDragOverlay ? undefined : 0}
 				{...(isDragOverlay ? {} : attributes)}
 				{...(isDragOverlay ? {} : listeners)}
 				className={cn(
 					"group bg-card relative cursor-grab rounded-lg border-2 border-dashed border-red-200 p-3 shadow-sm transition-all hover:border-red-300 hover:shadow-md active:cursor-grabbing dark:border-red-900/50",
+					"focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
 					isDragging && !isDragOverlay && "opacity-30",
 					isDragOverlay &&
 						"scale-105 cursor-grabbing shadow-2xl ring-2 ring-red-500",

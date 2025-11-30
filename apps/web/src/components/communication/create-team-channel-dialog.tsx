@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { logError } from "@/lib/utils/error-logger";
 
 type CreateTeamChannelDialogProps = {
 	open?: boolean;
@@ -81,7 +82,7 @@ export function CreateTeamChannelDialog({
 				toast.error(result.error || "Failed to create channel");
 			}
 		} catch (error) {
-			console.error("Error creating channel:", error);
+			logError(error, "CreateTeamChannel");
 			toast.error("An unexpected error occurred");
 		} finally {
 			setLoading(false);

@@ -10,6 +10,7 @@ import {
 } from "@/lib/communication/unified-communication-sidebar-config";
 import type { ComponentProps } from "react";
 import { useCallback, useEffect, useState } from "react";
+import { logError } from "@/lib/utils/error-logger";
 
 /**
  * UnifiedCommunicationSidebar - Unified communication hub sidebar
@@ -148,7 +149,7 @@ export function UnifiedCommunicationSidebar(
 
 			setConfig(sidebarConfig);
 		} catch (error) {
-			console.error("Failed to fetch unified communication counts:", error);
+			logError(error, "FetchUnifiedCommunicationCounts");
 		}
 	}, []);
 

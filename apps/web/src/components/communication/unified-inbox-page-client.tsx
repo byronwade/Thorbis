@@ -55,8 +55,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, lazy, Suspense } from "react";
 import { toast } from "sonner";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 // Type for message attachments stored in provider_metadata
 type MessageAttachment = {
@@ -79,21 +80,20 @@ import {
 } from "@/actions/teams-actions";
 import { sendTextMessage } from "@/actions/twilio";
 import { AutoLinkSuggestions } from "@/components/communication/auto-link-suggestions";
-import { CallDetailView } from "@/components/communication/call-detail-view";
 import { CommunicationEmptyState } from "@/components/communication/communication-empty-state";
 import {
     SmsConversationSkeleton,
     TeamsChannelSkeleton
 } from "@/components/communication/communication-loading-skeleton";
 import { EmailContent } from "@/components/communication/email-content";
-import { EmailFullComposer } from "@/components/communication/email-full-composer";
-import {
-    EmailReplyComposer,
-    type EmailReplyMode,
-} from "@/components/communication/email-reply-composer";
+// Lazy load heavy components for code splitting
+const EmailFullComposer = lazy(() => import("@/components/communication/email-full-composer").then(m => ({ default: m.EmailFullComposer })));
+const EmailReplyComposer = lazy(() => import("@/components/communication/email-reply-composer").then(m => ({ default: m.EmailReplyComposer })));
+import type { EmailReplyMode } from "@/components/communication/email-reply-composer";
 import { SmsMessageInput } from "@/components/communication/sms-message-input";
 import { TransferDialog } from "@/components/communication/transfer-dialog";
-import { VoicemailDetailView } from "@/components/communication/voicemail-detail-view";
+const CallDetailView = lazy(() => import("@/components/communication/call-detail-view").then(m => ({ default: m.CallDetailView })));
+const VoicemailDetailView = lazy(() => import("@/components/communication/voicemail-detail-view").then(m => ({ default: m.VoicemailDetailView })));
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,6 +123,7 @@ import {
 import type { Communication, CommunicationCounts } from "@/lib/queries/communications";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { logError, logDebug } from "@/lib/utils/error-logger";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 import { Hash } from "lucide-react";
@@ -146,7 +147,7 @@ type CommunicationType = "all" | "email" | "sms" | "call" | "voicemail";
  */
 function isTeamChannelMessage(communication: Communication): boolean {
 	// Check if channel is explicitly "teams" - this is the definitive indicator
-	if ((communication as any).channel === "teams") {
+	if (communication.channel === "teams") {
 		return true;
 	}
 	
@@ -306,6 +307,10 @@ export function UnifiedInboxPageClient({
 	const [loadingChannelMessages, setLoadingChannelMessages] = useState(false);
 	const conversationScrollRef = useRef<HTMLDivElement>(null);
 	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+	// Track timeout IDs for cleanup
+	const timeoutRefs = useRef<Set<NodeJS.Timeout>>(new Set());
+	// Virtual scrolling refs
+	const listScrollRef = useRef<HTMLDivElement>(null);
 
 	const [refreshing, setRefreshing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -341,6 +346,11 @@ export function UnifiedInboxPageClient({
 	} | null>(null);
 	const [loadingContent, setLoadingContent] = useState(false);
 	const [retrying, setRetrying] = useState(false);
+	// Loading states for optimistic actions
+	const [starringIds, setStarringIds] = useState<Set<string>>(new Set());
+	const [archivingIds, setArchivingIds] = useState<Set<string>>(new Set());
+	const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+	const [markingReadIds, setMarkingReadIds] = useState<Set<string>>(new Set());
 
 	// SMS state
 	const [conversationMessages, setConversationMessages] = useState<CompanySms[]>([]);
@@ -576,7 +586,9 @@ export function UnifiedInboxPageClient({
 								(msg) => !msg.read_at && msg.direction === "inbound",
 							);
 							if (unreadMessages.length > 0) {
-								markTeamChannelAsReadAction(currentChannelId).catch(console.error);
+								markTeamChannelAsReadAction(currentChannelId).catch((error) => {
+									logError(error, "MarkTeamChannelAsRead");
+								});
 							}
 						} else {
 							setError(result.error || "Failed to load channel messages");
@@ -699,7 +711,7 @@ export function UnifiedInboxPageClient({
 						}
 					}
 				} catch (err) {
-					console.error("Failed to fetch communications:", err);
+					logError(err, "FetchCommunications");
 					const errorMessage =
 						err instanceof Error
 							? err.message
@@ -757,16 +769,20 @@ export function UnifiedInboxPageClient({
 								window.dispatchEvent(new CustomEvent("sms-read"));
 							}
 						})
-						.catch(() => {});
+						.catch((error) => {
+							logError(error, "MarkSmsConversationAsRead");
+						});
 				}
 
 				// Scroll to bottom
-				setTimeout(() => {
+				const scrollTimeout = setTimeout(() => {
 					if (conversationScrollRef.current) {
 						conversationScrollRef.current.scrollTop =
 							conversationScrollRef.current.scrollHeight;
 					}
+					timeoutRefs.current.delete(scrollTimeout);
 				}, 100);
+				timeoutRefs.current.add(scrollTimeout);
 			}
 		} catch (err) {
 			toast.error("Failed to load conversation");
@@ -805,12 +821,19 @@ export function UnifiedInboxPageClient({
 	// Auto-scroll to bottom for Teams channel messages
 	useEffect(() => {
 		if (channelId && channelMessages.length > 0 && !loadingChannelMessages) {
-			setTimeout(() => {
+			const scrollTimeout = setTimeout(() => {
 				if (conversationScrollRef.current) {
 					conversationScrollRef.current.scrollTop =
 						conversationScrollRef.current.scrollHeight;
 				}
+				timeoutRefs.current.delete(scrollTimeout);
 			}, 100);
+			timeoutRefs.current.add(scrollTimeout);
+			
+			return () => {
+				clearTimeout(scrollTimeout);
+				timeoutRefs.current.delete(scrollTimeout);
+			};
 		}
 	}, [channelId, channelMessages.length, loadingChannelMessages]);
 
@@ -841,107 +864,110 @@ export function UnifiedInboxPageClient({
 					filter: `company_id=eq.${companyId}`,
 				},
 				async (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-					// Check if this message belongs to the current channel
-					const newMessage = payload.new as {
-						id: string;
-						company_id: string;
-						type: string;
-						tags: string[] | null;
-						direction: string;
-						body: string;
-						body_html: string | null;
-						created_at: string;
-						read_at: string | null;
-						sent_by: string | null;
-						provider_metadata: Record<string, unknown> | null;
-					};
+					try {
+						// Check if this message belongs to the current channel
+						const newMessage = payload.new as {
+							id: string;
+							company_id: string;
+							type: string;
+							tags: string[] | null;
+							direction: string;
+							body: string;
+							body_html: string | null;
+							created_at: string;
+							read_at: string | null;
+							sent_by: string | null;
+							provider_metadata: Record<string, unknown> | null;
+						};
 
-					// Filter by channel tag (type and channel already filtered at DB level)
-					// Only process messages for this specific channel
-					if (
-						newMessage.tags &&
-						Array.isArray(newMessage.tags) &&
-						newMessage.tags.includes(channelId)
-					) {
-						// Fetch the full message with user info
-						const { data: fullMessage } = await supabase
-							.from("communications")
-							.select(`
-								id,
-								body,
-								body_html,
-								created_at,
-								read_at,
-								direction,
-								sent_by,
-								provider_metadata,
-								tags,
-								sent_by_user:users!sent_by(id, name, avatar, email)
-							`)
-							.eq("id", newMessage.id)
-							.single();
-
-						if (fullMessage) {
-							// Handle sent_by_user - it might be an array or single object
-							const userData = Array.isArray(fullMessage.sent_by_user)
-								? fullMessage.sent_by_user[0]
-								: fullMessage.sent_by_user;
-
-							const channelMessage: ChannelMessage = {
-								id: fullMessage.id,
-								body: fullMessage.body || "",
-								body_html: fullMessage.body_html,
-								created_at: fullMessage.created_at,
-								read_at: fullMessage.read_at,
-								direction: fullMessage.direction as "inbound" | "outbound",
-								sent_by: fullMessage.sent_by,
-								sent_by_user: userData
-									? {
-											id: userData.id,
-											name: userData.name || null,
-											avatar: userData.avatar || null,
-											email: userData.email || null,
-										}
-									: null,
-								provider_metadata: (fullMessage.provider_metadata as Record<string, unknown>) || null,
-							};
-
-							// Add new message to state
-							setChannelMessages((prev) => {
-								// Check if message already exists (prevent duplicates)
-								if (prev.some((msg) => msg.id === channelMessage.id)) {
-									return prev;
-								}
-								return [...prev, channelMessage];
-							});
-
-							// Auto-scroll to bottom
-							setTimeout(() => {
-								if (conversationScrollRef.current) {
-									conversationScrollRef.current.scrollTop =
-										conversationScrollRef.current.scrollHeight;
-								}
-							}, 100);
-
-							// Mark as read if it's an inbound message
-							if (channelMessage.direction === "inbound" && !channelMessage.read_at) {
-								markTeamChannelAsReadAction(channelId).catch(console.error);
+						// Filter by channel tag (type and channel already filtered at DB level)
+						// Only process messages for this specific channel
+						if (
+							newMessage.tags &&
+							Array.isArray(newMessage.tags) &&
+							newMessage.tags.includes(channelId)
+						) {
+							// Optimize: Only fetch user data if sent_by is present and we don't have it
+							// Use the message data from realtime payload to avoid unnecessary query
+							let userData = null;
+							if (newMessage.sent_by) {
+								// Only fetch user data if not already available in the payload
+								const { data: user, error: userError } = await supabase
+									.from("users")
+									.select("id, name, avatar, email")
+									.eq("id", newMessage.sent_by)
+									.single();
+								
+							if (!userError && user) {
+								userData = user;
 							}
 						}
+
+						// Build channel message from realtime payload (optimized - no full fetch)
+						const channelMessage: ChannelMessage = {
+							id: newMessage.id,
+							body: newMessage.body || "",
+							body_html: newMessage.body_html || null,
+							created_at: newMessage.created_at,
+							read_at: newMessage.read_at || null,
+							direction: newMessage.direction as "inbound" | "outbound",
+							sent_by: newMessage.sent_by,
+							sent_by_user: userData
+								? {
+										id: userData.id,
+										name: userData.name || null,
+										avatar: userData.avatar || null,
+										email: userData.email || null,
+									}
+								: null,
+							provider_metadata: (newMessage.provider_metadata as Record<string, unknown>) || null,
+						};
+
+						// Add new message to state
+						setChannelMessages((prev) => {
+							// Check if message already exists (prevent duplicates)
+							if (prev.some((msg) => msg.id === channelMessage.id)) {
+								return prev;
+							}
+							return [...prev, channelMessage];
+						});
+
+						// Auto-scroll to bottom
+						const scrollTimeout = setTimeout(() => {
+							if (conversationScrollRef.current) {
+								conversationScrollRef.current.scrollTop =
+									conversationScrollRef.current.scrollHeight;
+							}
+							timeoutRefs.current.delete(scrollTimeout);
+						}, 100);
+						timeoutRefs.current.add(scrollTimeout);
+
+						// Mark as read if it's an inbound message
+						if (channelMessage.direction === "inbound" && !channelMessage.read_at) {
+							markTeamChannelAsReadAction(channelId).catch((error) => {
+								logError(error, "MarkTeamChannelAsRead");
+							});
+						}
 					}
+				} catch (error) {
+					logError(error, "RealtimeSubscriptionCallback");
+				}
 				},
 			)
 			.subscribe((status: "SUBSCRIBED" | "TIMED_OUT" | "CLOSED" | "CHANNEL_ERROR") => {
 				if (status === "SUBSCRIBED") {
-					console.log(`✅ Subscribed to Teams channel: ${channelId}`);
+					logDebug(`Subscribed to Teams channel: ${channelId}`);
 				} else if (status === "CHANNEL_ERROR") {
-					console.error(`❌ Failed to subscribe to Teams channel: ${channelId}`);
+					logError(new Error(`Failed to subscribe to Teams channel: ${channelId}`), "TeamsChannelSubscription");
 				}
 			});
 
 		return () => {
 			// Remove subscription and cleanup
 			supabase.removeChannel(channel);
+			// Clean up any pending timeouts
+			timeoutRefs.current.forEach((timeout) => clearTimeout(timeout));
+			timeoutRefs.current.clear();
 		};
 	}, [channelId, companyId]);
 
@@ -987,9 +1013,13 @@ export function UnifiedInboxPageClient({
 				);
 				// Fire and forget - don't await
 				if (communication.type === "email") {
-					markEmailAsReadAction({ emailId: communication.id }).catch(() => {});
+					markEmailAsReadAction({ emailId: communication.id }).catch((error) => {
+						logError(error, "MarkEmailAsRead");
+					});
 				} else if (communication.type === "sms") {
-					markSmsAsReadAction({ smsId: communication.id }).catch(() => {});
+					markSmsAsReadAction({ smsId: communication.id }).catch((error) => {
+						logError(error, "MarkSmsAsRead");
+					});
 				}
 			}
 
@@ -1057,7 +1087,9 @@ export function UnifiedInboxPageClient({
 								// Mark unread as read
 								const unread = result.messages.filter(m => !m.read_at && m.direction === "inbound");
 								if (unread.length > 0) {
-									markSmsConversationAsReadAction(phoneNumber).catch(() => {});
+									markSmsConversationAsReadAction(phoneNumber).catch((error) => {
+										logError(error, "MarkSmsConversationAsRead");
+									});
 								}
 							}
 						})
@@ -1105,7 +1137,7 @@ export function UnifiedInboxPageClient({
 				toast.error(result.error || "Failed to save notes");
 			}
 		} catch (error) {
-			console.error("Failed to save notes:", error);
+			logError(error, "SaveNotes");
 			toast.error("Failed to save notes");
 		} finally {
 			setSavingNotes(false);
@@ -1118,6 +1150,9 @@ export function UnifiedInboxPageClient({
 			// Store the communication for potential revert
 			const commToArchive = communications.find((c) => c.id === communicationId);
 			if (!commToArchive) return;
+
+			// Set loading state
+			setArchivingIds((prev) => new Set(prev).add(communicationId));
 
 			// Optimistic update - immediately remove from list
 			setCommunications((prev) => prev.filter((c) => c.id !== communicationId));
@@ -1146,8 +1181,15 @@ export function UnifiedInboxPageClient({
 				setCommunications((prev) => [...prev, commToArchive].sort((a, b) => 
 					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 				));
-				console.error("Failed to archive:", err);
+				logError(err, "ArchiveCommunication");
 				toast.error("Failed to archive");
+			} finally {
+				// Clear loading state
+				setArchivingIds((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(communicationId);
+					return newSet;
+				});
 			}
 		},
 		[communications, selectedCommunication],
@@ -1157,6 +1199,9 @@ export function UnifiedInboxPageClient({
 		// Get current starred state
 		const currentlyStarred = starredIds.has(communicationId);
 		const newStarredState = !currentlyStarred;
+		
+		// Set loading state
+		setStarringIds((prev) => new Set(prev).add(communicationId));
 		
 		// Optimistic update - immediately update UI
 		setStarredIds((prev) => {
@@ -1240,8 +1285,15 @@ export function UnifiedInboxPageClient({
 					return c;
 				})
 			);
-			console.error("Failed to star:", err);
+			logError(err, "ToggleStar");
 			toast.error("Failed to update");
+		} finally {
+			// Clear loading state
+			setStarringIds((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(communicationId);
+				return newSet;
+			});
 		}
 	}, [starredIds]);
 
@@ -1265,26 +1317,52 @@ export function UnifiedInboxPageClient({
 
 	const handleDelete = useCallback(
 		async (communicationId: string) => {
+			// Store the communication for potential revert
+			const commToDelete = communications.find((c) => c.id === communicationId);
+			if (!commToDelete) return;
+
+			// Set loading state
+			setDeletingIds((prev) => new Set(prev).add(communicationId));
+
+			// Optimistic update - immediately remove from list
+			setCommunications((prev) => prev.filter((c) => c.id !== communicationId));
+			
+			// Clear selection if this was the selected communication
+			if (selectedCommunication?.id === communicationId) {
+				setSelectedCommunication(null);
+				setEmailContent(null);
+				selectedCommunicationRef.current = null;
+			}
+
 			try {
 				const result = await bulkDeleteEmailsAction([communicationId]);
 				if (result.success) {
 					toast.success("Deleted");
-					setCommunications((prev) =>
-						prev.filter((c) => c.id !== communicationId),
-					);
-					if (selectedCommunication?.id === communicationId) {
-						setSelectedCommunication(null);
-						setEmailContent(null);
-					}
+					window.dispatchEvent(new CustomEvent("email-deleted"));
 				} else {
+					// Revert on failure
+					setCommunications((prev) => [...prev, commToDelete].sort((a, b) => 
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+					));
 					toast.error(result.error || "Failed to delete");
 				}
 			} catch (err) {
-				console.error("Failed to delete:", err);
+				// Revert on error
+				setCommunications((prev) => [...prev, commToDelete].sort((a, b) => 
+					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+				));
+				logError(err, "DeleteCommunication");
 				toast.error("Failed to delete");
+			} finally {
+				// Clear loading state
+				setDeletingIds((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(communicationId);
+					return newSet;
+				});
 			}
 		},
-		[selectedCommunication],
+		[communications, selectedCommunication],
 	);
 
 	const handleRetry = useCallback(
@@ -1304,7 +1382,7 @@ export function UnifiedInboxPageClient({
 					});
 				}
 			} catch (err) {
-				console.error("Failed to retry email:", err);
+				logError(err, "RetryEmail");
 				toast.error("Failed to send email");
 			} finally {
 				setRetrying(false);
@@ -1487,7 +1565,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 	]);
 
 	// Handle sending Teams channel messages
-	const handleSendSms = useCallback(async (text: string, attachments: any[]) => {
+	const handleSendSms = useCallback(async (text: string, attachments: Array<{ file: File; type: "image" | "file"; url?: string; filename?: string }>) => {
 		if (!channelId || sendingMessage) {
 			if (!channelId) {
 				toast.error("Channel ID not found.");
@@ -1569,16 +1647,16 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 	}, [channelId, currentUserId, teamMemberId, sendingMessage, fetchCommunications]);
 
 
-	// Format call duration
-	const formatDuration = (seconds: number | null | undefined): string => {
+	// Format call duration - memoized to prevent recalculation
+	const formatDuration = useCallback((seconds: number | null | undefined): string => {
 		if (!seconds) return "0:00";
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
 		return `${mins}:${secs.toString().padStart(2, "0")}`;
-	};
+	}, []);
 
-	// Format timestamp for SMS messages
-	const formatMessageTime = (date: string) => {
+	// Format timestamp for SMS messages - memoized
+	const formatMessageTime = useCallback((date: string) => {
 		const messageDate = new Date(date);
 		const now = new Date();
 		const isToday = messageDate.toDateString() === now.toDateString();
@@ -1596,7 +1674,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 			hour: "numeric",
 			minute: "2-digit",
 		});
-	};
+	}, []);
 
 	// Helper function to get user display name (Slack-style)
 	const getUserDisplayName = useCallback((user: {
@@ -1630,6 +1708,19 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 		// Apply type filter client-side
 		return communications.filter((comm) => comm.type === typeFilter);
 	}, [communications, typeFilter]);
+
+	// Virtual scrolling setup - only enable for lists with 50+ items for performance
+	const shouldVirtualize = filteredCommunications.length >= 50;
+	const rowVirtualizer = useVirtualizer({
+		count: shouldVirtualize ? filteredCommunications.length : 0,
+		getScrollElement: () => listScrollRef.current,
+		estimateSize: () => 80, // Estimated row height in pixels
+		overscan: 5, // Render 5 extra items above/below viewport for smooth scrolling
+		enabled: shouldVirtualize,
+	});
+
+	// Get virtual items for rendering
+	const virtualItems = shouldVirtualize ? rowVirtualizer.getVirtualItems() : [];
 
 	// Mobile: show list when no communication selected, show detail when communication selected
 	const showListOnMobile = !selectedCommunication && !composeMode;
@@ -2057,21 +2148,49 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 												</div>
 											</div>
 										) : filteredCommunications.length ? (
-											<div className="min-h-[200px] px-2">
-												{filteredCommunications.map((communication) => {
-													const isSelected =
-														selectedCommunication?.id === communication.id;
-													const isUnread =
-														communication.status === "unread" ||
-														communication.status === "new";
-													const typeConfig = getTypeConfig(communication.type);
-													const TypeIcon = typeConfig.icon;
+											<div 
+												ref={listScrollRef}
+												className={cn(
+													"min-h-[200px] px-2",
+													shouldVirtualize && "h-full overflow-auto"
+												)}
+												style={shouldVirtualize ? {
+													contain: "strict",
+												} : undefined}
+											>
+												{shouldVirtualize ? (
+													<div
+														style={{
+															height: `${rowVirtualizer.getTotalSize()}px`,
+															width: "100%",
+															position: "relative",
+														}}
+													>
+														{virtualItems.map((virtualRow) => {
+															const communication = filteredCommunications[virtualRow.index];
+															if (!communication) return null;
+															
+															const isSelected =
+																selectedCommunication?.id === communication.id;
+															const isUnread =
+																communication.status === "unread" ||
+																communication.status === "new";
+															const typeConfig = getTypeConfig(communication.type);
+															const TypeIcon = typeConfig.icon;
 
-													return (
-														<div
-															key={communication.id}
-															className="select-none md:my-1"
-														>
+															return (
+																<div
+																	key={communication.id}
+																	className="select-none md:my-1"
+																	style={{
+																		position: "absolute",
+																		top: 0,
+																		left: 0,
+																		width: "100%",
+																		height: `${virtualRow.size}px`,
+																		transform: `translateY(${virtualRow.start}px)`,
+																	}}
+																>
 															<div
 																className={cn(
 																	"hover:bg-accent group flex cursor-pointer flex-col items-start rounded-lg py-2 text-left text-sm transition-all hover:opacity-100 relative",
@@ -2095,16 +2214,21 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																			e.stopPropagation();
 																			handleStar(communication.id);
 																		}}
+																		disabled={starringIds.has(communication.id)}
 																		title="Star"
 																	>
-																		<Star
-																			className={cn(
-																				"h-4 w-4 transition-colors group-hover/star:text-yellow-500",
-																				starredIds.has(communication.id)
-																					? "fill-yellow-500 text-yellow-500"
-																					: "text-muted-foreground",
-																			)}
-																		/>
+																		{starringIds.has(communication.id) ? (
+																			<Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+																		) : (
+																			<Star
+																				className={cn(
+																					"h-4 w-4 transition-colors group-hover/star:text-yellow-500",
+																					starredIds.has(communication.id)
+																						? "fill-yellow-500 text-yellow-500"
+																						: "text-muted-foreground",
+																				)}
+																			/>
+																		)}
 																	</Button>
 																	<Button
 																		variant="ghost"
@@ -2114,9 +2238,14 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																			e.stopPropagation();
 																			handleArchive(communication.id);
 																		}}
+																		disabled={archivingIds.has(communication.id)}
 																		title="Archive"
 																	>
-																		<Archive className="h-4 w-4 text-muted-foreground transition-colors group-hover/archive:text-blue-500" />
+																		{archivingIds.has(communication.id) ? (
+																			<Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+																		) : (
+																			<Archive className="h-4 w-4 text-muted-foreground transition-colors group-hover/archive:text-blue-500" />
+																		)}
 																	</Button>
 																</div>
 
@@ -2237,6 +2366,199 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 														</div>
 													);
 												})}
+													</div>
+												) : (
+													// Non-virtualized rendering for small lists
+													filteredCommunications.map((communication) => {
+														const isSelected =
+															selectedCommunication?.id === communication.id;
+														const isUnread =
+															communication.status === "unread" ||
+															communication.status === "new";
+														const typeConfig = getTypeConfig(communication.type);
+														const TypeIcon = typeConfig.icon;
+
+														return (
+															<div
+																key={communication.id}
+																className="select-none md:my-1"
+															>
+																<div
+																	className={cn(
+																		"hover:bg-accent group flex cursor-pointer flex-col items-start rounded-lg py-2 text-left text-sm transition-all hover:opacity-100 relative",
+																		isSelected ? "bg-accent opacity-100" : "",
+																		isUnread ? "opacity-100" : "opacity-60",
+																	)}
+																	onClick={() =>
+																		handleCommunicationSelect(communication)
+																	}
+																>
+																	{/* Hover Action Toolbar */}
+																	<div
+																		className="dark:bg-panelDark absolute right-2 z-25 flex -translate-y-1/2 items-center gap-1 rounded-xl border bg-white p-1 opacity-0 shadow-sm group-hover:opacity-100 top-[-1] transition-opacity duration-200"
+																		onClick={(e) => e.stopPropagation()}
+																	>
+																		<Button
+																			variant="ghost"
+																			size="sm"
+																			className="h-6 w-6 overflow-visible p-0 hover:bg-accent group/star"
+																			onClick={(e) => {
+																				e.stopPropagation();
+																				handleStar(communication.id);
+																			}}
+																			disabled={starringIds.has(communication.id)}
+																			title="Star"
+																		>
+																			{starringIds.has(communication.id) ? (
+																				<Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+																			) : (
+																				<Star
+																					className={cn(
+																						"h-4 w-4 transition-colors group-hover/star:text-yellow-500",
+																						starredIds.has(communication.id)
+																							? "fill-yellow-500 text-yellow-500"
+																							: "text-muted-foreground",
+																					)}
+																				/>
+																			)}
+																		</Button>
+																		<Button
+																			variant="ghost"
+																			size="sm"
+																			className="h-6 w-6 p-0 hover:bg-accent group/archive"
+																			onClick={(e) => {
+																				e.stopPropagation();
+																				handleArchive(communication.id);
+																			}}
+																			disabled={archivingIds.has(communication.id)}
+																			title="Archive"
+																		>
+																			{archivingIds.has(communication.id) ? (
+																				<Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+																			) : (
+																				<Archive className="h-4 w-4 text-muted-foreground transition-colors group-hover/archive:text-blue-500" />
+																			)}
+																		</Button>
+																	</div>
+
+																	{/* Communication Card Content */}
+																	<div className="relative flex w-full items-center justify-between gap-4 px-2">
+																		{/* Avatar with type badge */}
+																		<div className="relative">
+																			<Avatar className="h-8 w-8 shrink-0 rounded-full border">
+																				<AvatarFallback className="bg-white dark:bg-[#373737] text-[#9F9F9D] font-bold text-xs">
+																					{getContactDisplayName(communication)[0]?.toUpperCase() || "?"}
+																				</AvatarFallback>
+																			</Avatar>
+																			<div
+																				className={cn(
+																					"absolute -bottom-1 -right-1 rounded-full p-1 flex items-center justify-center",
+																					typeConfig.bg,
+																					"shadow-sm ring-1 ring-background/50",
+																				)}
+																			>
+																				<TypeIcon
+																					className="h-2.5 w-2.5"
+																					style={{ color: 'white' }}
+																				/>
+																			</div>
+																		</div>
+
+																		<div className="flex w-full justify-between">
+																			<div className="w-full">
+																				<div className="flex w-full flex-row items-center justify-between">
+																					<div className="flex flex-row items-center gap-[4px]">
+																						<span className="font-bold text-md flex items-baseline gap-1 group-hover:opacity-100">
+																							<div className="flex items-center gap-1">
+																								<span className="line-clamp-1 overflow-hidden text-sm">
+																									{getContactDisplayName(communication)}
+																								</span>
+																								{isUnread && (
+																									<span className="ml-0.5 size-2 rounded-full bg-[#006FFE]"></span>
+																								)}
+																							</div>
+																						</span>
+																					</div>
+																					<p className="text-muted-foreground text-nowrap text-xs font-normal opacity-70 transition-opacity group-hover:opacity-100 dark:text-[#8C8C8C]">
+																						{communication.createdAt
+																							? new Date(
+																									communication.createdAt,
+																								).toLocaleTimeString([], {
+																									hour: "2-digit",
+																									minute: "2-digit",
+																								})
+																							: ""}
+																					</p>
+																				</div>
+
+																				<div className="flex justify-between items-center gap-2">
+																					<p className="mt-1 line-clamp-1 min-w-0 overflow-hidden text-sm text-[#8C8C8C] flex-1">
+																						{communication.type === "call" ? (
+																							<span>
+																								{communication.direction === "inbound"
+																									? "Incoming Call"
+																									: "Outgoing Call"}
+																								{communication.callDuration && communication.callDuration > 0 && (
+																									<span className="ml-2">
+																										• {formatDuration(communication.callDuration)}
+																									</span>
+																								)}
+																							</span>
+																						) : communication.type === "voicemail" ? (
+																							<span>
+																								Voicemail
+																								{communication.callDuration && (
+																									<span className="ml-2">
+																										• {formatDuration(communication.callDuration)}
+																									</span>
+																								)}
+																							</span>
+																						) : (
+																							communication.subject ||
+																							communication.body ||
+																							"No content"
+																						)}
+																					</p>
+																					{/* Status badges */}
+																					<div className="flex items-center gap-1 shrink-0">
+																						{communication.customerId && (
+																							<Link
+																								href={`/dashboard/customers/${communication.customerId}`}
+																								onClick={(e) =>
+																									e.stopPropagation()
+																								}
+																								className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-0.5"
+																								title="View customer profile"
+																							>
+																								<User className="h-2.5 w-2.5" />
+																							</Link>
+																						)}
+																						{communication.jobId && (
+																							<span className="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-600 flex items-center gap-0.5">
+																								<Briefcase className="h-2.5 w-2.5" />
+																							</span>
+																						)}
+																						{communication.internalNotes && (
+																							<span className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground flex items-center gap-0.5">
+																								<StickyNote className="h-2.5 w-2.5" />
+																							</span>
+																						)}
+																						{communication.status ===
+																							"failed" && (
+																							<span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/10 text-destructive flex items-center gap-0.5">
+																								<AlertTriangle className="h-2.5 w-2.5" />
+																							</span>
+																						)}
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														);
+													})
+												)}
 											</div>
 										) : (
 											<CommunicationEmptyState
@@ -2283,7 +2605,8 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 							showDetailOnMobile ? "flex" : "hidden md:flex",
 						)}
 					>
-						<EmailFullComposer
+						<Suspense fallback={<div className="flex items-center justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+							<EmailFullComposer
 							companyId={companyId}
 							onClose={() => setComposeMode(false)}
 							onSent={() => {
@@ -2292,6 +2615,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 							}}
 							className="h-full"
 						/>
+						</Suspense>
 					</div>
 				) : selectedCommunication ? (
 					<div
@@ -2414,15 +2738,20 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 											className="h-10 w-10 p-0 md:h-8 md:w-8 group/star"
 											title="Star"
 											onClick={() => handleStar(selectedCommunication.id)}
+											disabled={starringIds.has(selectedCommunication.id)}
 										>
-											<Star
-												className={cn(
-													"h-5 w-5 md:h-4 md:w-4 transition-colors group-hover/star:text-yellow-500",
-													starredIds.has(selectedCommunication.id)
-														? "fill-yellow-500 text-yellow-500"
-														: "text-muted-foreground",
-												)}
-											/>
+											{starringIds.has(selectedCommunication.id) ? (
+												<Loader2 className="h-5 w-5 md:h-4 md:w-4 animate-spin text-muted-foreground" />
+											) : (
+												<Star
+													className={cn(
+														"h-5 w-5 md:h-4 md:w-4 transition-colors group-hover/star:text-yellow-500",
+														starredIds.has(selectedCommunication.id)
+															? "fill-yellow-500 text-yellow-500"
+															: "text-muted-foreground",
+													)}
+												/>
+											)}
 										</Button>
 										{/* Spam toggle for email */}
 										{selectedCommunication.type === "email" && (
@@ -2447,8 +2776,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 											onClick={() =>
 												handleArchive(selectedCommunication.id)
 											}
+											disabled={archivingIds.has(selectedCommunication.id)}
 										>
-											<Archive className="h-5 w-5 md:h-4 md:w-4" />
+											{archivingIds.has(selectedCommunication.id) ? (
+												<Loader2 className="h-5 w-5 md:h-4 md:w-4 animate-spin" />
+											) : (
+												<Archive className="h-5 w-5 md:h-4 md:w-4" />
+											)}
 										</Button>
 										{/* More menu */}
 										<DropdownMenu>
@@ -2502,8 +2836,13 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 												<DropdownMenuItem
 													onClick={() => handleDelete(selectedCommunication.id)}
 													className="text-destructive focus:text-destructive"
+													disabled={deletingIds.has(selectedCommunication.id)}
 												>
-													<Trash2 className="h-4 w-4 mr-2" />
+													{deletingIds.has(selectedCommunication.id) ? (
+														<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+													) : (
+														<Trash2 className="h-4 w-4 mr-2" />
+													)}
 													Delete
 												</DropdownMenuItem>
 											</DropdownMenuContent>
@@ -2643,17 +2982,43 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 													{/* Reply Composer or Action Bar */}
 													<div className="px-2 py-4 pb-safe">
 														{replyMode ? (
-															<EmailReplyComposer
+															<Suspense fallback={<div className="flex items-center justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+																<EmailReplyComposer
 																mode={replyMode}
 																selectedEmail={{
 																	id: selectedCommunication.id,
-																	from_address: selectedCommunication.fromAddress || "",
-																	from_name: null,
-																	to_address: selectedCommunication.toAddress || "",
-																	subject: selectedCommunication.subject || "",
-																	body: emailContent?.text || selectedCommunication.body || "",
+																	from_address: selectedCommunication.fromAddress || null,
+																	from_name: selectedCommunication.fromName || null,
+																	to_address: selectedCommunication.toAddress || null,
+																	subject: selectedCommunication.subject || null,
+																	body: emailContent?.text || selectedCommunication.body || null,
 																	body_html: emailContent?.html || null,
-																} as any}
+																	created_at: selectedCommunication.createdAt,
+																	read_at: null,
+																	direction: selectedCommunication.direction,
+																	customer_id: selectedCommunication.customerId || null,
+																	customer: selectedCommunication.customer ? {
+																		id: selectedCommunication.customer.id,
+																		first_name: selectedCommunication.customer.firstName || null,
+																		last_name: selectedCommunication.customer.lastName || null,
+																		display_name: selectedCommunication.customer.firstName && selectedCommunication.customer.lastName
+																			? `${selectedCommunication.customer.firstName} ${selectedCommunication.customer.lastName}`
+																			: null,
+																		email: selectedCommunication.customer.email || null,
+																		phone: selectedCommunication.customer.phone || null,
+																		company_name: null,
+																	} : null,
+																	sent_at: null,
+																	delivered_at: null,
+																	opened_at: null,
+																	clicked_at: null,
+																	open_count: null,
+																	click_count: null,
+																	status: selectedCommunication.status,
+																	tags: selectedCommunication.tags || null,
+																	category: selectedCommunication.emailCategory || null,
+																	provider_metadata: null,
+																}}
 																companyId={companyId}
 																onClose={() => setReplyMode(null)}
 																onSent={() => {
@@ -2661,6 +3026,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 																	fetchCommunications();
 																}}
 															/>
+															</Suspense>
 														) : selectedCommunication.status === "failed" ? (
 															<div className="flex items-center gap-2 flex-wrap">
 																<Button
@@ -2901,7 +3267,8 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 												</>
 											) : selectedCommunication.type === "call" ? (
 												/* Call Detail View */
-												<CallDetailView
+												<Suspense fallback={<div className="flex items-center justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+													<CallDetailView
 													communication={selectedCommunication}
 													onSendText={(phone) => {
 														// Navigate to SMS view for this phone
@@ -2924,9 +3291,11 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 														setTransferDialogOpen(true);
 													}}
 												/>
+												</Suspense>
 											) : selectedCommunication.type === "voicemail" ? (
 												/* Voicemail Detail View */
-												<VoicemailDetailView
+												<Suspense fallback={<div className="flex items-center justify-center p-8"><Loader2 className="h-6 w-6 animate-spin" /></div>}>
+													<VoicemailDetailView
 													communication={selectedCommunication}
 													isRead={selectedCommunication.status === "read"}
 													onMarkAsRead={(id, read) => {
@@ -2959,6 +3328,7 @@ ${emailContent?.html || `<p>${selectedCommunication.body || "No content"}</p>`}
 														setTransferDialogOpen(true);
 													}}
 												/>
+												</Suspense>
 											) : (
 												/* Fallback for other types */
 												<ScrollArea className="flex-1 px-2 py-4">

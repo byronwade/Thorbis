@@ -206,9 +206,11 @@ export function buildShareImageUrl({
 	path = SEO_URLS.defaultImagePath,
 	query,
 }: ShareImageOptions = {}): string {
-	const url = new URL(
-		path.startsWith("http") ? path : `${SEO_URLS.site}${path}`,
-	);
+	// Ensure we have a valid base URL
+	const baseUrl = SEO_URLS.site || "https://thorbis.com";
+	const fullPath = path.startsWith("http") ? path : `${baseUrl}${path}`;
+	
+	const url = new URL(fullPath);
 
 	if (query) {
 		Object.entries(query).forEach(([key, value]) => {

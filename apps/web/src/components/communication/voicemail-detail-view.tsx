@@ -12,30 +12,29 @@
  * - Quick actions (call back, send text, transfer)
  */
 
-import {
-	AlertCircle,
-	Calendar,
-	Check,
-	Clock,
-	ExternalLink,
-	Mail,
-	MailOpen,
-	MessageSquare,
-	Phone,
-	PhoneForwarded,
-	User,
-	Voicemail,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { AudioPlayer } from "@/components/ui/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MediaPlayer } from "@/components/ui/media-player";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import type { Communication } from "@/lib/queries/communications";
-import { cn } from "@/lib/utils";
+import {
+    AlertCircle,
+    Calendar,
+    Check,
+    Clock,
+    ExternalLink,
+    Mail,
+    MailOpen,
+    MessageSquare,
+    Phone,
+    PhoneForwarded,
+    User,
+    Voicemail,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface VoicemailDetailViewProps {
 	communication: Communication;
@@ -201,8 +200,9 @@ export function VoicemailDetailView({
 					</h3>
 
 					{communication.callRecordingUrl ? (
-						<AudioPlayer
+						<MediaPlayer
 							src={communication.callRecordingUrl}
+							type="audio"
 							title="Voicemail Message"
 						/>
 					) : (

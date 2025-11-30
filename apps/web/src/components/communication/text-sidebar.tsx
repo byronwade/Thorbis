@@ -3,6 +3,7 @@
 import type { ComponentProps } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { getSmsFolderCountsAction } from "@/actions/sms-actions";
+import { logError } from "@/lib/utils/error-logger";
 import { CommunicationSidebar } from "@/components/communication/communication-sidebar";
 import { RecipientSelector } from "@/components/communication/recipient-selector";
 import type { Sidebar } from "@/components/ui/sidebar";
@@ -24,13 +25,10 @@ export function TextSidebar(props: ComponentProps<typeof Sidebar>) {
 			if (countsResult.success && countsResult.counts) {
 				setConfig(getSmsSidebarConfig(countsResult.counts));
 			} else {
-				console.error(
-					"❌ Failed to fetch SMS folder counts:",
-					countsResult.error,
-				);
+				logError(new Error(countsResult.error || "Failed to fetch SMS folder counts"), "FetchSmsFolderCounts");
 			}
 		} catch (error) {
-			console.error("Failed to fetch SMS folder data:", error);
+			logError(error, "FetchSmsFolderData");
 		}
 	}, []);
 

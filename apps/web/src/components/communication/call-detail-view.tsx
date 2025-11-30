@@ -12,35 +12,35 @@
  * - Transfer/assign to team member
  */
 
-import {
-	ArrowDownLeft,
-	ArrowUpRight,
-	Calendar,
-	ChevronDown,
-	ChevronUp,
-	Clock,
-	ExternalLink,
-	MessageSquare,
-	Phone,
-	PhoneForwarded,
-	PhoneOff,
-	User,
-	Volume2,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { AudioPlayer } from "@/components/ui/audio-player";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { MediaPlayer } from "@/components/ui/media-player";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import type { Communication } from "@/lib/queries/communications";
 import { cn } from "@/lib/utils";
+import {
+    ArrowDownLeft,
+    ArrowUpRight,
+    Calendar,
+    ChevronDown,
+    ChevronUp,
+    Clock,
+    ExternalLink,
+    MessageSquare,
+    Phone,
+    PhoneForwarded,
+    PhoneOff,
+    User,
+    Volume2,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface CallDetailViewProps {
 	communication: Communication;
@@ -272,8 +272,9 @@ export function CallDetailView({
 						<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
 							Recording
 						</h3>
-						<AudioPlayer
+						<MediaPlayer
 							src={communication.callRecordingUrl}
+							type="audio"
 							title="Call Recording"
 						/>
 					</div>

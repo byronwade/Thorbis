@@ -1,7 +1,5 @@
 "use server";
 
-import { sendEmail } from "@/lib/email/email-sender";
-import { EmailTemplate } from "@/lib/email/email-types";
 import { z } from "zod";
 import { Resend } from "resend";
 import { authRateLimiter, checkRateLimit } from "@/lib/security/rate-limit";
@@ -175,45 +173,97 @@ export async function joinWaitlist(
 			console.error("Error adding contact to Resend audience:", resendError);
 		}
 
-		// Send subscription confirmation email (only for new subscriptions)
+		// Send subscription confirmation email via Resend (only for new subscriptions)
 		if (isNewSubscriber) {
 			try {
-				await sendEmail({
-					to: validated.email,
-					subject: "Welcome to the Thorbis Waitlist! 🎉",
-					template: WaitlistSubscriptionEmail({
-						name: validated.name,
-						previewText: "Welcome to the Thorbis waitlist!",
-					}),
-					templateType: EmailTemplate.WAITLIST_SUBSCRIPTION,
-					tags: [{ name: "category", value: "waitlist" }],
-				});
+				if (!env.resend.apiKey) {
+					console.warn(
+						"[Waitlist] RESEND_API_KEY not set, skipping welcome email",
+					);
+				} else {
+					const { render } = await import("@react-email/components");
+					const html = await render(
+						WaitlistSubscriptionEmail({
+							name: validated.name,
+							previewText: "Welcome to the Thorbis waitlist!",
+						}),
+					);
+
+					const fromEmail =
+						env.resend.fromEmail || "notifications@thorbis.com";
+					const fromName =
+						env.resend.fromName || "Thorbis";
+
+					const { data, error } = await resend.emails.send({
+						from: `${fromName} <${fromEmail}>`,
+						to: validated.email,
+						subject: "Welcome to the Thorbis Waitlist! 🎉",
+						html,
+						tags: [{ name: "category", value: "waitlist" }],
+					});
+
+					if (error) {
+						console.error(
+							"[Waitlist] Failed to send welcome email via Resend:",
+							error,
+						);
+					} else {
+						console.log(
+							`[Waitlist] Welcome email sent via Resend: ${data?.id}`,
+						);
+					}
+				}
 			} catch (emailError) {
 				// Log email error but don't fail the signup
 				console.error(
-					"Failed to send waitlist confirmation email:",
+					"[Waitlist] Error sending welcome email:",
 					emailError,
 				);
 			}
 		}
 
-		// Send admin notification email
+		// Send admin notification email via Resend
 		try {
-			await sendEmail({
-				to: "bcw1995@gmail.com",
-				subject: `New Waitlist Signup: ${validated.name}`,
-				template: WaitlistAdminNotificationEmail({
-					userName: validated.name,
-					userEmail: validated.email,
-					previewText: "New waitlist signup",
-				}),
-				templateType: EmailTemplate.WAITLIST_ADMIN_NOTIFICATION,
-				tags: [{ name: "category", value: "waitlist-admin" }],
-			});
+			if (!env.resend.apiKey) {
+				console.warn(
+					"[Waitlist] RESEND_API_KEY not set, skipping admin notification",
+				);
+			} else {
+				const { render } = await import("@react-email/components");
+				const html = await render(
+					WaitlistAdminNotificationEmail({
+						userName: validated.name,
+						userEmail: validated.email,
+						previewText: "New waitlist signup",
+					}),
+				);
+
+				const fromEmail = env.resend.fromEmail || "notifications@thorbis.com";
+				const fromName = env.resend.fromName || "Thorbis";
+
+				const { data, error } = await resend.emails.send({
+					from: `${fromName} <${fromEmail}>`,
+					to: "bcw1995@gmail.com",
+					subject: `New Waitlist Signup: ${validated.name}`,
+					html,
+					tags: [{ name: "category", value: "waitlist-admin" }],
+				});
+
+				if (error) {
+					console.error(
+						"[Waitlist] Failed to send admin notification via Resend:",
+						error,
+					);
+				} else {
+					console.log(
+						`[Waitlist] Admin notification sent via Resend: ${data?.id}`,
+					);
+				}
+			}
 		} catch (adminEmailError) {
 			// Log admin email error but don't fail the signup
 			console.error(
-				"Failed to send admin notification email:",
+				"[Waitlist] Error sending admin notification:",
 				adminEmailError,
 			);
 		}

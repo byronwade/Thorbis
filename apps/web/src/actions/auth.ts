@@ -1,37 +1,37 @@
 "use server";
 
-import { Buffer } from "node:buffer";
-import { extname } from "node:path";
 import { AuthApiError, AuthUnknownError } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { Buffer } from "node:buffer";
+import { extname } from "node:path";
 import { z } from "zod";
 // import { checkBotId } from "botid/server";
 import { clearActiveCompany } from "@/lib/auth/company-context";
 import {
-	createEmailVerificationToken,
-	verifyAndConsumeToken,
+    createEmailVerificationToken,
+    verifyAndConsumeToken,
 } from "@/lib/auth/tokens";
 import { sendgridConfig } from "@/lib/email/sendgrid-client";
 import { clearCSRFToken } from "@/lib/security/csrf";
 import {
-	authRateLimiter,
-	checkRateLimit,
-	passwordResetRateLimiter,
-	RateLimitError,
+    authRateLimiter,
+    checkRateLimit,
+    passwordResetRateLimiter,
+    RateLimitError,
 } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
-	createServiceSupabaseClient,
-	type ServiceSupabaseClient,
+    createServiceSupabaseClient,
+    type ServiceSupabaseClient,
 } from "@/lib/supabase/service-client";
 import {
-	sendEmailVerification,
-	sendPasswordChanged,
-	sendWelcomeEmail,
+    sendEmailVerification,
+    sendPasswordChanged,
+    sendWelcomeEmail,
 } from "./emails";
 
-import { VALIDATION_LIMITS, TIME_DEFAULTS, COUNTRY_DEFAULTS, FILE_SIZE_LIMITS } from "@stratos/shared/constants";
+import { COUNTRY_DEFAULTS, FILE_SIZE_LIMITS, TIME_DEFAULTS, VALIDATION_LIMITS } from "@stratos/shared/constants";
 
 // Use centralized constants
 const NAME_MIN_LENGTH = VALIDATION_LIMITS.name.min;
@@ -59,7 +59,7 @@ const MAX_AVATAR_FILE_SIZE = FILE_SIZE_LIMITS.avatar;
  */
 
 // Import centralized validation schemas
-import { signUpSchema, signInSchema, forgotPasswordSchema, resetPasswordSchema } from "@/lib/validations/form-schemas";
+import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from "@/lib/validations/form-schemas";
 
 const AVATAR_STORAGE_BUCKET = "avatars";
 const SUPABASE_RATE_LIMIT_MAX_RETRIES = 3;
@@ -886,6 +886,7 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		const supabase = await createClient();
 
 		if (!supabase) {
+			console.error("[AUTH] Failed to create Supabase client");
 			return {
 				success: false,
 				error:
@@ -894,27 +895,68 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		}
 
 		// Sign in with Supabase Auth
-		const { data, error: signInError } = await withSupabaseRateLimitRetry(() =>
-			supabase.auth.signInWithPassword({
-				email: validatedData.email,
-				password: validatedData.password,
-			}),
-		);
+		let signInResult;
+		try {
+			signInResult = await withSupabaseRateLimitRetry(() =>
+				supabase.auth.signInWithPassword({
+					email: validatedData.email,
+					password: validatedData.password,
+				}),
+			);
+		} catch (networkError) {
+			console.error("Supabase connection error:", networkError);
+			
+			// Check for JSON parse error (indicates HTML response from paused project)
+			if (networkError instanceof SyntaxError && networkError.message.includes("Unexpected token")) {
+				return {
+					success: false,
+					error: "Authentication service is currently unavailable. Please try again later.",
+				};
+			}
+
+			// Check for fetch failures
+			if (networkError instanceof TypeError && networkError.message.includes("fetch")) {
+				return {
+					success: false,
+					error: "Unable to connect to the server. Please check your internet connection.",
+				};
+			}
+
+			throw networkError;
+		}
+
+		const { data, error: signInError } = signInResult;
 
 		if (signInError) {
+			console.error("[AUTH] Sign in error:", signInError.message);
+			// Provide user-friendly error messages
+			let userMessage = signInError.message;
+			
+			if (signInError.message.includes("Invalid login credentials")) {
+				userMessage =
+					"Invalid email or password. Please check your credentials and try again.";
+			} else if (signInError.message.includes("Email not confirmed")) {
+				userMessage =
+					"Please verify your email address before signing in. Check your inbox for a verification link.";
+			} else if (signInError.message.includes("Too many requests")) {
+				userMessage =
+					"Too many login attempts. Please wait a few minutes before trying again.";
+			}
 			return {
 				success: false,
-				error: signInError.message,
+				error: userMessage,
 			};
 		}
 
 		if (!data.session) {
+			console.error("[AUTH] No session created");
 			return {
 				success: false,
 				error: "Failed to create session. Please try again.",
 			};
 		}
 
+		console.log("[AUTH] Sign in successful, redirecting to dashboard");
 		// Revalidate and redirect to dashboard
 		revalidatePath("/", "layout");
 		redirect("/dashboard");
@@ -942,9 +984,19 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		) {
 			// Log non-redirect errors for debugging
 			console.error("Sign in error:", caughtError);
+			
+			let userMessage = "An unexpected error occurred. Please try again.";
+			
+			// Catch-all for the "Unexpected token" error if it propagates here
+			if (caughtError.message.includes("Unexpected token") || caughtError.message.includes("JSON")) {
+				userMessage = "Authentication service is currently unavailable. Please try again later.";
+			} else if (caughtError.message) {
+				userMessage = caughtError.message;
+			}
+			
 			return {
 				success: false,
-				error: caughtError.message,
+				error: userMessage,
 			};
 		}
 
@@ -1039,19 +1091,44 @@ export async function signInWithOAuth(
 			throw new Error("NEXT_PUBLIC_SITE_URL is not configured");
 		}
 
-		const { data, error: oauthError } = await withSupabaseRateLimitRetry(() =>
-			supabase.auth.signInWithOAuth({
-				provider,
-				options: {
-					redirectTo: `${siteUrl}/auth/callback`,
-				},
-			}),
-		);
+		let oauthResult;
+		try {
+			oauthResult = await withSupabaseRateLimitRetry(() =>
+				supabase.auth.signInWithOAuth({
+					provider,
+					options: {
+						redirectTo: `${siteUrl}/auth/callback`,
+					},
+				}),
+			);
+		} catch (oauthError) {
+			// Handle JSON parse errors (HTML response instead of JSON)
+			if (
+				oauthError instanceof Error &&
+				(oauthError.message.includes("Unexpected token") ||
+					oauthError.message.includes("<!DOCTYPE") ||
+					oauthError.message.includes("is not valid JSON"))
+			) {
+				console.error(
+					"[AUTH] OAuth: Supabase returned HTML instead of JSON",
+					oauthError,
+				);
+				return {
+					success: false,
+					error:
+						"Authentication service is temporarily unavailable. Please try again in a moment.",
+				};
+			}
+			throw oauthError;
+		}
+
+		const { data, error: oauthError } = oauthResult;
 
 		if (oauthError) {
+			console.error("[AUTH] OAuth error:", oauthError.message);
 			return {
 				success: false,
-				error: oauthError.message,
+				error: oauthError.message || "Failed to initiate OAuth login.",
 			};
 		}
 
@@ -1068,9 +1145,12 @@ export async function signInWithOAuth(
 			caughtError instanceof Error &&
 			caughtError.message !== "NEXT_REDIRECT"
 		) {
+			console.error("[AUTH] OAuth unexpected error:", caughtError);
 			return {
 				success: false,
-				error: caughtError.message,
+				error:
+					caughtError.message ||
+					"An unexpected error occurred during OAuth login. Please try again.",
 			};
 		}
 

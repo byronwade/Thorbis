@@ -114,7 +114,7 @@ export function TransferDialog({
 			);
 			setTeamMembers(filtered);
 		} catch (error) {
-			console.error("Failed to fetch team members:", error);
+			logError(error, "FetchTeamMembers");
 			toast.error("Failed to load team members");
 		} finally {
 			setLoading(false);
@@ -152,13 +152,6 @@ export function TransferDialog({
 
 		startTransition(async () => {
 			try {
-				// TODO: Implement actual transfer action
-				// For now, we'll just show a success message
-				// In a real implementation, this would:
-				// 1. Update the communication's assigned_to field
-				// 2. Create a transfer activity log
-				// 3. Optionally notify the receiving team member
-
 				const { transferCommunicationAction } = await import(
 					"@/actions/communications"
 				).catch(() => ({ transferCommunicationAction: null }));
@@ -191,7 +184,7 @@ export function TransferDialog({
 					resetForm();
 				}
 			} catch (error) {
-				console.error("Failed to transfer:", error);
+				logError(error, "TransferCommunication");
 				toast.error("Failed to transfer communication");
 			}
 		});

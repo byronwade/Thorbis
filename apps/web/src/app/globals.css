@@ -1265,15 +1265,6 @@
 	}
 }
 
-/* Floating card animation */
-@keyframes float-card {
-	0%, 100% {
-		transform: perspective(1000px) rotateY(var(--rotateY, 15deg)) rotateX(var(--rotateX, 5deg)) translateY(0px);
-	}
-	50% {
-		transform: perspective(1000px) rotateY(var(--rotateY, 15deg)) rotateX(var(--rotateX, 5deg)) translateY(-10px);
-	}
-}
 
 /* Shimmer gradient effect for text */
 @keyframes shimmer {

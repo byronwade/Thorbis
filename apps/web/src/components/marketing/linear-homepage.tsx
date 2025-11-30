@@ -10,6 +10,10 @@
  * - Service business focused content
  */
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { LinearMediaPlayer } from "@/registry/default/blocks/linear-player/components/media-player";
 import type { LucideIcon } from "lucide-react";
 import {
 	ArrowRight,
@@ -30,9 +34,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { AnimatedGradientText, HeroBackground } from "./hero-background";
 
 const keyFeatures = [
@@ -240,15 +241,11 @@ export function LinearHomepage() {
 						</div>
 					</div>
 
-					{/* Hero Product Image */}
+					{/* Hero Product Video */}
 					<div className="hero-text-animate animate-delay-600 relative pb-20">
-						<div className="relative aspect-video rounded-xl shadow-2xl">
-							<Image
-								alt="Thorbis scheduling and dispatch dashboard"
-								className="object-contain rounded-xl"
-								fill
-								priority
-								src="/dispatch-timeline.png"
+						<div className="relative aspect-video rounded-xl shadow-2xl overflow-hidden">
+							<LinearMediaPlayer
+								className="w-full h-full"
 							/>
 						</div>
 					</div>

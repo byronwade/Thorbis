@@ -323,7 +323,7 @@ export async function fetchScheduleData({
 		[scheduleResult, teamMembers, unscheduledResult] = await withRetry(
 			() =>
 				Promise.all([
-					scheduleQuery,
+					scheduleQuery.then((result) => result),
 					fetchTeamMembersWithUsers(supabase, companyId),
 					fetchUnscheduledJobs(supabase, companyId, {
 						limit: unscheduledLimit,
@@ -354,13 +354,20 @@ export async function fetchScheduleData({
 			.filter((id): id is string => Boolean(id)),
 	);
 
-	const unscheduledJobRows = unscheduledResult.rows.filter(
+	// Null safety: Provide safe defaults if unscheduledResult is undefined
+	const unscheduledResultSafe = unscheduledResult ?? {
+		rows: [],
+		totalCount: 0,
+		hasMore: false,
+	};
+
+	const unscheduledJobRows = unscheduledResultSafe.rows.filter(
 		(row) => !scheduledJobIds.has(row.id),
 	);
 	const unscheduledMeta = {
-		totalCount: unscheduledResult.totalCount,
-		hasMore: unscheduledResult.hasMore,
-		fetchedCount: unscheduledResult.rows.length,
+		totalCount: unscheduledResultSafe.totalCount,
+		hasMore: unscheduledResultSafe.hasMore,
+		fetchedCount: unscheduledResultSafe.rows.length,
 	};
 
 	let propertyMap;
@@ -379,7 +386,9 @@ export async function fetchScheduleData({
 		propertyMap = new Map<string, ScheduleProperty>();
 	}
 
-	const technicianLookups = mapTeamMembersToTechnicians(teamMembers);
+	// Null safety: Provide empty array fallback if teamMembers is undefined
+	const teamMembersSafe = teamMembers ?? [];
+	const technicianLookups = mapTeamMembersToTechnicians(teamMembersSafe);
 
 	const normalizedSchedules = scheduleRows as unknown as ScheduleRecord[];
 

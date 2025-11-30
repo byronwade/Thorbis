@@ -55,6 +55,7 @@ export interface Communication {
 	internalNotesUpdatedBy?: string;
 	contentType?: string;
 	tags?: string[] | null; // Tags array for starred, spam, etc.
+	channel?: string | null; // Channel for team messages (e.g., "teams")
 	createdAt: string;
 	// Call-specific fields
 	callDuration?: number | null;
@@ -785,81 +786,102 @@ export const getCompanyCommunicationCounts = cache(
 	): Promise<CommunicationCounts> => {
 		const supabase = await createServiceSupabaseClient();
 
-		// Get all active communications for the company
-		const { data: communications, error } = await supabase
-			.from("communications")
-			.select("type, status, direction, category")
-			.eq("company_id", companyId)
-			.is("deleted_at", null);
-
-		if (error) {
-			console.error("Error fetching communication counts:", error);
-			return {
-				all: 0,
-				email: 0,
-				sms: 0,
-				call: 0,
-				voicemail: 0,
-				inbox: 0,
-				sent: 0,
-				archive: 0,
-				trash: 0,
-				starred: 0,
-				personal_inbox: 0,
-				personal_sent: 0,
-				personal_drafts: 0,
-				company_support: 0,
-				company_sales: 0,
-				company_billing: 0,
-				company_general: 0,
-				sms_inbox: 0,
-				sms_sent: 0,
-				sms_archive: 0,
-				assignedToMe: 0,
-			};
-		}
-
-		// Initialize counts
-		const counts: CommunicationCounts = {
-			all: 0,
-			email: 0,
-			sms: 0,
-			call: 0,
-			voicemail: 0,
-			inbox: 0,
-			sent: 0,
-			archive: 0,
-			trash: 0,
-			starred: 0,
-			personal_inbox: 0,
-			personal_sent: 0,
-			personal_drafts: 0,
-			company_support: 0,
-			company_sales: 0,
-			company_billing: 0,
-			company_general: 0,
-			sms_inbox: 0,
-			sms_sent: 0,
-			sms_archive: 0,
-			assignedToMe: 0,
+		// Helper to get count for a specific filter
+		const getCount = async (
+			filter: (query: any) => any,
+		): Promise<number> => {
+			let query = supabase
+				.from("communications")
+				.select("*", { count: "exact", head: true })
+				.eq("company_id", companyId)
+				.is("deleted_at", null);
+			
+			query = filter(query);
+			
+			const { count, error } = await query;
+			if (error) {
+				console.error("Error fetching count:", error);
+				return 0;
+			}
+			return count || 0;
 		};
 
-		if (!communications) return counts;
+		// Execute all count queries in parallel
+		const [
+			all,
+			email,
+			sms,
+			call,
+			voicemail,
+			inbox,
+			sent,
+			archive,
+			trash,
+			starred,
+			personal_inbox,
+			personal_sent,
+			personal_drafts,
+			company_support,
+			company_sales,
+			company_billing,
+			company_general,
+			sms_inbox,
+			sms_sent,
+			sms_archive,
+			assignedToMe
+		] = await Promise.all([
+			// All
+			getCount((q) => q),
+			// Types
+			getCount((q) => q.eq("type", "email")),
+			getCount((q) => q.eq("type", "sms")),
+			getCount((q) => q.eq("type", "call")),
+			getCount((q) => q.eq("type", "voicemail")),
+			// Email Folders (approximate based on status/direction)
+			getCount((q) => q.eq("type", "email").eq("direction", "inbound").neq("status", "archived").neq("status", "trash")), // inbox
+			getCount((q) => q.eq("type", "email").eq("direction", "outbound").neq("status", "draft")), // sent
+			getCount((q) => q.eq("type", "email").eq("status", "archived")), // archive
+			getCount((q) => q.eq("type", "email").eq("status", "trash")), // trash
+			getCount((q) => q.contains("tags", ["starred"])), // starred
+			// Personal (requires teamMemberId)
+			teamMemberId ? getCount((q) => q.eq("type", "email").eq("mailbox_owner_id", teamMemberId).eq("direction", "inbound")) : Promise.resolve(0),
+			teamMemberId ? getCount((q) => q.eq("type", "email").eq("mailbox_owner_id", teamMemberId).eq("direction", "outbound")) : Promise.resolve(0),
+			teamMemberId ? getCount((q) => q.eq("type", "email").eq("mailbox_owner_id", teamMemberId).eq("status", "draft")) : Promise.resolve(0),
+			// Company Categories
+			getCount((q) => q.eq("category", "support")),
+			getCount((q) => q.eq("category", "sales")),
+			getCount((q) => q.eq("category", "billing")),
+			getCount((q) => q.eq("category", "general")),
+			// SMS Folders
+			getCount((q) => q.eq("type", "sms").eq("direction", "inbound")),
+			getCount((q) => q.eq("type", "sms").eq("direction", "outbound")),
+			getCount((q) => q.eq("type", "sms").eq("status", "archived")),
+			// Assigned To Me
+			teamMemberId ? getCount((q) => q.eq("assigned_to", teamMemberId)) : Promise.resolve(0),
+		]);
 
-		// Aggregate counts
-		communications.forEach((comm) => {
-			// Type counts
-		if (comm.type === "email") counts.email = (counts.email || 0) + 1;
-		if (comm.type === "sms") counts.sms = (counts.sms || 0) + 1;
-		if (comm.type === "call") counts.call = (counts.call || 0) + 1;
-		if (comm.type === "voicemail")
-			counts.voicemail = (counts.voicemail || 0) + 1;
-		counts.all = (counts.all || 0) + 1;
-
-		// TODO: Add assigned_to and read_at columns to database schema
-		// Then implement assignedToMe counting logic
-	});
-
-		return counts;
+		return {
+			all,
+			email,
+			sms,
+			call,
+			voicemail,
+			inbox,
+			sent,
+			archive,
+			trash,
+			starred,
+			personal_inbox,
+			personal_sent,
+			personal_drafts,
+			company_support,
+			company_sales,
+			company_billing,
+			company_general,
+			sms_inbox,
+			sms_sent,
+			sms_archive,
+			assignedToMe,
+		};
 	},
 );

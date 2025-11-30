@@ -2,27 +2,23 @@
 
 import confetti from "canvas-confetti";
 import {
-	CheckCircle2,
 	Loader2,
-	Mail,
 	PartyPopper,
 	Share2,
 	Sparkles,
+	ArrowRight,
+	UserPlus,
+	Check,
+	Copy,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { joinWaitlist } from "@/actions/waitlist";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export function WaitlistForm() {
 	const [email, setEmail] = useState("");
@@ -32,11 +28,15 @@ export function WaitlistForm() {
 	const [success, setSuccess] = useState(false);
 	const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
 	const [shareUrl, setShareUrl] = useState("");
+	const [referralUrl, setReferralUrl] = useState("");
+	const [copied, setCopied] = useState(false);
+	const [userEmail, setUserEmail] = useState("");
 
 	// Get the current page URL for sharing (client-side only)
 	useEffect(() => {
 		if (typeof window !== "undefined") {
-			const waitlistUrl = window.location.href;
+			const baseUrl = window.location.origin;
+			const waitlistUrl = `${baseUrl}/waitlist`;
 			const shareText =
 				"Join the Thorbis waitlist for early access to field service management! 🚀";
 			setShareUrl(
@@ -44,7 +44,8 @@ export function WaitlistForm() {
 			);
 		} else {
 			// Fallback for SSR
-			const waitlistUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com"}/waitlist`;
+			const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thorbis.com";
+			const waitlistUrl = `${baseUrl}/waitlist`;
 			const shareText =
 				"Join the Thorbis waitlist for early access to field service management! 🚀";
 			setShareUrl(
@@ -52,6 +53,20 @@ export function WaitlistForm() {
 			);
 		}
 	}, []);
+
+	// Generate referral URL when user email is set (after successful signup)
+	useEffect(() => {
+		if (userEmail && typeof window !== "undefined") {
+			const baseUrl = window.location.origin;
+			// Create referral URL with encoded email as ref parameter
+			// Use btoa for browser-compatible base64 encoding
+			const refCode = btoa(userEmail.toLowerCase().trim())
+				.replace(/\+/g, "-")
+				.replace(/\//g, "_")
+				.replace(/=/g, "");
+			setReferralUrl(`${baseUrl}/waitlist?ref=${refCode}`);
+		}
+	}, [userEmail]);
 
 	const triggerConfetti = () => {
 		// Fire multiple confetti bursts for celebration
@@ -145,6 +160,9 @@ export function WaitlistForm() {
 				result.message?.toLowerCase().includes("already") || false;
 			setIsAlreadySubscribed(alreadySubscribed);
 
+			// Store email for referral link generation
+			setUserEmail(email);
+
 			// Reset form fields - reset state first (form might unmount after setSuccess)
 			setEmail("");
 			setName("");
@@ -163,41 +181,103 @@ export function WaitlistForm() {
 		}
 	};
 
+	const copyReferralLink = async () => {
+		if (!referralUrl) return;
+
+		try {
+			await navigator.clipboard.writeText(referralUrl);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		} catch (err) {
+			console.error("Failed to copy:", err);
+		}
+	};
+
 	if (success) {
 		return (
-			<Card className="w-full max-w-xl mx-auto border-2 border-primary/20 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500">
-				<CardHeader className="text-center space-y-3 pb-6">
-					<div className="mx-auto mb-3 flex size-24 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10">
-						<PartyPopper className="size-12 text-primary" />
-					</div>
-					<CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+			<div className="w-full space-y-6 animate-in fade-in-50 zoom-in-95 duration-500">
+				{/* Success Icon */}
+				<div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 animate-in zoom-in-50 duration-500">
+					<PartyPopper className="size-10 text-primary" />
+				</div>
+
+				{/* Success Title */}
+				<div className="space-y-3 text-center">
+					<h2
+						className="text-3xl font-bold bg-gradient-to-r from-primary via-blue-500 to-primary bg-[length:200%_auto] bg-clip-text text-transparent"
+						style={{
+							animation: "shimmer 3s linear infinite",
+						}}
+					>
 						{isAlreadySubscribed
 							? "You're already on the list! 🎉"
-							: "You're on the list! 🎉"}
-					</CardTitle>
-					<CardDescription className="text-base">
+							: "Welcome to the waitlist! 🎉"}
+					</h2>
+					<p className="text-base text-muted-foreground max-w-md mx-auto">
 						{isAlreadySubscribed ? (
 							<>
-								You're already subscribed to the waitlist! We'll notify you when
-								we launch.
+								You're already subscribed! We'll notify you when we launch with
+								exclusive early access.
 							</>
 						) : (
 							<>
-								We'll notify you when we launch. Check your email for a
-								confirmation message.
+								We've sent a confirmation email. Check your inbox! We'll notify
+								you as soon as Thorbis launches with priority access.
 							</>
 						)}
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="space-y-4">
-					{/* Social Links - Horizontal */}
-					<div className="flex gap-3">
-						<Button asChild variant="outline" className="flex-1">
+					</p>
+				</div>
+
+				{/* Refer a Friend Section */}
+				<div className="space-y-4 rounded-lg border border-border/50 bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+					<div className="flex items-start gap-3">
+						<div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/20">
+							<UserPlus className="size-5 text-primary" />
+						</div>
+						<div className="flex-1 space-y-2">
+							<h3 className="font-semibold leading-none">
+								Refer a Friend
+							</h3>
+							<p className="text-sm leading-relaxed text-muted-foreground">
+								Share Thorbis with your network. When they join the waitlist, you both move up in priority!
+							</p>
+						</div>
+					</div>
+
+					{/* Referral Link */}
+					<div className="flex gap-2">
+						<div className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm font-mono text-muted-foreground">
+							{referralUrl || "Generating link..."}
+						</div>
+						<Button
+							onClick={copyReferralLink}
+							variant="outline"
+							size="sm"
+							className="shrink-0"
+							disabled={!referralUrl || copied}
+						>
+							{copied ? (
+								<>
+									<Check className="mr-2 size-4" />
+									Copied!
+								</>
+							) : (
+								<>
+									<Copy className="mr-2 size-4" />
+									Copy
+								</>
+							)}
+						</Button>
+					</div>
+
+					{/* Social Share Buttons */}
+					<div className="flex gap-3 pt-2">
+						<Button asChild variant="outline" className="flex-1" size="sm">
 							<Link
-								href="https://twitter.com/thorbisllc"
+								href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("Join me on the Thorbis waitlist for early access to field service management! 🚀")}&url=${encodeURIComponent(referralUrl || "")}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								aria-label="Follow @thorbisllc on Twitter"
+								aria-label="Share referral link on Twitter"
 							>
 								<svg
 									className="mr-2 size-4"
@@ -207,163 +287,135 @@ export function WaitlistForm() {
 								>
 									<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
 								</svg>
-								Follow
+								Share on Twitter
 							</Link>
 						</Button>
-						<Button asChild variant="outline" className="flex-1">
+						<Button asChild variant="outline" className="flex-1" size="sm">
 							<Link
-								href={shareUrl || "#"}
+								href="https://twitter.com/thorbisllc"
 								target="_blank"
 								rel="noopener noreferrer"
-								aria-label="Share waitlist on Twitter"
+								aria-label="Follow @thorbisllc on Twitter"
 							>
 								<Share2 className="mr-2 size-4" />
-								Share
+								Follow Us
 							</Link>
 						</Button>
 					</div>
+				</div>
 
-					<Button
-						className="w-full"
-						onClick={() => {
-							setSuccess(false);
-							setIsAlreadySubscribed(false);
-							setError(null);
-							setEmail("");
-							setName("");
-						}}
-						variant="outline"
-					>
-						{isAlreadySubscribed
-							? "Join with Different Email"
-							: "Join Another Email"}
-					</Button>
-				</CardContent>
-			</Card>
+				<Button
+					className="w-full"
+					onClick={() => {
+						setSuccess(false);
+						setIsAlreadySubscribed(false);
+						setError(null);
+						setEmail("");
+						setName("");
+						setUserEmail("");
+						setReferralUrl("");
+						setCopied(false);
+					}}
+					variant="ghost"
+				>
+					{isAlreadySubscribed
+						? "Join with Different Email"
+						: "Join Another Email"}
+				</Button>
+			</div>
 		);
 	}
 
 	return (
-		<Card className="w-full max-w-md mx-auto border-2 border-border/50 shadow-xl backdrop-blur-sm bg-card/95">
-			<CardHeader className="text-center space-y-2 pb-4">
-				<div className="mx-auto mb-2 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent">
-					<Sparkles className="size-8 text-primary animate-pulse" />
-				</div>
-				<CardTitle className="text-2xl font-bold tracking-tight">
-					Join the Waitlist
-				</CardTitle>
-				<CardDescription className="text-sm">
-					Be among the first to access Thorbis. We'll notify you when we launch.
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<form
-					className="space-y-4"
-					onSubmit={handleSubmit}
-					onReset={(e) => {
-						// Prevent form reset from clearing success state
-						if (success) {
-							e.preventDefault();
-						}
-					}}
-				>
-					{error && (
-						<Alert variant="destructive" className="animate-in fade-in-50">
-							<AlertDescription className="text-sm">{error}</AlertDescription>
-						</Alert>
-					)}
+		<div className="w-full space-y-6">
+			{/* Form Header */}
+			<div className="space-y-2">
+				<h2 className="text-2xl font-bold tracking-tight">
+					Reserve Your Spot
+				</h2>
+				<p className="text-sm text-muted-foreground">
+					Get notified when we launch. Early access members get exclusive pricing.
+				</p>
+			</div>
 
-					<div className="space-y-2">
-						<Label htmlFor="name" className="text-sm font-medium">
-							Name
-						</Label>
-						<Input
-							id="name"
-							name="name"
-							type="text"
-							placeholder="Your name"
-							required
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-							disabled={isLoading}
-							className="h-10"
-						/>
-					</div>
+			{/* Form */}
+			<form
+				className="space-y-5"
+				onSubmit={handleSubmit}
+				onReset={(e) => {
+					// Prevent form reset from clearing success state
+					if (success) {
+						e.preventDefault();
+					}
+				}}
+			>
+				{error && (
+					<Alert variant="destructive" className="animate-in fade-in-50">
+						<AlertDescription className="text-sm">{error}</AlertDescription>
+					</Alert>
+				)}
 
-					<div className="space-y-2">
-						<Label htmlFor="email" className="text-sm font-medium">
-							Email
-						</Label>
-						<Input
-							id="email"
-							name="email"
-							type="email"
-							placeholder="you@example.com"
-							required
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							disabled={isLoading}
-							className="h-10"
-						/>
-					</div>
-
-					<Button
-						className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90 shadow-lg"
+				<div className="space-y-2">
+					<Label htmlFor="name" className="text-sm font-medium">
+						Full Name
+					</Label>
+					<Input
+						id="name"
+						name="name"
+						type="text"
+						placeholder="John Doe"
+						required
+						value={name}
+						onChange={(e) => setName(e.target.value)}
 						disabled={isLoading}
-						type="submit"
-					>
-						{isLoading ? (
-							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								Joining...
-							</>
-						) : (
-							<>
-								<Mail className="mr-2 h-4 w-4" />
-								Join Waitlist
-							</>
-						)}
-					</Button>
-
-					<p className="text-muted-foreground text-center text-xs pt-1">
-						By joining, you agree to receive updates. You can unsubscribe at any
-						time.
-					</p>
-				</form>
-
-				{/* Social Links - Horizontal and Compact */}
-				<div className="mt-4 flex gap-2 border-t border-border/50 pt-4">
-					<Button asChild variant="outline" className="flex-1" size="sm">
-						<Link
-							href="https://twitter.com/thorbisllc"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Follow @thorbisllc on Twitter"
-						>
-							<svg
-								className="mr-1.5 size-3.5"
-								fill="currentColor"
-								viewBox="0 0 24 24"
-								aria-hidden="true"
-							>
-								<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-							</svg>
-							Follow
-						</Link>
-					</Button>
-					<Button asChild variant="outline" className="flex-1" size="sm">
-						<Link
-							href={shareUrl || "#"}
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Share waitlist on Twitter"
-						>
-							<Share2 className="mr-1.5 size-3.5" />
-							Share
-						</Link>
-					</Button>
+						className="h-12 text-base"
+					/>
 				</div>
-			</CardContent>
-		</Card>
+
+				<div className="space-y-2">
+					<Label htmlFor="email" className="text-sm font-medium">
+						Work Email
+					</Label>
+					<Input
+						id="email"
+						name="email"
+						type="email"
+						placeholder="john@yourcompany.com"
+						required
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						disabled={isLoading}
+						className="h-12 text-base"
+					/>
+				</div>
+
+				<Button
+					className={cn(
+						"w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-500/90 shadow-lg transition-all duration-200",
+						!isLoading && "hover:shadow-xl hover:scale-[1.02]"
+					)}
+					disabled={isLoading || !email || !name}
+					type="submit"
+				>
+					{isLoading ? (
+						<>
+							<Loader2 className="mr-2 h-5 w-5 animate-spin" />
+							Joining Waitlist...
+						</>
+					) : (
+						<>
+							<Sparkles className="mr-2 h-5 w-5" />
+							Join the Waitlist
+							<ArrowRight className="ml-2 h-4 w-4" />
+						</>
+					)}
+				</Button>
+
+				<p className="text-muted-foreground text-center text-xs leading-relaxed pt-2">
+					By joining, you agree to receive product updates. You can
+					unsubscribe at any time. We respect your privacy.
+				</p>
+			</form>
+		</div>
 	);
 }

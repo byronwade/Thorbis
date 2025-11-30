@@ -103,7 +103,7 @@ export function EmailSidebar(props: ComponentProps<typeof Sidebar>) {
 				);
 			}
 		} catch (error) {
-			console.error("Failed to fetch email folder data:", error);
+			logError(error, "FetchEmailFolderData");
 		}
 	}, []);
 

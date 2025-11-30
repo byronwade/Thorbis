@@ -35,14 +35,34 @@ async function getSchedulingSupabaseClient() {
 		console.warn(
 			"SUPABASE_SERVICE_ROLE_KEY not configured – falling back to authenticated client",
 		);
-		return await createClient();
+		try {
+			return await createClient();
+		} catch (clientError) {
+			console.error(
+				"Failed to create authenticated Supabase client:",
+				clientError instanceof Error ? clientError.message : String(clientError),
+			);
+			throw new Error(
+				"Unable to initialize database connection. Please refresh the page.",
+			);
+		}
 	} catch (error) {
 		// Service client creation failed - fall back to auth client
 		console.warn(
 			"Supabase service role client failed to initialize – falling back to authenticated client:",
 			error instanceof Error ? error.message : String(error),
 		);
-		return await createClient();
+		try {
+			return await createClient();
+		} catch (clientError) {
+			console.error(
+				"Failed to create authenticated Supabase client after service client failure:",
+				clientError instanceof Error ? clientError.message : String(clientError),
+			);
+			throw new Error(
+				"Unable to initialize database connection. Please refresh the page.",
+			);
+		}
 	}
 }
 
@@ -72,7 +92,7 @@ async function ScheduleData() {
 		};
 
 		// Fetch schedule data
-		const { jobs, technicians } = await fetchScheduleData({
+		const { jobs, technicians, unassignedMeta } = await fetchScheduleData({
 			supabase,
 			companyId,
 			range: defaultRange,
@@ -84,6 +104,7 @@ async function ScheduleData() {
 			technicians,
 			range: defaultRange,
 			lastSync: new Date(),
+			unassignedMeta,
 		});
 	} catch (error) {
 		// Log the full error details to help debug

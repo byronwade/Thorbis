@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
 import { fetchScheduleData } from "@/lib/schedule-data";
 import { filterJobs, sortJobsByStartTime } from "@/lib/schedule-utils";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useViewStore } from "@/lib/stores/view-store";
 import { createClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export function useSchedule() {
 	// Use granular selectors to avoid closure issues
@@ -71,7 +71,7 @@ export function useSchedule() {
 	// Calculate visible time range once
 	const visibleTimeRange = useMemo(
 		() => useViewStore.getState().getVisibleTimeRange(),
-		[],
+		[_currentDate, _zoom],
 	);
 
 	const rangeStart = visibleTimeRange.start.getTime();
@@ -142,32 +142,25 @@ export function useSchedule() {
 						.select("company_id")
 						.eq("user_id", user.id)
 						.eq("status", "active")
-						.order("joined_at", { ascending: false, nullsFirst: false })
-						.limit(1)
-						.maybeSingle();
+						.order("created_at", { ascending: false, nullsFirst: false })
+						.maybeSingle(); // maybeSingle() already limits to 1 result
 
 					if (membershipError) {
 						console.warn("Company membership lookup failed; falling back to empty schedule", membershipError.message);
-						return {
-							jobs: [],
-							technicians: [],
-							unassignedMeta: {
-								totalCount: 0,
-								hasMore: false,
-							},
-						};
+						if (isMounted) {
+							setLoading(false);
+							setError("Unable to load schedule: Company membership lookup failed");
+						}
+						return;
 					}
 
 					if (!membership?.company_id) {
 						console.warn("No active company membership found; returning empty schedule");
-						return {
-							jobs: [],
-							technicians: [],
-							unassignedMeta: {
-								totalCount: 0,
-								hasMore: false,
-							},
-						};
+						if (isMounted) {
+							setLoading(false);
+							setError("Unable to load schedule: No active company membership found");
+						}
+						return;
 					}
 
 					companyId = membership.company_id;
@@ -198,20 +191,39 @@ export function useSchedule() {
 					return;
 				}
 
-				setTechnicians(convertedTechnicians);
-				setJobs(convertedJobs);
 				const fetchedRange = {
 					start: new Date(rangeStart),
 					end: new Date(rangeEnd),
 				};
 
+				// Check isMounted before each state update to prevent race conditions
+				if (!isMounted) {
+					return;
+				}
 				setTechnicians(convertedTechnicians);
+
+				if (!isMounted) {
+					return;
+				}
 				setJobs(convertedJobs);
+
 				const unassignedCount = convertedJobs.filter(
 					(job) => job.isUnassigned,
 				).length;
+
+				if (!isMounted) {
+					return;
+				}
 				setUnassignedMeta(unassignedMeta, unassignedCount);
+
+				if (!isMounted) {
+					return;
+				}
 				setLastSync(new Date());
+
+				if (!isMounted) {
+					return;
+				}
 				setLastFetchedRange(fetchedRange);
 			} catch (error) {
 				if (!isMounted) {
@@ -520,24 +532,4 @@ function mapStatus(status: string): Job["status"] {
 		default:
 			return "scheduled";
 	}
-}
-
-/**
- * Hook for schedule statistics
- */
-function useScheduleStats() {
-	const { technicians, jobs, visibleJobs } = useSchedule();
-
-	const stats = {
-		totalTechnicians: technicians.length,
-		totalJobs: jobs.length,
-		visibleJobs: visibleJobs.length,
-		scheduledJobs: jobs.filter((j) => j.status === "scheduled").length,
-		inProgressJobs: jobs.filter((j) => j.status === "in-progress").length,
-		completedJobs: jobs.filter((j) => j.status === "completed").length,
-		cancelledJobs: jobs.filter((j) => j.status === "cancelled").length,
-		urgentJobs: jobs.filter((j) => j.priority === "urgent").length,
-	};
-
-	return stats;
 }

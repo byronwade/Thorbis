@@ -51,7 +51,16 @@ const nextConfig: NextConfig = {
 			"zod",
 			"@react-email/components",
 			"xlsx",
+			"@dnd-kit/core",
+			"@dnd-kit/sortable",
+			"@tanstack/react-virtual",
+			"framer-motion",
+			"@phosphor-icons/react",
 		],
+		// Faster builds with optimized server components
+		serverComponentsExternalPackages: ["prettier"],
+		// Optimize CSS processing
+		optimizeCss: true,
 	},
 
 	// Turbopack config - required for Next.js 16 when webpack config is present
@@ -119,9 +128,16 @@ const nextConfig: NextConfig = {
 		return webpackConfig;
 	},
 
-	// Optimize build output
+	// Optimize build output - exclude heavy dependencies from tracing
 	outputFileTracingExcludes: {
-		"*": ["node_modules/@swc/core*", "node_modules/webpack"],
+		"*": [
+			"node_modules/@swc/core*",
+			"node_modules/webpack",
+			"node_modules/.cache",
+			"node_modules/.pnpm",
+			"node_modules/prettier",
+			"node_modules/@react-email",
+		],
 	},
 
 	// DISABLED: Complex headers - temporarily disabled for testing

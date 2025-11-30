@@ -22,8 +22,8 @@
  * ```
  */
 
-import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { AUTOMATION_PRICING } from "@/lib/billing/pricing";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { v4 as uuidv4 } from "uuid";
 
 // ============================================
@@ -545,7 +545,7 @@ function withAutomationTracking<T>(
 // Exports
 // ============================================
 
-default {
+export default {
 	trackAutomationExecution,
 	trackAutomationExecutionsBatch,
 	getAutomationUsage,

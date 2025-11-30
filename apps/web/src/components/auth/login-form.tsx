@@ -37,23 +37,40 @@ export function LoginForm() {
 				formData.append("redirectTo", redirectTo);
 			}
 
-			const result = await signIn(formData);
+			// Add timeout protection (30 seconds)
+			const timeoutPromise = new Promise<never>((_, reject) => {
+				setTimeout(
+					() => reject(new Error("Request timed out. Please try again.")),
+					30000,
+				);
+			});
+
+			const result = await Promise.race([signIn(formData), timeoutPromise]);
 
 			if (!result.success && result.error) {
 				setError(result.error);
 				setIsLoading(false);
 			}
 			// If successful, the server action will redirect
+			// Keep loading state active during redirect
 		} catch (caughtError) {
+			// Always reset loading state on error
+			setIsLoading(false);
+			
 			if (
 				caughtError instanceof Error &&
 				caughtError.message === "NEXT_REDIRECT"
 			) {
+				// Redirect is happening, keep loading state
+				setIsLoading(true);
 				return;
 			}
 
-			setError("An unexpected error occurred. Please try again.");
-			setIsLoading(false);
+			const errorMessage =
+				caughtError instanceof Error
+					? caughtError.message
+					: "An unexpected error occurred. Please try again.";
+			setError(errorMessage);
 		}
 	};
 
@@ -62,7 +79,18 @@ export function LoginForm() {
 		setError(null);
 
 		try {
-			const result = await signInWithOAuth(provider);
+			// Add timeout protection (10 seconds for OAuth redirect)
+			const timeoutPromise = new Promise<never>((_, reject) => {
+				setTimeout(
+					() => reject(new Error("OAuth request timed out. Please try again.")),
+					10000,
+				);
+			});
+
+			const result = await Promise.race([
+				signInWithOAuth(provider),
+				timeoutPromise,
+			]);
 
 			if (result && !result.success && result.error) {
 				// If result exists and has an error, show it
@@ -77,18 +105,18 @@ export function LoginForm() {
 				caughtError instanceof Error &&
 				caughtError.message === "NEXT_REDIRECT"
 			) {
-				return; // Let the redirect happen, keep loading state
+				// Redirect is happening, keep loading state
+				return;
 			}
 
-			if (caughtError instanceof Error) {
-				setError(
-					caughtError.message ||
-						"An unexpected error occurred. Please try again.",
-				);
-			} else {
-				setError("An unexpected error occurred. Please try again.");
-			}
+			// Always reset loading state on error (unless redirecting)
 			setIsLoading(false);
+
+			const errorMessage =
+				caughtError instanceof Error
+					? caughtError.message
+					: "An unexpected error occurred. Please try again.";
+			setError(errorMessage);
 		}
 	};
 

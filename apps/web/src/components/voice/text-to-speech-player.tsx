@@ -11,31 +11,29 @@
  */
 
 import {
-	Loader2,
-	Pause,
-	Play,
-	RefreshCw,
-	Volume2,
-	VolumeX,
+    Loader2,
+    Play,
+    RefreshCw,
+    Volume2,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
+import { MediaPlayer } from "@/components/ui/media-player";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 export interface TextToSpeechPlayerProps {
@@ -80,13 +78,8 @@ export function TextToSpeechPlayer({
 	onError,
 }: TextToSpeechPlayerProps) {
 	const [isLoading, setIsLoading] = useState(false);
-	const [isPlaying, setIsPlaying] = useState(false);
 	const [audioUrl, setAudioUrl] = useState<string | null>(null);
-	const [volume, setVolume] = useState(1);
-	const [playbackRate, setPlaybackRate] = useState(1);
 	const [error, setError] = useState<string | null>(null);
-
-	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	const synthesizeSpeech = useCallback(async () => {
 		if (!text.trim()) return;
@@ -114,12 +107,6 @@ export function TextToSpeechPlayer({
 			}
 
 			setAudioUrl(data.data.audioUrl);
-
-			// Auto-play if enabled
-			if (autoPlay && audioRef.current) {
-				audioRef.current.src = data.data.audioUrl;
-				audioRef.current.play();
-			}
 		} catch (err) {
 			const message =
 				err instanceof Error ? err.message : "Speech synthesis failed";
@@ -130,48 +117,16 @@ export function TextToSpeechPlayer({
 		}
 	}, [text, type, urgency, languageCode, voiceGender, autoPlay, onError]);
 
-	const play = useCallback(async () => {
+	const handlePlay = useCallback(async () => {
 		if (!audioUrl) {
 			await synthesizeSpeech();
 		}
+		onPlay?.();
+	}, [audioUrl, synthesizeSpeech, onPlay]);
 
-		if (audioRef.current && audioUrl) {
-			audioRef.current.src = audioUrl;
-			audioRef.current.volume = volume;
-			audioRef.current.playbackRate = playbackRate;
-			audioRef.current.play();
-			setIsPlaying(true);
-			onPlay?.();
-		}
-	}, [audioUrl, synthesizeSpeech, volume, playbackRate, onPlay]);
-
-	const pause = () => {
-		if (audioRef.current) {
-			audioRef.current.pause();
-			setIsPlaying(false);
-		}
-	};
-
-	const togglePlay = () => {
-		if (isPlaying) {
-			pause();
-		} else {
-			play();
-		}
-	};
-
-	const handleEnded = () => {
-		setIsPlaying(false);
+	const handleEnded = useCallback(() => {
 		onEnd?.();
-	};
-
-	const handleVolumeChange = (value: number[]) => {
-		const newVolume = value[0];
-		setVolume(newVolume);
-		if (audioRef.current) {
-			audioRef.current.volume = newVolume;
-		}
-	};
+	}, [onEnd]);
 
 	const refresh = () => {
 		setAudioUrl(null);
@@ -181,31 +136,27 @@ export function TextToSpeechPlayer({
 	if (compact) {
 		return (
 			<div className={cn("flex items-center gap-2", className)}>
-				<audio ref={audioRef} onEnded={handleEnded} className="hidden" />
-				<Button
-					size="sm"
-					variant="outline"
-					onClick={togglePlay}
-					disabled={isLoading || !text.trim()}
-				>
-					{isLoading ? (
-						<Loader2 className="h-4 w-4 animate-spin" />
-					) : isPlaying ? (
-						<Pause className="h-4 w-4" />
-					) : (
-						<Play className="h-4 w-4" />
-					)}
-				</Button>
-				{showControls && (
+				{audioUrl ? (
+					<MediaPlayer
+						src={audioUrl}
+						type="audio"
+						compact
+						onPlay={handlePlay}
+						onEnded={handleEnded}
+					/>
+				) : (
 					<Button
 						size="sm"
-						variant="ghost"
-						onClick={() => setVolume(volume === 0 ? 1 : 0)}
+						variant="outline"
+						onClick={async () => {
+							await synthesizeSpeech();
+						}}
+						disabled={isLoading || !text.trim()}
 					>
-						{volume === 0 ? (
-							<VolumeX className="h-4 w-4" />
+						{isLoading ? (
+							<Loader2 className="h-4 w-4 animate-spin" />
 						) : (
-							<Volume2 className="h-4 w-4" />
+							<Play className="h-4 w-4" />
 						)}
 					</Button>
 				)}
@@ -223,42 +174,52 @@ export function TextToSpeechPlayer({
 				<CardDescription>Listen to text spoken aloud</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				{/* Hidden audio element */}
-				<audio ref={audioRef} onEnded={handleEnded} className="hidden" />
-
 				{/* Text preview */}
 				<div className="p-3 rounded-lg bg-muted max-h-32 overflow-y-auto">
 					<p className="text-sm">{text || "No text to speak"}</p>
 				</div>
 
-				{/* Main controls */}
-				<div className="flex items-center justify-center gap-4">
-					<Button
-						size="lg"
-						variant="default"
-						onClick={togglePlay}
-						disabled={isLoading || !text.trim()}
-						className="h-14 w-14 rounded-full"
-					>
-						{isLoading ? (
-							<Loader2 className="h-6 w-6 animate-spin" />
-						) : isPlaying ? (
-							<Pause className="h-6 w-6" />
-						) : (
-							<Play className="h-6 w-6" />
-						)}
-					</Button>
-					{audioUrl && (
+				{/* Media Player or Generate Button */}
+				{audioUrl ? (
+					<div className="space-y-2">
+						<MediaPlayer
+							src={audioUrl}
+							type="audio"
+							title="Text to Speech Audio"
+							onPlay={handlePlay}
+							onEnded={handleEnded}
+						/>
+						<div className="flex justify-center">
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={refresh}
+								disabled={isLoading}
+							>
+								<RefreshCw className="h-4 w-4 mr-2" />
+								Regenerate
+							</Button>
+						</div>
+					</div>
+				) : (
+					<div className="flex items-center justify-center">
 						<Button
-							size="sm"
-							variant="outline"
-							onClick={refresh}
-							disabled={isLoading}
+							size="lg"
+							variant="default"
+							onClick={async () => {
+								await synthesizeSpeech();
+							}}
+							disabled={isLoading || !text.trim()}
+							className="h-14 w-14 rounded-full"
 						>
-							<RefreshCw className="h-4 w-4" />
+							{isLoading ? (
+								<Loader2 className="h-6 w-6 animate-spin" />
+							) : (
+								<Play className="h-6 w-6" />
+							)}
 						</Button>
-					)}
-				</div>
+					</div>
+				)}
 
 				{/* Error display */}
 				{error && (
@@ -267,60 +228,12 @@ export function TextToSpeechPlayer({
 					</div>
 				)}
 
-				{/* Advanced controls */}
-				{showControls && (
+				{/* Advanced controls - Note: Volume and playback speed are now handled by MediaPlayer */}
+				{showControls && audioUrl && (
 					<div className="space-y-4 pt-2 border-t">
-						{/* Volume control */}
-						<div className="space-y-2">
-							<div className="flex items-center justify-between">
-								<span className="text-sm font-medium">Volume</span>
-								<span className="text-sm text-muted-foreground">
-									{Math.round(volume * 100)}%
-								</span>
-							</div>
-							<div className="flex items-center gap-2">
-								<Button
-									size="sm"
-									variant="ghost"
-									onClick={() => handleVolumeChange([volume === 0 ? 1 : 0])}
-								>
-									{volume === 0 ? (
-										<VolumeX className="h-4 w-4" />
-									) : (
-										<Volume2 className="h-4 w-4" />
-									)}
-								</Button>
-								<Slider
-									value={[volume]}
-									min={0}
-									max={1}
-									step={0.1}
-									onValueChange={handleVolumeChange}
-									className="flex-1"
-								/>
-							</div>
-						</div>
-
-						{/* Playback speed */}
-						<div className="space-y-2">
-							<span className="text-sm font-medium">Playback Speed</span>
-							<Select
-								value={playbackRate.toString()}
-								onValueChange={(v) => setPlaybackRate(parseFloat(v))}
-							>
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="0.5">0.5x (Slow)</SelectItem>
-									<SelectItem value="0.75">0.75x</SelectItem>
-									<SelectItem value="1">1x (Normal)</SelectItem>
-									<SelectItem value="1.25">1.25x</SelectItem>
-									<SelectItem value="1.5">1.5x (Fast)</SelectItem>
-									<SelectItem value="2">2x</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<p className="text-xs text-muted-foreground text-center">
+							Volume and playback speed controls are available in the player above
+						</p>
 
 						{/* Voice settings */}
 						<div className="grid grid-cols-2 gap-4">

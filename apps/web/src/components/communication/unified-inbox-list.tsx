@@ -56,6 +56,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { Communication } from "@/lib/queries/communications";
 import { cn } from "@/lib/utils";
+import { logError } from "@/lib/utils/error-logger";
 
 type CommunicationType = "all" | "email" | "sms" | "call" | "voicemail";
 
@@ -136,7 +137,7 @@ export function UnifiedInboxList({
 				setCommunications(result.data as Communication[]);
 			}
 		} catch (error) {
-			console.error("Failed to refresh communications:", error);
+			logError(error, "RefreshCommunications");
 		} finally {
 			setLoading(false);
 		}
