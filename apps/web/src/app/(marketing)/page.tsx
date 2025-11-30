@@ -118,74 +118,74 @@ export default function Home() {
 
 	return (
 		<>
-			{/* Organization and WebSite Structured Data */}
+			{/* Organization and WebSite Structured Data - Inline JSON-LD for optimal SEO */}
 			<Script
 				id="thorbis-organization-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(
-					createOrganizationSchema({
-						sameAs: [
-							"https://www.linkedin.com/company/thorbis",
-							"https://twitter.com/thorbis",
-						],
-					}),
-				)}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(
+						createOrganizationSchema({
+							sameAs: [
+								"https://www.linkedin.com/company/thorbis",
+								"https://twitter.com/thorbis",
+							],
+						}),
+					),
+				}}
+			/>
 			<Script
 				id="thorbis-website-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(createWebsiteSchema())}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(createWebsiteSchema()),
+				}}
+			/>
 
 			{/* Product Schema - For Google Shopping & AI Overviews */}
 			<Script
 				id="thorbis-product-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(productSchema)}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(productSchema),
+				}}
+			/>
 
 			{/* ItemList Schema - Features for AI understanding */}
 			<Script
 				id="thorbis-features-list-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(featuresListSchema)}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(featuresListSchema),
+				}}
+			/>
 
 			{/* Review Aggregate Schema */}
 			<Script
 				id="thorbis-review-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(
-					createReviewAggregateSchema({
-						item: {
-							name: "Thorbis Field Management Platform",
-							url: SEO_URLS.site,
-							type: "SoftwareApplication",
-						},
-						ratingValue: 4.9,
-						reviewCount: 327,
-					}),
-				)}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(
+						createReviewAggregateSchema({
+							item: {
+								name: "Thorbis Field Management Platform",
+								url: SEO_URLS.site,
+								type: "SoftwareApplication",
+							},
+							ratingValue: 4.9,
+							reviewCount: 327,
+						}),
+					),
+				}}
+			/>
 
 			{/* Speakable Schema - Voice search optimization */}
 			<Script
 				id="thorbis-speakable-schema"
-				strategy="afterInteractive"
 				type="application/ld+json"
-			>
-				{JSON.stringify(speakableSchema)}
-			</Script>
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(speakableSchema),
+				}}
+			/>
 
 			<LinearHomepage />
 		</>

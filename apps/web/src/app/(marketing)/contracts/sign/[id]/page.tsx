@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock, FileSignature, Shield } from "lucide-react";
+import Image from "next/image";
 import {
 	Card,
 	CardContent,
@@ -143,10 +144,12 @@ export default async function ContractSignPage({
 				{/* Header */}
 				<div className="mb-8 text-center">
 					{contract.companyLogo ? (
-						<img
+						<Image
 							alt={contract.companyName}
-							className="mx-auto mb-4 h-16"
+							className="mx-auto mb-4 h-16 w-auto"
+							height={64}
 							src={contract.companyLogo}
+							width={64}
 						/>
 					) : (
 						<div className="bg-primary/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">

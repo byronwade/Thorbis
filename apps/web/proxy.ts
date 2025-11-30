@@ -35,6 +35,48 @@ function isAdminDomain(email: string | undefined | null): boolean {
 	return ADMIN_ONLY_DOMAINS.includes(domain || "");
 }
 
+/**
+ * Security Headers Configuration
+ * Required for Best Practices audit in PageSpeed Insights
+ */
+const SECURITY_HEADERS = {
+	// Content Security Policy - mitigates XSS attacks
+	"Content-Security-Policy":
+		"default-src 'self'; " +
+		"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.visitors.now https://va.vercel-scripts.com; " +
+		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+		"img-src 'self' data: https: blob:; " +
+		"font-src 'self' data: https://fonts.gstatic.com; " +
+		"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com; " +
+		"frame-ancestors 'none'; " +
+		"base-uri 'self'; " +
+		"form-action 'self';",
+	// Strict Transport Security - force HTTPS
+	"Strict-Transport-Security":
+		"max-age=31536000; includeSubDomains; preload",
+	// Cross-Origin Opener Policy - mitigates cross-origin attacks
+	"Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+	// X-Frame-Options - mitigates clickjacking (redundant with CSP frame-ancestors but better compatibility)
+	"X-Frame-Options": "DENY",
+	// X-Content-Type-Options - prevents MIME type sniffing
+	"X-Content-Type-Options": "nosniff",
+	// Referrer Policy - controls referrer information
+	"Referrer-Policy": "strict-origin-when-cross-origin",
+	// Permissions Policy - restricts browser features
+	"Permissions-Policy":
+		"camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=()",
+};
+
+/**
+ * Apply security headers to response
+ */
+function applySecurityHeaders(response: NextResponse): NextResponse {
+	Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+		response.headers.set(key, value);
+	});
+	return response;
+}
+
 export async function proxy(request: NextRequest) {
 	if (process.env.NODE_ENV !== "production") {
 		// TODO: Handle error case
@@ -122,7 +164,8 @@ export async function proxy(request: NextRequest) {
 		const redirectUrl = request.nextUrl.clone();
 		redirectUrl.pathname = "/login";
 		redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-		return NextResponse.redirect(redirectUrl);
+		const redirectResponse = NextResponse.redirect(redirectUrl);
+		return applySecurityHeaders(redirectResponse);
 	}
 
 	// SECURITY: Block Thorbis employees from contractor dashboard
@@ -134,7 +177,10 @@ export async function proxy(request: NextRequest) {
 			await supabase.auth.signOut();
 			const adminUrl =
 				process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001";
-			return NextResponse.redirect(new URL("/login?error=use_admin", adminUrl));
+			const redirectResponse = NextResponse.redirect(
+				new URL("/login?error=use_admin", adminUrl),
+			);
+			return applySecurityHeaders(redirectResponse);
 		}
 	}
 
@@ -155,10 +201,12 @@ export async function proxy(request: NextRequest) {
 		const redirectUrl = request.nextUrl.clone();
 		redirectUrl.pathname = redirectTo || "/dashboard";
 		redirectUrl.search = ""; // Clear query params
-		return NextResponse.redirect(redirectUrl);
+		const redirectResponse = NextResponse.redirect(redirectUrl);
+		return applySecurityHeaders(redirectResponse);
 	}
 
-	return response;
+	// Apply security headers to all responses
+	return applySecurityHeaders(response);
 }
 
 export const config = {

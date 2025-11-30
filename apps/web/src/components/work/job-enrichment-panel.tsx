@@ -24,6 +24,7 @@ import {
 	Thermometer,
 	TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -623,16 +624,17 @@ export function JobEnrichmentPanel({
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{/* Main View */}
-							<div className="overflow-hidden rounded-lg border">
+							<div className="relative overflow-hidden rounded-lg border">
 								{/* biome-ignore lint/a11y/useAltText: Google Street View external API image */}
 								{/* biome-ignore lint/a11y/noSvgWithoutTitle: External API image */}
-								<img
+								<Image
 									alt="Property street view"
 									className="h-auto w-full"
-									height="400"
+									height={400}
 									loading="lazy"
 									src={streetView.mainView}
-									width="600"
+									unoptimized
+									width={600}
 								/>
 							</div>
 
@@ -647,13 +649,14 @@ export function JobEnrichmentPanel({
 											>
 												{/* biome-ignore lint/a11y/useAltText: Google Street View external API image */}
 												{/* biome-ignore lint/a11y/noSvgWithoutTitle: External API image */}
-												<img
+												<Image
 													alt="Property from alternate angle"
 													className="h-auto w-full"
-													height="400"
+													height={400}
 													loading="lazy"
 													src={view}
-													width="600"
+													unoptimized
+													width={600}
 												/>
 											</div>
 										))}
@@ -693,16 +696,16 @@ export function JobEnrichmentPanel({
 									>
 										{/* Photo */}
 										{place.photoUrl && (
-											<div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
+											<div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
 												{/* biome-ignore lint/a11y/useAltText: Google Places external API photo */}
 												{/* biome-ignore lint/a11y/noSvgWithoutTitle: External API image */}
-												<img
+												<Image
 													alt={place.name}
 													className="h-full w-full object-cover"
-													height="80"
+													fill
 													loading="lazy"
 													src={place.photoUrl}
-													width="80"
+													unoptimized
 												/>
 											</div>
 										)}

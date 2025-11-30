@@ -144,7 +144,7 @@ export default function RootLayout({
 				<Script
 					src="https://cdn.visitors.now/v.js"
 					data-token="b37b6bb2-f846-4834-a324-e7f5ab1336ee"
-					strategy="beforeInteractive"
+					strategy="lazyOnload"
 				/>
 			</body>
 		</html>

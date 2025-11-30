@@ -15,6 +15,7 @@ import {
 	Loader2,
 	User,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -267,10 +268,13 @@ function AcceptInvitationContent() {
 							<div className="flex items-center gap-4">
 								{photoPreview ? (
 									<div className="relative">
-										<img
+										<Image
 											alt="Profile preview"
 											className="size-20 rounded-full border object-cover"
+											height={80}
 											src={photoPreview}
+											unoptimized
+											width={80}
 										/>
 										<Button
 											className="absolute -top-1 -right-1 size-6 rounded-full p-0"

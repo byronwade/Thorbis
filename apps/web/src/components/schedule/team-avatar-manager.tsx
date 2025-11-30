@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -35,10 +36,12 @@ function TeamAvatar({
 				title={assignment.displayName}
 			>
 				{assignment.avatar && (
-					<img
+					<Image
 						alt={assignment.displayName}
 						className="size-full object-cover"
+						fill
 						src={assignment.avatar}
+						unoptimized
 					/>
 				)}
 				<AvatarFallback
