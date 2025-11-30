@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import { Suspense } from "react";
 import { SkipLink } from "@/components/layout/skip-link";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
@@ -140,6 +141,11 @@ export default function RootLayout({
 				</ThemeProvider>
 				<Analytics />
 				<SpeedInsights />
+				<Script
+					src="https://cdn.visitors.now/v.js"
+					data-token="b37b6bb2-f846-4834-a324-e7f5ab1336ee"
+					strategy="beforeInteractive"
+				/>
 			</body>
 		</html>
 	);

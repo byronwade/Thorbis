@@ -38,6 +38,7 @@ class InMemoryRateLimiter {
 		limit: number;
 		remaining: number;
 		reset: number;
+		retryAfter?: number; // Seconds until rate limit resets
 	}> {
 		const now = Date.now();
 		const key = identifier;
@@ -61,11 +62,13 @@ class InMemoryRateLimiter {
 
 		// Check if limit exceeded
 		if (record.requests.length >= this.maxRequests) {
+			const resetTime = Math.min(...record.requests) + this.windowMs;
 			return {
 				success: false,
 				limit: this.maxRequests,
 				remaining: 0,
-				reset: Math.min(...record.requests) + this.windowMs,
+				reset: resetTime,
+				retryAfter: Math.ceil((resetTime - now) / 1000), // Seconds
 			};
 		}
 
@@ -135,7 +138,7 @@ export const authRateLimiter = {
  * Use for: General API endpoints
  * Limit: 100 requests per minute per identifier
  */
-const apiRateLimiter = {
+export const apiRateLimiter = {
 	limit: (identifier: string) => apiRateLimiterInstance.limit(identifier),
 	reset: (identifier: string) => apiRateLimiterInstance.reset(identifier),
 };

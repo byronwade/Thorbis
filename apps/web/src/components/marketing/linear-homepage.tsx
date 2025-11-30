@@ -16,21 +16,21 @@ import { cn } from "@/lib/utils";
 import { LinearMediaPlayer } from "@/registry/default/blocks/linear-player/components/media-player";
 import type { LucideIcon } from "lucide-react";
 import {
-	ArrowRight,
-	Calendar,
-	CheckCircle2,
-	Clock,
-	DollarSign,
-	FileText,
-	Hammer,
-	MapPin,
-	MessageSquare,
-	Smartphone,
-	Sparkles,
-	TrendingUp,
-	Users,
-	Wrench,
-	Zap,
+    ArrowRight,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    DollarSign,
+    FileText,
+    Hammer,
+    MapPin,
+    MessageSquare,
+    Smartphone,
+    Sparkles,
+    TrendingUp,
+    Users,
+    Wrench,
+    Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,14 +40,14 @@ const keyFeatures = [
 	{
 		title: "Smart Scheduling",
 		description:
-			"Drag-and-drop scheduling with real-time availability. AI suggests optimal routes and time slots based on location, skills, and job requirements.",
+			"Drag. Drop. Done. AI handles the rest—optimal routes, perfect time slots, right technician. Every time.",
 		icon: Calendar,
 		gradient: "from-blue-500/20 to-primary/20",
 	},
 	{
 		title: "Mobile Field App",
 		description:
-			"Complete jobs, capture photos, collect signatures, and accept payments—all from a mobile device that works offline.",
+			"Your techs do everything from their phone—even without signal. Photos, signatures, payments. All synced when they're back online.",
 		icon: Smartphone,
 		gradient: "from-purple-500/20 to-primary/20",
 	},
@@ -61,21 +61,21 @@ const keyFeatures = [
 	{
 		title: "Instant Invoicing",
 		description:
-			"Generate professional invoices in seconds. Accept payments on-site with same-day funding. No more chasing down payments.",
+			"Invoice sent before your tech leaves the driveway. Money in your account before dinner. Stop chasing deadbeat customers.",
 		icon: FileText,
 		gradient: "from-green-500/20 to-primary/20",
 	},
 	{
 		title: "Customer Portal",
 		description:
-			"Give customers 24/7 access to service history, invoices, and scheduling. Reduce support calls and improve satisfaction.",
+			"Customers book, pay, and track jobs themselves. Reduce support calls by 60%. Let them help themselves while you focus on growing.",
 		icon: Users,
 		gradient: "from-orange-500/20 to-primary/20",
 	},
 	{
 		title: "Equipment Tracking",
 		description:
-			"Track equipment maintenance, warranties, and service history. Never miss a preventive maintenance opportunity.",
+			"Never miss another preventive maintenance payday. Track warranties, service history, and automatically remind customers when it's time.",
 		icon: Wrench,
 		gradient: "from-red-500/20 to-primary/20",
 	},
@@ -133,9 +133,9 @@ const workflows = [
 ] as const;
 
 const stats = [
-	{ value: "42%", label: "More jobs per technician", icon: TrendingUp },
-	{ value: "3hrs", label: "Saved on admin daily", icon: Clock },
-	{ value: "2.5x", label: "Faster invoice payment", icon: DollarSign },
+	{ value: "4.2", label: "More jobs per tech weekly", icon: TrendingUp },
+	{ value: "3hrs", label: "Get home earlier daily", icon: Clock },
+	{ value: "3.2 days", label: "Average payment time", icon: DollarSign },
 	{ value: "98%", label: "Mobile app adoption", icon: Smartphone },
 ] as const;
 
@@ -169,19 +169,17 @@ export function LinearHomepage() {
 
 						{/* Main Headline */}
 						<h1 className="hero-text-animate animate-delay-100 mb-6 max-w-5xl text-5xl font-bold leading-[1.08] tracking-tight md:text-6xl lg:text-7xl">
-							Thorbis is a purpose-built tool
+							Stop losing money to
 							<br />
-							for{" "}
 							<AnimatedGradientText>
-								running service businesses
+								scheduling chaos and late payments
 							</AnimatedGradientText>
 						</h1>
 
 						{/* Subheadline */}
 						<p className="hero-text-animate animate-delay-200 mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-							The all-in-one platform for HVAC, plumbing, electrical, and field
-							service companies. Schedule jobs, dispatch teams, and get paid—all
-							from one dashboard.
+							Schedule faster, dispatch smarter, get paid same-day. For HVAC, plumbing, electrical, and field service teams.
+							Everything happens in one place, so you can finally breathe.
 						</p>
 
 						{/* CTA Buttons */}
@@ -192,7 +190,7 @@ export function LinearHomepage() {
 								className="group h-12 bg-primary px-8 text-base font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
 							>
 								<Link href="/waitlist">
-									Join Waitlist
+									Reserve My Spot
 									<ArrowRight className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
 								</Link>
 							</Button>
@@ -202,7 +200,7 @@ export function LinearHomepage() {
 								size="lg"
 								className="h-12 px-8 text-base font-medium text-muted-foreground transition-all duration-300 hover:text-foreground"
 							>
-								<Link href="/demo">Watch Demo</Link>
+								<Link href="/demo">See It In Action</Link>
 							</Button>
 						</div>
 
@@ -210,15 +208,15 @@ export function LinearHomepage() {
 						<div className="hero-text-animate animate-delay-400 mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
 							<div className="flex items-center gap-2">
 								<CheckCircle2 className="size-4 text-primary" />
-								<span>14-day free trial</span>
+								<span>Try free for 14 days</span>
 							</div>
 							<div className="flex items-center gap-2">
 								<CheckCircle2 className="size-4 text-primary" />
-								<span>No credit card required</span>
+								<span>No card. No catches.</span>
 							</div>
 							<div className="flex items-center gap-2">
 								<CheckCircle2 className="size-4 text-primary" />
-								<span>Cancel anytime</span>
+								<span>Your choice, always</span>
 							</div>
 						</div>
 
@@ -264,31 +262,30 @@ export function LinearHomepage() {
 							Why Service Businesses Choose Thorbis
 						</Badge>
 						<h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-							No Sales Pressure. No Lock-Ins.
+							Straight Talk Pricing. Zero Contracts.
 							<br />
-							Just Software That Works.
+							Software That Actually Works.
 						</h2>
 						<p className="mb-12 text-lg text-muted-foreground">
-							Unlike traditional FSM companies, we believe in letting our
-							product speak for itself. Try it, love it, or leave—no hard
-							feelings, no contracts, no hassle.
+							Unlike traditional FSM companies, we let our product speak for itself.
+							Try it, love it, or leave—your choice, your freedom.
 						</p>
 
 						<div className="grid gap-6 text-left sm:grid-cols-2">
 							<DifferentiatorCard
 								icon={Users}
-								title="No Pushy Sales Teams"
-								description="Try the full platform yourself. No demos, no sales calls unless you want one. Self-service signup takes 60 seconds."
+								title="Zero Sales Pressure"
+								description="Try everything yourself in 60 seconds. Need help? We're here. Don't need help? We won't bother you."
 							/>
 							<DifferentiatorCard
 								icon={CheckCircle2}
-								title="No Contracts or Lock-Ins"
-								description="Cancel anytime with one click. Keep your data. We earn your business every single month, not through contracts."
+								title="Month-to-Month. Always."
+								description="One click to cancel. Your data leaves with you. We keep you because you love us, not because we trapped you."
 							/>
 							<DifferentiatorCard
 								icon={Zap}
-								title="5-Minute Intelligent Setup"
-								description="Smart onboarding form asks the right questions for your business. No lengthy operational assessments or expensive consultants."
+								title="Live in 5 Minutes"
+								description="Smart onboarding asks the right questions for your business. No lengthy assessments or expensive consultants. Running jobs same day."
 							/>
 							<DifferentiatorCard
 								icon={MessageSquare}
@@ -378,7 +375,7 @@ export function LinearHomepage() {
 							How it works
 						</Badge>
 						<h2 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
-							Set the product direction
+							From Call to Cash in 4 Steps
 						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
 							From lead to payment, Thorbis streamlines every step of your
@@ -586,13 +583,12 @@ export function LinearHomepage() {
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-3xl">
 						<h2 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-							Plan the present.
+							Your competitors are already
 							<br />
-							Build the future.
+							signing up. Don't fall behind.
 						</h2>
 						<p className="mb-10 text-lg leading-relaxed text-muted-foreground md:text-xl">
-							Join hundreds of field service teams running their entire business
-							on Thorbis. Start your free trial today.
+							Get early access before we hit capacity. Launching April 11, 2026.
 						</p>
 						<div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
 							<Button
@@ -601,7 +597,7 @@ export function LinearHomepage() {
 								className="h-12 bg-primary px-8 text-base font-medium text-primary-foreground hover:bg-primary/90"
 							>
 								<Link href="/waitlist">
-									Join Waitlist
+									Reserve My Spot
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
 							</Button>
@@ -611,7 +607,7 @@ export function LinearHomepage() {
 								size="lg"
 								className="h-12 px-8 text-base font-medium text-muted-foreground hover:text-foreground"
 							>
-								<Link href="/demo">Watch Demo</Link>
+								<Link href="/demo">See It In Action</Link>
 							</Button>
 						</div>
 					</div>

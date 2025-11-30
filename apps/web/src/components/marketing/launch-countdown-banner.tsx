@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 const LAUNCH_DATE = new Date("2026-04-11T00:00:00Z");
 
@@ -67,65 +67,55 @@ export function LaunchCountdownBanner() {
 	];
 
 	return (
-		<div className="relative overflow-hidden border-t border-border/40 bg-gradient-to-r from-primary/5 via-primary/3 to-primary/5">
-			<div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-			<div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+		<div className="border-t border-border/40 bg-muted/30">
+			<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 				<div
 					role="status"
 					aria-live="polite"
-					className="flex flex-col items-center justify-center gap-4 py-4 sm:flex-row sm:gap-6 sm:py-3.5"
+					className="flex items-center justify-center gap-4 py-2 text-sm sm:gap-5"
 				>
-					{/* Launch Date Info */}
-					<div className="flex items-center gap-2.5">
-						<div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
-							<Clock className="size-4 text-primary" />
-						</div>
-						<div className="text-left">
-							<div className="text-xs font-bold uppercase tracking-wider text-primary">
-								Launching Soon
-							</div>
-							<div className="text-sm font-semibold text-foreground">
-								April 11, 2026
-							</div>
-						</div>
+					{/* Launch Info */}
+					<div className="flex items-center gap-2">
+						<Clock className="size-3.5 text-primary" />
+						<span className="font-medium text-foreground">
+							Launching <span className="font-semibold">Apr 11, 2026</span>
+						</span>
 					</div>
 
 					{/* Separator */}
-					<div className="hidden h-10 w-px bg-border/50 sm:block" />
+					<div className="hidden h-4 w-px bg-border sm:block" />
 
-					{/* Countdown Timer */}
-					<div className="flex items-center gap-3">
+					{/* Compact Countdown */}
+					<div className="flex items-center gap-1.5 font-mono text-sm">
 						{segments.map((segment, idx) => (
-							<div key={segment.label} className="flex items-center gap-3">
-								<div className="flex flex-col items-center">
-									<div className="flex min-w-[3rem] items-center justify-center rounded-lg border border-border/50 bg-background/80 px-3 py-2 shadow-sm backdrop-blur-sm">
-										<span className="font-mono text-2xl font-bold tabular-nums text-foreground">
-											{segment.value.toString().padStart(2, "0")}
-										</span>
-									</div>
-									<span className="mt-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-										{segment.label}
+							<span key={segment.label} className="flex items-center gap-1.5">
+								<span className="flex items-baseline gap-0.5">
+									<span className="font-bold tabular-nums text-foreground">
+										{segment.value.toString().padStart(2, "0")}
 									</span>
-								</div>
+									<span className="text-xs text-muted-foreground">
+										{segment.label[0].toLowerCase()}
+									</span>
+								</span>
 								{idx < segments.length - 1 && (
-									<span className="mb-6 text-xl font-bold text-muted-foreground/40">:</span>
+									<span className="text-muted-foreground/50">:</span>
 								)}
-							</div>
+							</span>
 						))}
 					</div>
 
 					{/* Separator */}
-					<div className="hidden h-10 w-px bg-border/50 sm:block" />
+					<div className="hidden h-4 w-px bg-border sm:block" />
 
-					{/* CTA Button */}
+					{/* CTA */}
 					<Button
 						asChild
-						size="default"
-						className="group h-10 rounded-full bg-primary px-6 text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30 hover:-translate-y-0.5"
+						size="sm"
+						className="h-7 rounded-full bg-primary px-4 text-xs font-semibold shadow-sm hover:shadow-md transition-all"
 					>
-						<Link href="/waitlist" className="flex items-center gap-2">
+						<Link href="/waitlist" className="flex items-center gap-1.5">
 							Join Waitlist
-							<ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+							<ArrowRight className="size-3" />
 						</Link>
 					</Button>
 				</div>
