@@ -123,6 +123,7 @@ export default function RootLayout({
 			lang="en"
 			suppressHydrationWarning
 			className={`${inter.variable} ${jetbrainsMono.variable}`}
+			data-scroll-behavior="smooth"
 		>
 			<head>
 				<SpeculationRules />

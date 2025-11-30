@@ -868,6 +868,9 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		};
 
 		const validatedData = signInSchema.parse(rawData);
+		
+		// Get redirect destination from form if provided
+		const redirectTo = formData.get("redirectTo") as string | null;
 
 		// Rate limit sign-in attempts by email
 		try {
@@ -956,10 +959,16 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 			};
 		}
 
-		console.log("[AUTH] Sign in successful, redirecting to dashboard");
-		// Revalidate and redirect to dashboard
+		console.log("[AUTH] Sign in successful");
+		// Revalidate cache
 		revalidatePath("/", "layout");
-		redirect("/dashboard");
+		
+		// Return success instead of redirecting - let client handle redirect
+		// This ensures the session cookie is available before navigation
+		return {
+			success: true,
+			data: { redirectTo: redirectTo || "/dashboard" },
+		};
 	} catch (caughtError) {
 		if (caughtError instanceof z.ZodError) {
 			return {

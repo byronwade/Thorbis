@@ -38,6 +38,7 @@
  */
 
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { logSupabaseError } from "../utils/supabase-error-handler";
 
 // ============================================
 // Types
@@ -174,13 +175,10 @@ async function logCommunicationEvent(
 		});
 
 		if (error) {
-			console.error(
-				"[Communication Tracker] Failed to log event:",
-				error.message,
-			);
+			logSupabaseError(error, "Communication Tracker");
 		}
 	} catch (err) {
-		console.error("[Communication Tracker] Logging error:", err);
+		logSupabaseError(err, "Communication Tracker");
 	}
 }
 
@@ -473,10 +471,7 @@ export async function getCommunicationStats(
 		const { data, error } = await query;
 
 		if (error) {
-			console.error(
-				"[Communication Tracker] Failed to get stats:",
-				error.message,
-			);
+			logSupabaseError(error, "Communication Tracker");
 			return [];
 		}
 
@@ -538,7 +533,7 @@ export async function getCommunicationStats(
 
 		return Array.from(statsMap.values());
 	} catch (err) {
-		console.error("[Communication Tracker] Stats query error:", err);
+		logSupabaseError(err, "Communication Tracker");
 		return [];
 	}
 }
@@ -609,7 +604,7 @@ async function getEmailEngagement(
 			replied: events.includes("replied"),
 		};
 	} catch (err) {
-		console.error("[Communication Tracker] Engagement query error:", err);
+		logSupabaseError(err, "Communication Tracker");
 		return {
 			sent: false,
 			delivered: false,
@@ -708,7 +703,7 @@ export async function getTopEmailTemplates(
 
 		return results;
 	} catch (err) {
-		console.error("[Communication Tracker] Top templates query error:", err);
+		logSupabaseError(err, "Communication Tracker");
 		return [];
 	}
 }
@@ -752,10 +747,7 @@ export async function getCallStats(
 			.gte("created_at", cutoff);
 
 		if (error) {
-			console.error(
-				"[Communication Tracker] Failed to get call stats:",
-				error.message,
-			);
+			logSupabaseError(error, "Communication Tracker");
 			return {
 				totalCalls: 0,
 				connectedCalls: 0,
@@ -792,7 +784,7 @@ export async function getCallStats(
 			connectRate: initiated > 0 ? Math.round((connected / initiated) * 100) : 0,
 		};
 	} catch (err) {
-		console.error("[Communication Tracker] Call stats query error:", err);
+		logSupabaseError(err, "Communication Tracker");
 		return {
 			totalCalls: 0,
 			connectedCalls: 0,

@@ -50,19 +50,36 @@ export function LoginForm() {
 			if (!result.success && result.error) {
 				setError(result.error);
 				setIsLoading(false);
+				return;
 			}
-			// If successful, the server action will redirect
-			// Keep loading state active during redirect
+
+			// Successful login - redirect on client side after ensuring cookie is set
+			// Get redirect destination from result data or query param or use default
+			const destination = 
+				(result.data as { redirectTo?: string } | undefined)?.redirectTo ||
+				redirectTo || 
+				"/dashboard";
+			
+			// Small delay to ensure session cookie is available before redirect
+			// This prevents redirect loops where middleware doesn't see the session yet
+			await new Promise((resolve) => setTimeout(resolve, 200));
+			
+			// Use window.location for full page reload to ensure session is available
+			window.location.href = destination;
 		} catch (caughtError) {
 			// Always reset loading state on error
 			setIsLoading(false);
 			
+			// NEXT_REDIRECT is thrown by Next.js redirect() - handle it gracefully
 			if (
 				caughtError instanceof Error &&
 				caughtError.message === "NEXT_REDIRECT"
 			) {
-				// Redirect is happening, keep loading state
-				setIsLoading(true);
+				// Server-side redirect happened - wait for cookie and redirect on client
+				const destination = redirectTo || "/dashboard";
+				setTimeout(() => {
+					window.location.href = destination;
+				}, 100);
 				return;
 			}
 

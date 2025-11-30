@@ -58,7 +58,8 @@ const nextConfig: NextConfig = {
 			"@phosphor-icons/react",
 		],
 		// Faster builds with optimized server components
-		serverComponentsExternalPackages: ["prettier"],
+		// Note: prettier removed from external packages to allow bundling
+		// (required for @react-email/render which uses prettier internally)
 		// Optimize CSS processing
 		optimizeCss: true,
 	},
@@ -114,7 +115,9 @@ const nextConfig: NextConfig = {
 		"@stratos/config",
 		"@stratos/shared",
 	],
-	serverExternalPackages: ["prettier"], // Allow prettier to be used by @react-email/render
+	// Note: prettier removed from external packages to allow bundling
+	// (required for @react-email/render which uses prettier internally)
+	// serverExternalPackages: ["prettier"],
 	webpack: (webpackConfig) => {
 		// Keep webpack running to display all errors instead of bailing on the first failure
 		webpackConfig.bail = false;
@@ -135,7 +138,8 @@ const nextConfig: NextConfig = {
 			"node_modules/webpack",
 			"node_modules/.cache",
 			"node_modules/.pnpm",
-			"node_modules/prettier",
+			// Note: prettier removed from excludes to ensure it's bundled
+			// (required for @react-email/render which uses prettier internally)
 			"node_modules/@react-email",
 		],
 	},

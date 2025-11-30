@@ -36,6 +36,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { createClient } from "@/lib/supabase/server";
 import { v4 as uuidv4 } from "uuid";
+import { logSupabaseError } from "../utils/supabase-error-handler";
 
 // ============================================
 // Types
@@ -142,11 +143,11 @@ async function logApiCallToDatabase(entry: ApiCallLogEntry): Promise<void> {
 		});
 
 		if (error) {
-			console.error("[API Tracker] Failed to log API call:", error.message);
+			logSupabaseError(error, "API Tracker");
 		}
 	} catch (err) {
 		// Don't throw - logging failures shouldn't break the main request
-		console.error("[API Tracker] Logging error:", err);
+		logSupabaseError(err, "API Tracker");
 	}
 }
 
@@ -392,10 +393,10 @@ class ApiCallBatcher {
 			);
 
 			if (error) {
-				console.error("[API Tracker] Batch insert failed:", error.message);
+				logSupabaseError(error, "API Tracker");
 			}
 		} catch (err) {
-			console.error("[API Tracker] Batch flush error:", err);
+			logSupabaseError(err, "API Tracker");
 		}
 	}
 
@@ -458,13 +459,13 @@ export async function getApiCallStats(
 		});
 
 		if (error) {
-			console.error("[API Tracker] Failed to get stats:", error.message);
+			logSupabaseError(error, "API Tracker");
 			return [];
 		}
 
 		return data || [];
 	} catch (err) {
-		console.error("[API Tracker] Stats query error:", err);
+		logSupabaseError(err, "API Tracker");
 		return [];
 	}
 }
@@ -488,7 +489,7 @@ async function getRecentApiCalls(
 			.limit(limit);
 
 		if (error) {
-			console.error("[API Tracker] Failed to get recent calls:", error.message);
+			logSupabaseError(error, "API Tracker");
 			return [];
 		}
 
@@ -511,7 +512,7 @@ async function getRecentApiCalls(
 			createdAt: new Date(row.created_at),
 		}));
 	} catch (err) {
-		console.error("[API Tracker] Recent calls query error:", err);
+		logSupabaseError(err, "API Tracker");
 		return [];
 	}
 }
@@ -537,7 +538,7 @@ export async function getSlowApiCalls(
 			.limit(limit);
 
 		if (error) {
-			console.error("[API Tracker] Failed to get slow calls:", error.message);
+			logSupabaseError(error, "API Tracker");
 			return [];
 		}
 
@@ -560,7 +561,7 @@ export async function getSlowApiCalls(
 			createdAt: new Date(row.created_at),
 		}));
 	} catch (err) {
-		console.error("[API Tracker] Slow calls query error:", err);
+		logSupabaseError(err, "API Tracker");
 		return [];
 	}
 }
@@ -590,13 +591,13 @@ async function getApiErrorRates(
 		});
 
 		if (error) {
-			console.error("[API Tracker] Failed to get error rates:", error.message);
+			logSupabaseError(error, "API Tracker");
 			return [];
 		}
 
 		return data || [];
 	} catch (err) {
-		console.error("[API Tracker] Error rates query error:", err);
+		logSupabaseError(err, "API Tracker");
 		return [];
 	}
 }

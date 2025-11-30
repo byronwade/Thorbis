@@ -47,6 +47,7 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { createClient } from "@/lib/supabase/server";
 import { v4 as uuidv4 } from "uuid";
+import { logSupabaseError } from "../utils/supabase-error-handler";
 
 // ============================================
 // Types
@@ -183,11 +184,11 @@ async function logActionToDatabase(entry: ActionExecutionLog): Promise<void> {
 		});
 
 		if (error) {
-			console.error("[Action Tracker] Failed to log action:", error.message);
+			logSupabaseError(error, "Action Tracker");
 		}
 	} catch (err) {
 		// Don't throw - logging failures shouldn't break the main action
-		console.error("[Action Tracker] Logging error:", err);
+		logSupabaseError(err, "Action Tracker");
 	}
 }
 
@@ -404,13 +405,13 @@ export async function getActionStats(
 		});
 
 		if (error) {
-			console.error("[Action Tracker] Failed to get stats:", error.message);
+			logSupabaseError(error, "Action Tracker");
 			return [];
 		}
 
 		return data || [];
 	} catch (err) {
-		console.error("[Action Tracker] Stats query error:", err);
+		logSupabaseError(err, "Action Tracker");
 		return [];
 	}
 }
@@ -435,10 +436,7 @@ async function getRecentActions(
 			.limit(limit);
 
 		if (error) {
-			console.error(
-				"[Action Tracker] Failed to get recent actions:",
-				error.message,
-			);
+			logSupabaseError(error, "Action Tracker");
 			return [];
 		}
 
@@ -459,7 +457,7 @@ async function getRecentActions(
 			createdAt: new Date(row.created_at),
 		}));
 	} catch (err) {
-		console.error("[Action Tracker] Recent actions query error:", err);
+		logSupabaseError(err, "Action Tracker");
 		return [];
 	}
 }
@@ -489,10 +487,7 @@ export async function getFailedActions(
 			.limit(limit);
 
 		if (error) {
-			console.error(
-				"[Action Tracker] Failed to get failed actions:",
-				error.message,
-			);
+			logSupabaseError(error, "Action Tracker");
 			return [];
 		}
 
@@ -513,7 +508,7 @@ export async function getFailedActions(
 			createdAt: new Date(row.created_at),
 		}));
 	} catch (err) {
-		console.error("[Action Tracker] Failed actions query error:", err);
+		logSupabaseError(err, "Action Tracker");
 		return [];
 	}
 }
@@ -564,7 +559,7 @@ async function getSlowActions(
 			createdAt: new Date(row.created_at),
 		}));
 	} catch (err) {
-		console.error("[Action Tracker] Slow actions query error:", err);
+		logSupabaseError(err, "Action Tracker");
 		return [];
 	}
 }
@@ -636,7 +631,7 @@ export async function getActionVolumeByCategory(
 			return { category, date, ...value };
 		});
 	} catch (err) {
-		console.error("[Action Tracker] Volume by category query error:", err);
+		logSupabaseError(err, "Action Tracker");
 		return [];
 	}
 }

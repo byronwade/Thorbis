@@ -49,6 +49,7 @@
 
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { v4 as uuidv4 } from "uuid";
+import { logSupabaseError } from "../utils/supabase-error-handler";
 
 // ============================================
 // Types
@@ -231,11 +232,11 @@ async function logAIUsageToDatabase(params: AIUsageParams): Promise<void> {
 		});
 
 		if (error) {
-			console.error("[AI Tracker] Failed to log usage:", error.message);
+			logSupabaseError(error, "AI Tracker");
 		}
 	} catch (err) {
 		// Don't throw - logging failures shouldn't break the main operation
-		console.error("[AI Tracker] Logging error:", err);
+		logSupabaseError(err, "AI Tracker");
 	}
 }
 
@@ -515,13 +516,13 @@ export async function trackVoiceAICall(params: VoiceAICallParams): Promise<void>
 		});
 
 		if (error) {
-			console.error("[AI Tracker] Failed to log voice AI call:", error.message);
+			logSupabaseError(error, "AI Tracker");
 		}
 
 		// Also log to voice_ai_calls table for detailed tracking
 		await logVoiceAICallDetails(params, costs);
 	} catch (err) {
-		console.error("[AI Tracker] Voice AI logging error:", err);
+		logSupabaseError(err, "AI Tracker");
 	}
 }
 
@@ -559,7 +560,7 @@ async function logVoiceAICallDetails(
 
 		// Table might not exist yet, that's OK - we still have ai_usage_logs
 		if (error && !error.message.includes("does not exist")) {
-			console.error("[AI Tracker] Failed to log voice call details:", error.message);
+			logSupabaseError(error, "AI Tracker");
 		}
 	} catch (err) {
 		// Silently fail - main tracking is in ai_usage_logs
@@ -615,7 +616,7 @@ export async function getVoiceAIUsageSummary(
 		const { data, error } = await query;
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get voice AI summary:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return {
 				totalCalls: 0,
 				totalMinutes: 0,
@@ -662,7 +663,7 @@ export async function getVoiceAIUsageSummary(
 				: 0,
 		};
 	} catch (err) {
-		console.error("[AI Tracker] Voice AI summary error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return {
 			totalCalls: 0,
 			totalMinutes: 0,
@@ -707,7 +708,7 @@ export async function getAIUsageSummary(
 		});
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get summary:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return [];
 		}
 
@@ -722,7 +723,7 @@ export async function getAIUsageSummary(
 			successRate: row.success_rate as number,
 		}));
 	} catch (err) {
-		console.error("[AI Tracker] Summary query error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return [];
 	}
 }
@@ -757,7 +758,7 @@ export async function getAICostByDay(
 			.order("created_at", { ascending: true });
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get cost by day:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return [];
 		}
 
@@ -788,7 +789,7 @@ export async function getAICostByDay(
 			...stats,
 		}));
 	} catch (err) {
-		console.error("[AI Tracker] Cost by day query error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return [];
 	}
 }
@@ -823,7 +824,7 @@ export async function getToolCallStats(
 			.not("tools_called", "is", null);
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get tool stats:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return [];
 		}
 
@@ -861,7 +862,7 @@ export async function getToolCallStats(
 			}))
 			.sort((a, b) => b.callCount - a.callCount);
 	} catch (err) {
-		console.error("[AI Tracker] Tool stats query error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return [];
 	}
 }
@@ -903,7 +904,7 @@ export async function getApprovalStats(
 			.neq("approval_status", "not_required");
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get approval stats:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return {
 				totalRequested: 0,
 				autoApproved: 0,
@@ -948,7 +949,7 @@ export async function getApprovalStats(
 				totalDecided > 0 ? Math.round((totalApproved / totalDecided) * 100) : 0,
 		};
 	} catch (err) {
-		console.error("[AI Tracker] Approval stats query error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return {
 			totalRequested: 0,
 			autoApproved: 0,
@@ -989,7 +990,7 @@ export async function getRecentAIErrors(
 			.limit(limit);
 
 		if (error) {
-			console.error("[AI Tracker] Failed to get errors:", error.message);
+			logSupabaseError(error, "AI Tracker");
 			return [];
 		}
 
@@ -1002,7 +1003,7 @@ export async function getRecentAIErrors(
 			traceId: row.trace_id,
 		}));
 	} catch (err) {
-		console.error("[AI Tracker] Errors query error:", err);
+		logSupabaseError(err, "AI Tracker");
 		return [];
 	}
 }

@@ -6,6 +6,7 @@
 
 import { cache } from "react";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { logSupabaseError } from "../utils/supabase-error-handler";
 
 export interface ApiUsageRecord {
 	id: string;
@@ -57,7 +58,7 @@ export const getAggregatedApiUsage = cache(async (): Promise<AggregatedApiUsage[
 			.eq("month_year", currentMonth);
 
 		if (error) {
-			console.error("[API Usage] Failed to fetch usage data:", error.message);
+			logSupabaseError(error, "API Usage");
 			return [];
 		}
 
@@ -107,7 +108,7 @@ export const getAggregatedApiUsage = cache(async (): Promise<AggregatedApiUsage[
 
 		return Array.from(aggregatedMap.values()).sort((a, b) => b.totalCalls - a.totalCalls);
 	} catch (err) {
-		console.error("[API Usage] Query error:", err);
+		logSupabaseError(err, "API Usage");
 		return [];
 	}
 });
@@ -131,7 +132,7 @@ export const getCompanyApiUsage = cache(
 				.order("call_count", { ascending: false });
 
 			if (error) {
-				console.error("[API Usage] Failed to fetch company usage:", error.message);
+				logSupabaseError(error, "API Usage");
 				return [];
 			}
 
@@ -151,7 +152,7 @@ export const getCompanyApiUsage = cache(
 				lastErrorMessage: row.last_error_message,
 			}));
 		} catch (err) {
-			console.error("[API Usage] Company query error:", err);
+			logSupabaseError(err, "API Usage");
 			return [];
 		}
 	}
@@ -187,7 +188,7 @@ export const getApiUsageSummary = cache(async (): Promise<{
 			.eq("month_year", currentMonth);
 
 		if (error) {
-			console.error("[API Usage] Failed to fetch summary:", error.message);
+			logSupabaseError(error, "API Usage");
 			return {
 				totalApiCalls: 0,
 				totalCostCents: 0,
@@ -219,7 +220,7 @@ export const getApiUsageSummary = cache(async (): Promise<{
 			companiesWithUsage: uniqueCompanies.size,
 		};
 	} catch (err) {
-		console.error("[API Usage] Summary query error:", err);
+		logSupabaseError(err, "API Usage");
 		return {
 			totalApiCalls: 0,
 			totalCostCents: 0,
@@ -259,7 +260,7 @@ export const getApiUsageTrends = cache(async (): Promise<
 			.in("month_year", months);
 
 		if (error) {
-			console.error("[API Usage] Failed to fetch trends:", error.message);
+			logSupabaseError(error, "API Usage");
 			return [];
 		}
 
@@ -299,7 +300,7 @@ export const getApiUsageTrends = cache(async (): Promise<
 			})
 			.reverse();
 	} catch (err) {
-		console.error("[API Usage] Trends query error:", err);
+		logSupabaseError(err, "API Usage");
 		return [];
 	}
 });
