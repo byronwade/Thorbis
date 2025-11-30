@@ -9,10 +9,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+	Activity,
+	AlertCircle,
 	BarChart,
 	Building2,
 	Calendar,
 	CreditCard,
+	Database,
 	DollarSign,
 	FileText,
 	HelpCircle,
@@ -140,10 +143,80 @@ const navigationSections: Record<string, NavGroup[]> = {
 					url: "/dashboard/work/users",
 					icon: Users,
 				},
+			],
+		},
+		{
+			label: "Billing",
+			items: [
+				{
+					title: "Dashboard",
+					url: "/dashboard/work/billing",
+					icon: DollarSign,
+				},
 				{
 					title: "Subscriptions",
 					url: "/dashboard/work/subscriptions",
 					icon: CreditCard,
+				},
+			],
+		},
+		{
+			label: "Monitoring",
+			items: [
+				{
+					title: "System Health",
+					url: "/dashboard/work/system-health",
+					icon: Activity,
+				},
+				{
+					title: "Error Tracking",
+					url: "/dashboard/work/errors",
+					icon: AlertCircle,
+				},
+				{
+					title: "Integrations",
+					url: "/dashboard/work/integrations",
+					icon: Zap,
+				},
+				{
+					title: "Webhooks",
+					url: "/dashboard/work/webhooks",
+					icon: Activity,
+				},
+				{
+					title: "Communications",
+					url: "/dashboard/work/communications",
+					icon: Mail,
+				},
+			],
+		},
+		{
+			label: "Security & Audit",
+			items: [
+				{
+					title: "Audit Log",
+					url: "/dashboard/work/audit",
+					icon: FileText,
+				},
+				{
+					title: "Security",
+					url: "/dashboard/work/security",
+					icon: Settings,
+				},
+			],
+		},
+		{
+			label: "Platform",
+			items: [
+				{
+					title: "Settings",
+					url: "/dashboard/work/platform",
+					icon: Settings,
+				},
+				{
+					title: "Data Management",
+					url: "/dashboard/work/data",
+					icon: Database,
 				},
 			],
 		},

@@ -29,7 +29,7 @@ export interface SupportSession {
 /**
  * Request a support session to access a customer's account
  */
-async function requestSupportSession(companyId: string, ticketId: string | null, reason: string, requestedPermissions: string[] = ["view"]) {
+export async function requestSupportSession(companyId: string, ticketId: string | null, reason: string, requestedPermissions: string[] = ["view"]) {
 	const session = await getAdminSession();
 	if (!session) {
 		return { error: "Unauthorized" };

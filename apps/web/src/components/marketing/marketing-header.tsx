@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { LaunchCountdownBanner } from "./launch-countdown-banner";
 
 // Types
 type NavItem = {
@@ -423,9 +425,13 @@ function MobileSection({
 
 // Main Header
 export function MarketingHeader() {
+	const pathname = usePathname();
+	const isWaitlistPage = pathname === "/waitlist";
+
 	return (
-		<header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-			<div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+		<>
+			<header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+				<div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
 				{/* Logo */}
 				<Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80 shrink-0">
 					<Image src="/ThorbisLogo.webp" alt="Thorbis" width={36} height={36} className="object-contain size-9" />
@@ -512,14 +518,19 @@ export function MarketingHeader() {
 					<Button asChild variant="ghost" size="default" className="hidden rounded-full text-sm font-medium text-muted-foreground hover:text-foreground md:inline-flex">
 						<Link href="/login">Sign in</Link>
 					</Button>
-					<Button asChild size="default" className="hidden rounded-full bg-primary px-6 text-sm font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 md:inline-flex">
-						<Link href="/waitlist">
-							Get Started
-						</Link>
-					</Button>
+					<Button asChild size="default" className="hidden rounded-full bg-primary px-7 py-2.5 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 md:inline-flex">
+					<Link href="/waitlist" className="flex items-center gap-2">
+						Join Waitlist
+						<ArrowRight className="size-4.5" />
+					</Link>
+				</Button>
 					<MobileNav />
 				</div>
 			</div>
 		</header>
+
+		{/* Countdown Banner - Show on all pages except waitlist */}
+		{!isWaitlistPage && <LaunchCountdownBanner />}
+	</>
 	);
 }

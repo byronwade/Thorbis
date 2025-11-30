@@ -1,103 +1,87 @@
-import { LifeBuoy, Search } from "lucide-react";
+import { Suspense } from "react";
+import { getSupportTickets, getSupportTicketStats } from "@/actions/support-tickets";
+import { SupportTicketsManager } from "@/components/work/support-tickets-manager";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 /**
  * Support Tickets Page
+ *
+ * Manage customer support tickets across the platform.
  */
+async function SupportTicketsData() {
+	const [ticketsResult, statsResult] = await Promise.all([
+		getSupportTickets(50),
+		getSupportTicketStats(),
+	]);
+
+	if (ticketsResult.error || statsResult.error) {
+		return (
+			<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+				<p className="text-sm text-destructive">
+					{ticketsResult.error || statsResult.error || "Failed to load support tickets"}
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<SupportTicketsManager
+			initialTickets={ticketsResult.data || []}
+			initialStats={statsResult.data || {
+				total_tickets: 0,
+				open_tickets: 0,
+				in_progress: 0,
+				resolved_today: 0,
+				avg_response_time_minutes: 0,
+			}}
+		/>
+	);
+}
+
 export default function SupportPage() {
 	return (
-		<div className="p-6">
-			<div className="flex items-center justify-between mb-6">
-				<div>
-					<h1 className="text-2xl font-bold tracking-tight">Support Tickets</h1>
-					<p className="text-muted-foreground">
-						Handle customer support requests
-					</p>
-				</div>
+		<div className="flex flex-col">
+			<div className="mb-6">
+				<h1 className="text-2xl font-bold tracking-tight">Support Tickets</h1>
+				<p className="text-muted-foreground text-sm">
+					Manage customer support requests and track response times
+				</p>
 			</div>
+			<Suspense fallback={<SupportTicketsSkeleton />}>
+				<SupportTicketsData />
+			</Suspense>
+		</div>
+	);
+}
 
-			{/* Stats */}
-			<div className="grid gap-4 md:grid-cols-4 mb-6">
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Open Tickets</p>
-					<p className="text-2xl font-bold">--</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Pending</p>
-					<p className="text-2xl font-bold">--</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Resolved Today</p>
-					<p className="text-2xl font-bold">--</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Avg Response Time</p>
-					<p className="text-2xl font-bold">-- min</p>
-				</div>
+/**
+ * Loading skeleton
+ */
+function SupportTicketsSkeleton() {
+	return (
+		<div className="space-y-6">
+			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<Card key={i}>
+						<CardContent className="p-6">
+							<Skeleton className="h-4 w-24 mb-2" />
+							<Skeleton className="h-8 w-16 mb-1" />
+							<Skeleton className="h-3 w-20" />
+						</CardContent>
+					</Card>
+				))}
 			</div>
-
-			<div className="flex items-center gap-4 mb-6">
-				<div className="relative flex-1 max-w-md">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-					<input
-						type="text"
-						placeholder="Search tickets..."
-						className="w-full rounded-md border bg-background pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-					/>
-				</div>
-				<select className="rounded-md border bg-background px-4 py-2 text-sm">
-					<option>All Status</option>
-					<option>Open</option>
-					<option>Pending</option>
-					<option>Resolved</option>
-					<option>Closed</option>
-				</select>
-				<select className="rounded-md border bg-background px-4 py-2 text-sm">
-					<option>All Priority</option>
-					<option>Critical</option>
-					<option>High</option>
-					<option>Medium</option>
-					<option>Low</option>
-				</select>
-			</div>
-
-			<div className="rounded-lg border bg-card">
-				<div className="overflow-x-auto">
-					<table className="w-full">
-						<thead>
-							<tr className="border-b bg-muted/50">
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Ticket
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Company
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Priority
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Status
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Created
-								</th>
-								<th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
-									Actions
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colSpan={6} className="px-4 py-12 text-center">
-									<LifeBuoy className="size-12 mx-auto mb-4 text-muted-foreground/20" />
-									<p className="text-muted-foreground">
-										Support ticket data will be loaded here
-									</p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
+			<Card>
+				<CardContent className="p-6">
+					<Skeleton className="h-10 w-full mb-4" />
+					<div className="space-y-2">
+						{Array.from({ length: 5 }).map((_, i) => (
+							<Skeleton key={i} className="h-16 w-full" />
+						))}
+					</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

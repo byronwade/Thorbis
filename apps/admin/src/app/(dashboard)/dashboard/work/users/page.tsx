@@ -1,92 +1,68 @@
+import { Suspense } from "react";
 import { UsersTable } from "@/components/work/users-table";
+import { getUsersWithDetails } from "@/actions/users";
+import { UsersTableSkeleton } from "@/components/work/users-table-skeleton";
 import type { User } from "@/types/entities";
-
-// Mock data for development - replace with real data fetching
-const mockUsers: User[] = [
-	{
-		id: "1",
-		email: "john@acmeplumbing.com",
-		firstName: "John",
-		lastName: "Smith",
-		role: "owner",
-		status: "active",
-		companyId: "1",
-		companyName: "Acme Plumbing Co.",
-		lastLogin: "2024-11-10T14:30:00Z",
-		createdAt: "2024-01-15T10:30:00Z",
-	},
-	{
-		id: "2",
-		email: "sarah@elitehvac.com",
-		firstName: "Sarah",
-		lastName: "Johnson",
-		role: "admin",
-		status: "active",
-		companyId: "2",
-		companyName: "Elite HVAC Services",
-		lastLogin: "2024-11-11T09:15:00Z",
-		createdAt: "2023-06-20T14:00:00Z",
-	},
-	{
-		id: "3",
-		email: "mike@quickfixelectric.com",
-		firstName: "Mike",
-		lastName: "Williams",
-		role: "owner",
-		status: "pending",
-		companyId: "3",
-		companyName: "Quick Fix Electric",
-		createdAt: "2024-11-01T09:15:00Z",
-	},
-	{
-		id: "4",
-		email: "tech1@acmeplumbing.com",
-		firstName: "Bob",
-		lastName: "Davis",
-		role: "technician",
-		status: "active",
-		companyId: "1",
-		companyName: "Acme Plumbing Co.",
-		lastLogin: "2024-11-10T08:00:00Z",
-		createdAt: "2024-03-01T11:45:00Z",
-	},
-	{
-		id: "5",
-		email: "manager@johnsonroofing.com",
-		firstName: "Lisa",
-		lastName: "Johnson",
-		role: "manager",
-		status: "active",
-		companyId: "4",
-		companyName: "Johnson & Sons Roofing",
-		lastLogin: "2024-11-09T16:20:00Z",
-		createdAt: "2023-11-15T09:00:00Z",
-	},
-	{
-		id: "6",
-		email: "suspended@metrolandscaping.com",
-		firstName: "Tom",
-		lastName: "Brown",
-		role: "owner",
-		status: "suspended",
-		companyId: "5",
-		companyName: "Metro Landscaping",
-		lastLogin: "2024-10-01T10:00:00Z",
-		createdAt: "2023-08-05T16:20:00Z",
-	},
-];
 
 /**
  * Users Management Page
+ * 
+ * Displays all users on the platform with their company associations.
  */
+async function UsersData() {
+	const result = await getUsersWithDetails(100);
+
+	if (result.error || !result.data) {
+		return (
+			<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+				<p className="text-sm text-destructive">
+					{result.error || "Failed to load users"}
+				</p>
+			</div>
+		);
+	}
+
+	// Transform UserWithDetails to User type
+	const users: User[] = result.data.map((userDetails) => {
+		// Get primary company (first active one, or first one)
+		const primaryCompany = userDetails.companies.find((c) => c.status === "active") || userDetails.companies[0];
+
+		// Parse full_name into firstName/lastName if needed
+		const nameParts = userDetails.full_name?.split(" ") || [];
+		const firstName = nameParts[0] || undefined;
+		const lastName = nameParts.slice(1).join(" ") || undefined;
+
+		return {
+			id: userDetails.id,
+			email: userDetails.email,
+			firstName,
+			lastName,
+			fullName: userDetails.full_name,
+			role: (primaryCompany?.role as any) || "technician",
+			status: (primaryCompany?.status as any) || "active",
+			companyId: primaryCompany?.company_id,
+			companyName: primaryCompany?.company_name,
+			lastLogin: userDetails.last_sign_in_at,
+			createdAt: userDetails.created_at,
+			avatarUrl: userDetails.avatar_url,
+		};
+	});
+
+	return (
+		<UsersTable
+			users={users}
+			totalCount={users.length}
+			showRefresh
+		/>
+	);
+}
+
 export default function UsersPage() {
 	return (
 		<div className="flex flex-col">
-			<UsersTable
-				users={mockUsers}
-				totalCount={mockUsers.length}
-				showRefresh
-			/>
+			<Suspense fallback={<UsersTableSkeleton />}>
+				<UsersData />
+			</Suspense>
 		</div>
 	);
 }

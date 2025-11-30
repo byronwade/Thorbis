@@ -21,13 +21,16 @@ export const Root = React.forwardRef<
   const internalRef = useRef<HTMLDivElement>(
     null
   ) as React.RefObject<HTMLDivElement>
-  const { className, orientation = "horizontal", ...etc } = props
+  const { className, orientation = "horizontal", value: _valueProp, ...etc } = props
 
   const player = useMediaStore((s) => s.player)
   const currentTime = useMediaStore((s) => s.currentTime)
   const duration = useMediaStore((s) => s.duration)
   const isLive = useMediaStore((s) => s.isLive)
-  const currentValue = duration ? (currentTime / duration) * 100 : 0
+  // Ensure currentValue is always a valid finite number between 0 and 100
+  const currentValue = duration && Number.isFinite(duration) && Number.isFinite(currentTime) && duration > 0
+    ? Math.max(0, Math.min(100, (currentTime / duration) * 100))
+    : 0
   const readyState = useMediaStore((s) => s.readyState)
 
   const disabled = props.disabled || readyState < MediaReadyState.HAVE_METADATA
@@ -75,7 +78,6 @@ export const Root = React.forwardRef<
 
   return (
     <SliderPrimitive.Root
-      value={[currentValue]}
       className={cn(
         `
           relative h-1 rounded-full transition-[height] duration-(--speed-regularTransition) ease-out-quad
@@ -90,6 +92,7 @@ export const Root = React.forwardRef<
       {...trackEvents}
       {...etc}
       disabled={disabled}
+      value={[currentValue]}
     />
   )
 })
@@ -227,16 +230,22 @@ export const Thumb = React.forwardRef<HTMLDivElement, ThumbProps>(
 
     let finalPosition = 0
 
-    if (!duration) {
+    if (!duration || !Number.isFinite(duration) || duration <= 0) {
       return null
     }
 
     if (position && Number.isFinite(position)) {
-      finalPosition = position
+      finalPosition = Math.max(0, Math.min(100, position))
     } else if (showWithHover) {
-      finalPosition = (hoveringTime / duration) * 100
+      const hoveringValue = Number.isFinite(hoveringTime) 
+        ? (hoveringTime / duration) * 100 
+        : 0
+      finalPosition = Math.max(0, Math.min(100, hoveringValue))
     } else {
-      finalPosition = (currentTime / duration) * 100
+      const currentValue = Number.isFinite(currentTime)
+        ? (currentTime / duration) * 100
+        : 0
+      finalPosition = Math.max(0, Math.min(100, currentValue))
     }
 
     return (

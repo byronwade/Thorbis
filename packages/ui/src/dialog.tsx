@@ -1,7 +1,6 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
 import type * as React from "react";
 
 import { cn } from "./utils";
@@ -47,28 +46,47 @@ function DialogContent({
 	className,
 	children,
 	showCloseButton = true,
+	overlayClassName,
+	panelClassName,
+	panelless = false,
 	...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
 	showCloseButton?: boolean;
+	overlayClassName?: string;
+	panelClassName?: string;
+	panelless?: boolean;
 }) {
+	const content = panelless ? (
+		className ? <div className={className}>{children}</div> : children
+	) : (
+		<div className={cn("dialog-panel", panelClassName, className)}>
+			{children}
+		</div>
+	);
+
 	return (
 		<DialogPortal data-slot="dialog-portal">
 			<DialogOverlay />
 			<DialogPrimitive.Content
-				className={cn("dialog-content", className)}
+				className={cn("dialog-content", overlayClassName)}
 				data-slot="dialog-content"
 				{...props}
 			>
-				{children}
-				{showCloseButton && (
-					<DialogPrimitive.Close
-						className="dialog-close-button"
-						data-slot="dialog-close"
-					>
-						<XIcon className="size-4" />
-						<span className="sr-only">Close</span>
-					</DialogPrimitive.Close>
-				)}
+				<div className="dialog-content-wrapper">
+					{showCloseButton && (
+						<DialogPrimitive.Close
+							className="dialog-close-button"
+							data-slot="dialog-close"
+							aria-label="Close dialog"
+						>
+							<span aria-hidden="true" className="dialog-close-button-label">
+								esc
+							</span>
+							<span className="sr-only">Close dialog</span>
+						</DialogPrimitive.Close>
+					)}
+					{content}
+				</div>
 			</DialogPrimitive.Content>
 		</DialogPortal>
 	);

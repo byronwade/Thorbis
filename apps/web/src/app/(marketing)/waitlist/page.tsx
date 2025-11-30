@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, CheckCircle2, Zap, Users, Gift } from "lucide-react";
 import { Suspense } from "react";
 import { WaitlistForm } from "@/components/marketing/waitlist-form";
+import { LaunchCountdownInline } from "@/components/marketing/launch-countdown-inline";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import { AnimatedGradientText } from "@/components/marketing/hero-background";
 
@@ -44,7 +45,7 @@ const benefits = [
 
 export default function WaitlistPage() {
 	return (
-		<div className="bg-background relative flex h-screen overflow-hidden">
+		<div className="bg-background relative flex min-h-screen flex-col overflow-y-auto">
 			{/* Background Effects */}
 			<div className="absolute inset-0 -z-10 overflow-hidden">
 				<div className="from-primary/5 via-background to-background absolute inset-0 bg-gradient-to-br" />
@@ -53,7 +54,7 @@ export default function WaitlistPage() {
 			</div>
 
 			{/* Split Screen Layout */}
-			<div className="flex w-full h-full flex-col lg:flex-row">
+			<div className="flex w-full flex-1 flex-col lg:flex-row">
 				{/* Left Side - Benefits */}
 				<div className="flex flex-1 flex-col overflow-y-auto px-6 py-8 lg:px-12 lg:py-12 xl:px-16">
 					<div className="mx-auto w-full max-w-lg flex flex-col h-full justify-center space-y-6">
@@ -124,6 +125,16 @@ export default function WaitlistPage() {
 				{/* Right Side - Form */}
 				<div className="flex flex-1 flex-col overflow-y-auto border-t border-border/50 bg-muted/20 px-6 py-8 lg:border-t-0 lg:border-l lg:px-12 lg:py-12 xl:px-16">
 					<div className="mx-auto w-full max-w-md flex flex-col h-full justify-center animate-in fade-in-50 slide-in-from-right duration-700 delay-300">
+						{/* Inline Countdown Above Form */}
+						<Suspense
+							fallback={
+								<div className="mb-6 flex items-center justify-center">
+									<Loader2 className="text-primary size-4 animate-spin" />
+								</div>
+							}
+						>
+							<LaunchCountdownInline />
+						</Suspense>
 						<Suspense
 							fallback={
 								<div className="flex min-h-[400px] items-center justify-center">

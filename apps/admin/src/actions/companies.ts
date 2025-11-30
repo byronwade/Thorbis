@@ -142,3 +142,120 @@ export async function requestCompanyAccess(companyId: string, ticketId?: string,
 		message: "Access request sent to customer. Waiting for approval...",
 	};
 }
+
+/**
+ * Get company by ID with full details
+ */
+export async function getCompanyById(companyId: string) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const webDb = createWebClient();
+
+	// Get company
+	const { data: company, error: companyError } = await webDb
+		.from("companies")
+		.select("*")
+		.eq("id", companyId)
+		.single();
+
+	if (companyError || !company) {
+		return { error: "Company not found" };
+	}
+
+	// Get stats
+	const [usersCount, jobsCount, invoicesCount, revenueData, memberships] = await Promise.all([
+		webDb.from("company_memberships").select("id", { count: "exact", head: true }).eq("company_id", company.id),
+		webDb.from("jobs").select("id", { count: "exact", head: true }).eq("company_id", company.id),
+		webDb.from("invoices").select("id", { count: "exact", head: true }).eq("company_id", company.id),
+		webDb
+			.from("payments")
+			.select("amount")
+			.eq("company_id", company.id)
+			.eq("status", "completed")
+			.then((res) => res.data?.reduce((sum, payment) => sum + (payment.amount || 0), 0) || 0),
+		webDb
+			.from("company_memberships")
+			.select("user_id, users(id, email, full_name, avatar_url)")
+			.eq("company_id", company.id)
+			.eq("status", "active"),
+	]);
+
+	return {
+		data: {
+			...company,
+			users_count: usersCount.count || 0,
+			jobs_count: jobsCount.count || 0,
+			invoices_count: invoicesCount.count || 0,
+			total_revenue: revenueData,
+			memberships: memberships.data || [],
+		},
+	};
+}
+
+/**
+ * Update company
+ */
+export async function updateCompany(companyId: string, updates: {
+	name?: string;
+	owner_email?: string;
+	owner_phone?: string;
+	status?: string;
+	subscription_tier?: string;
+}) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const webDb = createWebClient();
+
+	const { data, error } = await webDb
+		.from("companies")
+		.update({
+			...updates,
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", companyId)
+		.select()
+		.single();
+
+	if (error) {
+		return { error: "Failed to update company" };
+	}
+
+	return { data };
+}
+
+/**
+ * Suspend or activate company
+ */
+export async function setCompanyStatus(companyId: string, status: "active" | "suspended", reason?: string) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const webDb = createWebClient();
+
+	const { data, error } = await webDb
+		.from("companies")
+		.update({
+			status,
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", companyId)
+		.select()
+		.single();
+
+	if (error) {
+		return { error: "Failed to update company status" };
+	}
+
+	// TODO: Log to audit log
+	// await logAdminAction(session.user.id, `company_${status}`, "company", companyId, { reason });
+
+	return { data };
+}

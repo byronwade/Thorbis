@@ -48,15 +48,17 @@ function CommandDialog({
 				<DialogDescription>{description}</DialogDescription>
 			</DialogHeader>
 			<DialogContent
-				className={cn(
-					"overflow-hidden border bg-white p-0 shadow-xl dark:border-white/18 dark:bg-[#070707] dark:shadow-[0_25px_70px_rgba(0,0,0,0.65)] dark:ring-1 dark:ring-white/8",
-					className,
-				)}
+				overlayClassName={cn("dialog-command-content", className)}
+				panelless
 				showCloseButton={showCloseButton}
 			>
-				<Command className="bg-transparent p-3 text-gray-900 dark:text-zinc-100 **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 dark:[&_[cmdk-group-heading]]:text-zinc-400 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-					{children}
-				</Command>
+				<div className="w-full max-w-[750px] rounded-2xl border border-gray-200 bg-[#FAFAFA] shadow-[0_25px_60px_rgba(15,23,42,0.25)] dark:border-white/10 dark:bg-[#202020] dark:shadow-[0_35px_90px_rgba(0,0,0,0.45)]">
+					<div className="flex max-h-[80vh] flex-col overflow-hidden rounded-2xl">
+						<Command className="bg-transparent p-3 text-gray-900 dark:text-zinc-100 **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500 dark:[&_[cmdk-group-heading]]:text-zinc-400 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+							{children}
+						</Command>
+					</div>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

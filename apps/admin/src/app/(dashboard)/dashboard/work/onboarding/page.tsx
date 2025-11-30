@@ -1,96 +1,87 @@
-import { Search, UserPlus } from "lucide-react";
+import { Suspense } from "react";
+import { getOnboardingProgress, getOnboardingStats } from "@/actions/onboarding";
+import { OnboardingManager } from "@/components/work/onboarding-manager";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 /**
- * Onboarding Page
+ * Onboarding Management Page
+ *
+ * Track and manage company onboarding progress.
  */
+async function OnboardingData() {
+	const [progressResult, statsResult] = await Promise.all([
+		getOnboardingProgress(50),
+		getOnboardingStats(),
+	]);
+
+	if (progressResult.error || statsResult.error) {
+		return (
+			<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+				<p className="text-sm text-destructive">
+					{progressResult.error || statsResult.error || "Failed to load onboarding data"}
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<OnboardingManager
+			initialProgress={progressResult.data || []}
+			initialStats={statsResult.data || {
+				total_companies: 0,
+				in_progress: 0,
+				completed_this_week: 0,
+				avg_completion_time_days: 0,
+				completion_rate: 0,
+			}}
+		/>
+	);
+}
+
 export default function OnboardingPage() {
 	return (
-		<div className="p-6">
-			<div className="flex items-center justify-between mb-6">
-				<div>
-					<h1 className="text-2xl font-bold tracking-tight">Onboarding</h1>
-					<p className="text-muted-foreground">
-						Track new company onboarding progress
-					</p>
-				</div>
+		<div className="flex flex-col">
+			<div className="mb-6">
+				<h1 className="text-2xl font-bold tracking-tight">Onboarding</h1>
+				<p className="text-muted-foreground text-sm">
+					Track new company onboarding progress and completion rates
+				</p>
 			</div>
+			<Suspense fallback={<OnboardingSkeleton />}>
+				<OnboardingData />
+			</Suspense>
+		</div>
+	);
+}
 
-			{/* Stats */}
-			<div className="grid gap-4 md:grid-cols-4 mb-6">
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">In Progress</p>
-					<p className="text-2xl font-bold">--</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Completed This Week</p>
-					<p className="text-2xl font-bold">--</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Avg. Completion Time</p>
-					<p className="text-2xl font-bold">-- days</p>
-				</div>
-				<div className="rounded-lg border bg-card p-4">
-					<p className="text-sm text-muted-foreground">Completion Rate</p>
-					<p className="text-2xl font-bold">--%</p>
-				</div>
+/**
+ * Loading skeleton
+ */
+function OnboardingSkeleton() {
+	return (
+		<div className="space-y-6">
+			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<Card key={i}>
+						<CardContent className="p-6">
+							<Skeleton className="h-4 w-24 mb-2" />
+							<Skeleton className="h-8 w-16 mb-1" />
+							<Skeleton className="h-3 w-20" />
+						</CardContent>
+					</Card>
+				))}
 			</div>
-
-			<div className="flex items-center gap-4 mb-6">
-				<div className="relative flex-1 max-w-md">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-					<input
-						type="text"
-						placeholder="Search companies..."
-						className="w-full rounded-md border bg-background pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-					/>
-				</div>
-				<select className="rounded-md border bg-background px-4 py-2 text-sm">
-					<option>All Status</option>
-					<option>Not Started</option>
-					<option>In Progress</option>
-					<option>Completed</option>
-					<option>Stalled</option>
-				</select>
-			</div>
-
-			<div className="rounded-lg border bg-card">
-				<div className="overflow-x-auto">
-					<table className="w-full">
-						<thead>
-							<tr className="border-b bg-muted/50">
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Company
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Progress
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Current Step
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Started
-								</th>
-								<th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
-									Assigned To
-								</th>
-								<th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
-									Actions
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colSpan={6} className="px-4 py-12 text-center">
-									<UserPlus className="size-12 mx-auto mb-4 text-muted-foreground/20" />
-									<p className="text-muted-foreground">
-										Onboarding data will be loaded here
-									</p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
+			<Card>
+				<CardContent className="p-6">
+					<Skeleton className="h-10 w-full mb-4" />
+					<div className="space-y-2">
+						{Array.from({ length: 5 }).map((_, i) => (
+							<Skeleton key={i} className="h-16 w-full" />
+						))}
+					</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
