@@ -1,36 +1,33 @@
 "use client";
 
-import {
-	AlertTriangle,
-	Building,
-	Calendar,
-	Check,
-	Clock,
-	DollarSign,
-	Loader2,
-	Mail,
-	MessageSquare,
-	Phone,
-	Shield,
-	User,
-	X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import {
+    AlertTriangle,
+    Building,
+    Check,
+    Clock,
+    DollarSign,
+    Loader2,
+    Mail,
+    Shield,
+    User,
+    X
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Types matching the service
 interface PendingAction {
@@ -143,7 +140,7 @@ function formatToolArgs(
 
 		// Truncate long values
 		if (displayValue.length > 200) {
-			displayValue = displayValue.substring(0, 200) + "...";
+			displayValue = displayValue.substring(0, 200) + "…";
 		}
 
 		formatted.push({ label, value: displayValue });

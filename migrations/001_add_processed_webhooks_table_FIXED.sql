@@ -41,3 +41,5 @@ CREATE POLICY "Service role only" ON processed_webhooks
 -- 2. If exists: skip processing (return cached response)
 -- 3. If not exists: process webhook and insert record
 
+
+

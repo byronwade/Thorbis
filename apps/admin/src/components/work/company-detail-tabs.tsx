@@ -87,3 +87,5 @@ export function CompanyDetailTabs({ company }: CompanyDetailTabsProps) {
 	);
 }
 
+
+

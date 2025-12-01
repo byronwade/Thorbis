@@ -7,58 +7,48 @@
  */
 
 import {
-	AlertTriangle,
-	Building2,
-	Calendar,
-	Check,
-	Clock,
-	CreditCard,
-	DollarSign,
-	ExternalLink,
-	Eye,
-	EyeOff,
-	FileCheck,
-	Loader2,
-	Settings,
-	Zap,
-} from "lucide-react";
-import { useState } from "react";
-import {
-	updatePaymentSettings,
-	updatePayoutSchedule,
+    updatePaymentSettings,
+    updatePayoutSchedule,
 } from "@/actions/settings/payments";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import {
+    Building2,
+    Calendar,
+    Check,
+    Clock,
+    CreditCard,
+    DollarSign,
+    ExternalLink,
+    Eye,
+    EyeOff,
+    Loader2,
+    Settings,
+    Zap
+} from "lucide-react";
+import { useState } from "react";
 
 interface PaymentSettingsContentProps {
 	companyId: string;
@@ -258,6 +248,7 @@ export function PaymentSettingsContent({
 											variant="ghost"
 											size="icon"
 											onClick={() => toggleApiKeyVisibility("adyen-api")}
+											aria-label={showApiKeys["adyen-api"] ? "Hide API Key" : "Show API Key"}
 										>
 											{showApiKeys["adyen-api"] ? (
 												<EyeOff className="h-4 w-4" />
@@ -324,6 +315,7 @@ export function PaymentSettingsContent({
 											variant="ghost"
 											size="icon"
 											onClick={() => toggleApiKeyVisibility("plaid-secret")}
+											aria-label={showApiKeys["plaid-secret"] ? "Hide Secret" : "Show Secret"}
 										>
 											{showApiKeys["plaid-secret"] ? (
 												<EyeOff className="h-4 w-4" />
@@ -389,6 +381,7 @@ export function PaymentSettingsContent({
 											variant="ghost"
 											size="icon"
 											onClick={() => toggleApiKeyVisibility("profitstars-api")}
+											aria-label={showApiKeys["profitstars-api"] ? "Hide API Key" : "Show API Key"}
 										>
 											{showApiKeys["profitstars-api"] ? (
 												<EyeOff className="h-4 w-4" />

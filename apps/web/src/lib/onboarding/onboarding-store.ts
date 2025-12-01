@@ -60,6 +60,13 @@ export interface OnboardingData {
 	teamSize: string;
 	industry: string;
 	referralSource: string; // How did you hear about us?
+	
+	// User Profile
+	userPhoto: string | null;
+	userName: string;
+	userEmail: string;
+	userPhone: string;
+	userRole: string;
 
 	// Company profile & business verification
 	// Basic info
@@ -447,6 +454,13 @@ const initialData: OnboardingData = {
 	teamSize: "",
 	industry: "",
 	referralSource: "",
+
+	// User Profile
+	userPhoto: null,
+	userName: "",
+	userEmail: "",
+	userPhone: "",
+	userRole: "owner",
 
 	// Basic info
 	companyName: "",

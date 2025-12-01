@@ -57,3 +57,5 @@ async function UserDetailDataWrapper({
 	return <UserDetailData userId={id} />;
 }
 
+
+

@@ -68,7 +68,7 @@ function DialogContent({
 		<DialogPortal data-slot="dialog-portal">
 			<DialogOverlay />
 			<DialogPrimitive.Content
-				className={cn("dialog-content", overlayClassName)}
+				className={cn("dialog-content overscroll-contain", overlayClassName)}
 				data-slot="dialog-content"
 				{...props}
 			>
@@ -145,11 +145,6 @@ function DialogDescription({
 }
 
 export {
-	Dialog,
-	DialogTrigger,
-	DialogContent,
-	DialogHeader,
-	DialogFooter,
-	DialogTitle,
-	DialogDescription,
+    Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger
 };
+

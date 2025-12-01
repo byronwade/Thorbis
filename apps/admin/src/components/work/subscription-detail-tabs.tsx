@@ -80,3 +80,5 @@ export function SubscriptionDetailTabs({ subscription }: SubscriptionDetailTabsP
 	);
 }
 
+
+

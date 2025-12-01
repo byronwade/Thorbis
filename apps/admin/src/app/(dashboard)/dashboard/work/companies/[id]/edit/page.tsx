@@ -52,3 +52,5 @@ async function CompanyEditDataWrapper({
 	return <CompanyEditData companyId={id} />;
 }
 
+
+

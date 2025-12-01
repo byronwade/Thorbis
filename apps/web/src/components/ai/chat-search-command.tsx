@@ -1,22 +1,21 @@
 "use client";
 
+import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    type Chat,
+    chatSelectors,
+    useChatStore
+} from "@/lib/stores/chat-store";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-	CommandDialog,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import {
-	type Chat,
-	chatSelectors,
-	type Message,
-	useChatStore,
-} from "@/lib/stores/chat-store";
 
 type ChatSearchCommandProps = {
 	open: boolean;
@@ -72,9 +71,9 @@ function searchChats(chats: Chat[], query: string): SearchResult[] {
 					const start = Math.max(0, idx - 20);
 					const end = Math.min(message.content.length, idx + 60);
 					matchedSnippet =
-						(start > 0 ? "..." : "") +
+						(start > 0 ? "…" : "") +
 						message.content.slice(start, end) +
-						(end < message.content.length ? "..." : "");
+						(end < message.content.length ? "…" : "");
 				}
 			}
 		}

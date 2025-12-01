@@ -4,19 +4,19 @@
  * Profile Step - Clean User Profile Setup
  */
 
-import { Mail, Phone, User, X } from "lucide-react";
-import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
 import { cn } from "@/lib/utils";
+import { User, X } from "lucide-react";
+import { useRef, useState } from "react";
 
 const USER_ROLES = [
 	{ value: "owner", label: "Owner", description: "Full access to everything" },
@@ -159,6 +159,7 @@ export function ProfileStep() {
 					value={data.userName}
 					onChange={(e) => updateData({ userName: e.target.value })}
 					className="text-lg"
+					autoComplete="name"
 				/>
 			</div>
 
@@ -172,6 +173,7 @@ export function ProfileStep() {
 						placeholder="john@acmeplumbing.com"
 						value={data.userEmail}
 						onChange={(e) => updateData({ userEmail: e.target.value })}
+						autoComplete="email"
 					/>
 					<p className="text-xs text-muted-foreground">
 						For notifications and customer replies
@@ -185,6 +187,7 @@ export function ProfileStep() {
 						placeholder="(555) 123-4567"
 						value={data.userPhone}
 						onChange={(e) => updateData({ userPhone: e.target.value })}
+						autoComplete="tel"
 					/>
 					<p className="text-xs text-muted-foreground">
 						For SMS alerts and customer calls

@@ -52,3 +52,5 @@ async function SubscriptionDetailDataWrapper({
 	return <SubscriptionDetailData subscriptionId={id} />;
 }
 
+
+

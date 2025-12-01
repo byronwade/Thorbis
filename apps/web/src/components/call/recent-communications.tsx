@@ -8,19 +8,19 @@
  * Designed for the call window sidebar to provide quick context.
  */
 
-import { formatDistanceToNow } from "date-fns";
-import {
-	ChevronRight,
-	ExternalLink,
-	Mail,
-	MessageSquare,
-	Phone,
-	Voicemail,
-} from "lucide-react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import {
+    ChevronRight,
+    ExternalLink,
+    Mail,
+    MessageSquare,
+    Phone,
+    Voicemail,
+} from "lucide-react";
+import Link from "next/link";
 
 type CommunicationType = "sms" | "email" | "call" | "voicemail";
 
@@ -91,7 +91,7 @@ const getPreview = (comm: RecentCommunication): string => {
 	if (comm.body) {
 		// Strip HTML and truncate
 		const text = comm.body.replace(/<[^>]*>/g, "").trim();
-		return text.length > 60 ? text.substring(0, 60) + "..." : text;
+		return text.length > 60 ? text.substring(0, 60) + "…" : text;
 	}
 	// Fallback based on type
 	switch (comm.type) {

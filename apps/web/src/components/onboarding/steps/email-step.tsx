@@ -10,31 +10,30 @@
  * 4. Skip - Use platform domain later
  */
 
-import {
-	AlertTriangle,
-	Check,
-	CheckCircle2,
-	Clock,
-	Copy,
-	ExternalLink,
-	Globe,
-	Loader2,
-	Mail,
-	Shield,
-	SkipForward,
-	Zap,
-} from "lucide-react";
-import { useState } from "react";
 import { DNSVerificationTracker } from "@/components/onboarding/status-tracking/dns-verification-tracker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-	formatCurrency,
-	GMAIL_WORKSPACE_PER_USER_FEE,
+    formatCurrency,
+    GMAIL_WORKSPACE_PER_USER_FEE,
 } from "@/lib/onboarding/onboarding-fees";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
 import { cn } from "@/lib/utils";
+import {
+    AlertTriangle,
+    Check,
+    CheckCircle2,
+    Clock,
+    ExternalLink,
+    Globe,
+    Loader2,
+    Mail,
+    Shield,
+    SkipForward,
+    Zap
+} from "lucide-react";
+import { useState } from "react";
 
 type EmailSetupOption =
 	| "platform"
@@ -328,6 +327,7 @@ export function EmailStep() {
 							placeholder="you@yourcompany.com"
 							value={data.companyEmail}
 							onChange={(e) => updateData({ companyEmail: e.target.value })}
+							autoComplete="email"
 						/>
 						<p className="text-xs text-muted-foreground">
 							Customer replies go to this address. You can upgrade to a custom
@@ -365,6 +365,7 @@ export function EmailStep() {
 											setDomainError(null);
 										}}
 										className={domainError ? "border-destructive" : ""}
+										autoComplete="url"
 									/>
 									<Button
 										onClick={handleDomainSubmit}

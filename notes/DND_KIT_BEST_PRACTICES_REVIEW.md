@@ -273,3 +273,5 @@ const sensors = useSensors(
 
 **Priority Fix**: Add `KeyboardSensor` to schedule timeline and monthly view for full accessibility compliance.
 
+
+

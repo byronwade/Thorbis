@@ -14,24 +14,25 @@
 -- ============================================================================
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE suggestions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE streams ENABLE ROW LEVEL SECURITY;
+-- Commented out: these tables don't exist (appear to be from a different application)
+-- ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE suggestions ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE streams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
-ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE custom_roles ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE departments ENABLE ROW LEVEL SECURITY;  -- doesn't exist
+-- ALTER TABLE custom_roles ENABLE ROW LEVEL SECURITY;  -- doesn't exist
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;  -- doesn't exist
 ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE estimates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purchase_orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE po_settings ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE po_settings ENABLE ROW LEVEL SECURITY;  -- doesn't exist
 
 -- ============================================================================
 -- USERS TABLE POLICIES
@@ -61,244 +62,244 @@ CREATE POLICY "Users can delete own profile"
   USING (auth.uid() = id);
 
 -- ============================================================================
--- POSTS TABLE POLICIES
+-- POSTS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read published posts or their own posts
 -- Users can create their own posts
 -- Users can update/delete their own posts
 
-CREATE POLICY "Users can read published posts or own posts"
-  ON posts
-  FOR SELECT
-  USING (published = 'true' OR author_id = auth.uid());
-
-CREATE POLICY "Users can create own posts"
-  ON posts
-  FOR INSERT
-  WITH CHECK (author_id = auth.uid());
-
-CREATE POLICY "Users can update own posts"
-  ON posts
-  FOR UPDATE
-  USING (author_id = auth.uid());
-
-CREATE POLICY "Users can delete own posts"
-  ON posts
-  FOR DELETE
-  USING (author_id = auth.uid());
+-- CREATE POLICY "Users can read published posts or own posts"
+--   ON posts
+--   FOR SELECT
+--   USING (published = 'true' OR author_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can create own posts"
+--   ON posts
+--   FOR INSERT
+--   WITH CHECK (author_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can update own posts"
+--   ON posts
+--   FOR UPDATE
+--   USING (author_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can delete own posts"
+--   ON posts
+--   FOR DELETE
+--   USING (author_id = auth.uid());
 
 -- ============================================================================
--- CHATS TABLE POLICIES
+-- CHATS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read their own chats or public chats
 -- Users can create chats
 -- Users can update/delete their own chats
 
-CREATE POLICY "Users can read own or public chats"
-  ON chats
-  FOR SELECT
-  USING (user_id = auth.uid() OR visibility = 'public');
-
-CREATE POLICY "Users can create chats"
-  ON chats
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update own chats"
-  ON chats
-  FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can delete own chats"
-  ON chats
-  FOR DELETE
-  USING (user_id = auth.uid());
+-- CREATE POLICY "Users can read own or public chats"
+--   ON chats
+--   FOR SELECT
+--   USING (user_id = auth.uid() OR visibility = 'public');
+-- 
+-- CREATE POLICY "Users can create chats"
+--   ON chats
+--   FOR INSERT
+--   WITH CHECK (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can update own chats"
+--   ON chats
+--   FOR UPDATE
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can delete own chats"
+--   ON chats
+--   FOR DELETE
+--   USING (user_id = auth.uid());
 
 -- ============================================================================
--- MESSAGES TABLE POLICIES
+-- MESSAGES TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read messages from their chats
 -- Users can create messages in their chats
 -- Users can update/delete their own messages
 
-CREATE POLICY "Users can read messages from own chats"
-  ON messages
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = messages.chat_id
-      AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
-    )
-  );
-
-CREATE POLICY "Users can create messages in own chats"
-  ON messages
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can update own messages"
-  ON messages
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = messages.chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can delete own messages"
-  ON messages
-  FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = messages.chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Users can read messages from own chats"
+--   ON messages
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = messages.chat_id
+--       AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can create messages in own chats"
+--   ON messages
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can update own messages"
+--   ON messages
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = messages.chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can delete own messages"
+--   ON messages
+--   FOR DELETE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = messages.chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
--- VOTES TABLE POLICIES
+-- VOTES TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read their own votes
 -- Users can create votes
 -- Users can update/delete their own votes
 
-CREATE POLICY "Users can read own votes"
-  ON votes
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = votes.chat_id
-      AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
-    )
-  );
-
-CREATE POLICY "Users can create votes"
-  ON votes
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can update own votes"
-  ON votes
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = votes.chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Users can delete own votes"
-  ON votes
-  FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = votes.chat_id
-      AND chats.user_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Users can read own votes"
+--   ON votes
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = votes.chat_id
+--       AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can create votes"
+--   ON votes
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can update own votes"
+--   ON votes
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = votes.chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can delete own votes"
+--   ON votes
+--   FOR DELETE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = votes.chat_id
+--       AND chats.user_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
--- DOCUMENTS TABLE POLICIES
+-- DOCUMENTS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read their own documents
 -- Users can create/update/delete their own documents
 
-CREATE POLICY "Users can read own documents"
-  ON documents
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can create documents"
-  ON documents
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update own documents"
-  ON documents
-  FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can delete own documents"
-  ON documents
-  FOR DELETE
-  USING (user_id = auth.uid());
+-- CREATE POLICY "Users can read own documents"
+--   ON documents
+--   FOR SELECT
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can create documents"
+--   ON documents
+--   FOR INSERT
+--   WITH CHECK (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can update own documents"
+--   ON documents
+--   FOR UPDATE
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can delete own documents"
+--   ON documents
+--   FOR DELETE
+--   USING (user_id = auth.uid());
 
 -- ============================================================================
--- SUGGESTIONS TABLE POLICIES
+-- SUGGESTIONS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read suggestions from their chats
 -- Users can create/update/delete suggestions in their chats
 
-CREATE POLICY "Users can read suggestions from own chats"
-  ON suggestions
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM chats
-      WHERE chats.id = suggestions.document_id::uuid
-      AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
-    )
-  );
-
-CREATE POLICY "Users can create suggestions"
-  ON suggestions
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update own suggestions"
-  ON suggestions
-  FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can delete own suggestions"
-  ON suggestions
-  FOR DELETE
-  USING (user_id = auth.uid());
+-- CREATE POLICY "Users can read suggestions from own chats"
+--   ON suggestions
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM chats
+--       WHERE chats.id = suggestions.document_id::uuid
+--       AND (chats.user_id = auth.uid() OR chats.visibility = 'public')
+--     )
+--   );
+-- 
+-- CREATE POLICY "Users can create suggestions"
+--   ON suggestions
+--   FOR INSERT
+--   WITH CHECK (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can update own suggestions"
+--   ON suggestions
+--   FOR UPDATE
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can delete own suggestions"
+--   ON suggestions
+--   FOR DELETE
+--   USING (user_id = auth.uid());
 
 -- ============================================================================
--- STREAMS TABLE POLICIES
+-- STREAMS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Users can read their own streams
 -- Users can create/update/delete their own streams
 
-CREATE POLICY "Users can read own streams"
-  ON streams
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can create streams"
-  ON streams
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update own streams"
-  ON streams
-  FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can delete own streams"
-  ON streams
-  FOR DELETE
-  USING (user_id = auth.uid());
+-- CREATE POLICY "Users can read own streams"
+--   ON streams
+--   FOR SELECT
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can create streams"
+--   ON streams
+--   FOR INSERT
+--   WITH CHECK (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can update own streams"
+--   ON streams
+--   FOR UPDATE
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE POLICY "Users can delete own streams"
+--   ON streams
+--   FOR DELETE
+--   USING (user_id = auth.uid());
 
 -- ============================================================================
 -- COMPANIES TABLE POLICIES
@@ -335,106 +336,106 @@ CREATE POLICY "Company owners can delete company"
   USING (owner_id = auth.uid());
 
 -- ============================================================================
--- DEPARTMENTS TABLE POLICIES
+-- DEPARTMENTS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Company members can read departments
 -- Company owners can manage departments
 
-CREATE POLICY "Company members can read departments"
-  ON departments
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM team_members
-      WHERE team_members.company_id = departments.company_id
-      AND team_members.user_id = auth.uid()
-      AND team_members.status = 'active'
-    )
-  );
-
-CREATE POLICY "Company owners can create departments"
-  ON departments
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Company owners can update departments"
-  ON departments
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = departments.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Company owners can delete departments"
-  ON departments
-  FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = departments.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Company members can read departments"
+--   ON departments
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM team_members
+--       WHERE team_members.company_id = departments.company_id
+--       AND team_members.user_id = auth.uid()
+--       AND team_members.status = 'active'
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can create departments"
+--   ON departments
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can update departments"
+--   ON departments
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = departments.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can delete departments"
+--   ON departments
+--   FOR DELETE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = departments.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
--- CUSTOM_ROLES TABLE POLICIES
+-- CUSTOM_ROLES TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Company members can read roles
 -- Company owners can manage roles
 
-CREATE POLICY "Company members can read roles"
-  ON custom_roles
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM team_members
-      WHERE team_members.company_id = custom_roles.company_id
-      AND team_members.user_id = auth.uid()
-      AND team_members.status = 'active'
-    )
-  );
-
-CREATE POLICY "Company owners can create roles"
-  ON custom_roles
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Company owners can update roles"
-  ON custom_roles
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = custom_roles.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Company owners can delete roles"
-  ON custom_roles
-  FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = custom_roles.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Company members can read roles"
+--   ON custom_roles
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM team_members
+--       WHERE team_members.company_id = custom_roles.company_id
+--       AND team_members.user_id = auth.uid()
+--       AND team_members.status = 'active'
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can create roles"
+--   ON custom_roles
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can update roles"
+--   ON custom_roles
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = custom_roles.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can delete roles"
+--   ON custom_roles
+--   FOR DELETE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = custom_roles.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
 -- TEAM_MEMBERS TABLE POLICIES
@@ -495,44 +496,44 @@ CREATE POLICY "Company owners can remove members"
   );
 
 -- ============================================================================
--- COMPANY_SETTINGS TABLE POLICIES
+-- COMPANY_SETTINGS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Company members can read settings
 -- Company owners can update settings
 
-CREATE POLICY "Company members can read settings"
-  ON company_settings
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM team_members
-      WHERE team_members.company_id = company_settings.company_id
-      AND team_members.user_id = auth.uid()
-      AND team_members.status = 'active'
-    )
-  );
-
-CREATE POLICY "Company owners can create settings"
-  ON company_settings
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
-
-CREATE POLICY "Company owners can update settings"
-  ON company_settings
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = company_settings.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Company members can read settings"
+--   ON company_settings
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM team_members
+--       WHERE team_members.company_id = company_settings.company_id
+--       AND team_members.user_id = auth.uid()
+--       AND team_members.status = 'active'
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can create settings"
+--   ON company_settings
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
+-- 
+-- CREATE POLICY "Company owners can update settings"
+--   ON company_settings
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = company_settings.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
 -- PROPERTIES TABLE POLICIES
@@ -800,44 +801,44 @@ CREATE POLICY "Company owners can delete purchase orders"
   );
 
 -- ============================================================================
--- PO_SETTINGS TABLE POLICIES
+-- PO_SETTINGS TABLE POLICIES (COMMENTED - TABLE DOESN'T EXIST)
 -- ============================================================================
 -- Company members can read PO settings
 -- Company owners can update PO settings
 
-CREATE POLICY "Company members can read PO settings"
-  ON po_settings
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM team_members
-      WHERE team_members.company_id = po_settings.company_id
-      AND team_members.user_id = auth.uid()
-      AND team_members.status = 'active'
-    )
-  );
+-- CREATE POLICY "Company members can read PO settings"
+--   ON po_settings
+--   FOR SELECT
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM team_members
+--       WHERE team_members.company_id = po_settings.company_id
+--       AND team_members.user_id = auth.uid()
+--       AND team_members.status = 'active'
+--     )
+--   );
 
-CREATE POLICY "Company owners can create PO settings"
-  ON po_settings
-  FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Company owners can create PO settings"
+--   ON po_settings
+--   FOR INSERT
+--   WITH CHECK (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
 
-CREATE POLICY "Company owners can update PO settings"
-  ON po_settings
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM companies
-      WHERE companies.id = po_settings.company_id
-      AND companies.owner_id = auth.uid()
-    )
-  );
+-- CREATE POLICY "Company owners can update PO settings"
+--   ON po_settings
+--   FOR UPDATE
+--   USING (
+--     EXISTS (
+--       SELECT 1 FROM companies
+--       WHERE companies.id = po_settings.company_id
+--       AND companies.owner_id = auth.uid()
+--     )
+--   );
 
 -- ============================================================================
 -- DATABASE TRIGGERS FOR USER SYNC

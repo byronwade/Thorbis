@@ -95,3 +95,5 @@ export function UserDetailTabs({ user }: UserDetailTabsProps) {
 	);
 }
 
+
+

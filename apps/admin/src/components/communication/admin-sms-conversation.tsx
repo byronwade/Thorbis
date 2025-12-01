@@ -16,8 +16,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Check, CheckCheck, Clock, AlertCircle, Building2, User } from "lucide-react";
+import { format, isSameDay, isToday, isYesterday } from "date-fns";
+import { AlertCircle, Building2, Check, CheckCheck, Clock, User } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 type MessageDirection = "inbound" | "outbound";
@@ -144,7 +144,7 @@ function TypingIndicator() {
 		<div className="flex gap-2">
 			<div className="w-7 shrink-0">
 				<Avatar className="size-7">
-					<AvatarFallback className="bg-muted text-[10px]">...</AvatarFallback>
+					<AvatarFallback className="bg-muted text-[10px]">…</AvatarFallback>
 				</Avatar>
 			</div>
 			<div className="rounded-2xl rounded-bl-md bg-muted px-4 py-3">

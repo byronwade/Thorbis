@@ -53,7 +53,7 @@ function SheetContent({
 		<SheetPortal>
 			<SheetOverlay />
 			<SheetPrimitive.Content
-				className={cn("sheet-content", className)}
+				className={cn("sheet-content overscroll-contain", className)}
 				data-slot="sheet-content"
 				data-side={side}
 				{...props}
@@ -118,12 +118,6 @@ function SheetDescription({
 }
 
 export {
-	Sheet,
-	SheetTrigger,
-	SheetContent,
-	SheetClose,
-	SheetHeader,
-	SheetFooter,
-	SheetTitle,
-	SheetDescription,
+    Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger
 };
+

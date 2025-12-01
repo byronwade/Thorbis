@@ -57,3 +57,5 @@ async function CompanyDetailDataWrapper({
 	return <CompanyDetailData companyId={id} />;
 }
 
+
+

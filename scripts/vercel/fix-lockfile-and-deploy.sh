@@ -32,3 +32,5 @@ echo ""
 echo "✅ Changes pushed! Vercel will deploy both apps with updated install commands."
 
 
+
+

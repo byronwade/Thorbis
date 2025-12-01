@@ -1,0 +1,549 @@
+-- ============================================================================
+-- COMPREHENSIVE BASELINE SCHEMA - ALL CORE TABLES
+-- ============================================================================
+-- Migration: 00000000000000_baseline_schema
+-- Description: Creates ALL foundational tables required by subsequent migrations
+-- Author: AI Assistant (Gemini)
+-- Date: 2024-01-01 (predates all other migrations)
+--
+-- CRITICAL: This migration creates the complete core schema including:
+-- - PostgreSQL extensions
+-- - All core ENUMs
+-- - users, companies, team_members (auth/organization)
+-- - customers, properties (customer management)
+-- - price_book_categories, price_book_items (pricing)
+-- - jobs, estimates, invoices (work management)
+-- - All necessary indexes, triggers, and RLS infrastructure
+--
+-- This ensures NO migration will fail due to missing table references.
+-- ============================================================================
+
+-- ============================================================================
+-- SECTION 1: ENABLE EXTENSIONS
+-- ============================================================================
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- ============================================================================
+-- SECTION 2: CREATE ALL CORE ENUMS
+-- ============================================================================
+
+-- User enums
+CREATE TYPE user_role AS ENUM ('owner', 'admin', 'manager', 'dispatcher', 'technician', 'csr');
+CREATE TYPE user_status AS ENUM ('online', 'available', 'busy');
+
+-- Customer enums (needed for customers table)
+CREATE TYPE customer_type AS ENUM ('residential', 'commercial', 'industrial');
+
+-- ============================================================================
+-- SECTION 3: CREATE USERS TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  phone TEXT,
+  avatar TEXT,
+  bio TEXT,
+  email_verified BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  status user_status DEFAULT 'available',
+  stripe_customer_id TEXT,
+  last_login_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_is_active ON users(is_active) WHERE is_active = TRUE;
+
+-- ============================================================================
+-- SECTION 4: CREATE COMPANIES TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  legal_name TEXT,
+  doing_business_as TEXT,
+  email TEXT,
+  phone TEXT,
+  support_email TEXT,
+  support_phone TEXT,
+  website TEXT,
+  website_url TEXT,
+  address TEXT,
+  city TEXT,
+  state TEXT,
+  zip_code TEXT,
+  lat NUMERIC,
+  lon NUMERIC,
+  industry TEXT,
+  company_size TEXT,
+  ein TEXT,
+  tax_id TEXT,
+  license_number TEXT,
+  business_timezone TEXT DEFAULT 'America/New_York',
+  logo TEXT,
+  logo_url TEXT,
+  logo_square_url TEXT,
+  brand_color TEXT,
+  brand_primary_color TEXT,
+  brand_secondary_color TEXT,
+  brand_accent_color TEXT,
+  brand_font TEXT,
+  email_settings JSONB DEFAULT '{}'::jsonb,
+  portal_settings JSONB DEFAULT '{}'::jsonb,
+  refund_settings JSONB DEFAULT '{}'::jsonb,
+  onboarding_step INTEGER DEFAULT 0,
+  onboarding_progress JSONB DEFAULT '{}'::jsonb,
+  onboarding_data JSONB DEFAULT '{}'::jsonb,
+  onboarding_step_completed JSONB DEFAULT '{}'::jsonb,
+  onboarding_completion_percentage INTEGER DEFAULT 0,
+  onboarding_completed_at TIMESTAMPTZ,
+  email_verified BOOLEAN DEFAULT FALSE,
+  email_verified_at TIMESTAMPTZ,
+  stripe_subscription_id TEXT,
+  stripe_subscription_status TEXT,
+  subscription_current_period_start TIMESTAMPTZ,
+  subscription_current_period_end TIMESTAMPTZ,
+  subscription_cancel_at_period_end BOOLEAN DEFAULT FALSE,
+  trial_ends_at TIMESTAMPTZ,
+  owner_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  deleted_at TIMESTAMPTZ,
+  deleted_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  archived_at TIMESTAMPTZ,
+  permanent_delete_scheduled_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_companies_slug ON companies(slug);
+CREATE INDEX IF NOT EXISTS idx_companies_owner_id ON companies(owner_id);
+CREATE INDEX IF NOT EXISTS idx_companies_created_at ON companies(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_companies_active ON companies(id) WHERE deleted_at IS NULL AND archived_at IS NULL;
+
+-- ============================================================================
+-- SECTION 5: CREATE TEAM_MEMBERS TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS team_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  role user_role NOT NULL DEFAULT 'technician',
+  status TEXT NOT NULL DEFAULT 'active',
+  email TEXT,
+  phone TEXT,
+  job_title TEXT,
+  department TEXT,
+  department_id UUID,
+  permissions JSONB,
+  role_id UUID,
+  invited_at TIMESTAMPTZ,
+  invited_by UUID,
+  invited_email TEXT,
+  invited_name TEXT,
+  joined_at TIMESTAMPTZ,
+  last_active_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
+  phone_extension TEXT,
+  direct_inward_dial TEXT,
+  extension_enabled BOOLEAN DEFAULT FALSE,
+  call_forwarding_enabled BOOLEAN DEFAULT FALSE,
+  call_forwarding_number TEXT,
+  simultaneous_ring_enabled BOOLEAN DEFAULT FALSE,
+  ring_timeout_seconds INTEGER DEFAULT 30,
+  voicemail_pin TEXT,
+  voicemail_greeting_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT team_members_company_user_unique UNIQUE (company_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_team_members_company_id ON team_members(company_id);
+CREATE INDEX IF NOT EXISTS idx_team_members_user_id ON team_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_team_members_role ON team_members(role);
+CREATE INDEX IF NOT EXISTS idx_team_members_status ON team_members(status) WHERE status = 'active';
+
+-- ============================================================================
+-- SECTION 6: CREATE CUSTOMERS TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS customers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  type customer_type NOT NULL DEFAULT 'residential',
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  company_name TEXT,
+  display_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  secondary_phone TEXT,
+  address TEXT,
+  address2 TEXT,
+  city TEXT,
+  state TEXT,
+  zip_code TEXT,
+  country TEXT DEFAULT 'USA',
+  tags JSONB DEFAULT '[]'::jsonb,
+  source TEXT,
+  referred_by UUID REFERENCES customers(id) ON DELETE SET NULL,
+  communication_preferences JSONB DEFAULT '{}'::jsonb,
+  preferred_contact_method TEXT DEFAULT 'email',
+  preferred_technician UUID REFERENCES users(id) ON DELETE SET NULL,
+  billing_email TEXT,
+  payment_terms TEXT DEFAULT 'due_on_receipt',
+  credit_limit INTEGER DEFAULT 0,
+  tax_exempt BOOLEAN NOT NULL DEFAULT FALSE,
+  tax_exempt_number TEXT,
+  total_revenue INTEGER DEFAULT 0,
+  total_jobs INTEGER DEFAULT 0,
+  total_invoices INTEGER DEFAULT 0,
+  average_job_value INTEGER DEFAULT 0,
+  outstanding_balance INTEGER DEFAULT 0,
+  last_job_date TIMESTAMPTZ,
+  last_invoice_date TIMESTAMPTZ,
+  last_payment_date TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'active',
+  notes TEXT,
+  internal_notes TEXT,
+  portal_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  portal_invited_at TIMESTAMPTZ,
+  portal_last_login_at TIMESTAMPTZ,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  deleted_at TIMESTAMPTZ,
+  deleted_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_customers_company_id ON customers(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(company_id, email);
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(company_id, phone);
+
+-- ============================================================================
+-- SECTION 7: CREATE PROPERTIES TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS properties (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  type TEXT NOT NULL DEFAULT 'residential',
+  name TEXT,
+  address TEXT NOT NULL,
+  address2 TEXT,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  zip_code TEXT NOT NULL,
+  country TEXT DEFAULT 'USA',
+  square_footage INTEGER,
+  year_built INTEGER,
+  number_of_units INTEGER DEFAULT 1,
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  is_primary BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  access_notes TEXT,
+  gate_code TEXT,
+  notes TEXT,
+  custom_fields JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_properties_company_id ON properties(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_properties_customer_id ON properties(customer_id) WHERE deleted_at IS NULL;
+
+-- ============================================================================
+-- SECTION 8: CREATE PRICE_BOOK_CATEGORIES TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS price_book_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  description TEXT,
+  parent_id UUID REFERENCES price_book_categories(id) ON DELETE SET NULL,
+  sort_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  CONSTRAINT price_book_categories_company_slug_unique UNIQUE (company_id, slug)
+);
+
+CREATE INDEX IF NOT EXISTS idx_price_book_categories_company_id ON price_book_categories(company_id);
+CREATE INDEX IF NOT EXISTS idx_price_book_categories_parent_id ON price_book_categories(parent_id);
+
+-- ============================================================================
+-- SECTION 9: CREATE PRICE_BOOK_ITEMS TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS price_book_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  category_id UUID REFERENCES price_book_categories(id) ON DELETE SET NULL,
+  type TEXT NOT NULL DEFAULT 'service',
+  name TEXT NOT NULL,
+  description TEXT,
+  sku TEXT,
+  unit_price INTEGER NOT NULL DEFAULT 0,
+  cost INTEGER DEFAULT 0,
+  unit TEXT DEFAULT 'ea',
+  taxable BOOLEAN DEFAULT TRUE,
+  is_active BOOLEAN DEFAULT TRUE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_price_book_items_company_id ON price_book_items(company_id);
+CREATE INDEX IF NOT EXISTS idx_price_book_items_category_id ON price_book_items(category_id);
+CREATE INDEX IF NOT EXISTS idx_price_book_items_type ON price_book_items(type);
+
+-- ============================================================================
+-- SECTION 10: CREATE JOBS TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+  assigned_to UUID REFERENCES users(id) ON DELETE SET NULL,
+  job_number TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'quoted',
+  priority TEXT NOT NULL DEFAULT 'medium',
+  job_type TEXT,
+  scheduled_start TIMESTAMPTZ,
+  scheduled_end TIMESTAMPTZ,
+  actual_start TIMESTAMPTZ,
+  actual_end TIMESTAMPTZ,
+  subtotal INTEGER DEFAULT 0 NOT NULL,
+  tax_rate DECIMAL(5, 2) DEFAULT 0,
+  tax_amount INTEGER DEFAULT 0 NOT NULL,
+  discount_amount INTEGER DEFAULT 0 NOT NULL,
+  total_amount INTEGER DEFAULT 0 NOT NULL,
+  completion_notes TEXT,
+  customer_signature TEXT,
+  technician_signature TEXT,
+  internal_notes TEXT,
+  recurring_job_id UUID,
+  source TEXT,
+  custom_fields JSONB DEFAULT '{}'::jsonb,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_jobs_company_id ON jobs(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_jobs_customer_id ON jobs(customer_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_jobs_job_number ON jobs(job_number);
+
+-- ============================================================================
+-- SECTION 11: CREATE ESTIMATES TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS estimates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+  property_id UUID REFERENCES properties(id) ON DELETE SET NULL,
+  job_id UUID REFERENCES jobs(id) ON DELETE SET NULL,
+  estimate_number TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  subtotal INTEGER DEFAULT 0 NOT NULL,
+  tax_rate DECIMAL(5, 2) DEFAULT 0,
+  tax_amount INTEGER DEFAULT 0 NOT NULL,
+  discount_amount INTEGER DEFAULT 0 NOT NULL,
+  total_amount INTEGER DEFAULT 0 NOT NULL,
+  valid_until DATE,
+  line_items JSONB DEFAULT '[]'::jsonb,
+  terms TEXT,
+  notes TEXT,
+  internal_notes TEXT,
+  sent_at TIMESTAMPTZ,
+  viewed_at TIMESTAMPTZ,
+  accepted_at TIMESTAMPTZ,
+  declined_at TIMESTAMPTZ,
+  decline_reason TEXT,
+  custom_fields JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_estimates_company_id ON estimates(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_estimates_estimate_number ON estimates(estimate_number);
+
+-- ============================================================================
+-- SECTION 12: CREATE INVOICES TABLE
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS invoices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+  property_id UUID REFERENCES properties(id) ON DELETE SET NULL,
+  job_id UUID REFERENCES jobs(id) ON DELETE SET NULL,
+  estimate_id UUID REFERENCES estimates(id) ON DELETE SET NULL,
+  invoice_number TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  subtotal INTEGER DEFAULT 0 NOT NULL,
+  tax_rate DECIMAL(5, 2) DEFAULT 0,
+  tax_amount INTEGER DEFAULT 0 NOT NULL,
+  discount_amount INTEGER DEFAULT 0 NOT NULL,
+  total_amount INTEGER DEFAULT 0 NOT NULL,
+  amount_paid INTEGER DEFAULT 0 NOT NULL,
+  amount_due INTEGER DEFAULT 0 NOT NULL,
+  due_date DATE,
+  payment_terms TEXT,
+  line_items JSONB DEFAULT '[]'::jsonb,
+  terms TEXT,
+  notes TEXT,
+  internal_notes TEXT,
+  sent_at TIMESTAMPTZ,
+  viewed_at TIMESTAMPTZ,
+  paid_at TIMESTAMPTZ,
+  custom_fields JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_invoices_company_id ON invoices(company_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_invoices_invoice_number ON invoices(invoice_number);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status) WHERE deleted_at IS NULL;
+
+-- ============================================================================
+-- SECTION 13: CREATE PURCHASE_ORDERS TABLE (referenced by inventory)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS purchase_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  po_number TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'draft',
+  subtotal INTEGER DEFAULT 0 NOT NULL,
+  tax_amount INTEGER DEFAULT 0 NOT NULL,
+  total_amount INTEGER DEFAULT 0 NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchase_orders_company_id ON purchase_orders(company_id);
+
+-- ============================================================================
+-- SECTION 14: CREATE HELPER FUNCTIONS
+-- ============================================================================
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================================================
+-- SECTION 15: CREATE TRIGGERS FOR UPDATED_AT
+-- ============================================================================
+
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_companies_updated_at BEFORE UPDATE ON companies
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_team_members_updated_at BEFORE UPDATE ON team_members
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON customers
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_properties_updated_at BEFORE UPDATE ON properties
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_price_book_categories_updated_at BEFORE UPDATE ON price_book_categories
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_price_book_items_updated_at BEFORE UPDATE ON price_book_items
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_estimates_updated_at BEFORE UPDATE ON estimates
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_invoices_updated_at BEFORE UPDATE ON invoices
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_purchase_orders_updated_at BEFORE UPDATE ON purchase_orders
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- SECTION 16: ENABLE ROW LEVEL SECURITY
+-- ============================================================================
+
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_book_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_book_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE estimates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE purchase_orders ENABLE ROW LEVEL SECURITY;
+
+-- Note: Detailed RLS policies will be added in later migrations
+
+-- ============================================================================
+-- SECTION 17: CREATE HELPFUL VIEWS
+-- ============================================================================
+
+CREATE OR REPLACE VIEW company_owners AS
+SELECT 
+  c.id AS company_id,
+  c.name AS company_name,
+  c.owner_id,
+  u.name AS owner_name,
+  u.email AS owner_email
+FROM companies c
+INNER JOIN users u ON u.id = c.owner_id
+WHERE c.deleted_at IS NULL;
+
+-- ============================================================================
+-- BASELINE SCHEMA COMPLETE
+-- ============================================================================
+
+COMMENT ON TABLE users IS 'Core user accounts linked to Supabase Auth';
+COMMENT ON TABLE companies IS 'Company/organization accounts';
+COMMENT ON TABLE team_members IS 'Team member roles and permissions within companies';
+COMMENT ON TABLE customers IS 'Customer records separate from team members';
+COMMENT ON TABLE properties IS 'Customer service locations';
+COMMENT ON TABLE price_book_categories IS 'Service/product category hierarchy';
+COMMENT ON TABLE price_book_items IS 'Service/product pricing catalog';
+COMMENT ON TABLE jobs IS 'Work orders and service jobs';
+COMMENT ON TABLE estimates IS 'Price quotes for customers';
+COMMENT ON TABLE invoices IS 'Billing documents';
+COMMENT ON TABLE purchase_orders IS 'Vendor purchase orders';

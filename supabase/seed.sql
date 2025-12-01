@@ -112,12 +112,14 @@ BEGIN
     INSERT INTO companies (
       name,
       slug,
+      owner_id,
       created_at,
       updated_at
     )
     VALUES (
       'Thorbis HVAC & Plumbing Services',
       'thorbis-hvac-plumbing-services',
+      v_user_id,
       NOW(),
       NOW()
     )
@@ -141,34 +143,26 @@ BEGIN
     company_id,
     user_id,
     role,
-    title,
+    status,
+    job_title,
     department,
-    is_active,
-    can_see_revenue,
-    can_see_costs,
-    hourly_rate,
-    created_at,
-    updated_at
+    joined_at
   )
   VALUES (
     v_company_id,
     v_user_id,
     'owner',
+    'active',
     'Owner / CEO',
     'management',
-    true,
-    true,
-    true,
-    15000, -- $150/hr in cents
-    NOW(),
     NOW()
   )
   ON CONFLICT (company_id, user_id)
   DO UPDATE SET
     role = 'owner',
-    title = 'Owner / CEO',
-    is_active = true,
-    updated_at = NOW();
+    status = 'active',
+    job_title = 'Owner / CEO',
+    joined_at = NOW();
 
   RAISE NOTICE '   You are now the company owner';
 

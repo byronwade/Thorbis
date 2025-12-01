@@ -49,3 +49,4 @@ CREATE INDEX IF NOT EXISTS idx_communications_visibility_category
 ON communications(company_id, visibility_scope, category, created_at DESC)
 WHERE deleted_at IS NULL;
 
+

@@ -12,51 +12,45 @@
 
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
-import {
-	AlertCircle,
-	ArrowDownLeft,
-	ArrowUpRight,
-	Briefcase,
-	ChevronRight,
-	Circle,
-	CircleDot,
-	Clock,
-	Filter,
-	Link as LinkIcon,
-	Mail,
-	MapPin,
-	MessageSquare,
-	Mic,
-	Phone,
-	PhoneIncoming,
-	PhoneMissed,
-	PhoneOff,
-	PhoneOutgoing,
-	RefreshCw,
-	Search,
-	StickyNote,
-	User,
-	Voicemail,
-	Volume2,
-} from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Communication } from "@/lib/queries/communications";
 import { cn } from "@/lib/utils";
 import { logError } from "@/lib/utils/error-logger";
+import { formatDistanceToNow } from "date-fns";
+import {
+    AlertCircle,
+    Briefcase,
+    ChevronRight,
+    CircleDot,
+    Filter,
+    Link as LinkIcon,
+    Mail,
+    MapPin,
+    MessageSquare,
+    Mic,
+    Phone,
+    PhoneIncoming,
+    PhoneMissed,
+    PhoneOutgoing,
+    RefreshCw,
+    Search,
+    StickyNote,
+    User,
+    Voicemail,
+    Volume2
+} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
 
 type CommunicationType = "all" | "email" | "sms" | "call" | "voicemail";
 
@@ -131,6 +125,7 @@ export function UnifiedInboxList({
 				teamMemberId,
 				companyId,
 				limit: 100,
+				offset: 0,
 			});
 
 			if (result.success && result.data) {
@@ -178,6 +173,7 @@ export function UnifiedInboxList({
 									size="icon"
 									onClick={handleRefresh}
 									disabled={loading}
+									aria-label="Refresh communications"
 								>
 									<RefreshCw
 										className={cn("h-4 w-4", loading && "animate-spin")}
@@ -442,7 +438,7 @@ function CommunicationListItem({
 	const getPreviewText = () => {
 		// For calls with transcription, show transcription preview
 		if (isPhoneComm && communication.callTranscript) {
-			return communication.callTranscript.slice(0, 100) + (communication.callTranscript.length > 100 ? "..." : "");
+			return communication.callTranscript.slice(0, 100) + (communication.callTranscript.length > 100 ? "…" : "");
 		}
 
 		// For calls, show a descriptive status
@@ -487,7 +483,7 @@ function CommunicationListItem({
 				{/* Avatar with type indicator */}
 				<div className="relative">
 					<Avatar className="h-10 w-10">
-						<AvatarFallback className={cn(bg, color)}>
+						<AvatarFallback className={cn(bg)}>
 							{avatarLetter}
 						</AvatarFallback>
 					</Avatar>

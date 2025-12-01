@@ -17,3 +17,4 @@ CREATE INDEX IF NOT EXISTS idx_company_email_domains_sendgrid_domain_id
 COMMENT ON COLUMN company_email_domains.sendgrid_domain_id IS 'SendGrid domain ID for domain authentication. Used when company uses SendGrid as email provider.';
 
 
+
