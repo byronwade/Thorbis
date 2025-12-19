@@ -117,9 +117,8 @@ const nextConfig: NextConfig = {
 		"@stratos/config",
 		"@stratos/shared",
 	],
-	// Note: prettier removed from external packages to allow bundling
-	// (required for @react-email/render which uses prettier internally)
-	// serverExternalPackages: ["prettier"],
+	// Mark server-only packages to prevent client-side bundling
+	serverExternalPackages: ["twilio"],
 	webpack: (webpackConfig) => {
 		// Keep webpack running to display all errors instead of bailing on the first failure
 		webpackConfig.bail = false;

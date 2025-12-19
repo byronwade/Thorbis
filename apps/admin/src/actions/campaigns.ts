@@ -13,8 +13,18 @@ import { getWebReaderClient } from "@/lib/supabase/web-reader";
 import { Resend } from "resend";
 import type { CampaignDraft, EmailCampaign, AudienceFilter } from "@/types/campaigns";
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-load Resend client to avoid build-time errors when API key is not available
+let _resend: Resend | null = null;
+function getResend(): Resend | null {
+	if (!_resend) {
+		const apiKey = process.env.RESEND_API_KEY;
+		if (!apiKey) {
+			return null;
+		}
+		_resend = new Resend(apiKey);
+	}
+	return _resend;
+}
 
 // Platform email configuration
 const PLATFORM_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "hello@thorbis.com";
@@ -336,6 +346,11 @@ export async function sendCampaign(id: string): Promise<ActionResult<SendCampaig
 		// Send emails via Resend (batch processing)
 		let sentCount = 0;
 		let failedCount = 0;
+
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
 
 		for (const recipient of recipients) {
 			try {

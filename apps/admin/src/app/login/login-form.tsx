@@ -2,9 +2,9 @@
 
 import { AlertCircle, Eye, EyeOff, Loader2, ShieldAlert } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { adminSignIn } from "@/actions/auth";
+import { signIn } from "@/lib/auth/better-auth/auth-client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { StandardFormField } from "@/components/ui/standard-form-field";
 
 export function AdminLoginForm() {
+	const router = useRouter();
 	const searchParams = useSearchParams();
 	const errorParam = searchParams?.get("error");
 
@@ -32,23 +33,28 @@ export function AdminLoginForm() {
 		setError(null);
 		setIsRateLimited(false);
 
+		const formData = new FormData(e.currentTarget);
+		const email = formData.get("email") as string;
+		const password = formData.get("password") as string;
+
 		try {
-			const formData = new FormData(e.currentTarget);
+			// Use Better Auth for authentication
+			const result = await signIn.email({
+				email,
+				password,
+			});
 
-			// Use server action for secure authentication with rate limiting
-			const result = await adminSignIn(formData);
-
-			if (!result.success) {
-				setError(result.error || "Authentication failed.");
-				setIsRateLimited(result.rateLimited || false);
+			if (result.error) {
+				setError(result.error.message || "Authentication failed. Please check your credentials.");
 				setIsLoading(false);
 				return;
 			}
 
 			// Redirect to admin dashboard on success
-			window.location.href = "/dashboard";
-		} catch {
-			setError("An unexpected error occurred. Please try again.");
+			router.push("/dashboard");
+		} catch (err) {
+			const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+			setError(message);
 			setIsLoading(false);
 		}
 	};

@@ -27,6 +27,16 @@ import {
 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -132,6 +142,8 @@ export function EmailPermissionsManager({
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
+	const [showRevokeDialog, setShowRevokeDialog] = useState(false);
+	const [pendingRevokeCategory, setPendingRevokeCategory] = useState<EmailCategory | null>(null);
 
 	// Helper to check if category is locked (can't be modified)
 	const isCategoryLocked = (category: EmailCategory): boolean => {
@@ -209,18 +221,13 @@ export function EmailPermissionsManager({
 		});
 	};
 
-	// Handle revoke category
-	const handleRevoke = async (category: EmailCategory) => {
-		setError(null);
-		setSuccess(null);
+	// Execute revoke category
+	const executeRevoke = async () => {
+		if (!pendingRevokeCategory) return;
 
-		if (
-			!confirm(
-				`Revoke all ${CATEGORY_METADATA[category].label} permissions for ${teamMemberName}?`,
-			)
-		) {
-			return;
-		}
+		const category = pendingRevokeCategory;
+		setShowRevokeDialog(false);
+		setPendingRevokeCategory(null);
 
 		startTransition(async () => {
 			try {
@@ -247,6 +254,14 @@ export function EmailPermissionsManager({
 				);
 			}
 		});
+	};
+
+	// Handle revoke category
+	const handleRevoke = (category: EmailCategory) => {
+		setError(null);
+		setSuccess(null);
+		setPendingRevokeCategory(category);
+		setShowRevokeDialog(true);
 	};
 
 	return (
@@ -383,6 +398,35 @@ export function EmailPermissionsManager({
 					);
 				})}
 			</div>
+
+			{/* Revoke Confirmation Dialog */}
+			<AlertDialog open={showRevokeDialog} onOpenChange={setShowRevokeDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Revoke Permissions?</AlertDialogTitle>
+						<AlertDialogDescription>
+							{pendingRevokeCategory && (
+								<>
+									All {CATEGORY_METADATA[pendingRevokeCategory].label} permissions will be
+									revoked for {teamMemberName}. They will no longer be able to access,
+									send, or assign emails in this category.
+								</>
+							)}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setPendingRevokeCategory(null)}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeRevoke}
+						>
+							Revoke Permissions
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

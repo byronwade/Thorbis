@@ -16,23 +16,61 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function WorkOrdersStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real work order statistics
-	// const { data: stats } = await supabase
-	//   .from("work_orders")
-	//   .select("*")
-	//   .eq("company_id", companyId);
+	let activeOrders = 0;
+	let completedToday = 0;
+	let pendingApproval = 0;
+	let totalValue = 0;
+	let totalCount = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get today's date range
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+
+		// Fetch jobs with different statuses
+		const { data: jobs, error } = await supabase
+			.from("jobs")
+			.select("id, status, total_amount, completed_at")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && jobs) {
+			for (const job of jobs) {
+				totalCount++;
+				totalValue += job.total_amount || 0;
+
+				// Count by status
+				if (
+					["scheduled", "dispatched", "in_progress", "arrived"].includes(
+						job.status,
+					)
+				) {
+					activeOrders++;
+				} else if (job.status === "pending_approval") {
+					pendingApproval++;
+				} else if (job.status === "completed" && job.completed_at) {
+					const completedDate = new Date(job.completed_at);
+					if (completedDate >= todayStart) {
+						completedToday++;
+					}
+				}
+			}
+		}
+	}
+
+	const avgValue =
+		totalCount > 0 ? Math.round(totalValue / totalCount / 100) : 0;
+
 	const stats = {
-		activeOrders: 24,
-		activeChange: "+3",
-		completed: 18,
+		activeOrders,
+		activeChange: "+0",
+		completed: completedToday,
 		completedPeriod: "Today",
-		pendingApproval: 5,
-		avgValue: 180,
+		pendingApproval,
+		avgValue,
 	};
 
 	return (

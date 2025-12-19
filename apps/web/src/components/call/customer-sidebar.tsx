@@ -24,6 +24,7 @@ import {
 	Home,
 	Lightbulb,
 	Linkedin,
+	Loader2,
 	Mail,
 	MapPin,
 	Phone,
@@ -34,7 +35,8 @@ import {
 	Wrench,
 	X,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { updateCustomer } from "@/actions/customers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -212,9 +214,51 @@ export function CustomerSidebar({
 		setEmailAddresses(updated);
 	};
 
+	// State for save operation
+	const [isSaving, setIsSaving] = useState(false);
+	const formRef = useRef<HTMLFormElement>(null);
+
 	// Save customer data
 	const handleSaveCustomer = async () => {
-		// TODO: Implement save logic
+		if (!customer?.id || !formRef.current) return;
+
+		setIsSaving(true);
+		try {
+			const form = formRef.current;
+			const formData = new FormData();
+
+			// Get form values
+			const firstName =
+				(form.querySelector("#firstName") as HTMLInputElement)?.value || "";
+			const lastName =
+				(form.querySelector("#lastName") as HTMLInputElement)?.value || "";
+			const companyName =
+				(form.querySelector("#companyName") as HTMLInputElement)?.value || "";
+
+			// Build FormData for updateCustomer action
+			formData.append("firstName", firstName);
+			formData.append("lastName", lastName);
+			if (companyName) formData.append("companyName", companyName);
+
+			// Use first phone and email from the arrays
+			const primaryPhone = phoneNumbers.find((p) => p.trim()) || "";
+			const primaryEmail = emailAddresses.find((e) => e.trim()) || "";
+			formData.append("phone", primaryPhone);
+			formData.append("email", primaryEmail);
+
+			// Use customer's existing type or default
+			formData.append("type", customer.type || "residential");
+
+			const result = await updateCustomer(customer.id, formData);
+
+			if (!result.success) {
+				console.error("Failed to save customer:", result.error);
+			}
+		} catch (error) {
+			console.error("Error saving customer:", error);
+		} finally {
+			setIsSaving(false);
+		}
 	};
 
 	// Build sections array for UnifiedAccordion
@@ -227,16 +271,21 @@ export function CustomerSidebar({
 			actions: (
 				<Button
 					className="h-8 gap-1.5 px-3"
+					disabled={isSaving}
 					onClick={handleSaveCustomer}
 					size="sm"
 					variant="default"
 				>
-					<Save className="h-3.5 w-3.5" />
-					Save
+					{isSaving ? (
+						<Loader2 className="h-3.5 w-3.5 animate-spin" />
+					) : (
+						<Save className="h-3.5 w-3.5" />
+					)}
+					{isSaving ? "Saving..." : "Save"}
 				</Button>
 			),
 			content: (
-				<div className="space-y-6 p-6">
+				<form ref={formRef} className="space-y-6 p-6" onSubmit={(e) => e.preventDefault()}>
 					{/* Basic Information */}
 					<div className="space-y-4">
 						<h4 className="text-sm font-semibold">Basic Information</h4>
@@ -258,13 +307,13 @@ export function CustomerSidebar({
 							</StandardFormField>
 						</StandardFormRow>
 
-						<StandardFormField label="Company" htmlFor="company">
+						<StandardFormField label="Company" htmlFor="companyName">
 							<div className="relative">
 								<Building2 className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 								<Input
 									className="pl-9"
 									defaultValue={customer?.company_name || ""}
-									id="company"
+									id="companyName"
 									placeholder="Enter company name"
 								/>
 							</div>
@@ -452,7 +501,7 @@ export function CustomerSidebar({
 							</StandardFormRow>
 						</div>
 					)}
-				</div>
+				</form>
 			),
 		},
 		// Jobs
@@ -464,12 +513,12 @@ export function CustomerSidebar({
 			actions: (
 				<Button
 					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
+					onClick={onCreateJob || (() => {})}
 					size="sm"
 					variant="outline"
 				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
-					Link Job
+					New Job
 				</Button>
 			),
 			content:
@@ -515,17 +564,8 @@ export function CustomerSidebar({
 			title: "Invoices",
 			icon: <FileText className="h-4 w-4" />,
 			count: invoices.length,
-			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
-					<Plus className="mr-2 h-3.5 w-3.5" />
-					Link Invoice
-				</Button>
-			),
+			// Note: Invoice creation typically happens from a job context, not directly
+			// For now, we don't show an action button here
 			content:
 				invoices.length > 0 ? (
 					<div className="space-y-2 p-6">
@@ -579,7 +619,7 @@ export function CustomerSidebar({
 			actions: (
 				<Button
 					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
+					onClick={onScheduleAppointment || (() => {})}
 					size="sm"
 					variant="outline"
 				>
@@ -636,17 +676,8 @@ export function CustomerSidebar({
 			title: "Properties",
 			icon: <Home className="h-4 w-4" />,
 			count: properties.length,
-			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
-					<Plus className="mr-2 h-3.5 w-3.5" />
-					Link Property
-				</Button>
-			),
+			// Note: Property linking is managed from the customer detail page
+			// In call context, we display existing properties only
 			content:
 				properties.length > 0 ? (
 					<div className="space-y-2 p-6">
@@ -683,17 +714,8 @@ export function CustomerSidebar({
 			title: "Equipment",
 			icon: <Wrench className="h-4 w-4" />,
 			count: equipment.length,
-			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
-					<Plus className="mr-2 h-3.5 w-3.5" />
-					Add Equipment
-				</Button>
-			),
+			// Note: Equipment management is handled from the customer detail page
+			// In call context, we display existing equipment only
 			content:
 				equipment.length > 0 ? (
 					<div className="space-y-2 p-6">
@@ -735,7 +757,7 @@ export function CustomerSidebar({
 			actions: (
 				<Button
 					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
+					onClick={onAddNote || (() => {})}
 					size="sm"
 					variant="outline"
 				>
@@ -776,7 +798,7 @@ export function CustomerSidebar({
 							</p>
 							<Button
 								className="mt-4"
-								onClick={() => {}}
+								onClick={onAddNote || (() => {})}
 								size="sm"
 								variant="outline"
 							>
@@ -889,38 +911,27 @@ export function CustomerSidebar({
 					)}
 
 					{/* Customer Tags */}
-					{customer && (
+					{customer && (customer.tags?.length > 0 || customer.customer_type) && (
 						<section className="border-border/60 bg-card overflow-hidden rounded-xl border p-4 shadow-sm">
 							<div className="space-y-2">
-								<div className="flex items-center justify-between">
-									<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-										Customer Tags
-									</h4>
-									<Button
-										className="h-6 px-2 text-xs"
-										onClick={() => {}}
-										size="sm"
-										variant="ghost"
-									>
-										<Plus className="mr-1 h-3 w-3" />
-										Add
-									</Button>
-								</div>
+								<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+									Customer Tags
+								</h4>
 								<div className="flex flex-wrap gap-1.5">
-									{/* TODO: Fetch real tags from customer data */}
-									<Badge className="text-xs" variant="secondary">
-										VIP
-									</Badge>
-									<Badge className="text-xs" variant="secondary">
-										Recurring
-									</Badge>
-									<Badge
-										className="hover:bg-muted cursor-pointer text-xs"
-										variant="outline"
-									>
-										<Plus className="mr-1 h-3 w-3" />
-										Add Tag
-									</Badge>
+									{customer.customer_type && (
+										<Badge className="text-xs" variant="secondary">
+											{customer.customer_type === "residential"
+												? "Residential"
+												: customer.customer_type === "commercial"
+													? "Commercial"
+													: customer.customer_type}
+										</Badge>
+									)}
+									{customer.tags?.map((tag: string) => (
+										<Badge className="text-xs" key={tag} variant="secondary">
+											{tag}
+										</Badge>
+									))}
 								</div>
 							</div>
 						</section>

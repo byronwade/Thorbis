@@ -16,6 +16,7 @@ import { AdminSmsInput } from "./admin-sms-input";
 import { cn } from "@/lib/utils";
 import { useAdminCommunicationStore } from "@/lib/stores/admin-communication-store";
 import type { AdminCommunication } from "@/types/entities";
+import { sendAdminSms } from "@/actions/sms";
 
 type AdminSmsPanelProps = {
 	communication: AdminCommunication;
@@ -92,27 +93,42 @@ export function AdminSmsPanel({ communication, onMessageSent, className }: Admin
 			companyId: communication.companyId,
 		});
 
-		// Simulate sending (replace with actual API call)
+		// Send SMS via Twilio
 		startTransition(async () => {
 			try {
-				// Simulate network delay
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				// Validate company ID exists
+				if (!communication.companyId) {
+					throw new Error("No company ID associated with this conversation");
+				}
+
+				// Send via Twilio API
+				const result = await sendAdminSms({
+					companyId: communication.companyId,
+					to: conversation.contactPhone,
+					body: messageText.trim(),
+				});
+
+				if (!result.success) {
+					throw new Error(result.error || "Failed to send SMS");
+				}
 
 				// Update message status to sent
 				setLocalMessages((prev) => prev.map((msg) => (msg.id === tempId ? { ...msg, status: "sent" as const } : msg)));
 
-				// Simulate delivery after another delay
-				await new Promise((resolve) => setTimeout(resolve, 500));
-				setLocalMessages((prev) => prev.map((msg) => (msg.id === tempId ? { ...msg, status: "delivered" as const } : msg)));
+				// Update to delivered based on Twilio status
+				if (result.status === "delivered" || result.status === "sent") {
+					setLocalMessages((prev) => prev.map((msg) => (msg.id === tempId ? { ...msg, status: "delivered" as const } : msg)));
+				}
 
 				// Resolve pending message in store
 				resolvePendingMessage(communication.id, tempId);
 
 				// Notify parent
 				onMessageSent?.(newMessage);
-			} catch {
+			} catch (error) {
 				// Mark as failed
 				setLocalMessages((prev) => prev.map((msg) => (msg.id === tempId ? { ...msg, status: "failed" as const } : msg)));
+				console.error("Failed to send SMS:", error);
 			}
 		});
 	}, [messageText, isPending, communication.id, conversation.contactName, conversation.contactPhone, communication.companyId, addPendingMessage, resolvePendingMessage, onMessageSent]);

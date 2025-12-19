@@ -14,23 +14,38 @@ import { persist } from "zustand/middleware";
 
 export type OnboardingPath = "solo" | "small" | "growing" | "enterprise";
 
+/**
+ * Consolidated Onboarding Steps (10 steps, down from 16)
+ *
+ * Merges:
+ * - phone + email + notifications → communication
+ * - payments + billing → payments-billing
+ * - schedule + reports + settings → operations
+ * - first-action merged into complete
+ */
 export type OnboardingStep =
 	| "welcome"
 	| "company"
+	| "communication"
 	| "data-import"
 	| "integrations"
+	| "services"
+	| "team"
+	| "payments-billing"
+	| "operations"
+	| "complete";
+
+// Legacy step types for backwards compatibility with existing progress
+export type LegacyOnboardingStep =
 	| "phone"
 	| "email"
 	| "notifications"
-	| "services"
-	| "team"
 	| "payments"
 	| "billing"
 	| "schedule"
 	| "reports"
 	| "settings"
-	| "first-action"
-	| "complete";
+	| "first-action";
 
 export interface TeamMemberInvite {
 	id: string;
@@ -271,22 +286,39 @@ export interface OnboardingState {
 // CONSTANTS
 // =============================================================================
 
+/**
+ * Consolidated Steps Order (10 steps)
+ *
+ * Phase 1: Getting Started
+ * - welcome: Choose your path
+ * - company: Business details
+ *
+ * Phase 2: Connect & Import
+ * - communication: Phone, email, notifications (merged)
+ * - data-import: Import from other software
+ * - integrations: QuickBooks, Google Calendar
+ *
+ * Phase 3: Business Setup
+ * - services: Service catalog & pricing
+ * - team: Team members
+ *
+ * Phase 4: Payments & Operations
+ * - payments-billing: Customer payments + platform subscription (merged)
+ * - operations: Schedule, reports, settings (merged)
+ *
+ * Phase 5: Launch
+ * - complete: First action + success celebration (merged)
+ */
 const STEPS_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
+	"communication",
 	"data-import",
 	"integrations",
-	"phone",
-	"email",
-	"notifications",
 	"services",
 	"team",
-	"payments",
-	"billing",
-	"schedule",
-	"reports",
-	"settings",
-	"first-action",
+	"payments-billing",
+	"operations",
 	"complete",
 ];
 
@@ -295,6 +327,7 @@ export const STEP_CONFIG: Record<
 	{
 		title: string;
 		shortTitle: string;
+		description: string;
 		phase: number;
 		required: boolean;
 		estimatedMinutes: number;
@@ -303,6 +336,7 @@ export const STEP_CONFIG: Record<
 	welcome: {
 		title: "Welcome",
 		shortTitle: "Start",
+		description: "Tell us about your business",
 		phase: 1,
 		required: true,
 		estimatedMinutes: 1,
@@ -310,41 +344,31 @@ export const STEP_CONFIG: Record<
 	company: {
 		title: "Company Details",
 		shortTitle: "Company",
+		description: "Your business information",
 		phase: 1,
 		required: true,
 		estimatedMinutes: 2,
 	},
+	communication: {
+		title: "Communication",
+		shortTitle: "Comms",
+		description: "Phone, email & notifications",
+		phase: 2,
+		required: false,
+		estimatedMinutes: 4,
+	},
 	"data-import": {
 		title: "Import Data",
 		shortTitle: "Import",
-		phase: 1,
-		required: false,
-		estimatedMinutes: 5,
-	},
-	integrations: {
-		title: "Connect Apps",
-		shortTitle: "Apps",
-		phase: 1,
-		required: false,
-		estimatedMinutes: 2,
-	},
-	phone: {
-		title: "Phone & SMS",
-		shortTitle: "Phone",
+		description: "Bring your existing data",
 		phase: 2,
 		required: false,
 		estimatedMinutes: 3,
 	},
-	email: {
-		title: "Email Setup",
-		shortTitle: "Email",
-		phase: 2,
-		required: false,
-		estimatedMinutes: 2,
-	},
-	notifications: {
-		title: "Notifications",
-		shortTitle: "Alerts",
+	integrations: {
+		title: "Connect Apps",
+		shortTitle: "Apps",
+		description: "QuickBooks, Calendar & more",
 		phase: 2,
 		required: false,
 		estimatedMinutes: 2,
@@ -352,6 +376,7 @@ export const STEP_CONFIG: Record<
 	services: {
 		title: "Services & Pricing",
 		shortTitle: "Services",
+		description: "Your service catalog",
 		phase: 3,
 		required: false,
 		estimatedMinutes: 3,
@@ -359,59 +384,51 @@ export const STEP_CONFIG: Record<
 	team: {
 		title: "Team Setup",
 		shortTitle: "Team",
+		description: "Invite your team members",
 		phase: 3,
 		required: false,
 		estimatedMinutes: 2,
 	},
-	payments: {
-		title: "Payment Processing",
+	"payments-billing": {
+		title: "Payments",
 		shortTitle: "Payments",
-		phase: 3,
+		description: "Accept payments & subscription",
+		phase: 4,
+		required: true,
+		estimatedMinutes: 4,
+	},
+	operations: {
+		title: "Operations",
+		shortTitle: "Ops",
+		description: "Schedule, reports & settings",
+		phase: 4,
 		required: false,
 		estimatedMinutes: 3,
-	},
-	billing: {
-		title: "Platform Subscription",
-		shortTitle: "Billing",
-		phase: 3,
-		required: false,
-		estimatedMinutes: 3,
-	},
-	schedule: {
-		title: "Schedule",
-		shortTitle: "Schedule",
-		phase: 4,
-		required: false,
-		estimatedMinutes: 2,
-	},
-	reports: {
-		title: "Reports & Dashboard",
-		shortTitle: "Reports",
-		phase: 4,
-		required: false,
-		estimatedMinutes: 2,
-	},
-	settings: {
-		title: "Important Settings",
-		shortTitle: "Settings",
-		phase: 4,
-		required: false,
-		estimatedMinutes: 2,
-	},
-	"first-action": {
-		title: "Your First Action",
-		shortTitle: "Try It",
-		phase: 5,
-		required: false,
-		estimatedMinutes: 2,
 	},
 	complete: {
-		title: "All Set!",
+		title: "You're Ready!",
 		shortTitle: "Done",
+		description: "Take your first action",
 		phase: 5,
 		required: true,
-		estimatedMinutes: 1,
+		estimatedMinutes: 2,
 	},
+};
+
+/**
+ * Legacy step mapping for backwards compatibility
+ * Maps old step names to new consolidated steps
+ */
+export const LEGACY_STEP_MAPPING: Record<LegacyOnboardingStep, OnboardingStep> = {
+	phone: "communication",
+	email: "communication",
+	notifications: "communication",
+	payments: "payments-billing",
+	billing: "payments-billing",
+	schedule: "operations",
+	reports: "operations",
+	settings: "operations",
+	"first-action": "complete",
 };
 
 export const INDUSTRIES = [

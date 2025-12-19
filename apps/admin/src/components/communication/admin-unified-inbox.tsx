@@ -8,6 +8,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,6 +96,7 @@ const TYPE_FILTERS: { type: CommunicationType; label: string }[] = [
 
 export function AdminUnifiedInbox({ communications, onRefresh }: AdminUnifiedInboxProps) {
 	const { toggleSidebar } = useSidebar();
+	const router = useRouter();
 	const [searchInput, setSearchInput] = useState("");
 	const [typeFilter, setTypeFilter] = useState<CommunicationType>("all");
 	const [selectedCommunication, setSelectedCommunication] = useState<AdminCommunication | null>(null);
@@ -130,9 +132,13 @@ export function AdminUnifiedInbox({ communications, onRefresh }: AdminUnifiedInb
 
 	const handleRefresh = useCallback(() => {
 		setRefreshing(true);
+		// Use router.refresh() to revalidate server data
+		router.refresh();
+		// Also call custom onRefresh if provided
 		onRefresh?.();
+		// Reset refreshing state after a short delay
 		setTimeout(() => setRefreshing(false), 1000);
-	}, [onRefresh]);
+	}, [router, onRefresh]);
 
 	const handleSelectCommunication = useCallback((comm: AdminCommunication) => {
 		setSelectedCommunication(comm);

@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChevronUp, ChevronDown, Wrench, Key, DollarSign, FileText, UserCog, Download, History } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
+import { exportAuditLogs } from "@/actions/audit";
 
 interface AdminFloatingToolsProps {
 	companyId: string;
@@ -30,15 +32,40 @@ export function AdminFloatingTools({ companyId, sessionId }: AdminFloatingToolsP
 		{ icon: FileText, label: "View Session Log", action: "log", description: "See detailed session activity" },
 	];
 
-	const handleAction = (action: string) => {
+	const handleAction = async (action: string) => {
 		switch (action) {
 			case "audit":
 				// Navigate to audit trail filtered by session
 				window.open(`/admin/dashboard/audit-trail?session=${sessionId}`, "_blank");
 				break;
 			case "export":
-				// TODO: Implement CSV export of current view
-				alert("Export functionality coming soon");
+				// Export session audit logs
+				try {
+					const result = await exportAuditLogs();
+					if (result.error) {
+						toast.error(result.error);
+						return;
+					}
+					if (!result.data) {
+						toast.error("No data to export");
+						return;
+					}
+					// Download CSV
+					const blob = new Blob([result.data], { type: "text/csv;charset=utf-8;" });
+					const link = document.createElement("a");
+					const url = URL.createObjectURL(blob);
+					link.setAttribute("href", url);
+					link.setAttribute("download", `session-${sessionId.slice(0, 8)}-${new Date().toISOString().split("T")[0]}.csv`);
+					link.style.visibility = "hidden";
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+					URL.revokeObjectURL(url);
+					toast.success("Session data exported");
+				} catch (error) {
+					console.error("Export error:", error);
+					toast.error("Failed to export data");
+				}
 				break;
 			case "log":
 				// Navigate to session details

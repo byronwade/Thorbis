@@ -17,9 +17,19 @@ import {
 } from "@/lib/onboarding/onboarding-fees";
 import { createClient } from "@/lib/supabase/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-	apiVersion: "2024-11-20.acacia",
-});
+// Lazily initialize Stripe client to avoid build-time errors
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+	if (!_stripe) {
+		if (!process.env.STRIPE_SECRET_KEY) {
+			throw new Error("STRIPE_SECRET_KEY is not configured");
+		}
+		_stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+			apiVersion: "2024-11-20.acacia",
+		});
+	}
+	return _stripe;
+}
 
 interface CheckoutSessionParams {
 	companyId: string;
@@ -83,7 +93,7 @@ export async function createOnboardingCheckoutSession(
 
 		// Create Stripe customer if needed
 		if (!customerId) {
-			const customer = await stripe.customers.create({
+			const customer = await getStripe().customers.create({
 				email: company.email || undefined,
 				name: company.name,
 				metadata: {
@@ -124,7 +134,7 @@ export async function createOnboardingCheckoutSession(
 		];
 
 		// Create Stripe Checkout session
-		const session = await stripe.checkout.sessions.create({
+		const session = await getStripe().checkout.sessions.create({
 			customer: customerId,
 			mode: "subscription",
 			payment_method_types: ["card", "us_bank_account"],
@@ -205,7 +215,7 @@ export async function handleCheckoutSuccess(
 		const supabase = await createClient();
 
 		// Retrieve checkout session from Stripe
-		const session = await stripe.checkout.sessions.retrieve(params.sessionId, {
+		const session = await getStripe().checkout.sessions.retrieve(params.sessionId, {
 			expand: ["subscription", "customer"],
 		});
 
@@ -218,7 +228,7 @@ export async function handleCheckoutSuccess(
 
 		const subscription =
 			typeof session.subscription === "string"
-				? await stripe.subscriptions.retrieve(session.subscription)
+				? await getStripe().subscriptions.retrieve(session.subscription)
 				: session.subscription;
 
 		const customerId =
@@ -280,7 +290,7 @@ export async function handleCheckoutSuccess(
  */
 export async function getCheckoutSessionStatus(sessionId: string) {
 	try {
-		const session = await stripe.checkout.sessions.retrieve(sessionId);
+		const session = await getStripe().checkout.sessions.retrieve(sessionId);
 
 		return {
 			success: true,
@@ -299,6 +309,136 @@ export async function getCheckoutSessionStatus(sessionId: string) {
 				error instanceof Error
 					? error.message
 					: "Failed to retrieve session status",
+		};
+	}
+}
+
+/**
+ * Retry a failed subscription payment
+ *
+ * Attempts to pay the latest unpaid invoice for the company's subscription.
+ * Used in payment recovery flow when a payment has failed.
+ *
+ * @param companyId - The company ID to retry payment for
+ * @returns Success status
+ */
+export async function retrySubscriptionPayment(
+	companyId: string,
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const supabase = await createClient();
+
+		// Get company's subscription details
+		const { data: company, error: companyError } = await supabase
+			.from("companies")
+			.select("stripe_subscription_id, stripe_customer_id")
+			.eq("id", companyId)
+			.single();
+
+		if (companyError || !company) {
+			return {
+				success: false,
+				error: "Company not found",
+			};
+		}
+
+		if (!company.stripe_subscription_id) {
+			return {
+				success: false,
+				error: "No subscription found for this company",
+			};
+		}
+
+		const stripe = getStripe();
+
+		// Get the latest invoice for this subscription
+		const invoices = await stripe.invoices.list({
+			subscription: company.stripe_subscription_id,
+			status: "open",
+			limit: 1,
+		});
+
+		if (invoices.data.length === 0) {
+			// No open invoices - try to find draft invoices
+			const draftInvoices = await stripe.invoices.list({
+				subscription: company.stripe_subscription_id,
+				status: "draft",
+				limit: 1,
+			});
+
+			if (draftInvoices.data.length === 0) {
+				return {
+					success: false,
+					error: "No unpaid invoices found",
+				};
+			}
+
+			// Finalize the draft invoice first
+			const finalizedInvoice = await stripe.invoices.finalizeInvoice(
+				draftInvoices.data[0].id,
+			);
+
+			// Then pay it
+			const paidInvoice = await stripe.invoices.pay(finalizedInvoice.id);
+
+			if (paidInvoice.status === "paid") {
+				// Update company status
+				await supabase
+					.from("companies")
+					.update({
+						stripe_subscription_status: "active",
+						payment_failed_at: null,
+						updated_at: new Date().toISOString(),
+					})
+					.eq("id", companyId);
+
+				return { success: true };
+			}
+
+			return {
+				success: false,
+				error: "Payment attempt failed",
+			};
+		}
+
+		// Try to pay the open invoice
+		const paidInvoice = await stripe.invoices.pay(invoices.data[0].id);
+
+		if (paidInvoice.status === "paid") {
+			// Update company status
+			await supabase
+				.from("companies")
+				.update({
+					stripe_subscription_status: "active",
+					payment_failed_at: null,
+					updated_at: new Date().toISOString(),
+				})
+				.eq("id", companyId);
+
+			return { success: true };
+		}
+
+		return {
+			success: false,
+			error: "Payment attempt failed",
+		};
+	} catch (error) {
+		console.error("Error retrying subscription payment:", error);
+
+		// Check if it's a card declined error
+		if (error instanceof Stripe.errors.StripeCardError) {
+			return {
+				success: false,
+				error: error.message || "Your card was declined",
+			};
+		}
+
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to process payment retry",
 		};
 	}
 }

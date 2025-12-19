@@ -5,6 +5,7 @@ import {
 	CheckCircle2,
 	Clock,
 	Download,
+	Loader2,
 	MoreHorizontal,
 	Package,
 	PackageCheck,
@@ -12,8 +13,14 @@ import {
 	Plus,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import {
+	bulkApprovePurchaseOrders,
+	bulkArchivePurchaseOrders,
+} from "@/actions/purchase-orders";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -121,10 +128,78 @@ export function PurchaseOrdersTable({
 	currentPage?: number;
 	totalCount?: number;
 }) {
+	const { toast } = useToast();
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
 	// Archive filter state
 	const archiveFilter = useArchiveStore(
 		(state) => state.filters.purchase_orders,
 	);
+
+	// Bulk action handlers
+	const handleBulkApprove = async (ids: string[]) => {
+		setIsProcessing(true);
+		try {
+			const result = await bulkApprovePurchaseOrders(ids);
+			if (result.success) {
+				toast.success(`${result.approvedCount} purchase orders approved`);
+				setSelectedIds([]);
+			} else {
+				toast.error(result.error || "Failed to approve purchase orders");
+			}
+		} catch (_error) {
+			toast.error("Failed to approve purchase orders");
+		} finally {
+			setIsProcessing(false);
+		}
+	};
+
+	const handleBulkArchive = async (ids: string[]) => {
+		setIsProcessing(true);
+		try {
+			const result = await bulkArchivePurchaseOrders(ids);
+			if (result.success) {
+				toast.success(`${result.archivedCount} purchase orders archived`);
+				setSelectedIds([]);
+			} else {
+				toast.error(result.error || "Failed to archive purchase orders");
+			}
+		} catch (_error) {
+			toast.error("Failed to archive purchase orders");
+		} finally {
+			setIsProcessing(false);
+		}
+	};
+
+	const handleBulkExport = (ids: string[]) => {
+		// Export selected items as CSV
+		const selectedOrders = filteredOrders.filter((o) => ids.includes(o.id));
+		const csv = [
+			["PO Number", "Vendor", "Title", "Status", "Total Amount", "Expected Delivery"].join(","),
+			...selectedOrders.map((po) =>
+				[
+					po.poNumber,
+					`"${po.vendor.replace(/"/g, '""')}"`,
+					`"${po.title.replace(/"/g, '""')}"`,
+					po.status,
+					po.totalAmount,
+					po.expectedDelivery || "",
+				].join(","),
+			),
+		].join("\n");
+
+		const blob = new Blob([csv], { type: "text/csv" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `purchase-orders-${new Date().toISOString().split("T")[0]}.csv`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		toast.success(`Exported ${selectedOrders.length} purchase orders`);
+	};
 
 	// Filter orders based on archive status
 	const filteredOrders = orders.filter((order) => {
@@ -324,26 +399,30 @@ export function PurchaseOrdersTable({
 
 	const bulkActions: BulkAction[] = [
 		{
-			label: "Approve",
-			icon: <CheckCircle2 className="h-4 w-4" />,
-			onClick: () => {
-				/* TODO: implement approve bulk action */
-			},
+			label: isProcessing ? "Processing..." : "Approve",
+			icon: isProcessing ? (
+				<Loader2 className="h-4 w-4 animate-spin" />
+			) : (
+				<CheckCircle2 className="h-4 w-4" />
+			),
+			onClick: handleBulkApprove,
+			disabled: isProcessing,
 		},
 		{
 			label: "Export",
 			icon: <Download className="h-4 w-4" />,
-			onClick: () => {
-				/* TODO: implement export bulk action */
-			},
+			onClick: handleBulkExport,
 		},
 		{
-			label: "Archive",
-			icon: <Archive className="h-4 w-4" />,
+			label: isProcessing ? "Processing..." : "Archive",
+			icon: isProcessing ? (
+				<Loader2 className="h-4 w-4 animate-spin" />
+			) : (
+				<Archive className="h-4 w-4" />
+			),
 			variant: "destructive",
-			onClick: () => {
-				/* TODO: implement archive bulk action */
-			},
+			onClick: handleBulkArchive,
+			disabled: isProcessing,
 		},
 	];
 

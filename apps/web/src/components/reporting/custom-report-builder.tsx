@@ -48,6 +48,8 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useReportingStore } from "@/lib/stores/reporting-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -700,8 +702,11 @@ function StepSave({
 
 export function CustomReportBuilder() {
 	const router = useRouter();
+	const { toast } = useToast();
+	const addCustomReport = useReportingStore((state) => state.addCustomReport);
 
 	const [currentStep, setCurrentStep] = useState<WizardStep>("source");
+	const [isSaving, setIsSaving] = useState(false);
 	const [config, setConfig] = useState<ReportConfig>({
 		name: "",
 		description: "",
@@ -823,10 +828,41 @@ export function CustomReportBuilder() {
 		}));
 	}, []);
 
-	const handleSave = () => {
-		// TODO: Save to database
-		console.log("Saving report:", config);
-		router.push("/dashboard/reporting");
+	const handleSave = async () => {
+		if (!config.name.trim()) {
+			toast.error("Please enter a report name");
+			return;
+		}
+
+		setIsSaving(true);
+		try {
+			// Generate a URL-friendly slug from the report name
+			const slug = config.name
+				.toLowerCase()
+				.replace(/[^a-z0-9]+/g, "-")
+				.replace(/(^-|-$)/g, "");
+
+			// Save to Zustand store (persisted to localStorage)
+			addCustomReport({
+				title: config.name,
+				description: config.description,
+				href: `/dashboard/reporting/custom/${slug}`,
+				filters: {
+					primarySource: config.primarySource,
+					selectedFields: config.selectedFields,
+					filters: config.filters,
+					chartType: config.chartType,
+					limit: config.limit,
+				},
+			});
+
+			toast.success("Report saved successfully");
+			router.push("/dashboard/reporting");
+		} catch (error) {
+			toast.error("Failed to save report. Please try again.");
+		} finally {
+			setIsSaving(false);
+		}
 	};
 
 	return (
@@ -952,13 +988,16 @@ export function CustomReportBuilder() {
 						<div className="flex gap-3">
 							{currentStep === "save" ? (
 								<>
-									<Button variant="outline">
+									<Button variant="outline" disabled={isSaving}>
 										<Eye className="mr-2 h-4 w-4" />
 										Preview
 									</Button>
-									<Button onClick={handleSave} disabled={!canProceed}>
+									<Button
+										onClick={handleSave}
+										disabled={!canProceed || isSaving}
+									>
 										<Save className="mr-2 h-4 w-4" />
-										Save Report
+										{isSaving ? "Saving..." : "Save Report"}
 									</Button>
 								</>
 							) : (

@@ -117,7 +117,15 @@ export function DrillDownView({
 							name={
 								navigationPath.length === 0 ? "Add Category" : "Add Subcategory"
 							}
-							onClick={() => {}}
+							onClick={() =>
+								router.push(
+									`/dashboard/work/pricebook/new?type=category${
+										navigationPath.length > 0
+											? `&parent=${encodeURIComponent(navigationPath.join("/"))}`
+											: ""
+									}`,
+								)
+							}
 							variant="add"
 						/>
 					</div>
@@ -169,7 +177,16 @@ export function DrillDownView({
 						<div className="flex items-center justify-center gap-3">
 							<button
 								className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-								onClick={() => {}}
+								onClick={() =>
+									router.push(
+										`/dashboard/work/pricebook/new${
+											navigationPath.length > 0
+												? `?category=${encodeURIComponent(navigationPath.join("/"))}`
+												: ""
+										}`,
+									)
+								}
+								type="button"
 							>
 								<svg
 									className="size-4"
@@ -189,7 +206,16 @@ export function DrillDownView({
 							</button>
 							<button
 								className="border-border bg-background hover:bg-muted inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
-								onClick={() => {}}
+								onClick={() =>
+									router.push(
+										`/dashboard/work/pricebook/new?type=category${
+											navigationPath.length > 0
+												? `&parent=${encodeURIComponent(navigationPath.join("/"))}`
+												: ""
+										}`,
+									)
+								}
+								type="button"
 							>
 								<svg
 									className="size-4"

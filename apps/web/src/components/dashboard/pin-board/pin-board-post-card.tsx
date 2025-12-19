@@ -8,6 +8,16 @@ import {
 	markPostAsViewed,
 	togglePinBoardPostPin,
 } from "@/actions/pin-board";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,6 +65,7 @@ interface PinBoardPostCardProps {
 export function PinBoardPostCard({ post, onEdit }: PinBoardPostCardProps) {
 	const [isViewOpen, setIsViewOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
 	const categoryColor = post.category?.color
 		? CATEGORY_COLORS[post.category.color] || CATEGORY_COLORS.blue
@@ -70,11 +81,15 @@ export function PinBoardPostCard({ post, onEdit }: PinBoardPostCardProps) {
 		await togglePinBoardPostPin(post.id);
 	};
 
-	const handleDelete = async () => {
-		if (!confirm("Are you sure you want to delete this post?")) return;
+	const executeDelete = async () => {
+		setShowDeleteDialog(false);
 		setIsDeleting(true);
 		await deletePinBoardPost(post.id);
 		setIsDeleting(false);
+	};
+
+	const handleDelete = () => {
+		setShowDeleteDialog(true);
 	};
 
 	const formattedDate = post.published_at
@@ -216,6 +231,27 @@ export function PinBoardPostCard({ post, onEdit }: PinBoardPostCardProps) {
 					</div>
 				</DialogContent>
 			</Dialog>
+
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Delete Post?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will permanently delete "{post.title}". This action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeDelete}
+						>
+							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	);
 }

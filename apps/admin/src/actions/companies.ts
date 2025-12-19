@@ -11,6 +11,7 @@ import { getAdminSession } from "@/lib/auth/session";
 import { requestSupportSession } from "./support-sessions";
 import { setImpersonation } from "@/lib/admin-context";
 import { redirect } from "next/navigation";
+import { logAdminAction } from "@/lib/admin/audit";
 
 export interface CompanyStats {
 	id: string;
@@ -254,8 +255,22 @@ export async function setCompanyStatus(companyId: string, status: "active" | "su
 		return { error: "Failed to update company status" };
 	}
 
-	// TODO: Log to audit log
-	// await logAdminAction(session.user.id, `company_${status}`, "company", companyId, { reason });
+	// Log to audit log
+	await logAdminAction({
+		admin_user_id: session.user.id,
+		admin_email: session.user.email || undefined,
+		action: `company_status_${status}`,
+		resource_type: "company",
+		resource_id: companyId,
+		company_id: companyId,
+		details: {
+			new_status: status,
+			reason,
+		},
+	});
 
 	return { data };
 }
+
+// Export alias for backward compatibility
+export const updateCompanyStatus = setCompanyStatus;

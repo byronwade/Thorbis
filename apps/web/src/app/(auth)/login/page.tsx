@@ -1,7 +1,7 @@
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { LoginForm } from "@/components/auth/login-form";
+import { ConvexLoginForm } from "@/components/auth/convex-login-form";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
@@ -46,7 +46,7 @@ export default function LoginPage() {
 						</div>
 					}
 				>
-					<LoginForm />
+					<ConvexLoginForm />
 				</Suspense>
 			</div>
 		</div>

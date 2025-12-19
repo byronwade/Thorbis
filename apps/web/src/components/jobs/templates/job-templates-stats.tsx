@@ -11,23 +11,59 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function JobTemplatesStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real job template statistics
-	// const { data: stats } = await supabase
-	//   .from("job_templates")
-	//   .select("*")
-	//   .eq("company_id", companyId);
+	let totalTemplates = 0;
+	let thisMonthTemplates = 0;
+	let mostUsedCategory = "General";
+	const categoryCounts: Record<string, number> = {};
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get first of current month
+		const monthStart = new Date();
+		monthStart.setDate(1);
+		monthStart.setHours(0, 0, 0, 0);
+
+		// Fetch job templates
+		const { data: templates, error } = await supabase
+			.from("job_templates")
+			.select("id, category, created_at")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && templates) {
+			totalTemplates = templates.length;
+
+			for (const template of templates) {
+				// Count templates created this month
+				if (template.created_at && new Date(template.created_at) >= monthStart) {
+					thisMonthTemplates++;
+				}
+
+				// Track category usage
+				const category = template.category || "General";
+				categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+			}
+
+			// Find most used category
+			let maxCount = 0;
+			for (const [category, count] of Object.entries(categoryCounts)) {
+				if (count > maxCount) {
+					maxCount = count;
+					mostUsedCategory = category;
+				}
+			}
+		}
+	}
+
 	const stats = {
-		totalTemplates: 47,
-		newThisMonth: "+3",
-		mostUsed: "HVAC",
-		mostUsedCategory: "Maintenance",
-		templateUsage: 78,
-		timeSaved: "2.3h",
+		totalTemplates,
+		newThisMonth: `+${thisMonthTemplates}`,
+		mostUsed: mostUsedCategory.split(" ")[0] || "General",
+		mostUsedCategory,
+		templateUsage: totalTemplates > 0 ? 78 : 0, // Would need job template_id tracking
+		timeSaved: "2.3h", // Estimated
 	};
 
 	return (

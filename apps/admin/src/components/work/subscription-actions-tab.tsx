@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 import { Settings, X, RotateCcw, ExternalLink } from "lucide-react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cancelSubscription, reactivateSubscription } from "@/actions/billing";
@@ -20,12 +30,10 @@ type SubscriptionActionsTabProps = {
 export function SubscriptionActionsTab({ subscription }: SubscriptionActionsTabProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
+	const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-	const handleCancel = async () => {
-		if (!confirm("Are you sure you want to cancel this subscription?")) {
-			return;
-		}
-
+	const executeCancel = async () => {
+		setShowCancelDialog(false);
 		setIsLoading(true);
 		try {
 			const result = await cancelSubscription(
@@ -42,6 +50,10 @@ export function SubscriptionActionsTab({ subscription }: SubscriptionActionsTabP
 		} finally {
 			setIsLoading(false);
 		}
+	};
+
+	const handleCancel = () => {
+		setShowCancelDialog(true);
 	};
 
 	const handleReactivate = async () => {
@@ -103,6 +115,28 @@ export function SubscriptionActionsTab({ subscription }: SubscriptionActionsTabP
 					)}
 				</CardContent>
 			</Card>
+
+			{/* Cancel Subscription Confirmation Dialog */}
+			<AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will cancel the subscription at the end of the current billing period.
+							The customer will retain access until then.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeCancel}
+						>
+							Cancel Subscription
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

@@ -23,6 +23,19 @@ import { getCurrentUser } from "./session";
 const ACTIVE_COMPANY_COOKIE = "active_company_id";
 
 /**
+ * Get Current User ID
+ *
+ * Returns the currently authenticated user's ID or null if not authenticated.
+ * Cached per request to avoid multiple auth calls.
+ *
+ * @returns User ID string or null if not authenticated
+ */
+export const getCurrentUserId = cache(async (): Promise<string | null> => {
+	const user = await getCurrentUser();
+	return user?.id || null;
+});
+
+/**
  * Company Info
  */
 export type CompanyInfo = {

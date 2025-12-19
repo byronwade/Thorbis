@@ -4,8 +4,7 @@
  * Transfer Call Modal
  *
  * Allows users to transfer an active call to another extension or number.
- * This is a stub implementation - full functionality to be added when call
- * transfer features are implemented.
+ * Supports blind and attended transfers via Twilio.
  */
 
 import { Phone, PhoneForwarded, Search, User, X } from "lucide-react";
@@ -29,6 +28,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { transferActiveCall } from "@/actions/call-control";
+import { toast } from "sonner";
 
 interface TransferCallModalProps {
 	open: boolean;
@@ -59,15 +60,29 @@ export function TransferCallModal({
 		setIsTransferring(true);
 
 		try {
-			// TODO: Implement actual call transfer via Twilio API
-			// For now, simulate a transfer
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const result = await transferActiveCall({
+				callSid: callControlId,
+				targetNumber: targetNumber.trim(),
+				transferType,
+			});
 
-			onTransferSuccess();
-			onOpenChange(false);
-			setTargetNumber("");
+			if (result.success) {
+				toast.success("Call transfer initiated", {
+					description: `Transferring to ${targetNumber}`,
+				});
+				onTransferSuccess();
+				onOpenChange(false);
+				setTargetNumber("");
+			} else {
+				toast.error("Transfer failed", {
+					description: result.error || "Unable to transfer call",
+				});
+			}
 		} catch (error) {
 			console.error("Failed to transfer call:", error);
+			toast.error("Transfer failed", {
+				description: "An unexpected error occurred",
+			});
 		} finally {
 			setIsTransferring(false);
 		}

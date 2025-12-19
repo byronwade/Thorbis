@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { exportReportToCSV } from "@/actions/reports-export";
+import { exportReportToCSV, emailReport } from "@/actions/reports-export";
+import { saveReportSchedule } from "@/actions/report-schedules";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -166,14 +167,50 @@ export function ExportDialog({
 					return;
 				}
 
-				// Simulate email sending (would call actual API)
-				await new Promise((resolve) => setTimeout(resolve, 1500));
-
 				if (scheduleDelivery) {
+					// Schedule recurring delivery using report schedules
+					const frequencyMap: Record<string, "daily" | "weekly" | "monthly" | "quarterly"> = {
+						daily: "daily",
+						weekly: "weekly",
+						monthly: "monthly",
+						quarterly: "quarterly",
+					};
+
+					const scheduleResult = await saveReportSchedule({
+						reportType,
+						reportTitle,
+						frequency: frequencyMap[scheduleFrequency] || "weekly",
+						time: "08:00",
+						timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+						recipients: [emailTo],
+						format: selectedFormat === "png" ? "pdf" : selectedFormat,
+						includeCharts,
+						isActive: true,
+					});
+
+					if (!scheduleResult.success) {
+						toast.error(scheduleResult.error || "Failed to schedule report");
+						return;
+					}
+
 					toast.success(
 						`Report scheduled for ${scheduleFrequency} delivery to ${emailTo}`,
 					);
 				} else {
+					// Send email immediately
+					const emailResult = await emailReport({
+						reportType,
+						reportTitle,
+						emailTo,
+						format: selectedFormat === "png" ? "pdf" : selectedFormat,
+						days,
+					});
+
+					if (!emailResult.success) {
+						toast.error(emailResult.error || "Failed to send report");
+						return;
+					}
+
 					toast.success(`Report sent to ${emailTo}`);
 				}
 				setOpen(false);

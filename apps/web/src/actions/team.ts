@@ -328,6 +328,248 @@ export async function createTeamMemberDirect(
 }
 
 /**
+ * Update team member - updates profile and membership data
+ */
+export async function updateTeamMember(
+	memberId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
+	return withErrorHandling(async () => {
+		const { companyId, supabase } = await requireCompanyMembership();
+
+		// Verify team member belongs to same company
+		const { data: targetMember } = await supabase
+			.from("company_memberships")
+			.select("id, company_id, user_id, status")
+			.eq("id", memberId)
+			.eq("company_id", companyId)
+			.single();
+
+		assertExists(targetMember, "Team member");
+
+		// Parse skills, licenses, service areas (comma-separated)
+		const skills = ((formData.get("skills") as string) || "")
+			.split(",")
+			.map((s) => s.trim())
+			.filter(Boolean);
+		const licenses = ((formData.get("licenses") as string) || "")
+			.split(",")
+			.map((l) => l.trim())
+			.filter(Boolean);
+		const serviceAreas = ((formData.get("service_areas") as string) || "")
+			.split(",")
+			.map((a) => a.trim())
+			.filter(Boolean);
+		const preferredJobTypes = (
+			(formData.get("preferred_job_types") as string) || ""
+		)
+			.split(",")
+			.map((t) => t.trim())
+			.filter(Boolean);
+
+		// Parse certifications (expecting JSON string or comma-separated)
+		let certifications = null;
+		const certificationsInput = formData.get("certifications") as string;
+		if (certificationsInput) {
+			try {
+				certifications = JSON.parse(certificationsInput);
+			} catch {
+				certifications = certificationsInput
+					.split(",")
+					.map((c) => c.trim())
+					.filter(Boolean);
+			}
+		}
+
+		// Parse commission_structure (expecting JSON string)
+		let commissionStructure = null;
+		const commissionStructureInput = formData.get(
+			"commission_structure",
+		) as string;
+		if (commissionStructureInput) {
+			try {
+				commissionStructure = JSON.parse(commissionStructureInput);
+			} catch {
+				// Invalid JSON - leave as null
+			}
+		}
+
+		// Parse availability_schedule (expecting JSON string)
+		let availabilitySchedule = null;
+		const availabilityScheduleInput = formData.get(
+			"availability_schedule",
+		) as string;
+		if (availabilityScheduleInput) {
+			try {
+				availabilitySchedule = JSON.parse(availabilityScheduleInput);
+			} catch {
+				// Invalid JSON - leave as null
+			}
+		}
+
+		// Build update object - only include fields that were provided
+		const updateData: Record<string, any> = {};
+
+		// Basic info
+		const jobTitle = formData.get("job_title");
+		if (jobTitle !== null) updateData.job_title = jobTitle || null;
+
+		const phone = formData.get("phone");
+		if (phone !== null) updateData.phone = phone || null;
+
+		const departmentId = formData.get("department_id");
+		if (departmentId !== null) updateData.department_id = departmentId || null;
+
+		// Emergency Contact
+		const emergencyContactName = formData.get("emergency_contact_name");
+		if (emergencyContactName !== null)
+			updateData.emergency_contact_name = emergencyContactName || null;
+
+		const emergencyContactPhone = formData.get("emergency_contact_phone");
+		if (emergencyContactPhone !== null)
+			updateData.emergency_contact_phone = emergencyContactPhone || null;
+
+		const emergencyContactRelationship = formData.get(
+			"emergency_contact_relationship",
+		);
+		if (emergencyContactRelationship !== null)
+			updateData.emergency_contact_relationship =
+				emergencyContactRelationship || null;
+
+		// Employment Details
+		const employeeId = formData.get("employee_id");
+		if (employeeId !== null) updateData.employee_id = employeeId || null;
+
+		const hireDate = formData.get("hire_date");
+		if (hireDate !== null) updateData.hire_date = hireDate || null;
+
+		const employmentType = formData.get("employment_type");
+		if (employmentType !== null)
+			updateData.employment_type = employmentType || null;
+
+		const workSchedule = formData.get("work_schedule");
+		if (workSchedule !== null) updateData.work_schedule = workSchedule || null;
+
+		const workLocation = formData.get("work_location");
+		if (workLocation !== null) updateData.work_location = workLocation || null;
+
+		// Compensation
+		const payType = formData.get("pay_type");
+		if (payType !== null) updateData.pay_type = payType || null;
+
+		const hourlyRate = formData.get("hourly_rate");
+		if (hourlyRate !== null)
+			updateData.hourly_rate = hourlyRate
+				? parseFloat(hourlyRate as string)
+				: null;
+
+		const annualSalary = formData.get("annual_salary");
+		if (annualSalary !== null)
+			updateData.annual_salary = annualSalary
+				? parseFloat(annualSalary as string)
+				: null;
+
+		const commissionRate = formData.get("commission_rate");
+		if (commissionRate !== null)
+			updateData.commission_rate = commissionRate
+				? parseFloat(commissionRate as string)
+				: null;
+
+		if (commissionStructure !== null)
+			updateData.commission_structure = commissionStructure;
+
+		const overtimeEligible = formData.get("overtime_eligible");
+		if (overtimeEligible !== null)
+			updateData.overtime_eligible = overtimeEligible === "true";
+
+		// Address
+		const streetAddress = formData.get("street_address");
+		if (streetAddress !== null)
+			updateData.street_address = streetAddress || null;
+
+		const city = formData.get("city");
+		if (city !== null) updateData.city = city || null;
+
+		const state = formData.get("state");
+		if (state !== null) updateData.state = state || null;
+
+		const postalCode = formData.get("postal_code");
+		if (postalCode !== null) updateData.postal_code = postalCode || null;
+
+		const country = formData.get("country");
+		if (country !== null) updateData.country = country || "US";
+
+		// Skills & Certifications
+		if (formData.has("skills"))
+			updateData.skills = skills.length > 0 ? skills : null;
+		if (certifications !== null) updateData.certifications = certifications;
+		if (formData.has("licenses"))
+			updateData.licenses = licenses.length > 0 ? licenses : null;
+
+		// Work Preferences
+		if (formData.has("service_areas"))
+			updateData.service_areas = serviceAreas.length > 0 ? serviceAreas : null;
+		if (availabilitySchedule !== null)
+			updateData.availability_schedule = availabilitySchedule;
+
+		const maxWeeklyHours = formData.get("max_weekly_hours");
+		if (maxWeeklyHours !== null)
+			updateData.max_weekly_hours = maxWeeklyHours
+				? parseInt(maxWeeklyHours as string)
+				: null;
+
+		if (formData.has("preferred_job_types"))
+			updateData.preferred_job_types =
+				preferredJobTypes.length > 0 ? preferredJobTypes : null;
+
+		// Performance
+		const performanceNotes = formData.get("performance_notes");
+		if (performanceNotes !== null)
+			updateData.performance_notes = performanceNotes || null;
+
+		const lastReviewDate = formData.get("last_review_date");
+		if (lastReviewDate !== null)
+			updateData.last_review_date = lastReviewDate || null;
+
+		const nextReviewDate = formData.get("next_review_date");
+		if (nextReviewDate !== null)
+			updateData.next_review_date = nextReviewDate || null;
+
+		// Notes
+		const notes = formData.get("notes");
+		if (notes !== null) updateData.notes = notes || null;
+
+		// Update company membership
+		if (Object.keys(updateData).length > 0) {
+			const { error: updateError } = await supabase
+				.from("company_memberships")
+				.update(updateData)
+				.eq("id", memberId);
+
+			if (updateError) {
+				throw new ActionError(
+					ERROR_MESSAGES.operationFailed("update team member"),
+					ERROR_CODES.DB_QUERY_ERROR,
+				);
+			}
+		}
+
+		// Update user profile name if provided
+		const name = formData.get("name");
+		if (name && targetMember.user_id) {
+			await supabase
+				.from("profiles")
+				.update({ full_name: name })
+				.eq("id", targetMember.user_id);
+		}
+
+		revalidatePath("/dashboard/settings/team");
+		revalidatePath("/dashboard/work/team");
+		revalidatePath(`/dashboard/work/team/${memberId}`);
+	});
+}
+
+/**
  * Invite team member
  */
 async function inviteTeamMember(
@@ -468,9 +710,9 @@ async function inviteTeamMember(
 }
 
 /**
- * Update team member
+ * Update team member (internal helper)
  */
-async function updateTeamMember(
+async function updateTeamMemberInternal(
 	memberId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {

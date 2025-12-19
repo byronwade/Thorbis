@@ -1,39 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownIcon, ArrowUpIcon, Mail, MessageSquare, Phone, PhoneIncoming, Building2, Users, Clock, TrendingUp } from "lucide-react";
-
-// Mock stats data - replace with real data fetching
-const platformStats = {
-	totalCommunications: 15420,
-	totalCommunicationsChange: 12.5,
-	activeCompanies: 156,
-	activeCompaniesChange: 8.2,
-	avgResponseTime: 2.4, // hours
-	avgResponseTimeChange: -15.3,
-	totalVolumeLast30Days: 45680,
-	totalVolumeChange: 18.7,
-	byChannel: {
-		email: { total: 8250, unread: 124, change: 15.2 },
-		sms: { total: 4830, unread: 89, change: 22.1 },
-		calls: { total: 1890, unread: 45, change: 8.7 },
-		voicemail: { total: 450, unread: 23, change: -5.2 },
-	},
-	topCompanies: [
-		{ name: "Acme Plumbing Co.", communications: 2340, percentage: 15.2 },
-		{ name: "Elite HVAC Services", communications: 1890, percentage: 12.3 },
-		{ name: "Quick Fix Electric", communications: 1650, percentage: 10.7 },
-		{ name: "Johnson & Sons Roofing", communications: 1420, percentage: 9.2 },
-		{ name: "Metro Landscaping", communications: 1180, percentage: 7.7 },
-	],
-	recentActivity: [
-		{ date: "Nov 11", emails: 450, sms: 280, calls: 95 },
-		{ date: "Nov 10", emails: 420, sms: 265, calls: 88 },
-		{ date: "Nov 9", emails: 380, sms: 290, calls: 102 },
-		{ date: "Nov 8", emails: 410, sms: 275, calls: 79 },
-		{ date: "Nov 7", emails: 395, sms: 260, calls: 85 },
-		{ date: "Nov 6", emails: 360, sms: 245, calls: 92 },
-		{ date: "Nov 5", emails: 340, sms: 230, calls: 78 },
-	],
-};
+import { getPlatformCommunicationStats } from "@/actions/communications";
 
 function StatCard({
 	title,
@@ -79,14 +46,12 @@ function ChannelCard({
 	title,
 	total,
 	unread,
-	change,
 	icon: Icon,
 	color,
 }: {
 	title: string;
 	total: number;
 	unread: number;
-	change: number;
 	icon: React.ElementType;
 	color: string;
 }) {
@@ -104,10 +69,6 @@ function ChannelCard({
 				<div className="text-2xl font-bold">{total.toLocaleString()}</div>
 				<div className="flex items-center justify-between mt-2">
 					<span className="text-xs text-muted-foreground">{unread} unread</span>
-					<span className={`text-xs ${change > 0 ? "text-green-500" : "text-red-500"}`}>
-						{change > 0 ? "+" : ""}
-						{change}%
-					</span>
 				</div>
 			</CardContent>
 		</Card>
@@ -119,7 +80,25 @@ function ChannelCard({
  *
  * Shows platform-wide communication metrics and analytics
  */
-export default function CommunicationStatsPage() {
+export default async function CommunicationStatsPage() {
+	// Fetch real stats
+	const result = await getPlatformCommunicationStats();
+	const stats = result.data || {
+		totalCommunications: 0,
+		totalCommunicationsChange: 0,
+		activeCompanies: 0,
+		avgResponseTimeHours: 0,
+		totalVolumeLast30Days: 0,
+		byChannel: {
+			email: { total: 0, unread: 0 },
+			sms: { total: 0, unread: 0 },
+			call: { total: 0, unread: 0 },
+			voicemail: { total: 0, unread: 0 },
+		},
+		topCompanies: [],
+		recentActivity: [],
+	};
+
 	return (
 		<div className="flex flex-col gap-6 p-6">
 			<div>
@@ -131,27 +110,24 @@ export default function CommunicationStatsPage() {
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				<StatCard
 					title="Total Communications"
-					value={platformStats.totalCommunications}
-					change={platformStats.totalCommunicationsChange}
+					value={stats.totalCommunications}
+					change={stats.totalCommunicationsChange}
 					icon={TrendingUp}
 				/>
 				<StatCard
 					title="Active Companies"
-					value={platformStats.activeCompanies}
-					change={platformStats.activeCompaniesChange}
+					value={stats.activeCompanies}
 					icon={Building2}
 				/>
 				<StatCard
 					title="Avg Response Time"
-					value={`${platformStats.avgResponseTime}h`}
-					change={platformStats.avgResponseTimeChange}
+					value={`${stats.avgResponseTimeHours}h`}
 					icon={Clock}
 					description="Across all channels"
 				/>
 				<StatCard
 					title="Volume (30 days)"
-					value={platformStats.totalVolumeLast30Days}
-					change={platformStats.totalVolumeChange}
+					value={stats.totalVolumeLast30Days}
 					icon={Users}
 				/>
 			</div>
@@ -162,33 +138,29 @@ export default function CommunicationStatsPage() {
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 					<ChannelCard
 						title="Email"
-						total={platformStats.byChannel.email.total}
-						unread={platformStats.byChannel.email.unread}
-						change={platformStats.byChannel.email.change}
+						total={stats.byChannel.email.total}
+						unread={stats.byChannel.email.unread}
 						icon={Mail}
 						color="bg-blue-500"
 					/>
 					<ChannelCard
 						title="SMS"
-						total={platformStats.byChannel.sms.total}
-						unread={platformStats.byChannel.sms.unread}
-						change={platformStats.byChannel.sms.change}
+						total={stats.byChannel.sms.total}
+						unread={stats.byChannel.sms.unread}
 						icon={MessageSquare}
 						color="bg-green-500"
 					/>
 					<ChannelCard
 						title="Calls"
-						total={platformStats.byChannel.calls.total}
-						unread={platformStats.byChannel.calls.unread}
-						change={platformStats.byChannel.calls.change}
+						total={stats.byChannel.call.total}
+						unread={stats.byChannel.call.unread}
 						icon={Phone}
 						color="bg-purple-500"
 					/>
 					<ChannelCard
 						title="Voicemail"
-						total={platformStats.byChannel.voicemail.total}
-						unread={platformStats.byChannel.voicemail.unread}
-						change={platformStats.byChannel.voicemail.change}
+						total={stats.byChannel.voicemail.total}
+						unread={stats.byChannel.voicemail.unread}
 						icon={PhoneIncoming}
 						color="bg-orange-500"
 					/>
@@ -204,20 +176,24 @@ export default function CommunicationStatsPage() {
 						<CardDescription>Companies with highest communication volume</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="space-y-4">
-							{platformStats.topCompanies.map((company, index) => (
-								<div key={company.name} className="flex items-center">
-									<div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
-										{index + 1}
+						{stats.topCompanies.length > 0 ? (
+							<div className="space-y-4">
+								{stats.topCompanies.map((company, index) => (
+									<div key={company.id} className="flex items-center">
+										<div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
+											{index + 1}
+										</div>
+										<div className="ml-4 flex-1 space-y-1">
+											<p className="text-sm font-medium leading-none">{company.name}</p>
+											<p className="text-sm text-muted-foreground">{company.communications.toLocaleString()} communications</p>
+										</div>
+										<div className="text-sm text-muted-foreground">{company.percentage}%</div>
 									</div>
-									<div className="ml-4 flex-1 space-y-1">
-										<p className="text-sm font-medium leading-none">{company.name}</p>
-										<p className="text-sm text-muted-foreground">{company.communications.toLocaleString()} communications</p>
-									</div>
-									<div className="text-sm text-muted-foreground">{company.percentage}%</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						) : (
+							<p className="text-sm text-muted-foreground text-center py-8">No communication data available</p>
+						)}
 					</CardContent>
 				</Card>
 
@@ -228,22 +204,26 @@ export default function CommunicationStatsPage() {
 						<CardDescription>Daily communication volume by channel</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="space-y-2">
-							<div className="grid grid-cols-4 text-xs font-medium text-muted-foreground">
-								<div>Date</div>
-								<div className="text-right">Email</div>
-								<div className="text-right">SMS</div>
-								<div className="text-right">Calls</div>
-							</div>
-							{platformStats.recentActivity.map((day) => (
-								<div key={day.date} className="grid grid-cols-4 text-sm">
-									<div>{day.date}</div>
-									<div className="text-right">{day.emails}</div>
-									<div className="text-right">{day.sms}</div>
-									<div className="text-right">{day.calls}</div>
+						{stats.recentActivity.length > 0 ? (
+							<div className="space-y-2">
+								<div className="grid grid-cols-4 text-xs font-medium text-muted-foreground">
+									<div>Date</div>
+									<div className="text-right">Email</div>
+									<div className="text-right">SMS</div>
+									<div className="text-right">Calls</div>
 								</div>
-							))}
-						</div>
+								{stats.recentActivity.map((day) => (
+									<div key={day.date} className="grid grid-cols-4 text-sm">
+										<div>{day.date}</div>
+										<div className="text-right">{day.emails}</div>
+										<div className="text-right">{day.sms}</div>
+										<div className="text-right">{day.calls}</div>
+									</div>
+								))}
+							</div>
+						) : (
+							<p className="text-sm text-muted-foreground text-center py-8">No recent activity</p>
+						)}
 					</CardContent>
 				</Card>
 			</div>

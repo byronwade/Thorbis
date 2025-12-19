@@ -12,6 +12,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { endActiveSupportSession } from "@/actions/support-sessions";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
 interface ActiveSession {
@@ -37,6 +47,7 @@ export function ActiveSessionBanner({
 	const [timeRemaining, setTimeRemaining] = useState("");
 	const [isEnding, setIsEnding] = useState(false);
 	const [isExpired, setIsExpired] = useState(false);
+	const [showEndDialog, setShowEndDialog] = useState(false);
 
 	// Calculate time remaining
 	useEffect(() => {
@@ -67,12 +78,9 @@ export function ActiveSessionBanner({
 		return () => clearInterval(interval);
 	}, [session.expires_at]);
 
-	const handleEndSession = async () => {
-		if (!confirm("Are you sure you want to end support access?")) {
-			return;
-		}
-
+	const executeEndSession = async () => {
 		setIsEnding(true);
+		setShowEndDialog(false);
 		try {
 			const result = await endActiveSupportSession(session.id);
 
@@ -90,6 +98,10 @@ export function ActiveSessionBanner({
 		} finally {
 			setIsEnding(false);
 		}
+	};
+
+	const handleEndSession = () => {
+		setShowEndDialog(true);
 	};
 
 	// Don't show if expired
@@ -176,6 +188,25 @@ export function ActiveSessionBanner({
 					</div>
 				</div>
 			</div>
+
+			{/* End Support Access Confirmation Dialog */}
+			<AlertDialog open={showEndDialog} onOpenChange={setShowEndDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>End Support Access?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will immediately end the support team's access to your account.
+							They will need to request new access if they need to continue helping you.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={executeEndSession}>
+							End Access
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

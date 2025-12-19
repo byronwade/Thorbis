@@ -133,9 +133,54 @@ type TwilioLookupPayload = {
 async function getTwilioEnrichmentData(
 	phoneNumber: string,
 ): Promise<TwilioEnrichmentData | undefined> {
-	// TODO: Implement Twilio Lookup API integration
-	// For now, return undefined - customer lookup from database is primary source
-	return undefined;
+	const accountSid = process.env.TWILIO_ACCOUNT_SID;
+	const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+	// If Twilio credentials are not configured, return undefined
+	if (!accountSid || !authToken) {
+		return undefined;
+	}
+
+	try {
+		// Use Twilio Lookup API v2 for comprehensive data
+		// Docs: https://www.twilio.com/docs/lookup/v2-api
+		const response = await fetch(
+			`https://lookups.twilio.com/v2/PhoneNumbers/${encodeURIComponent(phoneNumber)}?Fields=line_type_intelligence,caller_name`,
+			{
+				headers: {
+					Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+
+		if (!response.ok) {
+			console.error("[Twilio Lookup] Failed:", response.status, response.statusText);
+			return undefined;
+		}
+
+		const data = await response.json();
+
+		// Parse the Lookup API response
+		const enrichmentData: TwilioEnrichmentData = {
+			callerName: data.caller_name?.caller_name || undefined,
+			callerType: data.caller_name?.caller_type || undefined,
+			carrier: data.line_type_intelligence?.carrier_name || undefined,
+			lineType: data.line_type_intelligence?.type || undefined,
+			countryCode: data.country_code || undefined,
+			nationalFormat: data.national_format || undefined,
+		};
+
+		// Only return if we have at least some data
+		if (enrichmentData.callerName || enrichmentData.carrier || enrichmentData.lineType) {
+			return enrichmentData;
+		}
+
+		return undefined;
+	} catch (error) {
+		console.error("[Twilio Lookup] Error:", error);
+		return undefined;
+	}
 }
 
 function getEmptyRelatedCustomerData(): RelatedCustomerData {

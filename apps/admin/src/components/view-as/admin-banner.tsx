@@ -5,15 +5,16 @@
  *
  * Persistent banner shown at the top when admin is in view-as mode.
  * Shows session info, timer, and exit button.
+ * Features collapsible notes section for session documentation.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Clock, MessageSquare, ExternalLink } from "lucide-react";
-import { endSupportSession } from "@/actions/support-sessions";
+import { X, Clock, MessageSquare, ExternalLink, ChevronDown, ChevronUp, Save, FileText } from "lucide-react";
+import { endSupportSession, updateSessionNotes } from "@/actions/support-sessions";
 import { toast } from "sonner";
 
 interface AdminViewAsBannerProps {
@@ -22,6 +23,7 @@ interface AdminViewAsBannerProps {
 		company_id: string;
 		ticket_id?: string;
 		expires_at?: string;
+		notes?: string;
 		admin_users?: {
 			email?: string;
 			full_name?: string;
@@ -33,8 +35,13 @@ interface AdminViewAsBannerProps {
 export function AdminViewAsBanner({ session, companyId }: AdminViewAsBannerProps) {
 	const router = useRouter();
 	const [timeRemaining, setTimeRemaining] = useState<number>(0);
-	const [notes, setNotes] = useState("");
+	const [notes, setNotes] = useState(session.notes || "");
 	const [isEnding, setIsEnding] = useState(false);
+	const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+	const [isSavingNotes, setIsSavingNotes] = useState(false);
+	const [hasUnsavedNotes, setHasUnsavedNotes] = useState(false);
+	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const lastSavedNotesRef = useRef(session.notes || "");
 
 	// Calculate time remaining
 	useEffect(() => {
@@ -92,6 +99,60 @@ export function AdminViewAsBanner({ session, companyId }: AdminViewAsBannerProps
 		return "text-green-600";
 	};
 
+	// Save notes to session
+	const saveNotes = useCallback(async () => {
+		if (notes === lastSavedNotesRef.current) return;
+
+		setIsSavingNotes(true);
+		try {
+			const result = await updateSessionNotes(session.id, notes);
+			if (result.error) {
+				toast.error("Failed to save notes");
+			} else {
+				lastSavedNotesRef.current = notes;
+				setHasUnsavedNotes(false);
+			}
+		} catch (error) {
+			toast.error("Failed to save notes");
+		} finally {
+			setIsSavingNotes(false);
+		}
+	}, [session.id, notes]);
+
+	// Handle notes change with auto-save debounce
+	const handleNotesChange = (value: string) => {
+		setNotes(value);
+		setHasUnsavedNotes(value !== lastSavedNotesRef.current);
+
+		// Clear existing timeout
+		if (saveTimeoutRef.current) {
+			clearTimeout(saveTimeoutRef.current);
+		}
+
+		// Auto-save after 2 seconds of inactivity
+		saveTimeoutRef.current = setTimeout(() => {
+			saveNotes();
+		}, 2000);
+	};
+
+	// Clean up timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (saveTimeoutRef.current) {
+				clearTimeout(saveTimeoutRef.current);
+			}
+		};
+	}, []);
+
+	// Save notes before ending session
+	const handleEndSessionWithNotes = async () => {
+		// Save any unsaved notes first
+		if (hasUnsavedNotes) {
+			await saveNotes();
+		}
+		handleEndSession();
+	};
+
 	return (
 		<div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg">
 			<div className="container mx-auto px-4">
@@ -128,15 +189,76 @@ export function AdminViewAsBanner({ session, companyId }: AdminViewAsBannerProps
 
 					{/* Right: Actions */}
 					<div className="flex items-center gap-2">
-						<Button variant="ghost" size="sm" className="text-white hover:bg-white/20" onClick={handleEndSession} disabled={isEnding}>
+						{/* Notes toggle button */}
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-white hover:bg-white/20"
+							onClick={() => setIsNotesExpanded(!isNotesExpanded)}
+						>
+							<FileText className="h-4 w-4 mr-1" />
+							Notes
+							{hasUnsavedNotes && <span className="ml-1 text-yellow-200">•</span>}
+							{isNotesExpanded ? (
+								<ChevronUp className="h-3 w-3 ml-1" />
+							) : (
+								<ChevronDown className="h-3 w-3 ml-1" />
+							)}
+						</Button>
+
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-white hover:bg-white/20"
+							onClick={handleEndSessionWithNotes}
+							disabled={isEnding}
+						>
 							<X className="h-4 w-4 mr-1" />
 							End Session
 						</Button>
 					</div>
 				</div>
 
-				{/* Optional: Notes field (expandable) */}
-				{/* TODO: Implement collapsible notes section */}
+				{/* Collapsible Notes Section */}
+				{isNotesExpanded && (
+					<div className="pb-4 border-t border-white/20 mt-2 pt-3">
+						<div className="flex flex-col gap-2">
+							<div className="flex items-center justify-between">
+								<label className="text-sm font-medium text-white/90">
+									Session Notes
+								</label>
+								<div className="flex items-center gap-2">
+									{hasUnsavedNotes && (
+										<span className="text-xs text-yellow-200">Unsaved changes</span>
+									)}
+									{isSavingNotes && (
+										<span className="text-xs text-white/70">Saving...</span>
+									)}
+									<Button
+										variant="ghost"
+										size="sm"
+										className="h-7 px-2 text-white hover:bg-white/20"
+										onClick={saveNotes}
+										disabled={isSavingNotes || !hasUnsavedNotes}
+									>
+										<Save className="h-3 w-3 mr-1" />
+										Save
+									</Button>
+								</div>
+							</div>
+							<Textarea
+								value={notes}
+								onChange={(e) => handleNotesChange(e.target.value)}
+								placeholder="Add notes about this support session (actions taken, issues found, etc.)..."
+								className="min-h-[80px] bg-white/10 border-white/30 text-white placeholder:text-white/50 focus:border-white/50 resize-none"
+								rows={3}
+							/>
+							<p className="text-xs text-white/60">
+								Notes are saved automatically and will be attached to the session audit log.
+							</p>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

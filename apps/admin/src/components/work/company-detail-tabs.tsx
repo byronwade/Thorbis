@@ -8,9 +8,10 @@ import { CompanyUsersTab } from "./company-users-tab";
 import { CompanyBillingTab } from "./company-billing-tab";
 import { CompanyActivityTab } from "./company-activity-tab";
 import { CompanySettingsTab } from "./company-settings-tab";
+import type { CompanyWithDetails } from "@/types/entities";
 
 type CompanyDetailTabsProps = {
-	company: any; // TODO: Type properly
+	company: CompanyWithDetails;
 };
 
 /**

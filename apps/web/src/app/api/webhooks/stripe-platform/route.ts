@@ -1,12 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { sendEmail } from "@/lib/email/email-sender";
+import { EmailTemplate } from "@/lib/email/email-types";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+import TrialEndingEmail from "@/emails/templates/subscription/trial-ending";
+import PaymentFailedEmail from "@/emails/templates/subscription/payment-failed";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-	apiVersion: "2024-11-20.acacia",
-});
+// Lazily initialize Stripe to avoid build-time errors
+function getStripe() {
+	if (!process.env.STRIPE_SECRET_KEY) {
+		throw new Error("STRIPE_SECRET_KEY is not set");
+	}
+	return new Stripe(process.env.STRIPE_SECRET_KEY, {
+		apiVersion: "2024-11-20.acacia",
+	});
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getWebhookSecret() {
+	if (!process.env.STRIPE_WEBHOOK_SECRET) {
+		throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+	}
+	return process.env.STRIPE_WEBHOOK_SECRET;
+}
 
 /**
  * Stripe Platform Billing Webhook Handler
@@ -35,6 +50,8 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Verify webhook signature
+		const stripe = getStripe();
+		const webhookSecret = getWebhookSecret();
 		let event: Stripe.Event;
 		try {
 			event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
@@ -246,17 +263,100 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 async function handleTrialWillEnd(subscription: Stripe.Subscription) {
 	const supabase = createServiceSupabaseClient();
 	const companyId = subscription.metadata?.company_id;
+	const stripe = getStripe();
 
 	if (!companyId) {
 		console.error("Missing company_id in subscription metadata");
 		return;
 	}
 
-	// TODO: Send trial ending notification email
 	console.log(`[Stripe Webhook] Trial will end soon for company ${companyId}`);
 
-	// Log event for potential email sending
-	// In production, you'd trigger an email notification here
+	// Get company and owner details
+	const { data: company } = await supabase
+		.from("companies")
+		.select("id, name")
+		.eq("id", companyId)
+		.single();
+
+	if (!company) {
+		console.error(`Company not found: ${companyId}`);
+		return;
+	}
+
+	// Get company owner (first active member with owner role)
+	const { data: owner } = await supabase
+		.from("company_memberships")
+		.select("user_id, users!inner(email, raw_user_meta_data)")
+		.eq("company_id", companyId)
+		.eq("status", "active")
+		.eq("role", "owner")
+		.limit(1)
+		.single();
+
+	if (!owner?.users) {
+		console.error(`Owner not found for company ${companyId}`);
+		return;
+	}
+
+	const userMeta = owner.users.raw_user_meta_data as Record<string, unknown> | null;
+	const ownerName = (userMeta?.full_name as string) || (userMeta?.name as string) || "there";
+	const ownerEmail = owner.users.email;
+
+	if (!ownerEmail) {
+		console.error(`Owner email not found for company ${companyId}`);
+		return;
+	}
+
+	// Calculate trial end date and days remaining
+	const trialEndDate = subscription.trial_end
+		? new Date(subscription.trial_end * 1000)
+		: new Date();
+	const daysRemaining = Math.max(
+		0,
+		Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+	);
+
+	// Get plan details from subscription
+	const planItem = subscription.items?.data?.[0];
+	const planName = planItem?.plan?.nickname || "Professional";
+	const monthlyPrice = planItem?.plan?.amount
+		? `$${(planItem.plan.amount / 100).toFixed(2)}`
+		: "$49.00";
+
+	// Send trial ending email
+	try {
+		const result = await sendEmail({
+			to: ownerEmail,
+			subject: `Your Stratos trial ends in ${daysRemaining} days`,
+			template: TrialEndingEmail({
+				companyName: company.name,
+				ownerName,
+				daysRemaining,
+				trialEndDate: trialEndDate.toLocaleDateString("en-US", {
+					weekday: "long",
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}),
+				planName,
+				monthlyPrice,
+				billingUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://app.stratos.app"}/dashboard/settings/billing`,
+			}),
+			templateType: EmailTemplate.TRIAL_ENDING,
+			skipPreSendChecks: true, // System email - must go out
+		});
+
+		if (result.success) {
+			console.log(`[Stripe Webhook] Trial ending email sent to ${ownerEmail}`);
+		} else {
+			console.error(
+				`[Stripe Webhook] Failed to send trial ending email: ${result.error}`,
+			);
+		}
+	} catch (emailError) {
+		console.error("[Stripe Webhook] Error sending trial ending email:", emailError);
+	}
 }
 
 /**
@@ -304,10 +404,11 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 /**
  * Handle invoice.payment_failed
- * Records failed payment and potentially notifies company
+ * Records failed payment and notifies company
  */
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 	const supabase = createServiceSupabaseClient();
+	const stripe = getStripe();
 
 	// Get company ID from customer metadata
 	const customerId =
@@ -322,7 +423,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
 	const { data: company } = await supabase
 		.from("companies")
-		.select("id")
+		.select("id, name")
 		.eq("stripe_customer_id", customerId)
 		.single();
 
@@ -335,7 +436,107 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 		`[Stripe Webhook] Payment FAILED for company ${company.id}: ${invoice.amount_due / 100} ${invoice.currency}`,
 	);
 
-	// TODO: Send payment failure notification email
-	// In production, trigger email to company about failed payment
-	// Consider updating subscription status or limiting access
+	// Update company with payment failure timestamp
+	await supabase
+		.from("companies")
+		.update({
+			payment_failed_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+		})
+		.eq("id", company.id);
+
+	// Get company owner for notification
+	const { data: owner } = await supabase
+		.from("company_memberships")
+		.select("user_id, users!inner(email, raw_user_meta_data)")
+		.eq("company_id", company.id)
+		.eq("status", "active")
+		.eq("role", "owner")
+		.limit(1)
+		.single();
+
+	if (!owner?.users?.email) {
+		console.error(`Owner email not found for company ${company.id}`);
+		return;
+	}
+
+	const userMeta = owner.users.raw_user_meta_data as Record<string, unknown> | null;
+	const ownerName = (userMeta?.full_name as string) || (userMeta?.name as string) || "there";
+	const ownerEmail = owner.users.email;
+
+	// Get payment method details
+	let lastFourDigits = "****";
+	let paymentMethod = "Card";
+
+	try {
+		// Get the payment method from the invoice
+		const paymentMethodId =
+			typeof invoice.payment_intent === "string"
+				? invoice.payment_intent
+				: invoice.payment_intent?.payment_method;
+
+		if (paymentMethodId && typeof paymentMethodId === "string") {
+			const pm = await stripe.paymentMethods.retrieve(paymentMethodId);
+			if (pm.card) {
+				lastFourDigits = pm.card.last4;
+				paymentMethod = pm.card.brand
+					? pm.card.brand.charAt(0).toUpperCase() + pm.card.brand.slice(1)
+					: "Card";
+			} else if (pm.us_bank_account) {
+				lastFourDigits = pm.us_bank_account.last4 || "****";
+				paymentMethod = "Bank Account";
+			}
+		}
+	} catch (pmError) {
+		console.warn("[Stripe Webhook] Could not retrieve payment method:", pmError);
+	}
+
+	// Calculate grace period (7 days from now)
+	const gracePeriodEnds = new Date();
+	gracePeriodEnds.setDate(gracePeriodEnds.getDate() + 7);
+
+	// Get attempt count from invoice
+	const attemptCount = invoice.attempt_count || 1;
+
+	// Send payment failed email
+	try {
+		const result = await sendEmail({
+			to: ownerEmail,
+			subject: `Action required: Payment failed for ${company.name}`,
+			template: PaymentFailedEmail({
+				companyName: company.name,
+				ownerName,
+				failedAt: new Date().toLocaleDateString("en-US", {
+					weekday: "long",
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}),
+				attemptCount,
+				lastFourDigits,
+				paymentMethod,
+				amountDue: `$${(invoice.amount_due / 100).toFixed(2)}`,
+				gracePeriodEnds: gracePeriodEnds.toLocaleDateString("en-US", {
+					weekday: "long",
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}),
+				daysRemainingInGrace: 7,
+				updatePaymentUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://app.stratos.app"}/dashboard/settings/billing`,
+			}),
+			templateType: EmailTemplate.SUBSCRIPTION_PAYMENT_FAILED,
+			skipPreSendChecks: true, // System email - must go out
+		});
+
+		if (result.success) {
+			console.log(`[Stripe Webhook] Payment failed email sent to ${ownerEmail}`);
+		} else {
+			console.error(
+				`[Stripe Webhook] Failed to send payment failed email: ${result.error}`,
+			);
+		}
+	} catch (emailError) {
+		console.error("[Stripe Webhook] Error sending payment failed email:", emailError);
+	}
 }

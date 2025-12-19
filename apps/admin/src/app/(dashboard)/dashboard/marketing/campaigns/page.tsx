@@ -4,6 +4,9 @@ import { Button } from "@stratos/ui";
 import { CampaignsTable } from "@/components/marketing/campaigns-table";
 import { getCampaigns, getCampaignStats } from "@/lib/queries/campaigns";
 
+// Force dynamic rendering since this page fetches data from the database
+export const dynamic = "force-dynamic";
+
 /**
  * Marketing Campaigns Page
  *

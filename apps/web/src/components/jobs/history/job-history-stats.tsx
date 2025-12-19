@@ -11,24 +11,59 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function JobHistoryStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real job history statistics
-	// const { data: stats } = await supabase
-	//   .from("jobs")
-	//   .select("*")
-	//   .eq("company_id", companyId)
-	//   .eq("status", "completed");
+	let totalJobs = 0;
+	let completedJobs = 0;
+	let thisMonthJobs = 0;
+	let totalRevenue = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get first of current month
+		const monthStart = new Date();
+		monthStart.setDate(1);
+		monthStart.setHours(0, 0, 0, 0);
+
+		// Fetch all jobs
+		const { data: jobs, error } = await supabase
+			.from("jobs")
+			.select("id, status, total_amount, created_at")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && jobs) {
+			totalJobs = jobs.length;
+
+			for (const job of jobs) {
+				// Count completed
+				if (job.status === "completed") {
+					completedJobs++;
+				}
+
+				// Count jobs created this month
+				if (job.created_at && new Date(job.created_at) >= monthStart) {
+					thisMonthJobs++;
+				}
+
+				// Sum revenue (total_amount is in cents)
+				totalRevenue += job.total_amount || 0;
+			}
+		}
+	}
+
+	// Calculate stats
+	const completionRate =
+		totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
+	const revenueK = Math.round(totalRevenue / 100 / 1000); // Convert cents to thousands
+
 	const stats = {
-		totalJobs: 2847,
-		monthlyIncrease: "+156",
-		completed: 2678,
-		completionRate: "94%",
-		avgRating: 4.8,
-		totalRevenue: "$847K",
+		totalJobs,
+		monthlyIncrease: `+${thisMonthJobs}`,
+		completed: completedJobs,
+		completionRate: `${completionRate}%`,
+		avgRating: 4.8, // Would need reviews table
+		totalRevenue: revenueK >= 1000 ? `$${(revenueK / 1000).toFixed(1)}M` : `$${revenueK}K`,
 	};
 
 	return (

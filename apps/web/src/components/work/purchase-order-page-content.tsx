@@ -40,6 +40,7 @@ import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
 import {
 	archivePurchaseOrder,
+	updatePurchaseOrderStatus,
 	updatePurchaseOrderVendor,
 } from "@/actions/purchase-orders";
 import { VendorSelect } from "@/components/inventory/vendor-select";
@@ -1201,12 +1202,28 @@ export function PurchaseOrderPageContent({
 							className="w-full sm:w-auto"
 							disabled={isUpdatingStatus}
 							onClick={async () => {
-								// TODO: Implement status update logic
-								toast.success(
-									`Status changed to ${selectedStatus.replace("_", " ")}`,
-								);
-								setStatusUpdateDialogOpen(false);
-								setStatusUpdateNotes("");
+								setIsUpdatingStatus(true);
+								try {
+									const result = await updatePurchaseOrderStatus(
+										purchaseOrder.id,
+										selectedStatus,
+										statusUpdateNotes || undefined,
+									);
+									if (result.success) {
+										toast.success(
+											`Status changed to ${selectedStatus.replace("_", " ")}`,
+										);
+										setStatusUpdateDialogOpen(false);
+										setStatusUpdateNotes("");
+										router.refresh();
+									} else {
+										toast.error(result.error || "Failed to update status");
+									}
+								} catch (error) {
+									toast.error("Failed to update status");
+								} finally {
+									setIsUpdatingStatus(false);
+								}
 							}}
 						>
 							{isUpdatingStatus ? "Updating..." : "Update Status"}

@@ -6,6 +6,7 @@ import Script from "next/script";
 import { Suspense } from "react";
 import { SkipLink } from "@/components/layout/skip-link";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
+import { ConvexProvider } from "@/components/providers/convex-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ZustandHydration } from "@/components/providers/zustand-hydration";
@@ -132,12 +133,14 @@ export default function RootLayout({
 			<body className="font-sans antialiased">
 				<SkipLink />
 				<ThemeProvider>
-					<ZustandHydration />
-					{/* <BotIdProvider /> */}
-					<Suspense fallback={null}>
-						<AnalyticsProvider>{children}</AnalyticsProvider>
-					</Suspense>
-					<ToastProvider />
+					<ConvexProvider>
+						<ZustandHydration />
+						{/* <BotIdProvider /> */}
+						<Suspense fallback={null}>
+							<AnalyticsProvider>{children}</AnalyticsProvider>
+						</Suspense>
+						<ToastProvider />
+					</ConvexProvider>
 				</ThemeProvider>
 				<Analytics />
 				<SpeedInsights />

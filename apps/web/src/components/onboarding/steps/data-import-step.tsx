@@ -32,6 +32,7 @@ import {
 	Wrench,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
 	Accordion,
 	AccordionContent,
@@ -215,55 +216,104 @@ export function DataImportStep() {
 		setShowExportGuide(value !== "none" && value !== "spreadsheet");
 	};
 
-	// Simulate file upload (in production, this would call an API)
+	// Map import types to API data types
+	const importTypeToDataType: Record<string, string> = {
+		customers: "customers",
+		"price-book": "materials", // Price book items map to materials
+		equipment: "materials", // Equipment also maps to materials with different fields
+		jobs: "jobs",
+	};
+
+	// Handle file upload via API
 	const handleFileUpload = async (importType: string, file: File) => {
 		setImportStatuses((prev) => ({
 			...prev,
 			[importType]: { type: importType, status: "uploading", progress: 0 },
 		}));
 
-		// Simulate upload progress
-		for (let i = 0; i <= 100; i += 10) {
-			await new Promise((r) => setTimeout(r, 200));
+		try {
+			// Create form data for API
+			const formData = new FormData();
+			formData.append("file", file);
+			formData.append("dataType", importTypeToDataType[importType] || "customers");
+			formData.append("dryRun", "false");
+
+			// Update progress to show upload started
 			setImportStatuses((prev) => ({
 				...prev,
-				[importType]: { ...prev[importType], progress: i },
+				[importType]: { ...prev[importType], progress: 30 },
 			}));
-		}
 
-		// Simulate processing
-		setImportStatuses((prev) => ({
-			...prev,
-			[importType]: {
-				...prev[importType],
-				status: "processing",
-				progress: 100,
-			},
-		}));
+			// Call the data import API
+			const response = await fetch("/api/data/import", {
+				method: "POST",
+				body: formData,
+			});
 
-		await new Promise((r) => setTimeout(r, 1500));
-
-		// Complete with mock record count
-		const mockRecordCount = Math.floor(Math.random() * 200) + 20;
-		setImportStatuses((prev) => ({
-			...prev,
-			[importType]: {
-				...prev[importType],
-				status: "complete",
-				recordCount: mockRecordCount,
-			},
-		}));
-
-		// Update store with import status
-		updateData({
-			dataImportCompleted: {
-				...(data.dataImportCompleted || {}),
+			// Update progress to show processing
+			setImportStatuses((prev) => ({
+				...prev,
 				[importType]: {
-					recordCount: mockRecordCount,
-					importedAt: new Date().toISOString(),
+					...prev[importType],
+					status: "processing",
+					progress: 70,
 				},
-			},
-		});
+			}));
+
+			const result = await response.json();
+
+			if (!response.ok || !result.success) {
+				throw new Error(result.error || "Import failed");
+			}
+
+			// Complete with actual record count
+			const recordCount = result.validRows || 0;
+			setImportStatuses((prev) => ({
+				...prev,
+				[importType]: {
+					...prev[importType],
+					status: "complete",
+					progress: 100,
+					recordCount,
+				},
+			}));
+
+			// Update store with import status
+			updateData({
+				dataImportCompleted: {
+					...(data.dataImportCompleted || {}),
+					[importType]: {
+						recordCount,
+						importedAt: new Date().toISOString(),
+						jobId: result.jobId,
+					},
+				},
+			});
+
+			// Show success message with details
+			if (result.errorRows > 0) {
+				toast.success(`Imported ${recordCount} records`, {
+					description: `${result.errorRows} rows had validation errors and were skipped.`,
+				});
+			} else {
+				toast.success(`Successfully imported ${recordCount} records`);
+			}
+		} catch (error) {
+			console.error("Import error:", error);
+
+			setImportStatuses((prev) => ({
+				...prev,
+				[importType]: {
+					...prev[importType],
+					status: "error",
+					errorMessage: error instanceof Error ? error.message : "Import failed",
+				},
+			}));
+
+			toast.error("Import failed", {
+				description: error instanceof Error ? error.message : "An unexpected error occurred",
+			});
+		}
 	};
 
 	// File input handler

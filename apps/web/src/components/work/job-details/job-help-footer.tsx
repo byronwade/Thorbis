@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { submitJobHelpFeedback } from "@/actions/support";
 
 interface StatusStep {
 	status: string;
@@ -249,11 +250,22 @@ function SupportForm() {
 		setSubmitStatus("idle");
 
 		try {
-			// TODO: Implement actual support submission
-			await new Promise((resolve) => setTimeout(resolve, 1500));
-			setSubmitStatus("success");
-			setFormState({ name: "", email: "", subject: "", message: "" });
+			const result = await submitJobHelpFeedback({
+				name: formState.name,
+				email: formState.email,
+				subject: formState.subject,
+				message: formState.message,
+			});
+
+			if (result.success) {
+				setSubmitStatus("success");
+				setFormState({ name: "", email: "", subject: "", message: "" });
+			} else {
+				console.error("Support submission failed:", result.error);
+				setSubmitStatus("error");
+			}
 		} catch (error) {
+			console.error("Support submission error:", error);
 			setSubmitStatus("error");
 		} finally {
 			setIsSubmitting(false);

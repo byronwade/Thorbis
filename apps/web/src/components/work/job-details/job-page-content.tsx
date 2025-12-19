@@ -3242,7 +3242,15 @@ export function JobPageContent({
 						<p className="text-muted-foreground mb-4 text-sm">
 							Equipment serviced on this job will appear here
 						</p>
-						<Button onClick={() => {}} size="sm" variant="secondary">
+						<Button
+							onClick={() =>
+								router.push(
+									`/dashboard/work/equipment/new?jobId=${job.id}${customer?.id ? `&customerId=${customer.id}` : ""}`,
+								)
+							}
+							size="sm"
+							variant="secondary"
+						>
 							<Plus className="mr-2 h-4 w-4" /> Add Equipment
 						</Button>
 					</div>

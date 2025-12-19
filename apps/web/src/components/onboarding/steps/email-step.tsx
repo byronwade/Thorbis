@@ -11,6 +11,7 @@
  */
 
 import { DNSVerificationTracker } from "@/components/onboarding/status-tracking/dns-verification-tracker";
+import { setupSendGridDomain } from "@/actions/settings/sendgrid-domain";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,9 +32,10 @@ import {
     Mail,
     Shield,
     SkipForward,
-    Zap
+    Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type EmailSetupOption =
 	| "platform"
@@ -164,15 +166,38 @@ export function EmailStep() {
 
 		setIsValidating(true);
 
-		// Simulate API call to create domain in Resend
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		try {
+			// Create domain in SendGrid via server action
+			const result = await setupSendGridDomain({
+				domain: normalized,
+				subdomain: "mail", // Use mail subdomain by default
+			});
 
-		updateData({
-			customDomain: normalized,
-			dnsVerified: false,
-			emailSetupType: "custom-domain",
-		});
-		setIsValidating(false);
+			if (!result.success) {
+				setDomainError(result.error || "Failed to setup domain");
+				toast.error("Domain setup failed", {
+					description: result.error || "Please try again",
+				});
+				return;
+			}
+
+			// Update onboarding state with domain info
+			updateData({
+				customDomain: normalized,
+				dnsVerified: result.domain?.valid || false,
+				emailSetupType: "custom-domain",
+			});
+
+			toast.success("Domain setup initiated", {
+				description: "Add the DNS records below to verify your domain",
+			});
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Failed to setup domain";
+			setDomainError(message);
+			toast.error("Domain setup failed", { description: message });
+		} finally {
+			setIsValidating(false);
+		}
 	};
 
 	const handleCopy = async (text: string, id: string) => {

@@ -10,6 +10,7 @@ import {
 	CheckCircle2,
 	Clock,
 	FileText,
+	Loader2,
 	Mail,
 	MapPin,
 	Phone,
@@ -19,6 +20,7 @@ import {
 	Users,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -100,10 +102,37 @@ export function FirstActionStep() {
 
 	const saveCustomer = async () => {
 		setSaving(true);
-		await new Promise((resolve) => setTimeout(resolve, 1500));
-		setCompleted(true);
-		updateData({ firstActionCompleted: "customer" });
-		setSaving(false);
+		try {
+			// Import the server action dynamically
+			const { createSimpleCustomer } = await import("@/actions/customers");
+
+			// Create the customer in the database
+			const result = await createSimpleCustomer({
+				display_name: `${customerData.firstName} ${customerData.lastName}`.trim(),
+				first_name: customerData.firstName,
+				last_name: customerData.lastName,
+				email: customerData.email || undefined,
+				phone: customerData.phone || undefined,
+				address: customerData.address || undefined,
+				status: "active",
+			});
+
+			if (!result.success) {
+				throw new Error(result.error || "Failed to create customer");
+			}
+
+			setCompleted(true);
+			updateData({
+				firstActionCompleted: "customer",
+				firstCustomerId: result.data?.id,
+			});
+			toast.success("Customer added successfully!");
+		} catch (error) {
+			console.error("Failed to save customer:", error);
+			toast.error(error instanceof Error ? error.message : "Failed to save customer");
+		} finally {
+			setSaving(false);
+		}
 	};
 
 	// If action is completed, show success
@@ -253,7 +282,7 @@ export function FirstActionStep() {
 				>
 					{saving ? (
 						<>
-							<Clock className="mr-2 h-4 w-4 animate-spin" />
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							Saving...
 						</>
 					) : (

@@ -9,21 +9,62 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function InventoryStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real inventory statistics
-	// const { data: stats } = await supabase
-	//   .from("inventory_items")
-	//   .select("*")
-	//   .eq("company_id", companyId);
+	// Fetch real inventory statistics
+	let totalItems = 0;
+	let lowStock = 0;
+	let outOfStock = 0;
+	let totalValue = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get inventory items with their price book data for value calculation
+		const { data: inventoryData, error } = await supabase
+			.from("inventory")
+			.select(
+				`
+				id,
+				quantity_on_hand,
+				quantity_reserved,
+				reorder_point,
+				cost_per_unit,
+				price_book_items!inner(company_id)
+			`,
+			)
+			.eq("price_book_items.company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && inventoryData) {
+			totalItems = inventoryData.length;
+
+			for (const item of inventoryData) {
+				const available =
+					(item.quantity_on_hand || 0) - (item.quantity_reserved || 0);
+
+				// Out of stock: no available inventory
+				if (available <= 0) {
+					outOfStock++;
+				}
+				// Low stock: available is at or below reorder point
+				else if (available <= (item.reorder_point || 0)) {
+					lowStock++;
+				}
+
+				// Calculate value (cost_per_unit is in cents)
+				totalValue += (item.cost_per_unit || 0) * (item.quantity_on_hand || 0);
+			}
+
+			// Convert cents to dollars
+			totalValue = Math.round(totalValue / 100);
+		}
+	}
+
 	const stats = {
-		totalItems: 0,
-		lowStock: 0,
-		outOfStock: 0,
-		totalValue: 0,
+		totalItems,
+		lowStock,
+		outOfStock,
+		totalValue,
 	};
 
 	return (

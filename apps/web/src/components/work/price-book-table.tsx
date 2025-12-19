@@ -25,6 +25,7 @@ import {
 	Box,
 	Copy,
 	DollarSign,
+	Download,
 	Edit,
 	Eye,
 	Image as ImageIcon,
@@ -37,6 +38,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { archivePriceBookItem } from "@/actions/price-book";
+import { useToast } from "@/hooks/use-toast";
 import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -111,6 +113,8 @@ export function PriceBookTable({
 	itemsPerPage?: number;
 	onRefresh?: () => void;
 }) {
+	const { toast } = useToast();
+
 	// Get filters from store
 	const itemTypeFilter = usePriceBookStore((state) => state.itemTypeFilter);
 	const categoryFilter = usePriceBookStore((state) => state.categoryFilter);
@@ -118,6 +122,50 @@ export function PriceBookTable({
 
 	// Table actions hook
 	const { handleRefresh } = useTableActions({ entityType: "price_book" });
+
+	// Bulk export handler
+	const handleBulkExport = (ids: string[]) => {
+		const selectedItems = filteredItems.filter((item) => ids.includes(item.id));
+		const csv = [
+			[
+				"SKU",
+				"Name",
+				"Type",
+				"Category",
+				"Subcategory",
+				"Price",
+				"Cost",
+				"Status",
+				"Labor Hours",
+				"Taxable",
+			].join(","),
+			...selectedItems.map((item) =>
+				[
+					item.sku,
+					`"${item.name.replace(/"/g, '""')}"`,
+					item.itemType,
+					item.category,
+					item.subcategory || "",
+					item.price,
+					item.cost || "",
+					item.isActive ? "Active" : "Inactive",
+					item.laborHours || "",
+					item.taxable ? "Yes" : "No",
+				].join(","),
+			),
+		].join("\n");
+
+		const blob = new Blob([csv], { type: "text/csv" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `price-book-${new Date().toISOString().split("T")[0]}.csv`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		toast.success(`Exported ${selectedItems.length} price book items`);
+	};
 
 	// Archive dialog
 	const { openArchiveDialog, ArchiveDialogComponent } = useArchiveDialog({
@@ -413,22 +461,20 @@ export function PriceBookTable({
 			label: "Mass Price Update",
 			icon: <TrendingUp className="h-4 w-4" />,
 			onClick: () => {
-				/* TODO: implement mass price update */
+				toast.info("Mass price update coming soon!");
 			},
 		},
 		{
 			label: "Change Category",
 			icon: <Package className="h-4 w-4" />,
 			onClick: () => {
-				/* TODO: implement change category */
+				toast.info("Category change coming soon!");
 			},
 		},
 		{
-			label: "Bulk Export",
-			icon: <DollarSign className="h-4 w-4" />,
-			onClick: () => {
-				/* TODO: implement bulk export */
-			},
+			label: "Export CSV",
+			icon: <Download className="h-4 w-4" />,
+			onClick: handleBulkExport,
 		},
 		{
 			label: "Archive Selected",

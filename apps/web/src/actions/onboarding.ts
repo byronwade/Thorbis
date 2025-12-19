@@ -690,38 +690,36 @@ async function saveOnboardingProgress(
 					.replace(/(^-|-$)/g, "") || `company-${Date.now()}`;
 			companySlug = await generateUniqueSlug(serviceSupabase, baseSlug);
 
-			const { data: company, error: companyError } = await serviceSupabase
-				.from("companies")
-				.insert({
-					name: data.orgName,
-					slug: companySlug,
-					industry: data.orgIndustry,
-					company_size: data.orgSize,
-					phone: data.orgPhone,
-					address: fullAddress,
-					city: data.orgCity,
-					state: data.orgState,
-					zip_code: data.orgZip,
-					website: data.orgWebsite || null,
-					tax_id: data.orgTaxId || null,
-					lat: companyLat,
-					lon: companyLon,
-					created_by: userId,
-					owner_id: userId,
-					stripe_subscription_status: "incomplete",
+			// Use atomic RPC to create company with owner membership in single transaction
+			const { data: createResult, error: createError } = await serviceSupabase
+				.rpc("create_company_with_owner", {
+					p_user_id: userId,
+					p_name: data.orgName,
+					p_slug: companySlug,
+					p_industry: data.orgIndustry || null,
+					p_company_size: data.orgSize || null,
+					p_phone: data.orgPhone || null,
+					p_address: fullAddress || null,
+					p_city: data.orgCity || null,
+					p_state: data.orgState || null,
+					p_zip_code: data.orgZip || null,
+					p_website: data.orgWebsite || null,
+					p_tax_id: data.orgTaxId || null,
+					p_lat: companyLat,
+					p_lon: companyLon,
 				})
-				.select("id")
 				.single();
 
-			if (companyError || !company) {
+			if (createError || !createResult) {
 				return {
 					success: false,
-					error: `Failed to create company: ${companyError?.message || "Unknown error"}`,
+					error: `Failed to create company: ${createError?.message || "Unknown error"}`,
 				};
 			}
 
-			companyId = company.id;
+			companyId = createResult.company_id;
 			createdCompany = true;
+			// Membership already created by RPC - skip ensureActiveMembership for new companies
 		}
 
 		if (!companyId) {
@@ -746,24 +744,20 @@ async function saveOnboardingProgress(
 			}
 		}
 
-		try {
-			await ensureActiveMembership(serviceSupabase, companyId, userId);
-		} catch (membershipError) {
-			if (createdCompany) {
-				try {
-					await serviceSupabase.from("companies").delete().eq("id", companyId);
-				} catch (_cleanupError) {
-					// Ignore cleanup errors
-				}
+		// Only call ensureActiveMembership for existing companies (not new ones)
+		// New companies already have membership created atomically by RPC
+		if (!createdCompany) {
+			try {
+				await ensureActiveMembership(serviceSupabase, companyId, userId);
+			} catch (membershipError) {
+				return {
+					success: false,
+					error:
+						membershipError instanceof Error
+							? membershipError.message
+							: "Failed to add you to the organization",
+				};
 			}
-
-			return {
-				success: false,
-				error:
-					membershipError instanceof Error
-						? membershipError.message
-						: "Failed to add you to the organization",
-			};
 		}
 
 		await uploadCompanyLogo(serviceSupabase, companyId, logoFile);

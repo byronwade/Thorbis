@@ -210,13 +210,17 @@ function validateSmsLength(message: string): {
 }
 
 /**
- * Helper: Shorten URLs using a URL shortener service
- * (Placeholder - implement with Bitly, TinyURL, or custom shortener)
+ * Helper: Shorten URLs using the URL shortener service
  */
-async function shortenUrl(longUrl: string): Promise<string> {
-	// TODO: Implement URL shortening service integration
-	// For now, return the original URL
-	return longUrl;
+async function shortenUrl(longUrl: string, companyId?: string): Promise<string> {
+	// If no companyId, return original URL
+	if (!companyId) {
+		return longUrl;
+	}
+
+	// Import dynamically to avoid circular dependencies
+	const { shortenUrlForSms } = await import("@/lib/services/url-shortener");
+	return shortenUrlForSms(longUrl, companyId);
 }
 
 /**

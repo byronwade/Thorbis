@@ -18,6 +18,16 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -146,6 +156,7 @@ export function RecordPaymentDialog({
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [isOpen, setIsOpen] = useState(false);
+	const [showOverpaymentConfirm, setShowOverpaymentConfirm] = useState(false);
 
 	// Form state
 	const [amountInput, setAmountInput] = useState("");
@@ -162,19 +173,7 @@ export function RecordPaymentDialog({
 		setAmountInput((balanceAmount / 100).toFixed(2));
 	};
 
-	const handleSubmit = () => {
-		if (amountCents <= 0) {
-			toast.error("Please enter a valid payment amount");
-			return;
-		}
-
-		if (isOverpayment) {
-			const confirmed = window.confirm(
-				`The payment amount (${formatCurrency(amountCents)}) exceeds the balance (${formatCurrency(balanceAmount)}). Continue anyway?`
-			);
-			if (!confirmed) return;
-		}
-
+	const executePayment = () => {
 		startTransition(async () => {
 			try {
 				const result = await onRecordPayment({
@@ -207,6 +206,25 @@ export function RecordPaymentDialog({
 		});
 	};
 
+	const handleSubmit = () => {
+		if (amountCents <= 0) {
+			toast.error("Please enter a valid payment amount");
+			return;
+		}
+
+		if (isOverpayment) {
+			setShowOverpaymentConfirm(true);
+			return;
+		}
+
+		executePayment();
+	};
+
+	const handleConfirmOverpayment = () => {
+		setShowOverpaymentConfirm(false);
+		executePayment();
+	};
+
 	const resetForm = () => {
 		setAmountInput("");
 		setMethod("card");
@@ -231,6 +249,7 @@ export function RecordPaymentDialog({
 	}
 
 	return (
+		<>
 		<Dialog onOpenChange={setIsOpen} open={isOpen}>
 			<DialogTrigger asChild>
 				<Button
@@ -387,6 +406,27 @@ export function RecordPaymentDialog({
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
+
+		{/* Overpayment Confirmation Dialog */}
+		<AlertDialog open={showOverpaymentConfirm} onOpenChange={setShowOverpaymentConfirm}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Overpayment Detected</AlertDialogTitle>
+					<AlertDialogDescription>
+						The payment amount ({formatCurrency(amountCents)}) exceeds the outstanding
+						balance ({formatCurrency(balanceAmount)}). Do you want to continue with
+						this overpayment?
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction onClick={handleConfirmOverpayment}>
+						Continue with Overpayment
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+		</>
 	);
 }
 

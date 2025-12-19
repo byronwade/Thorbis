@@ -24,6 +24,16 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,6 +72,7 @@ export function GmailConnection({ data }: GmailConnectionProps) {
 	const [isSyncing, setIsSyncing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
+	const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
 
 	// Handle connect Gmail button click
 	const handleConnect = () => {
@@ -71,19 +82,9 @@ export function GmailConnection({ data }: GmailConnectionProps) {
 		window.location.href = "/api/gmail/oauth/user/authorize";
 	};
 
-	// Handle disconnect Gmail
-	const handleDisconnect = async () => {
-		setError(null);
-		setSuccess(null);
-
-		if (
-			!confirm(
-				"Are you sure you want to disconnect Gmail? Your inbox will no longer sync.",
-			)
-		) {
-			return;
-		}
-
+	// Execute disconnect Gmail
+	const executeDisconnect = async () => {
+		setShowDisconnectDialog(false);
 		startTransition(async () => {
 			try {
 				const response = await fetch("/api/gmail/user/disconnect", {
@@ -104,6 +105,13 @@ export function GmailConnection({ data }: GmailConnectionProps) {
 				);
 			}
 		});
+	};
+
+	// Handle disconnect Gmail
+	const handleDisconnect = () => {
+		setError(null);
+		setSuccess(null);
+		setShowDisconnectDialog(true);
 	};
 
 	// Handle manual sync
@@ -311,6 +319,28 @@ export function GmailConnection({ data }: GmailConnectionProps) {
 					</Button>
 				)}
 			</CardFooter>
+
+			{/* Disconnect Confirmation Dialog */}
+			<AlertDialog open={showDisconnectDialog} onOpenChange={setShowDisconnectDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Disconnect Gmail?</AlertDialogTitle>
+						<AlertDialogDescription>
+							Your inbox will no longer sync. Any unsynced emails will not be available.
+							You can reconnect at any time.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeDisconnect}
+						>
+							Disconnect
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</Card>
 	);
 }

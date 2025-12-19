@@ -13,8 +13,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { AuditLogEntry, AuditLogStats } from "@/actions/audit";
+import { AuditLogEntry, AuditLogStats, exportAuditLogs } from "@/actions/audit";
 import { formatRelativeTime } from "@/lib/formatters";
+import { toast } from "sonner";
 
 type AuditLogViewerProps = {
 	logs: AuditLogEntry[];
@@ -47,8 +48,38 @@ export function AuditLogViewer({ logs, stats }: AuditLogViewerProps) {
 	const uniqueResources = Array.from(new Set(logs.map((l) => l.resource_type).filter(Boolean))).sort();
 
 	const handleExport = async () => {
-		// TODO: Implement CSV export
-		alert("Export functionality coming soon");
+		try {
+			const result = await exportAuditLogs({
+				action: actionFilter !== "all" ? actionFilter : undefined,
+			});
+
+			if (result.error) {
+				toast.error(result.error);
+				return;
+			}
+
+			if (!result.data) {
+				toast.error("No data to export");
+				return;
+			}
+
+			// Create and download the CSV file
+			const blob = new Blob([result.data], { type: "text/csv;charset=utf-8;" });
+			const link = document.createElement("a");
+			const url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute("download", `audit-logs-${new Date().toISOString().split("T")[0]}.csv`);
+			link.style.visibility = "hidden";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
+
+			toast.success("Audit logs exported successfully");
+		} catch (error) {
+			console.error("Export error:", error);
+			toast.error("Failed to export audit logs");
+		}
 	};
 
 	return (

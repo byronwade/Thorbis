@@ -27,6 +27,7 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,6 +70,7 @@ export function NumberPortingWizard({
 	onOpenChange,
 	onSuccess,
 }: NumberPortingWizardProps) {
+	const { toast } = useToast();
 	const [currentStep, setCurrentStep] = useState(1);
 	const [portingData, setPortingData] = useState<PortingData>({
 		phoneNumber: "",
@@ -125,11 +127,27 @@ export function NumberPortingWizard({
 	};
 
 	const checkEligibility = async () => {
+		if (!portingData.phoneNumber) {
+			return;
+		}
+
 		setChecking(true);
-		// Simulate API call
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		setIsEligible(true);
-		setChecking(false);
+		try {
+			const { checkPortability } = await import("@/actions/phone-porting");
+			const result = await checkPortability(portingData.phoneNumber);
+
+			if (result.success && result.data?.portable) {
+				setIsEligible(true);
+			} else {
+				setIsEligible(false);
+			}
+		} catch (error) {
+			console.error("Failed to check portability:", error);
+			// Default to eligible if check fails (will be verified on submission)
+			setIsEligible(true);
+		} finally {
+			setChecking(false);
+		}
 	};
 
 	const submitPorting = async () => {
@@ -168,11 +186,11 @@ export function NumberPortingWizard({
 				}
 			} else {
 				setSubmitting(false);
-				alert(result.error || "Failed to submit porting request");
+				toast.error(result.error || "Failed to submit porting request");
 			}
 		} catch (_error) {
 			setSubmitting(false);
-			alert(
+			toast.error(
 				"An error occurred while submitting your porting request. Please try again.",
 			);
 		}

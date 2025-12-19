@@ -1,60 +1,30 @@
 "use client";
 
-import {
-	Archive,
-	Download,
-	Eye,
-	FileSignature,
-	MoreHorizontal,
-	Plus,
-	Send,
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { archiveContract } from "@/actions/contracts";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-	type BulkAction,
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
-import {
-	ContractStatusBadge,
-	ContractTypeBadge,
-} from "@/components/ui/status-badge";
-import { useArchiveStore } from "@/lib/stores/archive-store";
+/**
+ * ContractsTable Component
+ *
+ * Full-width Gmail-style table for displaying contracts.
+ * Now uses GenericWorkTable with configuration for maximum reusability.
+ *
+ * Features:
+ * - Full-width responsive layout
+ * - Row selection with bulk actions
+ * - Search and filtering
+ * - Status badges
+ * - Signed contract highlighting
+ * - Archive with restore capability
+ */
 
-export type Contract = {
-	id: string;
-	contractNumber: string;
-	customer: string;
-	title: string;
-	date: string;
-	validUntil: string;
-	status: "draft" | "sent" | "viewed" | "signed" | "rejected" | "expired";
-	contractType: "service" | "maintenance" | "custom";
-	signerName: string | null;
-	archived_at?: string | null;
-	deleted_at?: string | null;
+import { GenericWorkTable } from "@/components/work/generic";
+import { contractsTableConfig, type Contract } from "@/components/work/generic/configs/contracts";
+
+type ContractsTableProps = {
+	contracts: Contract[];
+	itemsPerPage?: number;
+	currentPage?: number;
+	totalCount?: number;
+	onContractClick?: (contract: Contract) => void;
+	showRefresh?: boolean;
 };
 
 export function ContractsTable({
@@ -62,397 +32,21 @@ export function ContractsTable({
 	itemsPerPage = 50,
 	currentPage = 1,
 	totalCount,
-}: {
-	contracts: Contract[];
-	itemsPerPage?: number;
-	currentPage?: number;
-	totalCount?: number;
-}) {
-	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.contracts);
-
-	// State for archive confirmation dialogs
-	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
-	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [contractToArchive, setContractToArchive] = useState<string | null>(
-		null,
-	);
-	const [selectedContractIds, setSelectedContractIds] = useState<Set<string>>(
-		new Set(),
-	);
-
-	// Filter contracts based on archive status
-	const filteredContracts = contracts.filter((contract) => {
-		const isArchived = Boolean(contract.archived_at || contract.deleted_at);
-		if (archiveFilter === "active") {
-			return !isArchived;
-		}
-		if (archiveFilter === "archived") {
-			return isArchived;
-		}
-		return true; // "all"
-	});
-
-	const columns: ColumnDef<Contract>[] = [
-		{
-			key: "contractNumber",
-			header: "Contract #",
-			width: "w-36",
-			shrink: true,
-			sortable: true,
-			hideable: false,
-			render: (contract) => (
-				<Link
-					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
-					href={`/dashboard/work/contracts/${contract.id}`}
-					onClick={(e) => e.stopPropagation()}
-				>
-					{contract.contractNumber}
-				</Link>
-			),
-		},
-		{
-			key: "customer",
-			header: "Customer",
-			width: "w-48",
-			shrink: true,
-			sortable: true,
-			hideable: false, // CRITICAL: Customer essential for quick identification
-			render: (contract) => (
-				<div className="min-w-0">
-					<div className="truncate leading-tight font-medium">
-						{contract.customer}
-					</div>
-				</div>
-			),
-		},
-		{
-			key: "title",
-			header: "Title",
-			width: "flex-1",
-			sortable: true,
-			hideable: false,
-			render: (contract) => (
-				<Link
-					className="block min-w-0"
-					href={`/dashboard/work/contracts/${contract.id}`}
-					onClick={(e) => e.stopPropagation()}
-				>
-					<div className="truncate text-sm leading-tight font-medium hover:underline">
-						{contract.title}
-					</div>
-				</Link>
-			),
-		},
-		{
-			key: "contractType",
-			header: "Type",
-			width: "w-32",
-			shrink: true,
-			hideOnMobile: true,
-			sortable: true,
-			hideable: true,
-			render: (contract) => <ContractTypeBadge type={contract.contractType} />,
-		},
-		{
-			key: "signerName",
-			header: "Signer",
-			width: "w-40",
-			shrink: true,
-			hideOnMobile: true,
-			sortable: true,
-			hideable: true,
-			render: (contract) => (
-				<span className="text-muted-foreground text-sm leading-tight">
-					{contract.signerName || (
-						<span className="text-muted-foreground">Not assigned</span>
-					)}
-				</span>
-			),
-		},
-		{
-			key: "date",
-			header: "Created",
-			width: "w-32",
-			shrink: true,
-			hideOnMobile: true,
-			sortable: true,
-			hideable: true,
-			render: (contract) => (
-				<span className="text-muted-foreground text-sm leading-tight tabular-nums">
-					{contract.date}
-				</span>
-			),
-		},
-		{
-			key: "validUntil",
-			header: "Valid Until",
-			width: "w-32",
-			shrink: true,
-			hideOnMobile: true,
-			sortable: true,
-			hideable: true,
-			render: (contract) => (
-				<span className="text-muted-foreground text-sm leading-tight tabular-nums">
-					{contract.validUntil}
-				</span>
-			),
-		},
-		{
-			key: "status",
-			header: "Status",
-			width: "w-28",
-			shrink: true,
-			sortable: true,
-			hideable: false, // CRITICAL: Status key for action items
-			render: (contract) => <ContractStatusBadge status={contract.status} />,
-		},
-		{
-			key: "actions",
-			header: "",
-			width: "w-10",
-			shrink: true,
-			sortable: false,
-			hideable: false,
-			render: (contract) => (
-				<div data-no-row-click>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button size="icon" variant="ghost">
-								<MoreHorizontal className="size-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem>
-								<Eye className="mr-2 size-4" />
-								View Contract
-							</DropdownMenuItem>
-							{contract.status === "draft" && (
-								<DropdownMenuItem>
-									<Send className="mr-2 size-4" />
-									Send for Signature
-								</DropdownMenuItem>
-							)}
-							<DropdownMenuItem>
-								<Download className="mr-2 size-4" />
-								Download PDF
-							</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								className="text-destructive"
-								onClick={() => {
-									setContractToArchive(contract.id);
-									setIsSingleArchiveOpen(true);
-								}}
-							>
-								<Archive className="mr-2 size-4" />
-								Archive Contract
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div>
-			),
-		},
-	];
-
-	const bulkActions: BulkAction[] = [
-		{
-			label: "Send",
-			icon: <Send className="h-4 w-4" />,
-			onClick: (selectedIds) => {
-				toast.info(
-					`Send functionality for ${selectedIds.size} contract${selectedIds.size > 1 ? "s" : ""} coming soon`,
-				);
-			},
-		},
-		{
-			label: "Export",
-			icon: <Download className="h-4 w-4" />,
-			onClick: (selectedIds) => {
-				// Export selected contracts as CSV
-				const selectedContracts = contracts.filter((c) =>
-					selectedIds.has(c.id),
-				);
-				const csvContent = [
-					[
-						"Contract #",
-						"Customer",
-						"Title",
-						"Type",
-						"Signer",
-						"Created",
-						"Valid Until",
-						"Status",
-					].join(","),
-					...selectedContracts.map((c) =>
-						[
-							c.contractNumber,
-							`"${c.customer}"`,
-							`"${c.title}"`,
-							c.contractType,
-							c.signerName || "",
-							c.date,
-							c.validUntil,
-							c.status,
-						].join(","),
-					),
-				].join("\n");
-				const blob = new Blob([csvContent], { type: "text/csv" });
-				const url = URL.createObjectURL(blob);
-				const a = document.createElement("a");
-				a.href = url;
-				a.download = `contracts-export-${new Date().toISOString().split("T")[0]}.csv`;
-				a.click();
-				URL.revokeObjectURL(url);
-				toast.success(
-					`Exported ${selectedIds.size} contract${selectedIds.size > 1 ? "s" : ""}`,
-				);
-			},
-		},
-		{
-			label: "Archive Selected",
-			icon: <Archive className="h-4 w-4" />,
-			onClick: async (selectedIds) => {
-				setSelectedContractIds(selectedIds);
-				setIsBulkArchiveOpen(true);
-			},
-			variant: "destructive",
-		},
-	];
-
-	const searchFilter = (contract: Contract, query: string) => {
-		const searchStr = query.toLowerCase();
-		return (
-			contract.contractNumber.toLowerCase().includes(searchStr) ||
-			contract.customer.toLowerCase().includes(searchStr) ||
-			contract.title.toLowerCase().includes(searchStr) ||
-			contract.status.toLowerCase().includes(searchStr) ||
-			contract.contractType.toLowerCase().includes(searchStr) ||
-			(contract.signerName?.toLowerCase().includes(searchStr) ?? false)
-		);
-	};
-
+	onContractClick,
+	showRefresh = false,
+}: ContractsTableProps) {
 	return (
-		<>
-			<FullWidthDataTable
-				bulkActions={bulkActions}
-				columns={columns}
-				data={filteredContracts}
-				emptyAction={
-					<Button
-						onClick={() =>
-							(window.location.href = "/dashboard/work/contracts/new")
-						}
-						size="sm"
-					>
-						<Plus className="mr-2 size-4" />
-						Create Contract
-					</Button>
-				}
-				emptyIcon={<FileSignature className="text-muted-foreground h-8 w-8" />}
-				emptyMessage="No contracts found"
-				enableSelection={true}
-				entity="contracts"
-				getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
-				getItemId={(contract) => contract.id}
-				isArchived={(contract) =>
-					Boolean(contract.archived_at || contract.deleted_at)
-				}
-				isHighlighted={(contract) => contract.status === "signed"}
-				itemsPerPage={itemsPerPage}
-				currentPageFromServer={currentPage}
-				serverPagination
-				onRefresh={() => window.location.reload()}
-				onRowClick={(contract) =>
-					(window.location.href = `/dashboard/work/contracts/${contract.id}`)
-				}
-				searchFilter={searchFilter}
-				searchPlaceholder="Search contracts by number, customer, title, or status..."
-				showArchived={archiveFilter !== "active"}
-				showRefresh={false}
-				totalCount={totalCount ?? filteredContracts.length}
-			/>
-
-			{/* Single Contract Archive Dialog */}
-			<AlertDialog
-				onOpenChange={setIsSingleArchiveOpen}
-				open={isSingleArchiveOpen}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Archive Contract?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This contract will be archived and can be restored within 90 days.
-							After 90 days, it will be permanently deleted.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={async () => {
-								if (contractToArchive) {
-									window.location.reload();
-								}
-							}}
-						>
-							Archive
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-
-			{/* Bulk Archive Dialog */}
-			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Archive {selectedContractIds.size} Contract(s)?
-						</AlertDialogTitle>
-						<AlertDialogDescription>
-							These contracts will be archived and can be restored within 90
-							days. After 90 days, they will be permanently deleted.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={async () => {
-								let successCount = 0;
-								let errorCount = 0;
-								for (const contractId of selectedContractIds) {
-									const result = await archiveContract(contractId);
-									if (result.success) {
-										successCount++;
-									} else {
-										errorCount++;
-										console.error(
-											`Failed to archive contract ${contractId}:`,
-											result.error,
-										);
-									}
-								}
-								if (successCount > 0) {
-									toast.success(
-										`Archived ${successCount} contract${successCount > 1 ? "s" : ""}`,
-									);
-								}
-								if (errorCount > 0) {
-									toast.error(
-										`Failed to archive ${errorCount} contract${errorCount > 1 ? "s" : ""}`,
-									);
-								}
-								window.location.reload();
-							}}
-						>
-							Archive All
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-		</>
+		<GenericWorkTable
+			config={contractsTableConfig}
+			data={contracts}
+			totalCount={totalCount}
+			currentPage={currentPage}
+			itemsPerPage={itemsPerPage}
+			onRowClick={onContractClick}
+			showRefresh={showRefresh}
+		/>
 	);
 }
+
+// Re-export type for backward compatibility
+export type { Contract };

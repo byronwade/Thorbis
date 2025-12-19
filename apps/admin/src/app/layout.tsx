@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
+import { ConvexProvider } from "@/components/providers/convex-provider";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -16,15 +17,17 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className="min-h-screen bg-background antialiased">
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="dark"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-					<ToastProvider />
-				</ThemeProvider>
+				<ConvexProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem
+						disableTransitionOnChange
+					>
+						{children}
+						<ToastProvider />
+					</ThemeProvider>
+				</ConvexProvider>
 			</body>
 		</html>
 	);

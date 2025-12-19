@@ -544,7 +544,7 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-async function updateCustomer(
+export async function updateCustomer(
 	customerId: string,
 	formData: FormData,
 ): Promise<ActionResult<void>> {
@@ -1313,5 +1313,102 @@ async function updateCustomerPageContent(
 		}
 
 		revalidatePath(`/dashboard/customers/${customerId}`);
+	});
+}
+
+// ============================================================================
+// SIMPLE CUSTOMER CREATION (for onboarding)
+// ============================================================================
+
+/**
+ * Simple customer input schema for onboarding
+ */
+const simpleCustomerSchema = z.object({
+	display_name: z.string().min(1, "Name is required").max(200),
+	first_name: z.string().max(100).optional(),
+	last_name: z.string().max(100).optional(),
+	email: z.string().email("Invalid email").optional().or(z.literal("")),
+	phone: z.string().max(20).optional(),
+	address: z.string().max(200).optional(),
+	status: z.enum(["active", "inactive"]).default("active"),
+});
+
+export type SimpleCustomerInput = z.infer<typeof simpleCustomerSchema>;
+
+/**
+ * Create a customer with minimal required fields
+ * Used by onboarding flow for quick customer creation
+ */
+export async function createSimpleCustomer(
+	input: SimpleCustomerInput,
+): Promise<ActionResult<{ id: string }>> {
+	return withErrorHandling(async () => {
+		const { userId, companyId, supabase } = await requireCompanyMembership();
+
+		// Validate input
+		const validated = simpleCustomerSchema.parse(input);
+
+		// Check for duplicate email if provided
+		if (validated.email) {
+			const { data: existingCustomer } = await supabase
+				.from("customers")
+				.select("id")
+				.eq("company_id", companyId)
+				.eq("email", validated.email)
+				.is("deleted_at", null)
+				.maybeSingle();
+
+			if (existingCustomer) {
+				throw new ActionError(
+					"A customer with this email already exists",
+					ERROR_CODES.DB_DUPLICATE_KEY,
+				);
+			}
+		}
+
+		// Geocode address if provided
+		let lat: number | null = null;
+		let lon: number | null = null;
+		if (validated.address) {
+			const coords = await geocodeAddressSilent(validated.address);
+			lat = coords.lat;
+			lon = coords.lon;
+		}
+
+		// Insert customer
+		const { data: customer, error: createError } = await supabase
+			.from("customers")
+			.insert({
+				company_id: companyId,
+				display_name: validated.display_name,
+				first_name: validated.first_name || null,
+				last_name: validated.last_name || null,
+				email: validated.email || null,
+				phone: validated.phone || null,
+				address: validated.address || null,
+				status: validated.status,
+				type: "residential",
+				lat,
+				lon,
+				communication_preferences: {
+					email: true,
+					sms: true,
+					phone: true,
+					marketing: false,
+				},
+			})
+			.select("id")
+			.single();
+
+		if (createError || !customer) {
+			console.error("Failed to create customer:", createError);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create customer"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		revalidatePath("/dashboard/customers");
+		return { id: customer.id };
 	});
 }

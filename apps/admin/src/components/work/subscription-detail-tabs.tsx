@@ -7,9 +7,10 @@ import { SubscriptionOverviewTab } from "./subscription-overview-tab";
 import { SubscriptionUsageTab } from "./subscription-usage-tab";
 import { SubscriptionBillingTab } from "./subscription-billing-tab";
 import { SubscriptionActionsTab } from "./subscription-actions-tab";
+import type { SubscriptionWithDetails } from "@/types/entities";
 
 type SubscriptionDetailTabsProps = {
-	subscription: any; // TODO: Type properly
+	subscription: SubscriptionWithDetails;
 };
 
 /**

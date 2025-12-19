@@ -6,6 +6,7 @@
  * Admin datatable for managing companies on the Stratos platform.
  */
 
+import { useState } from "react";
 import { Archive, Building2, Edit, Eye, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { Button, RowActionsDropdown } from "@stratos/ui";
@@ -20,6 +21,18 @@ import {
 } from "@/components/ui/status-badge";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/formatters";
 import type { Company } from "@/types/entities";
+import { updateCompanyStatus } from "@/actions/companies";
+import { toast } from "sonner";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type CompaniesTableProps = {
 	companies: Company[];
@@ -40,6 +53,66 @@ export function CompaniesTable({
 	showRefresh = false,
 	initialSearchQuery = "",
 }: CompaniesTableProps) {
+	const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
+	const [companyToSuspend, setCompanyToSuspend] = useState<Company | null>(null);
+	const [bulkSuspendIds, setBulkSuspendIds] = useState<string[]>([]);
+	const [isProcessing, setIsProcessing] = useState(false);
+
+	const handleSuspendCompany = async (company: Company) => {
+		setCompanyToSuspend(company);
+		setBulkSuspendIds([]);
+		setSuspendDialogOpen(true);
+	};
+
+	const handleBulkSuspend = async (selectedIds: string[]) => {
+		setCompanyToSuspend(null);
+		setBulkSuspendIds(selectedIds);
+		setSuspendDialogOpen(true);
+	};
+
+	const confirmSuspend = async () => {
+		setIsProcessing(true);
+		try {
+			if (companyToSuspend) {
+				// Single company suspend
+				const result = await updateCompanyStatus(companyToSuspend.id, "suspended", "Suspended by admin");
+				if (result.error) {
+					toast.error(result.error);
+				} else {
+					toast.success(`${companyToSuspend.name} has been suspended`);
+					window.location.reload();
+				}
+			} else if (bulkSuspendIds.length > 0) {
+				// Bulk suspend
+				let successCount = 0;
+				let errorCount = 0;
+				for (const id of bulkSuspendIds) {
+					const result = await updateCompanyStatus(id, "suspended", "Bulk suspended by admin");
+					if (result.error) {
+						errorCount++;
+					} else {
+						successCount++;
+					}
+				}
+				if (successCount > 0) {
+					toast.success(`${successCount} companies suspended`);
+				}
+				if (errorCount > 0) {
+					toast.error(`Failed to suspend ${errorCount} companies`);
+				}
+				window.location.reload();
+			}
+		} catch (error) {
+			console.error("Suspend error:", error);
+			toast.error("Failed to suspend company");
+		} finally {
+			setIsProcessing(false);
+			setSuspendDialogOpen(false);
+			setCompanyToSuspend(null);
+			setBulkSuspendIds([]);
+		}
+	};
+
 	const columns: ColumnDef<Company>[] = [
 		{
 			key: "name",
@@ -153,10 +226,7 @@ export function CompaniesTable({
 							icon: Archive,
 							variant: "destructive",
 							separatorBefore: true,
-							onClick: () => {
-								// TODO: Implement suspend action
-								console.log("Suspend company:", company.id);
-							},
+							onClick: () => handleSuspendCompany(company),
 						},
 					]}
 				/>
@@ -168,10 +238,7 @@ export function CompaniesTable({
 		{
 			label: "Suspend Selected",
 			icon: <Archive className="h-4 w-4" />,
-			onClick: (selectedIds) => {
-				// TODO: Implement bulk suspend
-				console.log("Suspend companies:", selectedIds);
-			},
+			onClick: (selectedIds) => handleBulkSuspend(selectedIds),
 			variant: "destructive",
 		},
 	];
@@ -193,32 +260,61 @@ export function CompaniesTable({
 	};
 
 	return (
-		<FullWidthDataTable
-			bulkActions={bulkActions}
-			columns={columns}
-			data={companies}
-			totalCount={totalCount}
-			currentPageFromServer={currentPage}
-			initialSearchQuery={initialSearchQuery}
-			serverPagination
-			emptyAction={
-				<Button onClick={handleAddCompany} size="sm">
-					<Plus className="mr-2 size-4" />
-					Add Company
-				</Button>
-			}
-			emptyIcon={<Building2 className="text-muted-foreground h-8 w-8" />}
-			emptyMessage="No companies found"
-			enableSelection={true}
-			entity="admin-companies"
-			getItemId={(company) => company.id}
-			itemsPerPage={itemsPerPage}
-			onRefresh={handleRefresh}
-			onRowClick={handleRowClick}
-			serverSearch
-			searchParamKey="search"
-			searchPlaceholder="Search companies by name, email, plan..."
-			showRefresh={showRefresh}
-		/>
+		<>
+			<FullWidthDataTable
+				bulkActions={bulkActions}
+				columns={columns}
+				data={companies}
+				totalCount={totalCount}
+				currentPageFromServer={currentPage}
+				initialSearchQuery={initialSearchQuery}
+				serverPagination
+				emptyAction={
+					<Button onClick={handleAddCompany} size="sm">
+						<Plus className="mr-2 size-4" />
+						Add Company
+					</Button>
+				}
+				emptyIcon={<Building2 className="text-muted-foreground h-8 w-8" />}
+				emptyMessage="No companies found"
+				enableSelection={true}
+				entity="admin-companies"
+				getItemId={(company) => company.id}
+				itemsPerPage={itemsPerPage}
+				onRefresh={handleRefresh}
+				onRowClick={handleRowClick}
+				serverSearch
+				searchParamKey="search"
+				searchPlaceholder="Search companies by name, email, plan..."
+				showRefresh={showRefresh}
+			/>
+
+			<AlertDialog open={suspendDialogOpen} onOpenChange={setSuspendDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							{companyToSuspend
+								? `Suspend ${companyToSuspend.name}?`
+								: `Suspend ${bulkSuspendIds.length} companies?`}
+						</AlertDialogTitle>
+						<AlertDialogDescription>
+							{companyToSuspend
+								? "This will suspend the company account. Users will lose access to the platform until the account is reactivated."
+								: `This will suspend ${bulkSuspendIds.length} company accounts. All users will lose access until their accounts are reactivated.`}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={confirmSuspend}
+							disabled={isProcessing}
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+						>
+							{isProcessing ? "Suspending..." : "Suspend"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 }

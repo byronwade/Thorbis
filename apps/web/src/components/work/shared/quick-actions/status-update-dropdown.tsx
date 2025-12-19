@@ -24,6 +24,16 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -169,6 +179,8 @@ export function StatusUpdateDropdown({
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [isOpen, setIsOpen] = useState(false);
+	const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+	const [pendingStatus, setPendingStatus] = useState<string | null>(null);
 
 	const statusOptions = STATUS_CONFIGS[entityType] || [];
 	const currentOption = statusOptions.find((opt) => opt.value === currentStatus) || {
@@ -177,16 +189,8 @@ export function StatusUpdateDropdown({
 		variant: "outline" as const,
 	};
 
-	const handleStatusChange = async (newStatus: string) => {
+	const executeStatusChange = async (newStatus: string) => {
 		const option = statusOptions.find((opt) => opt.value === newStatus);
-
-		if (option?.confirmRequired) {
-			const confirmed = window.confirm(
-				`Are you sure you want to change the status to "${option.label}"? This action may have consequences.`
-			);
-			if (!confirmed) return;
-		}
-
 		setIsOpen(false);
 
 		startTransition(async () => {
@@ -207,6 +211,28 @@ export function StatusUpdateDropdown({
 		});
 	};
 
+	const handleStatusChange = async (newStatus: string) => {
+		const option = statusOptions.find((opt) => opt.value === newStatus);
+
+		if (option?.confirmRequired) {
+			setPendingStatus(newStatus);
+			setConfirmDialogOpen(true);
+			return;
+		}
+
+		executeStatusChange(newStatus);
+	};
+
+	const handleConfirmStatusChange = () => {
+		if (pendingStatus) {
+			executeStatusChange(pendingStatus);
+			setPendingStatus(null);
+		}
+		setConfirmDialogOpen(false);
+	};
+
+	const pendingOption = pendingStatus ? statusOptions.find((opt) => opt.value === pendingStatus) : null;
+
 	const sizeClasses = {
 		sm: "h-6 text-xs px-2",
 		md: "h-8 text-sm px-3",
@@ -214,51 +240,77 @@ export function StatusUpdateDropdown({
 	};
 
 	return (
-		<DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
-			<DropdownMenuTrigger asChild disabled={disabled || isPending}>
-				<Button
-					className={cn(
-						"gap-1.5 font-medium",
-						sizeClasses[size],
-						BADGE_VARIANTS[currentOption.variant || "outline"],
-						isPending && "opacity-70",
-						className
-					)}
-					disabled={disabled || isPending}
-					size="sm"
-					variant="outline"
-				>
-					{isPending ? (
-						<Loader2 className="size-3.5 animate-spin" />
-					) : (
-						currentOption.icon
-					)}
-					<span>{currentOption.label}</span>
-					<ChevronDown className="size-3" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="w-48">
-				{statusOptions.map((option, index) => (
-					<div key={option.value}>
-						{option.confirmRequired && index > 0 && <DropdownMenuSeparator />}
-						<DropdownMenuItem
-							className={cn(
-								"flex items-center gap-2 cursor-pointer",
-								option.value === currentStatus && "bg-muted"
-							)}
-							disabled={option.value === currentStatus}
-							onClick={() => handleStatusChange(option.value)}
+		<>
+			<DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
+				<DropdownMenuTrigger asChild disabled={disabled || isPending}>
+					<Button
+						className={cn(
+							"gap-1.5 font-medium",
+							sizeClasses[size],
+							BADGE_VARIANTS[currentOption.variant || "outline"],
+							isPending && "opacity-70",
+							className
+						)}
+						disabled={disabled || isPending}
+						size="sm"
+						variant="outline"
+					>
+						{isPending ? (
+							<Loader2 className="size-3.5 animate-spin" />
+						) : (
+							currentOption.icon
+						)}
+						<span>{currentOption.label}</span>
+						<ChevronDown className="size-3" />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="start" className="w-48">
+					{statusOptions.map((option, index) => (
+						<div key={option.value}>
+							{option.confirmRequired && index > 0 && <DropdownMenuSeparator />}
+							<DropdownMenuItem
+								className={cn(
+									"flex items-center gap-2 cursor-pointer",
+									option.value === currentStatus && "bg-muted"
+								)}
+								disabled={option.value === currentStatus}
+								onClick={() => handleStatusChange(option.value)}
+							>
+								{option.icon}
+								<span>{option.label}</span>
+								{option.value === currentStatus && (
+									<Check className="ml-auto size-4 text-primary" />
+								)}
+							</DropdownMenuItem>
+						</div>
+					))}
+				</DropdownMenuContent>
+			</DropdownMenu>
+
+			{/* Confirmation Dialog for destructive status changes */}
+			<AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Confirm Status Change</AlertDialogTitle>
+						<AlertDialogDescription>
+							Are you sure you want to change the status to "{pendingOption?.label}"?
+							This action may have consequences and cannot be easily undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setPendingStatus(null)}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={handleConfirmStatusChange}
 						>
-							{option.icon}
-							<span>{option.label}</span>
-							{option.value === currentStatus && (
-								<Check className="ml-auto size-4 text-primary" />
-							)}
-						</DropdownMenuItem>
-					</div>
-				))}
-			</DropdownMenuContent>
-		</DropdownMenu>
+							Change Status
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 }
 

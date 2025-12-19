@@ -111,6 +111,15 @@ export async function getDatabaseHealth() {
 
 /**
  * Clean up orphaned records
+ *
+ * This function safely removes records that have null company_id,
+ * which indicates orphaned data that should not exist in production.
+ *
+ * SAFETY MEASURES:
+ * - Requires admin authentication
+ * - Only deletes records with NULL company_id
+ * - Logs all deletions for audit trail
+ * - Returns count of deleted records
  */
 export async function cleanupOrphanedData(dataType: string) {
 	const session = await getAdminSession();
@@ -118,14 +127,86 @@ export async function cleanupOrphanedData(dataType: string) {
 		return { error: "Unauthorized" };
 	}
 
+	// Valid data types that can be cleaned
+	const validDataTypes = ["jobs", "invoices", "customers", "estimates", "contracts", "appointments"];
+
+	if (!validDataTypes.includes(dataType)) {
+		return {
+			success: false,
+			error: `Invalid data type: ${dataType}. Valid types: ${validDataTypes.join(", ")}`,
+		};
+	}
+
 	try {
 		const webDb = createWebClient();
 
-		// This would need to be implemented carefully to avoid data loss
-		// For now, just return a placeholder response
+		// First, get count of records to be deleted
+		const { count: orphanedCount, error: countError } = await webDb
+			.from(dataType)
+			.select("id", { count: "exact", head: true })
+			.is("company_id", null);
+
+		if (countError) {
+			throw new Error(`Failed to count orphaned ${dataType}: ${countError.message}`);
+		}
+
+		if (!orphanedCount || orphanedCount === 0) {
+			return {
+				success: true,
+				message: `No orphaned ${dataType} records found`,
+				deletedCount: 0,
+			};
+		}
+
+		// Delete orphaned records in batches to avoid timeout
+		const batchSize = 100;
+		let totalDeleted = 0;
+		let hasMore = true;
+
+		while (hasMore) {
+			// Get IDs of orphaned records
+			const { data: orphanedRecords, error: fetchError } = await webDb
+				.from(dataType)
+				.select("id")
+				.is("company_id", null)
+				.limit(batchSize);
+
+			if (fetchError) {
+				throw new Error(`Failed to fetch orphaned ${dataType}: ${fetchError.message}`);
+			}
+
+			if (!orphanedRecords || orphanedRecords.length === 0) {
+				hasMore = false;
+				break;
+			}
+
+			const idsToDelete = orphanedRecords.map((r) => r.id);
+
+			// Delete the batch
+			const { error: deleteError, count: deletedCount } = await webDb
+				.from(dataType)
+				.delete()
+				.in("id", idsToDelete);
+
+			if (deleteError) {
+				throw new Error(`Failed to delete orphaned ${dataType}: ${deleteError.message}`);
+			}
+
+			totalDeleted += deletedCount || idsToDelete.length;
+
+			// If we got fewer records than batch size, we're done
+			if (orphanedRecords.length < batchSize) {
+				hasMore = false;
+			}
+		}
+
+		// Log the cleanup action
+		console.log(`[Admin] Cleaned up ${totalDeleted} orphaned ${dataType} records by admin ${session.user.email}`);
+
 		return {
-			success: false,
-			error: "Cleanup functionality not yet implemented. Please contact support.",
+			success: true,
+			message: `Successfully deleted ${totalDeleted} orphaned ${dataType} records`,
+			deletedCount: totalDeleted,
 		};
 	} catch (error) {
 		console.error("Failed to cleanup orphaned data:", error);

@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveProperty } from "@/actions/properties";
+import { useToast } from "@/hooks/use-toast";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -131,6 +132,7 @@ export function PropertiesTable({
 	customerId,
 }: PropertiesTableProps) {
 	const router = useRouter();
+	const { toast } = useToast();
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.properties);
 
@@ -182,9 +184,8 @@ export function PropertiesTable({
 			icon: <UserX className="size-4" />,
 			variant: "ghost",
 			onClick: async (selectedIds) => {
-				// TODO: Implement move dialog
-				alert(
-					`Move ${selectedIds.size} properties to another customer (coming soon)`,
+				toast.info(
+					`Moving ${selectedIds.size} properties to another customer will be available soon`,
 				);
 			},
 		},

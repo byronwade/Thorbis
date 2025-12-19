@@ -17,6 +17,9 @@ import { Button } from "@stratos/ui";
 import { getCampaigns, getCampaignStats } from "@/lib/queries/campaigns";
 import { getWaitlistStats } from "@/actions/waitlist";
 
+// Force dynamic rendering since this page fetches data from the database
+export const dynamic = "force-dynamic";
+
 /**
  * Marketing Dashboard
  *

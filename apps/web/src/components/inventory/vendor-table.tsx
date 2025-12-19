@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { archiveVendor } from "@/actions/vendors";
 import { useArchiveDialog } from "@/components/ui/archive-dialog-manager";
 import { Badge } from "@/components/ui/badge";
@@ -242,12 +243,22 @@ const getBulkActions = (
 	{
 		label: "Export Selected",
 		icon: <Download className="size-4" />,
-		onClick: (_ids) => {},
+		onClick: (selectedIds) => {
+			const count = selectedIds.size;
+			toast.info(`Export ${count} vendor${count !== 1 ? "s" : ""} coming soon`, {
+				description: "This feature is under development",
+			});
+		},
 	},
 	{
 		label: "Mark as Inactive",
 		icon: <Pause className="size-4" />,
-		onClick: (_ids) => {},
+		onClick: (selectedIds) => {
+			const count = selectedIds.size;
+			toast.info(`Mark ${count} vendor${count !== 1 ? "s" : ""} inactive coming soon`, {
+				description: "This feature is under development",
+			});
+		},
 		variant: "ghost",
 	},
 	{

@@ -397,3 +397,53 @@ async function hasSessionPermission(sessionId: string, actionType: string): Prom
 
 	return permission?.granted === true;
 }
+
+/**
+ * Update session notes
+ *
+ * Allows admins to add/update notes during a support session.
+ * Notes are attached to the session for audit purposes.
+ */
+export async function updateSessionNotes(sessionId: string, notes: string) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const adminDb = createAdminClient();
+
+	// Verify the session belongs to this admin and is active
+	const { data: supportSession, error: fetchError } = await adminDb
+		.from("support_sessions")
+		.select("id, admin_user_id, status, company_id")
+		.eq("id", sessionId)
+		.single();
+
+	if (fetchError || !supportSession) {
+		return { error: "Session not found" };
+	}
+
+	if (supportSession.admin_user_id !== session.userId) {
+		return { error: "You can only update notes for your own sessions" };
+	}
+
+	if (supportSession.status !== "active") {
+		return { error: "Session is not active" };
+	}
+
+	// Update the session notes
+	const { error: updateError } = await adminDb
+		.from("support_sessions")
+		.update({
+			notes,
+			notes_updated_at: new Date().toISOString(),
+		})
+		.eq("id", sessionId);
+
+	if (updateError) {
+		console.error("Failed to update session notes:", updateError);
+		return { error: "Failed to save notes" };
+	}
+
+	return { success: true };
+}

@@ -1,59 +1,87 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { isActiveCompanyOnboardingComplete } from "@stratos/auth/company-context";
-import { getCurrentUser } from "@/lib/auth/session";
+"use client";
+
+import { useQuery } from "convex/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { api } from "../../../../../convex/_generated/api";
+import { useSession } from "@/lib/auth/auth-client";
 
 /**
- * Dashboard Auth Wrapper - Async Server Component
+ * Dashboard Auth Wrapper - Client Component
  *
- * Handles authentication and onboarding checks WITHOUT blocking rendering.
- * This component is wrapped in Suspense with fallback={null} so it doesn't
- * show a loading screen - it just performs checks in the background.
+ * Handles authentication and onboarding checks.
+ * Uses Better Auth for session management.
  *
  * Behavior:
  * - If not authenticated → redirect to login
  * - If company hasn't completed onboarding → redirect to /dashboard/welcome
  * - If company has completed onboarding → allow access to dashboard
  *
- * This ensures users on companies that haven't paid get redirected to onboarding,
- * while users on paid companies can access the full dashboard.
- *
  * This component renders nothing - it only performs checks and redirects.
  */
-export async function DashboardAuthWrapper() {
-	// Check authentication - redirect to login if not authenticated
-	const user = await getCurrentUser();
+export function DashboardAuthWrapper() {
+	const { data: session, isPending: isLoading } = useSession();
+	const isAuthenticated = !!session?.user;
+	const router = useRouter();
+	const pathname = usePathname();
 
-	if (!user) {
-		redirect("/login?message=Please log in to access the dashboard");
-	}
-
-	// Get current pathname from headers (set by proxy.ts)
-	const headersList = await headers();
-	const pathname = headersList.get("x-dashboard-pathname") || "";
+	// Get current user with companies from Convex
+	const userData = useQuery(
+		api.users.currentWithCompanies,
+		isAuthenticated ? {} : "skip"
+	);
 
 	// Pages that should be accessible without completing onboarding
 	const onboardingAllowedPaths = [
 		"/dashboard/welcome",
 		"/dashboard/settings/billing",
 		"/dashboard/settings/profile",
+		"/onboarding",
 	];
 
 	// Check if current path is allowed without onboarding
 	const isOnboardingAllowedPath = onboardingAllowedPaths.some(
-		(path) => pathname === path || pathname.startsWith(path + "/"),
+		(path) => pathname === path || pathname.startsWith(path + "/")
 	);
 
-	// Skip onboarding check for allowed paths
-	if (!isOnboardingAllowedPath) {
-		// Check if active company has completed onboarding (payment + setup)
-		const onboardingComplete = await isActiveCompanyOnboardingComplete();
+	useEffect(() => {
+		// Wait for auth to finish loading
+		if (isLoading) return;
 
-		if (!onboardingComplete) {
-			// Redirect to onboarding/welcome page
-			redirect("/dashboard/welcome");
+		// Redirect to login if not authenticated
+		if (!isAuthenticated) {
+			router.push(`/login?redirectTo=${encodeURIComponent(pathname)}`);
+			return;
 		}
-	}
+
+		// Wait for user data to load
+		if (userData === undefined) return;
+
+		// If no user data, something is wrong - redirect to login
+		if (!userData) {
+			router.push("/login?message=Unable to load user data");
+			return;
+		}
+
+		// Check if any company has completed onboarding
+		if (!isOnboardingAllowedPath) {
+			const hasCompletedOnboarding = userData.companies?.some(
+				(company) => company.onboardingCompleted
+			);
+
+			if (!hasCompletedOnboarding && userData.companies?.length === 0) {
+				// No companies - redirect to onboarding
+				router.push("/onboarding");
+				return;
+			}
+
+			if (!hasCompletedOnboarding) {
+				// Has companies but none completed onboarding
+				router.push("/dashboard/welcome");
+				return;
+			}
+		}
+	}, [isAuthenticated, isLoading, userData, pathname, router, isOnboardingAllowedPath]);
 
 	// This component renders nothing - it only performs auth checks and redirects
 	return null;

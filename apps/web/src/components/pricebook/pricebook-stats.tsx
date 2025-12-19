@@ -9,21 +9,49 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function PricebookStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real pricebook statistics
-	// const { data: stats } = await supabase
-	//   .from("price_book_items")
-	//   .select("*")
-	//   .eq("company_id", companyId);
+	let totalServices = 0;
+	let partsCatalog = 0;
+	let laborRates = 0;
+	let servicePackages = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Fetch price book items by type
+		const { data: priceBookItems, error } = await supabase
+			.from("price_book_items")
+			.select("id, item_type")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && priceBookItems) {
+			for (const item of priceBookItems) {
+				switch (item.item_type) {
+					case "service":
+						totalServices++;
+						break;
+					case "part":
+					case "material":
+						partsCatalog++;
+						break;
+					case "labor":
+						laborRates++;
+						break;
+					case "package":
+					case "bundle":
+						servicePackages++;
+						break;
+				}
+			}
+		}
+	}
+
 	const stats = {
-		totalServices: 0,
-		partsCatalog: 0,
-		laborRates: 0,
-		servicePackages: 0,
+		totalServices,
+		partsCatalog,
+		laborRates,
+		servicePackages,
 	};
 
 	return (

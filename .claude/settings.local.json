@@ -305,13 +305,38 @@
       "WebFetch(domain:www.joshwcomeau.com)",
       "Bash(node:*)",
       "Bash(pnpm --filter @stratos/web typecheck:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(mcp__supabase-admin__list_tables)",
+      "Bash(timeout 90 pnpm:*)",
+      "Bash(mcp__supabase__apply_migration)",
+      "Bash(timeout 120 pnpm build:web:*)",
+      "WebFetch(domain:docs.convex.dev)",
+      "Bash(CONVEX_DEPLOY_KEY=\"prod:confident-sheep-616|eyJ2MiI6ImI5Njg3YzFjMzBhNjQ1MzE5NDJkODQ4ZThhMDVlOWJiIn0=\" npx convex deploy:*)",
+      "Bash(export:*)",
+      "Bash(export AUTH_SECRET=\"8cq5Qw0mDKo8rh3XuW2L9m3E1dgddubrhoG7IRZ4\":*)",
+      "Bash(npx convex deploy:*)",
+      "Bash(npx convex:*)",
+      "Bash(npm ls:*)",
+      "Bash(CONVEX_DEPLOY_KEY=\"prod:confident-sheep-616|eyJ2MiI6ImI5Njg3YzFjMzBhNjQ1MzE5NDJkODQ4ZThhMDVlOWJiIn0=\" npx convex env set:*)",
+      "Bash(for:*)",
+      "WebFetch(domain:labs.convex.dev)",
+      "Bash(CONVEX_DEPLOY_KEY=\"prod:confident-sheep-616|eyJ2MiI6ImI5Njg3YzFjMzBhNjQ1MzE5NDJkODQ4ZThhMDVlOWJiIn0=\" npx convex run:*)",
+      "Bash(CONVEX_DEPLOY_KEY=\"prod:confident-sheep-616|eyJ2MiI6ImI5Njg3YzFjMzBhNjQ1MzE5NDJkODQ4ZThhMDVlOWJiIn0=\" npx convex env:*)",
+      "Bash(mcp__supabase__get_project_url:*)",
+      "Bash(timeout 120 pnpm:*)",
+      "Bash(git status:*)",
+      "WebFetch(domain:www.better-auth.com)",
+      "WebFetch(domain:convex-better-auth.netlify.app)",
+      "Bash(npx convex dev:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "shadcn"
+    "shadcn",
+    "supabase-web",
+    "supabase-admin"
   ]
 }

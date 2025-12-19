@@ -235,6 +235,30 @@ export interface VerificationCompleteProps extends BaseEmailProps {
 	messagingUrl: string;
 }
 
+// Subscription Billing Email Props (Platform subscription, not customer billing)
+export interface TrialEndingProps extends BaseEmailProps {
+	companyName: string;
+	ownerName: string;
+	daysRemaining: number;
+	trialEndDate: string;
+	planName: string;
+	monthlyPrice: string;
+	billingUrl: string;
+}
+
+export interface SubscriptionPaymentFailedProps extends BaseEmailProps {
+	companyName: string;
+	ownerName: string;
+	failedAt: string;
+	attemptCount: number;
+	lastFourDigits: string;
+	paymentMethod: string; // "Visa", "Mastercard", "Bank Account", etc.
+	amountDue: string;
+	gracePeriodEnds: string;
+	daysRemainingInGrace: number;
+	updatePaymentUrl: string;
+}
+
 // Waitlist Email Props
 export interface WaitlistSubscriptionProps extends BaseEmailProps {
 	name: string;
@@ -291,6 +315,10 @@ export enum EmailTemplate {
 	// Waitlist
 	WAITLIST_SUBSCRIPTION = "waitlist-subscription",
 	WAITLIST_ADMIN_NOTIFICATION = "waitlist-admin-notification",
+
+	// Subscription (Platform billing)
+	TRIAL_ENDING = "trial-ending",
+	SUBSCRIPTION_PAYMENT_FAILED = "subscription-payment-failed",
 
 	// Generic
 	GENERIC = "generic",

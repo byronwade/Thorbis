@@ -4,10 +4,30 @@
  * Users Management Actions
  *
  * Server actions for managing user data.
+ * Uses Supabase Auth Admin API for authentication operations.
  */
 
+import { createClient } from "@supabase/supabase-js";
 import { createWebClient } from "@/lib/supabase/web-client";
 import { getAdminSession } from "@/lib/auth/session";
+import { logAdminAction } from "@/lib/admin/audit";
+
+// Create admin Supabase client with service role key for auth operations
+function getSupabaseAdmin() {
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+	if (!supabaseUrl || !serviceRoleKey) {
+		return null;
+	}
+
+	return createClient(supabaseUrl, serviceRoleKey, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false,
+		},
+	});
+}
 
 export interface UserWithDetails {
 	id: string;
@@ -155,6 +175,13 @@ export async function updateUser(
 
 	const webDb = createWebClient();
 
+	// Get current user data for audit log
+	const { data: beforeData } = await webDb
+		.from("users")
+		.select("*")
+		.eq("id", userId)
+		.single();
+
 	const { data, error } = await webDb
 		.from("users")
 		.update({
@@ -169,7 +196,19 @@ export async function updateUser(
 		return { error: "Failed to update user" };
 	}
 
-	// TODO: Log to audit log
+	// Log to audit log
+	await logAdminAction({
+		adminUserId: session.userId,
+		adminEmail: session.email || "",
+		action: "user_updated",
+		resourceType: "user",
+		resourceId: userId,
+		details: {
+			before: beforeData,
+			after: data,
+			changes: updates,
+		},
+	});
 
 	return { data };
 }
@@ -185,6 +224,13 @@ export async function setUserStatus(userId: string, status: "active" | "suspende
 
 	const webDb = createWebClient();
 
+	// Get user details for logging
+	const { data: user } = await webDb
+		.from("users")
+		.select("email, full_name")
+		.eq("id", userId)
+		.single();
+
 	// Update all company memberships for this user
 	const { error } = await webDb
 		.from("company_memberships")
@@ -198,15 +244,27 @@ export async function setUserStatus(userId: string, status: "active" | "suspende
 		return { error: "Failed to update user status" };
 	}
 
-	// TODO: Log to audit log
+	// Log to audit log
+	await logAdminAction({
+		adminUserId: session.userId,
+		adminEmail: session.email || "",
+		action: status === "suspended" ? "user_suspended" : "user_activated",
+		resourceType: "user",
+		resourceId: userId,
+		details: {
+			user_email: user?.email,
+			user_name: user?.full_name,
+			new_status: status,
+		},
+	});
 
 	return { success: true };
 }
 
 /**
  * Reset user password
- * 
- * Note: This should trigger a password reset email, not set a password directly.
+ *
+ * Triggers a password reset email via Supabase Auth Admin API.
  */
 export async function resetUserPassword(userId: string) {
 	const session = await getAdminSession();
@@ -214,10 +272,214 @@ export async function resetUserPassword(userId: string) {
 		return { error: "Unauthorized" };
 	}
 
-	// TODO: Implement password reset via Supabase Auth Admin API
-	// This requires SUPABASE_SERVICE_ROLE_KEY and admin.auth.resetPasswordForEmail()
+	const supabaseAdmin = getSupabaseAdmin();
+	if (!supabaseAdmin) {
+		return { error: "Admin client not configured. SUPABASE_SERVICE_ROLE_KEY is required." };
+	}
 
-	return { error: "Password reset not yet implemented" };
+	const webDb = createWebClient();
+
+	// Get user's email
+	const { data: user, error: userError } = await webDb
+		.from("users")
+		.select("email, full_name")
+		.eq("id", userId)
+		.single();
+
+	if (userError || !user?.email) {
+		return { error: "User not found or has no email" };
+	}
+
+	try {
+		// Use Supabase Auth Admin API to generate a password reset link
+		const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+			type: "recovery",
+			email: user.email,
+			options: {
+				redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+			},
+		});
+
+		if (error) {
+			console.error("[Users] Password reset error:", error);
+			return { error: `Failed to generate reset link: ${error.message}` };
+		}
+
+		// The link is generated but we also need to send the email
+		// Supabase handles this automatically, but we can also use a custom email
+		const { error: emailError } = await supabaseAdmin.auth.resetPasswordForEmail(
+			user.email,
+			{
+				redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+			}
+		);
+
+		if (emailError) {
+			console.error("[Users] Password reset email error:", emailError);
+			return { error: `Failed to send reset email: ${emailError.message}` };
+		}
+
+		// Log to audit log
+		await logAdminAction({
+			adminUserId: session.userId,
+			adminEmail: session.email || "",
+			action: "password_reset_initiated",
+			resourceType: "user",
+			resourceId: userId,
+			details: {
+				user_email: user.email,
+				user_name: user.full_name,
+			},
+		});
+
+		return {
+			success: true,
+			message: `Password reset email sent to ${user.email}`,
+		};
+	} catch (error: any) {
+		console.error("[Users] Password reset exception:", error);
+		return { error: error.message || "Failed to reset password" };
+	}
+}
+
+/**
+ * Force update user email (admin only)
+ */
+export async function updateUserEmail(userId: string, newEmail: string) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const supabaseAdmin = getSupabaseAdmin();
+	if (!supabaseAdmin) {
+		return { error: "Admin client not configured" };
+	}
+
+	const webDb = createWebClient();
+
+	// Get current user data
+	const { data: user } = await webDb
+		.from("users")
+		.select("email")
+		.eq("id", userId)
+		.single();
+
+	const oldEmail = user?.email;
+
+	try {
+		// Update email in Supabase Auth
+		const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+			userId,
+			{ email: newEmail, email_confirm: true }
+		);
+
+		if (authError) {
+			return { error: `Failed to update auth email: ${authError.message}` };
+		}
+
+		// Update email in users table
+		const { error: dbError } = await webDb
+			.from("users")
+			.update({
+				email: newEmail,
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", userId);
+
+		if (dbError) {
+			return { error: `Failed to update user email in database: ${dbError.message}` };
+		}
+
+		// Log to audit log
+		await logAdminAction({
+			adminUserId: session.userId,
+			adminEmail: session.email || "",
+			action: "user_email_updated",
+			resourceType: "user",
+			resourceId: userId,
+			details: {
+				old_email: oldEmail,
+				new_email: newEmail,
+			},
+		});
+
+		return { success: true };
+	} catch (error: any) {
+		return { error: error.message || "Failed to update email" };
+	}
+}
+
+/**
+ * Delete user (soft delete - deactivates auth and marks as deleted)
+ */
+export async function deleteUser(userId: string, reason?: string) {
+	const session = await getAdminSession();
+	if (!session) {
+		return { error: "Unauthorized" };
+	}
+
+	const supabaseAdmin = getSupabaseAdmin();
+	if (!supabaseAdmin) {
+		return { error: "Admin client not configured" };
+	}
+
+	const webDb = createWebClient();
+
+	// Get user data for logging
+	const { data: user } = await webDb
+		.from("users")
+		.select("email, full_name")
+		.eq("id", userId)
+		.single();
+
+	try {
+		// Soft delete: Ban the user in Supabase Auth
+		const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+			userId,
+			{ ban_duration: "876000h" } // ~100 years
+		);
+
+		if (authError) {
+			return { error: `Failed to disable user auth: ${authError.message}` };
+		}
+
+		// Update all company memberships to deleted
+		await webDb
+			.from("company_memberships")
+			.update({
+				status: "deleted",
+				updated_at: new Date().toISOString(),
+			})
+			.eq("user_id", userId);
+
+		// Mark user as deleted in users table
+		await webDb
+			.from("users")
+			.update({
+				deleted_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+			})
+			.eq("id", userId);
+
+		// Log to audit log
+		await logAdminAction({
+			adminUserId: session.userId,
+			adminEmail: session.email || "",
+			action: "user_deleted",
+			resourceType: "user",
+			resourceId: userId,
+			details: {
+				user_email: user?.email,
+				user_name: user?.full_name,
+				reason,
+			},
+		});
+
+		return { success: true };
+	} catch (error: any) {
+		return { error: error.message || "Failed to delete user" };
+	}
 }
 
 

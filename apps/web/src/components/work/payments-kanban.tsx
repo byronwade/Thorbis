@@ -200,16 +200,15 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 
 		startTransition(() => {
 			void (async () => {
-				// TODO: Implement updatePaymentStatus action
-				// const { updatePaymentStatus } = await import("@/actions/payments");
-				// const result = await updatePaymentStatus(item.entity.id, toColumnId);
+				const { updatePaymentStatus } = await import("@/actions/payments");
+				const result = await updatePaymentStatus(item.entity.id, toColumnId as "pending" | "processing" | "completed" | "failed" | "cancelled");
 
-				// if (!result.success) {
-				//   toast.error("Unable to move payment", {
-				//     description: result.error,
-				//   });
-				//   return;
-				// }
+				if (!result.success) {
+					toast.error("Unable to move payment", {
+						description: result.error,
+					});
+					return;
+				}
 
 				toast.success(
 					`Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`,

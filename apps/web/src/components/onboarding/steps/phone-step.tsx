@@ -38,7 +38,7 @@ import {
 	PHONE_PORTING_FEE,
 } from "@/lib/onboarding/onboarding-fees";
 import { useOnboardingStore } from "@/lib/onboarding/onboarding-store";
-import { getEstimatedFocDate } from "@/lib/twilio/porting";
+import { getEstimatedFocDate } from "@/lib/twilio/porting-utils";
 import { cn } from "@/lib/utils";
 
 type PhoneSetupOption = "new" | "port" | "skip";

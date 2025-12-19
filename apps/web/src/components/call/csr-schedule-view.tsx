@@ -422,7 +422,11 @@ export function CSRScheduleView({
 			<div className="bg-card/50 border-t p-3">
 				<Button
 					className="w-full gap-2 text-xs"
-					onClick={() => {}}
+					onClick={() =>
+						router.push(
+							`/dashboard/work/appointments/new?date=${selectedDate.toISOString().split("T")[0]}`,
+						)
+					}
 					size="sm"
 					variant="default"
 				>

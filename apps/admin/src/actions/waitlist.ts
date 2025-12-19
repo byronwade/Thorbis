@@ -12,8 +12,18 @@ import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import type { WaitlistSubscriber, WaitlistStats } from "@/types/campaigns";
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-load Resend client to avoid build-time errors when API key is not available
+let _resend: Resend | null = null;
+function getResend(): Resend | null {
+	if (!_resend) {
+		const apiKey = process.env.RESEND_API_KEY;
+		if (!apiKey) {
+			return null;
+		}
+		_resend = new Resend(apiKey);
+	}
+	return _resend;
+}
 
 // Cache for audience ID (avoid repeated API calls)
 let cachedAudienceId: string | null = null;
@@ -35,6 +45,12 @@ async function getWaitlistAudienceId(): Promise<string | null> {
 	}
 
 	try {
+		const resend = getResend();
+		if (!resend) {
+			console.warn("Resend not configured, skipping audience lookup");
+			return null;
+		}
+
 		// List all audiences to find existing waitlist
 		const { data: audiences, error: listError } = await resend.audiences.list();
 
@@ -114,6 +130,11 @@ export async function getWaitlistStats(): Promise<ActionResult<WaitlistStats>> {
 			};
 		}
 
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
+
 		// Fetch all contacts from Resend
 		const response = await resend.contacts.list({ audienceId });
 
@@ -177,6 +198,11 @@ async function getWaitlistSubscribers(
 					pageSize,
 				},
 			};
+		}
+
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
 		}
 
 		// Fetch contacts from Resend
@@ -248,6 +274,11 @@ async function addWaitlistSubscriber(
 			return { success: false, error: "Could not get or create waitlist audience" };
 		}
 
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
+
 		// Create contact in Resend
 		const response = await resend.contacts.create({
 			email,
@@ -296,6 +327,11 @@ async function removeWaitlistSubscriber(
 			return { success: false, error: "Could not get or create waitlist audience" };
 		}
 
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
+
 		// Delete contact from Resend
 		const response = await resend.contacts.remove({
 			id: contactId,
@@ -333,6 +369,11 @@ async function updateWaitlistSubscriber(
 
 		if (!audienceId) {
 			return { success: false, error: "Could not get or create waitlist audience" };
+		}
+
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
 		}
 
 		// Update contact in Resend
@@ -391,7 +432,13 @@ async function importWaitlistSubscribers(
 					}
 
 					// Add to Resend
-					const response = await resend.contacts.create({
+					const resendClient = getResend();
+					if (!resendClient) {
+						errors.push("Email service not configured");
+						skipped++;
+						continue;
+					}
+					const response = await resendClient.contacts.create({
 						email: sub.email,
 						firstName: sub.firstName,
 						lastName: sub.lastName,
@@ -447,6 +494,11 @@ async function exportWaitlistSubscribers(): Promise<
 			return { success: false, error: "Could not get or create waitlist audience" };
 		}
 
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
+
 		// Fetch all contacts from Resend
 		const response = await resend.contacts.list({ audienceId });
 
@@ -500,6 +552,11 @@ async function getWaitlistCampaignReadyCount(): Promise<ActionResult<number>> {
 			return { success: true, data: 0 };
 		}
 
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
+		}
+
 		const response = await resend.contacts.list({ audienceId });
 
 		if (response.error) {
@@ -528,6 +585,11 @@ async function getWaitlistEmailsForCampaign(): Promise<
 
 		if (!audienceId) {
 			return { success: true, data: [] };
+		}
+
+		const resend = getResend();
+		if (!resend) {
+			return { success: false, error: "Email service not configured" };
 		}
 
 		const response = await resend.contacts.list({ audienceId });

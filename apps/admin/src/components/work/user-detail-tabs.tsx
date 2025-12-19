@@ -8,9 +8,10 @@ import { UserActivityTab } from "./user-activity-tab";
 import { UserBillingTab } from "./user-billing-tab";
 import { UserSecurityTab } from "./user-security-tab";
 import { UserSettingsTab } from "./user-settings-tab";
+import type { UserWithDetails } from "@/types/entities";
 
 type UserDetailTabsProps = {
-	user: any; // TODO: Type properly
+	user: UserWithDetails;
 };
 
 /**

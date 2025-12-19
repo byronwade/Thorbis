@@ -40,6 +40,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import { updateTeamMember } from "@/actions/team";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
@@ -48,6 +49,16 @@ import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -107,6 +118,7 @@ export function TeamMemberPageContent({
 	const [localMember, setLocalMember] = useState(entityData.teamMember);
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
 
 	// Prevent hydration mismatch by only rendering Radix components after mount
@@ -170,10 +182,73 @@ export function TeamMemberPageContent({
 	const handleSave = async () => {
 		setIsSaving(true);
 		try {
-			// TODO: Implement save team member action
-			toast.success("Team member updated successfully");
-			setHasChanges(false);
-			// Server Action handles revalidation automatically
+			// Build FormData with team member fields
+			const formData = new FormData();
+
+			// Display name (updates user profile)
+			if (localMember.name) {
+				formData.append("name", localMember.name);
+			}
+
+			// Basic info
+			if (localMember.phone !== undefined) {
+				formData.append("phone", localMember.phone || "");
+			}
+			if (localMember.job_title !== undefined) {
+				formData.append("job_title", localMember.job_title || "");
+			}
+
+			// Emergency Contact
+			if (localMember.emergency_contact_name !== undefined) {
+				formData.append(
+					"emergency_contact_name",
+					localMember.emergency_contact_name || "",
+				);
+			}
+			if (localMember.emergency_contact_phone !== undefined) {
+				formData.append(
+					"emergency_contact_phone",
+					localMember.emergency_contact_phone || "",
+				);
+			}
+			if (localMember.emergency_contact_relationship !== undefined) {
+				formData.append(
+					"emergency_contact_relationship",
+					localMember.emergency_contact_relationship || "",
+				);
+			}
+
+			// Employment Details
+			if (localMember.employee_id !== undefined) {
+				formData.append("employee_id", localMember.employee_id || "");
+			}
+			if (localMember.hire_date !== undefined) {
+				formData.append("hire_date", localMember.hire_date || "");
+			}
+			if (localMember.employment_type !== undefined) {
+				formData.append("employment_type", localMember.employment_type || "");
+			}
+			if (localMember.work_schedule !== undefined) {
+				formData.append("work_schedule", localMember.work_schedule || "");
+			}
+			if (localMember.work_location !== undefined) {
+				formData.append("work_location", localMember.work_location || "");
+			}
+
+			// Notes
+			if (localMember.notes !== undefined) {
+				formData.append("notes", localMember.notes || "");
+			}
+
+			const result = await updateTeamMember(teamMember.id, formData);
+
+			if (result.success) {
+				toast.success("Team member updated successfully");
+				setHasChanges(false);
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to update team member");
+			}
 		} catch (_error) {
 			toast.error("Failed to update team member");
 		} finally {
@@ -184,6 +259,73 @@ export function TeamMemberPageContent({
 	const handleCancel = () => {
 		setLocalMember(teamMember);
 		setHasChanges(false);
+	};
+
+	// Export team member data as CSV
+	const handleExport = () => {
+		const csv = [
+			["Field", "Value"].join(","),
+			["Name", user?.name || displayName].join(","),
+			["Email", user?.email || ""].join(","),
+			["Phone", teamMember?.phone || ""].join(","),
+			["Role", roleName].join(","),
+			["Department", departmentName || ""].join(","),
+			["Status", memberStatus].join(","),
+			["Job Title", teamMember?.job_title || ""].join(","),
+			["Employee ID", teamMember?.employee_id || ""].join(","),
+			["Hire Date", teamMember?.hire_date || ""].join(","),
+			["Employment Type", teamMember?.employment_type || ""].join(","),
+			["Work Location", teamMember?.work_location || ""].join(","),
+		].join("\n");
+
+		const blob = new Blob([csv], { type: "text/csv" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `team-member-${teamMember.id}.csv`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		toast.success("Team member data exported");
+	};
+
+	// Print team member profile
+	const handlePrint = () => {
+		window.print();
+	};
+
+	// Share team member link
+	const handleShare = async () => {
+		const url = `${window.location.origin}/dashboard/work/team/${teamMember.id}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toast.success("Profile link copied to clipboard");
+		} catch (_error) {
+			toast.error("Failed to copy link");
+		}
+	};
+
+	// Execute archive team member
+	const executeArchive = async () => {
+		setShowArchiveDialog(false);
+		try {
+			const { archiveTeamMember } = await import("@/actions/team");
+			const result = await archiveTeamMember(teamMember.id);
+			if (result.success) {
+				toast.success("Team member archived successfully");
+				router.push("/dashboard/work/team");
+			} else {
+				toast.error(result.error || "Failed to archive team member");
+			}
+		} catch (_error) {
+			toast.error("Failed to archive team member");
+		}
+	};
+
+	// Archive team member - opens confirmation dialog
+	const handleArchive = () => {
+		setShowArchiveDialog(true);
 	};
 
 	// Get status badge variant
@@ -332,15 +474,15 @@ export function TeamMemberPageContent({
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handleExport}>
 							<Download className="mr-2 size-3.5" />
 							Export to CSV
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handlePrint}>
 							<Printer className="mr-2 size-3.5" />
 							Print Profile
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handleShare}>
 							<Share2 className="mr-2 size-3.5" />
 							Share Profile Link
 						</DropdownMenuItem>
@@ -349,7 +491,7 @@ export function TeamMemberPageContent({
 
 						<DropdownMenuItem
 							className="text-destructive focus:text-destructive"
-							onClick={() => {}}
+							onClick={handleArchive}
 						>
 							<Archive className="mr-2 size-3.5" />
 							Archive Member
@@ -363,6 +505,10 @@ export function TeamMemberPageContent({
 		isSaving,
 		handleSave,
 		handleCancel,
+		handleExport,
+		handlePrint,
+		handleShare,
+		handleArchive,
 		renderQuickActions,
 		router,
 		teamMember.id,
@@ -1169,7 +1315,15 @@ export function TeamMemberPageContent({
 				icon: <Award className="size-4" />,
 				count: certifications.length,
 				actions: (
-					<Button onClick={() => {}} size="sm" variant="outline">
+					<Button
+						onClick={() =>
+							toast.info(
+								"Certification management is coming soon. This feature is under development.",
+							)
+						}
+						size="sm"
+						variant="outline"
+					>
 						<Plus className="mr-2 h-4 w-4" /> Add Certification
 					</Button>
 				),
@@ -1548,6 +1702,7 @@ export function TeamMemberPageContent({
 	}, [assignedJobs, teamMember.id, user?.email]);
 
 	return (
+		<>
 		<DetailPageContentLayout
 			activities={activities}
 			attachments={attachments}
@@ -1563,5 +1718,27 @@ export function TeamMemberPageContent({
 			}}
 			storageKey="team-member-details"
 		/>
+
+		{/* Archive Confirmation Dialog */}
+		<AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Archive Team Member?</AlertDialogTitle>
+					<AlertDialogDescription>
+						Are you sure you want to archive this team member? They will no longer have access to the system.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction
+						className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+						onClick={executeArchive}
+					>
+						Archive Team Member
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+		</>
 	);
 }

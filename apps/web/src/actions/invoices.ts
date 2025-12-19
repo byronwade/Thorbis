@@ -1105,13 +1105,13 @@ async function generateInvoicePDF(
 			);
 		}
 
-		// TODO: Generate PDF using @react-pdf/renderer
-		// This would convert the page_content JSON to PDF
-		// For now, return a placeholder
+		// PDF generation is handled by the API route /api/invoices/[id]/pdf
+		// which uses @react-pdf/renderer via InvoicePDFDocument component
+		const pdfUrl = `/api/invoices/${invoiceId}/pdf`;
 
 		return {
 			success: true,
-			pdfUrl: `/api/invoices/${invoiceId}/pdf`,
+			pdfUrl,
 			invoice,
 		};
 	});

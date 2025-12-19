@@ -23,6 +23,7 @@ import {
 	Calendar,
 	ChevronLeft,
 	ChevronRight,
+	Clock,
 	Loader2,
 	Phone,
 	RefreshCw,
@@ -48,23 +49,18 @@ import {
 	AutoSaveIndicator,
 	CompanyContextBanner,
 	SkipConfirmation,
+	WelcomeBackBanner,
 } from "@/components/onboarding/progress-banner";
+// Step Components - Consolidated (10 steps down from 16)
+import { CommunicationStep } from "@/components/onboarding/steps/communication-step";
 import { CompanyStep } from "@/components/onboarding/steps/company-step";
 import { CompleteStep } from "@/components/onboarding/steps/complete-step";
 import { DataImportStep } from "@/components/onboarding/steps/data-import-step";
-import { EmailStep } from "@/components/onboarding/steps/email-step";
-import { FirstActionStep } from "@/components/onboarding/steps/first-action-step";
 import { IntegrationsStep } from "@/components/onboarding/steps/integrations-step";
-import { NotificationsStep } from "@/components/onboarding/steps/notifications-step";
-import { PaymentCollectionStep } from "@/components/onboarding/steps/payment-collection-step";
-import { PaymentsStep } from "@/components/onboarding/steps/payments-step";
-import { PhoneStep } from "@/components/onboarding/steps/phone-step";
-import { ReportsStep } from "@/components/onboarding/steps/reports-step";
-import { ScheduleStep } from "@/components/onboarding/steps/schedule-step";
+import { OperationsStep } from "@/components/onboarding/steps/operations-step";
+import { PaymentsBillingStep } from "@/components/onboarding/steps/payments-billing-step";
 import { ServicesStep } from "@/components/onboarding/steps/services-step";
-import { SettingsStep } from "@/components/onboarding/steps/settings-step";
 import { TeamStep } from "@/components/onboarding/steps/team-step";
-// Step Components
 import { WelcomeStep } from "@/components/onboarding/steps/welcome-step";
 import { Button } from "@/components/ui/button";
 import {
@@ -146,22 +142,25 @@ class OnboardingErrorBoundary extends Component<
 // CONSTANTS
 // =============================================================================
 
+/**
+ * Consolidated Steps Order (10 steps, down from 16)
+ *
+ * Phase 1: Getting Started (welcome, company)
+ * Phase 2: Connect & Import (communication, data-import, integrations)
+ * Phase 3: Business Setup (services, team)
+ * Phase 4: Payments & Operations (payments-billing, operations)
+ * Phase 5: Launch (complete)
+ */
 const STEP_ORDER: OnboardingStep[] = [
 	"welcome",
 	"company",
+	"communication",
 	"data-import",
 	"integrations",
-	"phone",
-	"email",
-	"notifications",
 	"services",
 	"team",
-	"payments",
-	"billing",
-	"schedule",
-	"reports",
-	"settings",
-	"first-action",
+	"payments-billing",
+	"operations",
 	"complete",
 ];
 
@@ -173,19 +172,19 @@ const PHASE_LABELS: Record<number, string> = {
 	5: "Launch",
 };
 
-// Phase transition walkthroughs
+// Phase transition walkthroughs (updated for consolidated steps)
 const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 	2: [
 		{
 			id: "phase-2",
-			title: "Time to Connect with Customers",
+			title: "Connect & Import",
 			description:
-				"Great job setting up your company! Now let's configure how you'll communicate with customers.",
+				"Great job setting up your company! Now let's connect your communication channels and import your data.",
 			icon: <Phone className="h-8 w-8" />,
 			bullets: [
-				"Phone & SMS setup",
-				"Email configuration",
-				"Notification preferences",
+				"Phone, email & notifications",
+				"Import from other software",
+				"Connect QuickBooks & Calendar",
 			],
 		},
 	],
@@ -194,23 +193,26 @@ const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 			id: "phase-3",
 			title: "Building Your Business",
 			description:
-				"Communication is ready! Let's set up the core of your business - services, team, and payments.",
+				"Communication is ready! Let's set up the core of your business.",
 			icon: <Wrench className="h-8 w-8" />,
 			bullets: [
 				"Service catalog & pricing",
 				"Team invitations",
-				"Payment processing",
 			],
 		},
 	],
 	4: [
 		{
 			id: "phase-4",
-			title: "Optimizing Operations",
+			title: "Payments & Operations",
 			description:
-				"Your business core is configured! Now let's optimize how you work day-to-day.",
+				"Your business core is configured! Now let's set up payments and optimize operations.",
 			icon: <Calendar className="h-8 w-8" />,
-			bullets: ["Business hours", "Dashboard widgets", "Key settings"],
+			bullets: [
+				"Accept customer payments",
+				"Start your subscription",
+				"Schedule, reports & settings",
+			],
 		},
 	],
 	5: [
@@ -218,9 +220,9 @@ const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 			id: "phase-5",
 			title: "Ready for Launch!",
 			description:
-				"Almost there! Let's do one quick action to make sure everything works perfectly.",
+				"Almost there! Let's get you to your dashboard.",
 			icon: <Rocket className="h-8 w-8" />,
-			bullets: ["Take your first action", "See your dashboard"],
+			bullets: ["Complete setup", "View your dashboard"],
 		},
 	],
 };
@@ -229,17 +231,20 @@ const PHASE_WALKTHROUGHS: Record<number, WalkthroughSlide[]> = {
 // MAIN COMPONENT
 // =============================================================================
 
-// Skip step consequences for UX
+// Skip step consequences for UX (updated for consolidated steps)
 const SKIP_CONSEQUENCES: Partial<Record<OnboardingStep, string[]>> = {
-	phone: [
+	communication: [
 		"You won't have a business phone number",
-		"Customers can't call or text through the platform",
+		"Emails will come from noreply@thorbis.com",
 		"No SMS appointment reminders",
 	],
-	email: [
-		"Emails will come from noreply@thorbis.com",
-		"May have lower deliverability",
-		"Less professional appearance",
+	"data-import": [
+		"Start fresh without existing customer data",
+		"You can import later from Settings",
+	],
+	integrations: [
+		"No QuickBooks sync - manual accounting",
+		"No Google Calendar sync",
 	],
 	services: [
 		"You'll need to add services manually later",
@@ -249,10 +254,10 @@ const SKIP_CONSEQUENCES: Partial<Record<OnboardingStep, string[]>> = {
 		"Team members won't have access yet",
 		"You can invite them later from Settings",
 	],
-	payments: ["Can't accept online payments", "Manual payment tracking only"],
-	schedule: [
+	operations: [
 		"Default business hours (9-5, Mon-Fri)",
-		"No service area defined",
+		"Default dashboard widgets",
+		"Standard payment terms",
 	],
 };
 
@@ -268,6 +273,7 @@ function OnboardingWizardInner() {
 		skipStep,
 		updateData,
 		isSaving,
+		resetOnboarding,
 	} = useOnboardingStore();
 
 	// Walkthrough state
@@ -285,6 +291,14 @@ function OnboardingWizardInner() {
 
 	// Auto-save state
 	const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+	// Welcome back banner state - shows when user has prior progress
+	const [showWelcomeBack, setShowWelcomeBack] = useState(() => {
+		// Only show if user has made progress (not on first step or has completed steps)
+		const hasProgress = completedSteps.length > 0 || skippedSteps.length > 0 || currentStep !== "welcome";
+		const hasData = !!data.companyName || !!data.path;
+		return hasProgress || hasData;
+	});
 
 	// Track saves
 	useEffect(() => {
@@ -430,6 +444,16 @@ function OnboardingWizardInner() {
 		}
 	}, [data, completedSteps, skippedSteps, updateData, router]);
 
+	// Welcome back banner handlers
+	const handleContinueOnboarding = useCallback(() => {
+		setShowWelcomeBack(false);
+	}, []);
+
+	const handleStartFresh = useCallback(() => {
+		setShowWelcomeBack(false);
+		resetOnboarding();
+	}, [resetOnboarding]);
+
 	return (
 		<>
 			{/* Phase Transition Walkthrough */}
@@ -451,18 +475,26 @@ function OnboardingWizardInner() {
 			)}
 
 			<div className="flex-1 flex flex-col">
-				{/* Progress Header - Only shown after payment collected */}
-				{data.paymentMethodCollected && (
+				{/* Progress Header - Always visible with time estimate */}
+				{!isFirstStep && (
 					<div className="sticky top-14 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
 						<div className="w-full max-w-2xl mx-auto px-4 sm:px-6">
 							<div className="flex items-center justify-between h-12">
-								{/* Left: Step name */}
-								<span className="text-sm text-muted-foreground truncate">
-									{currentConfig.title}
-								</span>
+								{/* Left: Step name + time estimate */}
+								<div className="flex items-center gap-3 min-w-0">
+									<span className="text-sm text-muted-foreground truncate">
+										{currentConfig.title}
+									</span>
+									{remainingMinutes > 0 && !isLastStep && (
+										<span className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground/70 whitespace-nowrap">
+											<Clock className="h-3 w-3" />
+											~{remainingMinutes} min left
+										</span>
+									)}
+								</div>
 
 								{/* Center: Progress bar */}
-								<div className="flex items-center gap-3 flex-1 max-w-xs mx-6">
+								<div className="flex items-center gap-3 flex-1 max-w-xs mx-4 sm:mx-6">
 									<div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
 										<div
 											className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
@@ -474,12 +506,21 @@ function OnboardingWizardInner() {
 									</span>
 								</div>
 
-								{/* Right: Save status */}
-								<div className="flex items-center gap-3">
-									<AutoSaveIndicator
-										isSaving={isSaving}
-										lastSaved={lastSaved}
-									/>
+								{/* Right: Save status (only after payment) or time on mobile */}
+								<div className="flex items-center gap-2">
+									{/* Mobile time estimate */}
+									{remainingMinutes > 0 && !isLastStep && (
+										<span className="sm:hidden flex items-center gap-1 text-xs text-muted-foreground/70 whitespace-nowrap">
+											<Clock className="h-3 w-3" />
+											{remainingMinutes}m
+										</span>
+									)}
+									{data.paymentMethodCollected && (
+										<AutoSaveIndicator
+											isSaving={isSaving}
+											lastSaved={lastSaved}
+										/>
+									)}
 								</div>
 							</div>
 						</div>
@@ -489,21 +530,27 @@ function OnboardingWizardInner() {
 				{/* Main Content */}
 				<main className="flex-1">
 					<div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+						{/* Welcome Back Banner - shows when returning user has prior progress */}
+						{showWelcomeBack && (
+							<WelcomeBackBanner
+								companyName={data.companyName}
+								currentStep={currentStep}
+								progress={Math.round(progress)}
+								onContinue={handleContinueOnboarding}
+								onStartFresh={handleStartFresh}
+							/>
+						)}
+
+						{/* Consolidated Steps (10 total) */}
 						{currentStep === "welcome" && <WelcomeStep />}
 						{currentStep === "company" && <CompanyStep />}
+						{currentStep === "communication" && <CommunicationStep />}
 						{currentStep === "data-import" && <DataImportStep />}
 						{currentStep === "integrations" && <IntegrationsStep />}
-						{currentStep === "phone" && <PhoneStep />}
-						{currentStep === "email" && <EmailStep />}
-						{currentStep === "notifications" && <NotificationsStep />}
 						{currentStep === "services" && <ServicesStep />}
 						{currentStep === "team" && <TeamStep />}
-						{currentStep === "payments" && <PaymentsStep />}
-						{currentStep === "billing" && <PaymentCollectionStep />}
-						{currentStep === "schedule" && <ScheduleStep />}
-						{currentStep === "reports" && <ReportsStep />}
-						{currentStep === "settings" && <SettingsStep />}
-						{currentStep === "first-action" && <FirstActionStep />}
+						{currentStep === "payments-billing" && <PaymentsBillingStep />}
+						{currentStep === "operations" && <OperationsStep />}
 						{currentStep === "complete" && <CompleteStep />}
 					</div>
 				</main>

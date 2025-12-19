@@ -337,9 +337,9 @@ export async function createAppointment(
 }
 
 /**
- * Update an existing appointment
+ * Update an existing appointment (internal helper)
  */
-async function updateAppointment(
+async function updateAppointmentInternal(
 	appointmentId: string,
 	formData: FormData,
 ): Promise<ActionResult<boolean>> {
@@ -658,6 +658,88 @@ export async function rescheduleAppointmentSimple(
 		if (error) {
 			throw new ActionError(
 				`Failed to reschedule appointment: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Revalidate relevant paths
+		revalidatePath("/dashboard/work/appointments");
+		revalidatePath(`/dashboard/work/appointments/${appointmentId}`);
+		revalidatePath("/dashboard/schedule");
+		if (appointment.job_id) {
+			revalidatePath(`/dashboard/work/${appointment.job_id}`);
+		}
+	});
+}
+
+/**
+ * Update appointment details
+ * General update function for appointment fields
+ */
+export async function updateAppointment(
+	appointmentId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
+	return await withErrorHandling(async () => {
+		const supabase = await getSupabaseServerClient();
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
+
+		const companyId = await getActiveCompanyId();
+		assertExists(companyId, "Company not found for user");
+
+		// Verify appointment exists and belongs to company
+		const { data: appointment, error: fetchError } = await supabase
+			.from("appointments")
+			.select("id, company_id, job_id")
+			.eq("id", appointmentId)
+			.eq("company_id", companyId)
+			.single();
+
+		if (fetchError || !appointment) {
+			throw new ActionError(
+				"Appointment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
+		}
+
+		// Extract and validate form values
+		const rawValues = extractFormValues(formData, [
+			"title",
+			"description",
+			"status",
+			"type",
+			"priority",
+			"scheduledStart",
+			"scheduledEnd",
+			"notes",
+		]);
+
+		const validated = updateAppointmentSchema.parse(rawValues);
+
+		// Calculate duration if times are provided
+		let duration: number | undefined;
+		if (validated.scheduledStart && validated.scheduledEnd) {
+			duration = calculateDuration(validated.scheduledStart, validated.scheduledEnd);
+		}
+
+		// Build update payload
+		const updateData = buildUpdatePayload(validated, duration);
+		const snakeCaseData = toSnakeCaseRecord(updateData);
+
+		// Update appointment
+		const { error } = await supabase
+			.from("appointments")
+			.update(snakeCaseData)
+			.eq("id", appointmentId)
+			.eq("company_id", companyId);
+
+		if (error) {
+			throw new ActionError(
+				`Failed to update appointment: ${error.message}`,
 				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}

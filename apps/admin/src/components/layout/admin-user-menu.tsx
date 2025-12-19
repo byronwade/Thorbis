@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useSession, signOut } from "@/lib/auth/better-auth/auth-client";
 import {
 	HelpCircle,
 	Keyboard,
@@ -30,38 +30,23 @@ export function AdminUserMenu() {
 	const { theme, setTheme } = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-	const [user, setUser] = useState<{
-		email?: string;
-		name?: string;
-		avatar?: string;
-	} | null>(null);
+
+	// Get user from Better Auth session
+	const { data: session } = useSession();
+	const user = session?.user
+		? {
+				email: session.user.email,
+				name: session.user.name || session.user.email?.split("@")[0],
+				avatar: session.user.image || undefined,
+			}
+		: null;
 
 	useEffect(() => {
 		setMounted(true);
 	}, []);
 
-	useEffect(() => {
-		const supabase = createClient();
-
-		async function getUser() {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (user) {
-				setUser({
-					email: user.email,
-					name: user.user_metadata?.full_name || user.email?.split("@")[0],
-					avatar: user.user_metadata?.avatar_url,
-				});
-			}
-		}
-
-		getUser();
-	}, []);
-
 	const handleSignOut = async () => {
-		const supabase = createClient();
-		await supabase.auth.signOut();
+		await signOut();
 		router.push("/login");
 	};
 

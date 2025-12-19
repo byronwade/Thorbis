@@ -286,6 +286,80 @@ async function getPayments(filters?: {
 // UPDATE
 // ============================================================================
 
+/**
+ * Update payment status (for kanban board and status changes)
+ */
+export async function updatePaymentStatus(
+	paymentId: string,
+	newStatus: "pending" | "processing" | "completed" | "failed" | "cancelled",
+): Promise<{ success: boolean; error?: string }> {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return { success: false, error: "Database connection not available" };
+		}
+
+		// Validate status transition
+		const { data: payment, error: fetchError } = await supabase
+			.from("payments")
+			.select("id, status, amount")
+			.eq("id", paymentId)
+			.is("deleted_at", null)
+			.single();
+
+		if (fetchError || !payment) {
+			return { success: false, error: "Payment not found" };
+		}
+
+		// Define valid status transitions
+		const validTransitions: Record<string, string[]> = {
+			pending: ["processing", "completed", "cancelled"],
+			processing: ["completed", "failed", "pending"],
+			completed: [], // Can't change from completed (use refund instead)
+			failed: ["pending", "processing", "cancelled"],
+			cancelled: ["pending"], // Can reopen cancelled payments
+		};
+
+		const currentStatus = payment.status || "pending";
+		const allowedTransitions = validTransitions[currentStatus] || [];
+
+		if (currentStatus === newStatus) {
+			return { success: true }; // No change needed
+		}
+
+		if (!allowedTransitions.includes(newStatus)) {
+			return {
+				success: false,
+				error: `Cannot transition from "${currentStatus}" to "${newStatus}"`,
+			};
+		}
+
+		const { error } = await supabase
+			.from("payments")
+			.update({
+				status: newStatus,
+				updated_at: new Date().toISOString(),
+				...(newStatus === "completed" ? { processed_at: new Date().toISOString() } : {}),
+			})
+			.eq("id", paymentId);
+
+		if (error) {
+			return { success: false, error: error.message };
+		}
+
+		revalidatePath("/dashboard/finance/payments");
+		revalidatePath("/dashboard/work/payments");
+		revalidatePath(`/dashboard/finance/payments/${paymentId}`);
+		return { success: true };
+	} catch (error) {
+		if (error instanceof Error) {
+			return { success: false, error: error.message };
+		}
+		return { success: false, error: "Failed to update payment status" };
+	}
+}
+
 async function updatePayment(
 	paymentId: string,
 	data: PaymentUpdate,

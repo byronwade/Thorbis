@@ -9,22 +9,69 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function TechniciansStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real technician statistics
-	// const { data: stats } = await supabase
-	//   .from("company_memberships")
-	//   .select("*")
-	//   .eq("company_id", companyId)
-	//   .eq("role", "technician");
+	let totalTechnicians = 0;
+	let activeToday = 0;
+	let onBreak = 0;
+	let available = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get all technicians (field roles)
+		const { data: technicianData, error: techError } = await supabase
+			.from("company_memberships")
+			.select("id, user_id, role, status")
+			.eq("company_id", companyId)
+			.in("role", ["technician", "lead_technician", "field_supervisor"])
+			.eq("status", "active");
+
+		if (!techError && technicianData) {
+			totalTechnicians = technicianData.length;
+
+			// Get today's date range
+			const todayStart = new Date();
+			todayStart.setHours(0, 0, 0, 0);
+			const todayEnd = new Date();
+			todayEnd.setHours(23, 59, 59, 999);
+
+			// Get technicians with appointments today
+			const { data: todayAppointments, error: apptError } = await supabase
+				.from("job_assignments")
+				.select(
+					`
+					technician_id,
+					status,
+					jobs!inner(scheduled_start, scheduled_end, company_id)
+				`,
+				)
+				.eq("jobs.company_id", companyId)
+				.gte("jobs.scheduled_start", todayStart.toISOString())
+				.lte("jobs.scheduled_start", todayEnd.toISOString());
+
+			if (!apptError && todayAppointments) {
+				// Count unique technicians with jobs today
+				const activeTechnicianIds = new Set(
+					todayAppointments.map((a) => a.technician_id),
+				);
+				activeToday = activeTechnicianIds.size;
+
+				// Count those available (total minus active)
+				available = totalTechnicians - activeToday;
+
+				// On break is typically tracked in real-time, using 0 as default
+				onBreak = 0;
+			} else {
+				available = totalTechnicians;
+			}
+		}
+	}
+
 	const stats = {
-		totalTechnicians: 0,
-		activeToday: 0,
-		onBreak: 0,
-		available: 0,
+		totalTechnicians,
+		activeToday,
+		onBreak,
+		available,
 	};
 
 	return (

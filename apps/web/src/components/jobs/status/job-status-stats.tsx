@@ -11,22 +11,60 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function JobStatusStats() {
-	const _supabase = await createClient();
-	const _companyId = await getActiveCompanyId();
+	const supabase = await createClient();
+	const companyId = await getActiveCompanyId();
 
-	// Future: Fetch real job status statistics
-	// const { data: stats } = await supabase
-	//   .from("jobs")
-	//   .select("status")
-	//   .eq("company_id", companyId);
+	let inProgress = 0;
+	let completedToday = 0;
+	let pending = 0;
+	let overdue = 0;
 
-	// Placeholder stats for now
+	if (companyId) {
+		// Get today's start
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+		const now = new Date();
+
+		// Fetch jobs
+		const { data: jobs, error } = await supabase
+			.from("jobs")
+			.select("id, status, scheduled_end, completed_at")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (!error && jobs) {
+			for (const job of jobs) {
+				switch (job.status) {
+					case "in_progress":
+					case "arrived":
+					case "dispatched":
+						inProgress++;
+						// Check if overdue (past scheduled end)
+						if (job.scheduled_end && new Date(job.scheduled_end) < now) {
+							overdue++;
+						}
+						break;
+					case "completed":
+						if (job.completed_at && new Date(job.completed_at) >= todayStart) {
+							completedToday++;
+						}
+						break;
+					case "scheduled":
+					case "pending":
+					case "unscheduled":
+						pending++;
+						break;
+				}
+			}
+		}
+	}
+
 	const stats = {
-		inProgress: 12,
-		avgDuration: "2.3h",
-		completed: 18,
-		pending: 6,
-		overdue: 2,
+		inProgress,
+		avgDuration: "2.3h", // Would need duration tracking
+		completed: completedToday,
+		pending,
+		overdue,
 	};
 
 	return (

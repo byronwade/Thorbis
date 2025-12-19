@@ -17,8 +17,9 @@ import {
 	Plus,
 	X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { saveReportSchedule, getReportSchedule } from "@/actions/report-schedules";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,6 +125,27 @@ export function ScheduleReportDialog({
 		setRecipients(recipients.filter((r) => r !== email));
 	};
 
+	// Load existing schedule when dialog opens
+	useEffect(() => {
+		if (open) {
+			loadSchedule();
+		}
+	}, [open, reportType]);
+
+	const loadSchedule = async () => {
+		const result = await getReportSchedule(reportType);
+		if (result.success && result.data) {
+			setFrequency(result.data.frequency);
+			if (result.data.dayOfWeek !== undefined) setDayOfWeek(result.data.dayOfWeek);
+			if (result.data.dayOfMonth !== undefined) setDayOfMonth(result.data.dayOfMonth);
+			setTime(result.data.time);
+			setFormat(result.data.format);
+			setIncludeCharts(result.data.includeCharts);
+			setRecipients(result.data.recipients);
+			setIsActive(result.data.isActive);
+		}
+	};
+
 	const handleSave = async () => {
 		if (recipients.length === 0) {
 			toast.error("Please add at least one recipient");
@@ -133,9 +155,6 @@ export function ScheduleReportDialog({
 		setIsSaving(true);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
 			const config: ScheduleConfig = {
 				frequency,
 				dayOfWeek: frequency === "weekly" ? dayOfWeek : undefined,
@@ -151,11 +170,22 @@ export function ScheduleReportDialog({
 				isActive,
 			};
 
+			// Save to database
+			const result = await saveReportSchedule({
+				reportType,
+				reportTitle,
+				...config,
+			});
+
+			if (!result.success) {
+				throw new Error(result.error || "Failed to save schedule");
+			}
+
 			onScheduled?.(config);
 			toast.success("Report schedule saved successfully");
 			setOpen(false);
 		} catch (error) {
-			toast.error("Failed to save schedule");
+			toast.error(error instanceof Error ? error.message : "Failed to save schedule");
 		} finally {
 			setIsSaving(false);
 		}

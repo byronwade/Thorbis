@@ -148,7 +148,7 @@ interface WelcomeBackBannerProps {
 	onStartFresh?: () => void;
 }
 
-function WelcomeBackBanner({
+export function WelcomeBackBanner({
 	companyName,
 	currentStep,
 	progress = 0,

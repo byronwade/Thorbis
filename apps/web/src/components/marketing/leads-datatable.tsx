@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -311,17 +312,38 @@ export function LeadsDataTable({
 		{
 			label: "Send Email",
 			icon: <Mail className="h-4 w-4" />,
-			onClick: (_selectedIds) => {},
+			onClick: (selectedIds) => {
+				const count = selectedIds.size;
+				toast.info(`Bulk email to ${count} lead${count !== 1 ? "s" : ""} coming soon`, {
+					description: "This feature is under development",
+				});
+			},
 		},
 		{
 			label: "Send Text",
 			icon: <MessageSquare className="h-4 w-4" />,
-			onClick: (_selectedIds) => {},
+			onClick: (selectedIds) => {
+				const count = selectedIds.size;
+				toast.info(`Bulk SMS to ${count} lead${count !== 1 ? "s" : ""} coming soon`, {
+					description: "This feature is under development",
+				});
+			},
 		},
 		{
 			label: "Call",
 			icon: <Phone className="h-4 w-4" />,
-			onClick: (_selectedIds) => {},
+			onClick: (selectedIds) => {
+				const count = selectedIds.size;
+				if (count > 1) {
+					toast.warning("Cannot call multiple leads at once", {
+						description: "Please select a single lead to call",
+					});
+					return;
+				}
+				toast.info("Click-to-call feature coming soon", {
+					description: "This feature is under development",
+				});
+			},
 		},
 	];
 

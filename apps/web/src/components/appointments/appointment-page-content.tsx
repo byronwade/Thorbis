@@ -31,8 +31,11 @@ import {
 	X,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useRef, useState } from "react";
+import { updateAppointment } from "@/actions/appointments";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
+import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,8 +76,49 @@ export type AppointmentPageContentProps = {
 export function AppointmentPageContent({
 	entityData,
 }: AppointmentPageContentProps) {
+	const router = useRouter();
+	const { toast } = useToast();
+	const formRef = useRef<HTMLFormElement>(null);
 	const [hasChanges, setHasChanges] = useState(false);
-	const [isSaving, _setIsSaving] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+
+	const handleSave = async () => {
+		const { appointment } = entityData;
+		if (!appointment?.id || !formRef.current) return;
+
+		setIsSaving(true);
+		try {
+			const form = formRef.current;
+			const formData = new FormData();
+
+			// Collect form values
+			const title = (form.querySelector('[name="title"]') as HTMLInputElement)
+				?.value;
+			const notes = (
+				form.querySelector('[name="notes"]') as HTMLTextAreaElement
+			)?.value;
+			const status = (form.querySelector('[name="status"]') as HTMLSelectElement)
+				?.value;
+
+			if (title) formData.append("title", title);
+			if (notes) formData.append("notes", notes);
+			if (status) formData.append("status", status);
+
+			const result = await updateAppointment(appointment.id, formData);
+
+			if (result.success) {
+				toast.success("Appointment updated successfully");
+				setHasChanges(false);
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to update appointment");
+			}
+		} catch (error) {
+			toast.error("Failed to update appointment");
+		} finally {
+			setIsSaving(false);
+		}
+	};
 
 	const {
 		appointment,
@@ -158,7 +202,7 @@ export function AppointmentPageContent({
 									<X className="mr-2 size-4" />
 									Cancel
 								</Button>
-								<Button disabled={isSaving} onClick={() => {}} size="sm">
+								<Button disabled={isSaving} onClick={handleSave} size="sm">
 									<Save className="mr-2 size-4" />
 									{isSaving ? "Saving..." : "Save Changes"}
 								</Button>

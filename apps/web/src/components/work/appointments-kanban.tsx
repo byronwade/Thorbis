@@ -208,16 +208,15 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 
 		startTransition(() => {
 			void (async () => {
-				// TODO: Implement updateAppointmentStatus action
-				// const { updateAppointmentStatus } = await import("@/actions/appointments");
-				// const result = await updateAppointmentStatus(item.appointment.id, toColumnId);
+				const { updateAppointmentStatus } = await import("@/actions/appointments");
+				const result = await updateAppointmentStatus(item.appointment.id, toColumnId);
 
-				// if (!result.success) {
-				//   toast.error("Unable to move appointment", {
-				//     description: result.error,
-				//   });
-				//   return;
-				// }
+				if (!result.success) {
+					toast.error("Unable to move appointment", {
+						description: result.error,
+					});
+					return;
+				}
 
 				toast.success(
 					`Appointment moved to ${COLUMN_LABEL.get(toColumnId as AppointmentStatus)}`,

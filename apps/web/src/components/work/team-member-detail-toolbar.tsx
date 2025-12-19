@@ -23,6 +23,16 @@ import {
 	sendPasswordResetEmail,
 	suspendTeamMember,
 } from "@/actions/team";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -39,6 +49,9 @@ export function TeamMemberDetailToolbar() {
 	const memberId = params?.id as string;
 	const [isLoading, setIsLoading] = useState(false);
 	const [canManage, setCanManage] = useState(false);
+	const [showSuspendDialog, setShowSuspendDialog] = useState(false);
+	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+	const [showPasswordResetDialog, setShowPasswordResetDialog] = useState(false);
 
 	useEffect(() => {
 		async function checkManagePermission() {
@@ -53,11 +66,8 @@ export function TeamMemberDetailToolbar() {
 		}
 	}, [memberId]);
 
-	const handleSuspendMember = async () => {
-		if (!confirm("Are you sure you want to suspend this team member?")) {
-			return;
-		}
-
+	const executeSuspend = async () => {
+		setShowSuspendDialog(false);
 		setIsLoading(true);
 		const result = await suspendTeamMember(memberId);
 		setIsLoading(false);
@@ -68,6 +78,10 @@ export function TeamMemberDetailToolbar() {
 		} else {
 			toast.error(result.error || "Failed to suspend team member");
 		}
+	};
+
+	const handleSuspendMember = () => {
+		setShowSuspendDialog(true);
 	};
 
 	const handleActivateMember = async () => {
@@ -83,15 +97,8 @@ export function TeamMemberDetailToolbar() {
 		}
 	};
 
-	const handleArchiveMember = async () => {
-		if (
-			!confirm(
-				"Are you sure you want to permanently archive this team member? This action cannot be undone.",
-			)
-		) {
-			return;
-		}
-
+	const executeArchive = async () => {
+		setShowArchiveDialog(false);
 		setIsLoading(true);
 		const result = await archiveTeamMember(memberId);
 		setIsLoading(false);
@@ -104,11 +111,12 @@ export function TeamMemberDetailToolbar() {
 		}
 	};
 
-	const handlePasswordReset = async () => {
-		if (!confirm("Send a password reset email to this team member?")) {
-			return;
-		}
+	const handleArchiveMember = () => {
+		setShowArchiveDialog(true);
+	};
 
+	const executePasswordReset = async () => {
+		setShowPasswordResetDialog(false);
 		setIsLoading(true);
 		const result = await sendPasswordResetEmail(memberId);
 		setIsLoading(false);
@@ -118,6 +126,10 @@ export function TeamMemberDetailToolbar() {
 		} else {
 			toast.error(result.error || "Failed to send password reset email");
 		}
+	};
+
+	const handlePasswordReset = () => {
+		setShowPasswordResetDialog(true);
 	};
 
 	return (
@@ -171,6 +183,66 @@ export function TeamMemberDetailToolbar() {
 					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
+
+			{/* Suspend Confirmation Dialog */}
+			<AlertDialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Suspend Team Member?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will temporarily disable the team member's access. They can be reactivated later.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeSuspend}
+						>
+							Suspend Member
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Archive Confirmation Dialog */}
+			<AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Archive Team Member?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will archive the team member and remove their access. This action can be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeArchive}
+						>
+							Archive Member
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Password Reset Confirmation Dialog */}
+			<AlertDialog open={showPasswordResetDialog} onOpenChange={setShowPasswordResetDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Send Password Reset?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will send a password reset email to this team member.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={executePasswordReset}>
+							Send Reset Email
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

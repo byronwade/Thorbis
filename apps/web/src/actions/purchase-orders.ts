@@ -763,3 +763,111 @@ async function restorePurchaseOrder(
 		revalidatePath("/dashboard/work/archive");
 	});
 }
+
+// ============================================================================
+// BULK ACTIONS
+// ============================================================================
+
+/**
+ * Bulk approve purchase orders
+ */
+export async function bulkApprovePurchaseOrders(
+	poIds: string[],
+): Promise<{ success: boolean; approvedCount: number; error?: string }> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, approvedCount: 0, error: "Database connection not available" };
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, approvedCount: 0, error: "Unauthorized" };
+		}
+
+		const activeCompanyId = await getActiveCompanyId();
+		if (!activeCompanyId) {
+			return { success: false, approvedCount: 0, error: "No active company" };
+		}
+
+		// Update all POs to approved status
+		const { data, error } = await supabase
+			.from("purchase_orders")
+			.update({
+				status: "approved",
+				approved_at: new Date().toISOString(),
+				approved_by: user.id,
+				updated_at: new Date().toISOString(),
+			})
+			.eq("company_id", activeCompanyId)
+			.in("id", poIds)
+			.is("deleted_at", null)
+			.select("id");
+
+		if (error) {
+			return { success: false, approvedCount: 0, error: error.message };
+		}
+
+		revalidatePath("/dashboard/work/purchase-orders");
+		return { success: true, approvedCount: data?.length || 0 };
+	} catch (error) {
+		return {
+			success: false,
+			approvedCount: 0,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+/**
+ * Bulk archive purchase orders
+ */
+export async function bulkArchivePurchaseOrders(
+	poIds: string[],
+): Promise<{ success: boolean; archivedCount: number; error?: string }> {
+	try {
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, archivedCount: 0, error: "Database connection not available" };
+		}
+
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return { success: false, archivedCount: 0, error: "Unauthorized" };
+		}
+
+		const activeCompanyId = await getActiveCompanyId();
+		if (!activeCompanyId) {
+			return { success: false, archivedCount: 0, error: "No active company" };
+		}
+
+		// Soft delete all specified POs
+		const { data, error } = await supabase
+			.from("purchase_orders")
+			.update({
+				deleted_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+			})
+			.eq("company_id", activeCompanyId)
+			.in("id", poIds)
+			.is("deleted_at", null)
+			.select("id");
+
+		if (error) {
+			return { success: false, archivedCount: 0, error: error.message };
+		}
+
+		revalidatePath("/dashboard/work/purchase-orders");
+		return { success: true, archivedCount: data?.length || 0 };
+	} catch (error) {
+		return {
+			success: false,
+			archivedCount: 0,
+			error: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}

@@ -43,6 +43,7 @@ import {
 	useState,
 } from "react";
 import { enrichCustomerData } from "@/actions/customer-enrichment";
+import { deleteCustomer, updateCustomer } from "@/actions/customers";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
@@ -56,6 +57,16 @@ import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -105,6 +116,7 @@ export function CustomerPageContent({
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isEnriching, setIsEnriching] = useState(false);
+	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const setToolbarActions = useToolbarActionsStore((state) => state.setActions);
 
 	// Extract data before hooks (Customer 360° view - all related entities)
@@ -378,10 +390,86 @@ export function CustomerPageContent({
 	const handleSave = async () => {
 		setIsSaving(true);
 		try {
-			// TODO: Implement save customer action
-			toast.success("Customer updated successfully");
-			setHasChanges(false);
-			// Server Action handles revalidation automatically
+			// Build FormData with the expected field names for the updateCustomer action
+			const formData = new FormData();
+
+			// Map local customer fields to action-expected field names
+			formData.append("type", localCustomer.type || "residential");
+			formData.append("firstName", localCustomer.first_name || "");
+			formData.append("lastName", localCustomer.last_name || "");
+			if (localCustomer.company_name) {
+				formData.append("companyName", localCustomer.company_name);
+			}
+			formData.append("email", localCustomer.email || "");
+			formData.append("phone", localCustomer.phone || localCustomer.mobile_phone || "");
+			if (localCustomer.secondary_phone) {
+				formData.append("secondaryPhone", localCustomer.secondary_phone);
+			}
+			if (localCustomer.address) {
+				formData.append("address", localCustomer.address);
+			}
+			if (localCustomer.address2) {
+				formData.append("address2", localCustomer.address2);
+			}
+			if (localCustomer.city) {
+				formData.append("city", localCustomer.city);
+			}
+			if (localCustomer.state) {
+				formData.append("state", localCustomer.state);
+			}
+			if (localCustomer.postal_code) {
+				formData.append("zipCode", localCustomer.postal_code);
+			}
+			if (localCustomer.country) {
+				formData.append("country", localCustomer.country);
+			}
+			if (localCustomer.source) {
+				formData.append("source", localCustomer.source);
+			}
+			if (localCustomer.referred_by) {
+				formData.append("referredBy", localCustomer.referred_by);
+			}
+			formData.append(
+				"preferredContactMethod",
+				localCustomer.preferred_contact_method || "email",
+			);
+			if (localCustomer.preferred_technician) {
+				formData.append("preferredTechnician", localCustomer.preferred_technician);
+			}
+			if (localCustomer.billing_email) {
+				formData.append("billingEmail", localCustomer.billing_email);
+			}
+			formData.append(
+				"paymentTerms",
+				localCustomer.payment_terms || "due_on_receipt",
+			);
+			formData.append(
+				"creditLimit",
+				String(localCustomer.credit_limit || 0),
+			);
+			formData.append("taxExempt", String(localCustomer.tax_exempt || false));
+			if (localCustomer.tax_exempt_number) {
+				formData.append("taxExemptNumber", localCustomer.tax_exempt_number);
+			}
+			if (localCustomer.tags && Array.isArray(localCustomer.tags)) {
+				formData.append("tags", JSON.stringify(localCustomer.tags));
+			}
+			if (localCustomer.notes) {
+				formData.append("notes", localCustomer.notes);
+			}
+			if (localCustomer.internal_notes) {
+				formData.append("internalNotes", localCustomer.internal_notes);
+			}
+
+			const result = await updateCustomer(customer.id, formData);
+
+			if (result.success) {
+				toast.success("Customer updated successfully");
+				setHasChanges(false);
+				router.refresh();
+			} else {
+				toast.error(result.error || "Failed to update customer");
+			}
 		} catch (_error) {
 			toast.error("Failed to update customer");
 		} finally {
@@ -411,6 +499,96 @@ export function CustomerPageContent({
 		} finally {
 			setIsEnriching(false);
 		}
+	};
+
+	// Export customer data as JSON
+	const handleExport = () => {
+		const exportData = {
+			customer: {
+				id: customer.id,
+				first_name: customer.first_name,
+				last_name: customer.last_name,
+				email: customer.email,
+				phone: customer.phone,
+				company_name: customer.company_name,
+				address: customer.address,
+				city: customer.city,
+				state: customer.state,
+				postal_code: customer.postal_code,
+				type: customer.type,
+				status: customer.status,
+				created_at: customer.created_at,
+			},
+			jobs: jobs?.map((j: any) => ({
+				id: j.id,
+				job_number: j.job_number,
+				title: j.title,
+				status: j.status,
+				total_amount: j.total_amount,
+			})),
+			invoices: invoices?.map((i: any) => ({
+				id: i.id,
+				invoice_number: i.invoice_number,
+				status: i.status,
+				total_amount: i.total_amount,
+			})),
+			properties: properties?.map((p: any) => ({
+				id: p.id,
+				address: p.address,
+				city: p.city,
+				state: p.state,
+			})),
+		};
+
+		const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `customer-${customer.customer_number || customer.id}.json`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		toast.success("Customer data exported");
+	};
+
+	// Print customer profile
+	const handlePrint = () => {
+		window.print();
+	};
+
+	// Share customer link
+	const handleShare = async () => {
+		const url = `${window.location.origin}/dashboard/customers/${customer.id}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toast.success("Customer link copied to clipboard");
+		} catch (_error) {
+			toast.error("Failed to copy link");
+		}
+	};
+
+	// Execute archive customer
+	const executeArchive = async () => {
+		setShowArchiveDialog(false);
+		try {
+			const result = await deleteCustomer(customer.id);
+			if (result.success) {
+				toast.success("Customer archived successfully");
+				router.push("/dashboard/customers");
+			} else {
+				toast.error(result.error || "Failed to archive customer");
+			}
+		} catch (_error) {
+			toast.error("Failed to archive customer");
+		}
+	};
+
+	// Archive customer - opens confirmation dialog
+	const handleArchive = () => {
+		setShowArchiveDialog(true);
 	};
 
 	// Helper to determine badge type based on status
@@ -546,22 +724,24 @@ export function CustomerPageContent({
 							{isEnriching ? "Enriching..." : "Enrich Customer Data"}
 						</DropdownMenuItem>
 
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handleExport}>
 							<Download className="mr-2 size-3.5" />
 							Export Customer Data
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handlePrint}>
 							<Printer className="mr-2 size-3.5" />
 							Print Customer Profile
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={handleShare}>
 							<Share2 className="mr-2 size-3.5" />
 							Share Customer Link
 						</DropdownMenuItem>
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem
+							onClick={() => toast.info("Customer merge feature coming soon!")}
+						>
 							<User className="mr-2 size-3.5" />
 							Merge with Another Customer
 						</DropdownMenuItem>
@@ -570,7 +750,7 @@ export function CustomerPageContent({
 
 						<DropdownMenuItem
 							className="text-destructive focus:text-destructive"
-							onClick={() => {}}
+							onClick={handleArchive}
 						>
 							<Archive className="mr-2 size-3.5" />
 							Archive Customer
@@ -586,9 +766,14 @@ export function CustomerPageContent({
 		handleSave,
 		handleCancel,
 		handleEnrich,
+		handleExport,
+		handlePrint,
+		handleShare,
+		handleArchive,
 		renderQuickActions,
 		router,
 		customer.id,
+		toast,
 	]);
 
 	// Update toolbar actions when hasChanges or isSaving changes
@@ -1178,7 +1363,15 @@ export function CustomerPageContent({
 				title: "Equipment",
 				icon: <Package className="size-4" />,
 				actions: (
-					<Button onClick={() => {}} size="sm" variant="outline">
+					<Button
+						onClick={() =>
+							router.push(
+								`/dashboard/work/equipment/new?customerId=${customer.id}`,
+							)
+						}
+						size="sm"
+						variant="outline"
+					>
 						<Plus className="mr-2 h-4 w-4" /> Add Equipment
 					</Button>
 				),
@@ -1238,7 +1431,15 @@ export function CustomerPageContent({
 				icon: <CreditCard className="size-4" />,
 				count: paymentMethods.length,
 				actions: (
-					<Button onClick={() => {}} size="sm" variant="outline">
+					<Button
+						onClick={() =>
+							toast.info(
+								"Payment method collection requires Stripe checkout. This feature will be available soon.",
+							)
+						}
+						size="sm"
+						variant="outline"
+					>
 						<Plus className="mr-2 h-4 w-4" /> Add Payment Method
 					</Button>
 				),
@@ -1271,8 +1472,16 @@ export function CustomerPageContent({
 											is_verified={method.is_verified}
 											key={method.id}
 											nickname={method.nickname}
-											onRemove={() => {}}
-											onSetDefault={() => {}}
+											onRemove={() =>
+												toast.info(
+													"Payment method removal requires Stripe integration. This feature is coming soon.",
+												)
+											}
+											onSetDefault={() =>
+												toast.info(
+													"Setting default payment method requires Stripe integration. This feature is coming soon.",
+												)
+											}
 											type={type}
 										/>
 									);
@@ -1906,6 +2115,7 @@ export function CustomerPageContent({
 	);
 
 	return (
+		<>
 		<DetailPageContentLayout
 			activities={activities}
 			attachments={attachments}
@@ -1922,5 +2132,27 @@ export function CustomerPageContent({
 			}}
 			storageKey="customer-details"
 		/>
+
+		{/* Archive Confirmation Dialog */}
+		<AlertDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Archive Customer?</AlertDialogTitle>
+					<AlertDialogDescription>
+						Are you sure you want to archive this customer? This action can be undone.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction
+						className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+						onClick={executeArchive}
+					>
+						Archive Customer
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+		</>
 	);
 }

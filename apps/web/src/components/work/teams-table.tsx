@@ -97,6 +97,11 @@ export function TeamsTable({
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToSuspend, setItemToSuspend] = useState<string | null>(null);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
+	// Bulk action confirmation dialogs
+	const [isBulkRestoreDialogOpen, setIsBulkRestoreDialogOpen] = useState(false);
+	const [isBulkSuspendDialogOpen, setIsBulkSuspendDialogOpen] = useState(false);
+	const [isBulkArchiveDialogOpen, setIsBulkArchiveDialogOpen] = useState(false);
+	const [pendingBulkIds, setPendingBulkIds] = useState<Set<string>>(new Set());
 
 	// Archive filter from store
 	const archiveFilter = useArchiveStore((state) => state.filters.team_members);
@@ -403,6 +408,85 @@ export function TeamsTable({
 		},
 	];
 
+	// Bulk action handlers (executed after confirmation)
+	const executeBulkRestore = async () => {
+		setIsBulkRestoreDialogOpen(false);
+		setIsLoading(true);
+		let successCount = 0;
+		let failCount = 0;
+
+		for (const memberId of pendingBulkIds) {
+			const result = await restoreTeamMember(memberId);
+			if (result.success) {
+				successCount++;
+			} else {
+				failCount++;
+			}
+		}
+
+		setIsLoading(false);
+		setPendingBulkIds(new Set());
+
+		if (successCount > 0) {
+			toast.success(`${successCount} team member(s) restored successfully`);
+		}
+		if (failCount > 0) {
+			toast.error(`Failed to restore ${failCount} team member(s)`);
+		}
+	};
+
+	const executeBulkSuspend = async () => {
+		setIsBulkSuspendDialogOpen(false);
+		setIsLoading(true);
+		let successCount = 0;
+		let failCount = 0;
+
+		for (const memberId of pendingBulkIds) {
+			const result = await suspendTeamMember(memberId);
+			if (result.success) {
+				successCount++;
+			} else {
+				failCount++;
+			}
+		}
+
+		setIsLoading(false);
+		setPendingBulkIds(new Set());
+
+		if (successCount > 0) {
+			toast.success(`${successCount} team member(s) suspended successfully`);
+		}
+		if (failCount > 0) {
+			toast.error(`Failed to suspend ${failCount} team member(s)`);
+		}
+	};
+
+	const executeBulkArchive = async () => {
+		setIsBulkArchiveDialogOpen(false);
+		setIsLoading(true);
+		let successCount = 0;
+		let failCount = 0;
+
+		for (const memberId of pendingBulkIds) {
+			const result = await archiveTeamMember(memberId);
+			if (result.success) {
+				successCount++;
+			} else {
+				failCount++;
+			}
+		}
+
+		setIsLoading(false);
+		setPendingBulkIds(new Set());
+
+		if (successCount > 0) {
+			toast.success(`${successCount} team member(s) archived successfully`);
+		}
+		if (failCount > 0) {
+			toast.error(`Failed to archive ${failCount} team member(s)`);
+		}
+	};
+
 	// Define bulk actions based on archive filter
 	const bulkActions: BulkAction[] = useMemo(() => {
 		const isViewingArchived = archiveFilter === "archived";
@@ -414,40 +498,9 @@ export function TeamsTable({
 					label: "Restore",
 					icon: <ArchiveRestore className="size-4" />,
 					variant: "default",
-					onClick: async (selectedIds) => {
-						if (
-							!confirm(
-								`Are you sure you want to restore ${selectedIds.size} team member(s)?`,
-							)
-						) {
-							return;
-						}
-
-						setIsLoading(true);
-						let successCount = 0;
-						let failCount = 0;
-
-						for (const memberId of selectedIds) {
-							const result = await restoreTeamMember(memberId);
-							if (result.success) {
-								successCount++;
-							} else {
-								failCount++;
-							}
-						}
-
-						setIsLoading(false);
-
-						if (successCount > 0) {
-							toast.success(
-								`${successCount} team member(s) restored successfully`,
-							);
-						}
-						if (failCount > 0) {
-							toast.error(`Failed to restore ${failCount} team member(s)`);
-						}
-
-						// Server Action handles revalidation automatically
+					onClick: (selectedIds) => {
+						setPendingBulkIds(selectedIds);
+						setIsBulkRestoreDialogOpen(true);
 					},
 				},
 			];
@@ -471,84 +524,22 @@ export function TeamsTable({
 				label: "Suspend",
 				icon: <UserX className="size-4" />,
 				variant: "destructive",
-				onClick: async (selectedIds) => {
-					if (
-						!confirm(
-							`Are you sure you want to suspend ${selectedIds.size} team member(s)?`,
-						)
-					) {
-						return;
-					}
-
-					setIsLoading(true);
-					let successCount = 0;
-					let failCount = 0;
-
-					for (const memberId of selectedIds) {
-						const result = await suspendTeamMember(memberId);
-						if (result.success) {
-							successCount++;
-						} else {
-							failCount++;
-						}
-					}
-
-					setIsLoading(false);
-
-					if (successCount > 0) {
-						toast.success(
-							`${successCount} team member(s) suspended successfully`,
-						);
-					}
-					if (failCount > 0) {
-						toast.error(`Failed to suspend ${failCount} team member(s)`);
-					}
-
-					// Server Action handles revalidation automatically
+				onClick: (selectedIds) => {
+					setPendingBulkIds(selectedIds);
+					setIsBulkSuspendDialogOpen(true);
 				},
 			},
 			{
 				label: "Archive",
 				icon: <Archive className="size-4" />,
 				variant: "destructive",
-				onClick: async (selectedIds) => {
-					if (
-						!confirm(
-							`Are you sure you want to archive ${selectedIds.size} team member(s)?`,
-						)
-					) {
-						return;
-					}
-
-					setIsLoading(true);
-					let successCount = 0;
-					let failCount = 0;
-
-					for (const memberId of selectedIds) {
-						const result = await archiveTeamMember(memberId);
-						if (result.success) {
-							successCount++;
-						} else {
-							failCount++;
-						}
-					}
-
-					setIsLoading(false);
-
-					if (successCount > 0) {
-						toast.success(
-							`${successCount} team member(s) archived successfully`,
-						);
-					}
-					if (failCount > 0) {
-						toast.error(`Failed to archive ${failCount} team member(s)`);
-					}
-
-					// Server Action handles revalidation automatically
+				onClick: (selectedIds) => {
+					setPendingBulkIds(selectedIds);
+					setIsBulkArchiveDialogOpen(true);
 				},
 			},
 		];
-	}, [archiveFilter, filteredTeamMembers, router]);
+	}, [archiveFilter, filteredTeamMembers]);
 
 	const handleInviteMember = () => {
 		window.location.href = "/dashboard/work/team/invite";
@@ -651,6 +642,81 @@ export function TeamsTable({
 									await handleArchiveMember(itemToArchive);
 								}
 							}}
+						>
+							Archive
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Bulk Restore Dialog */}
+			<AlertDialog
+				onOpenChange={setIsBulkRestoreDialogOpen}
+				open={isBulkRestoreDialogOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Restore {pendingBulkIds.size} Team Member(s)?</AlertDialogTitle>
+						<AlertDialogDescription>
+							These team members will be restored and will regain access to the system.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setPendingBulkIds(new Set())}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction onClick={executeBulkRestore}>
+							Restore
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Bulk Suspend Dialog */}
+			<AlertDialog
+				onOpenChange={setIsBulkSuspendDialogOpen}
+				open={isBulkSuspendDialogOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Suspend {pendingBulkIds.size} Team Member(s)?</AlertDialogTitle>
+						<AlertDialogDescription>
+							These team members will be suspended and will not be able to access the system until reactivated.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setPendingBulkIds(new Set())}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeBulkSuspend}
+						>
+							Suspend
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Bulk Archive Dialog */}
+			<AlertDialog
+				onOpenChange={setIsBulkArchiveDialogOpen}
+				open={isBulkArchiveDialogOpen}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Archive {pendingBulkIds.size} Team Member(s)?</AlertDialogTitle>
+						<AlertDialogDescription>
+							These team members will be archived and can be restored later.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setPendingBulkIds(new Set())}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={executeBulkArchive}
 						>
 							Archive
 						</AlertDialogAction>

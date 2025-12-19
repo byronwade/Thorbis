@@ -33,11 +33,11 @@ export async function POST(request: Request) {
 		}
 
 		// Test Resend API connection
-		const resend = new Resend(process.env.RESEND_API_KEY);
 		let resendStatus = "not_configured";
 		let audienceInfo = null;
 
 		if (process.env.RESEND_API_KEY) {
+			const resend = new Resend(process.env.RESEND_API_KEY);
 			try {
 				const { data: audiences, error } = await resend.audiences.list();
 				if (error) {

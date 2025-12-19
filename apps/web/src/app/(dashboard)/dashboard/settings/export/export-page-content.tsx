@@ -2,6 +2,7 @@
 
 import {
 	Briefcase,
+	CheckCircle,
 	DollarSign,
 	Download,
 	FileJson,
@@ -12,6 +13,12 @@ import {
 	Users,
 } from "lucide-react";
 import { useState } from "react";
+import {
+	exportData,
+	type ExportEntityType,
+	type ExportFormat,
+} from "@/actions/export";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -34,20 +41,27 @@ type ExportPageContentProps = {
 	userId: string;
 };
 
-type EntityType = "customers" | "jobs" | "invoices" | "estimates" | "equipment";
-type ExportFormat = "csv" | "excel" | "json" | "pdf";
+type ExportHistoryItem = {
+	id: string;
+	entityType: ExportEntityType;
+	format: ExportFormat;
+	filename: string;
+	timestamp: Date;
+};
 
 export function ExportPageContent({
 	companyId,
 	userId,
 }: ExportPageContentProps) {
+	const { toast } = useToast();
 	const [selectedEntityType, setSelectedEntityType] =
-		useState<EntityType>("customers");
+		useState<ExportEntityType>("customers");
 	const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
 	const [isExporting, setIsExporting] = useState(false);
+	const [exportHistory, setExportHistory] = useState<ExportHistoryItem[]>([]);
 
 	const entityTypes: Array<{
-		value: EntityType;
+		value: ExportEntityType;
 		label: string;
 		description: string;
 		icon: React.ElementType;
@@ -97,14 +111,44 @@ export function ExportPageContent({
 		{ value: "pdf", label: "PDF", icon: FileText },
 	];
 
-	const handleExport = async (entityType: EntityType) => {
+	const handleExport = async (entityType: ExportEntityType) => {
 		setSelectedEntityType(entityType);
 		setIsExporting(true);
 
 		try {
-			// TODO: Implement actual export logic
-			console.log(`Exporting ${entityType} as ${exportFormat}`);
-			await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate export
+			const result = await exportData(entityType, exportFormat);
+
+			if (!result.success || !result.data) {
+				toast.error(result.error || "Export failed");
+				return;
+			}
+
+			// Create and download the file
+			const blob = new Blob([result.data.data], { type: result.data.mimeType });
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = result.data.filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+
+			// Add to export history
+			setExportHistory((prev) => [
+				{
+					id: crypto.randomUUID(),
+					entityType,
+					format: exportFormat,
+					filename: result.data.filename,
+					timestamp: new Date(),
+				},
+				...prev.slice(0, 9), // Keep last 10 exports
+			]);
+
+			toast.success(`${entityType} exported successfully`);
+		} catch (error) {
+			toast.error("Export failed. Please try again.");
 		} finally {
 			setIsExporting(false);
 		}
@@ -271,12 +315,49 @@ export function ExportPageContent({
 							<Card>
 								<CardHeader>
 									<CardTitle>Export History</CardTitle>
-									<CardDescription>Recent data exports</CardDescription>
+									<CardDescription>Recent data exports (this session)</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<div className="flex items-center justify-center py-12 text-muted-foreground">
-										<p>No export history available</p>
-									</div>
+									{exportHistory.length > 0 ? (
+										<div className="space-y-3">
+											{exportHistory.map((item) => {
+												const entity = entityTypes.find(
+													(e) => e.value === item.entityType,
+												);
+												return (
+													<div
+														key={item.id}
+														className="flex items-center gap-4 p-3 rounded-lg border bg-muted/50"
+													>
+														<div className="p-2 rounded-lg bg-background">
+															{entity && (
+																<entity.icon
+																	className={`h-5 w-5 ${entity.color}`}
+																/>
+															)}
+														</div>
+														<div className="flex-1 min-w-0">
+															<p className="font-medium text-sm truncate">
+																{item.filename}
+															</p>
+															<p className="text-xs text-muted-foreground">
+																{item.timestamp.toLocaleTimeString("en-US", {
+																	hour: "numeric",
+																	minute: "2-digit",
+																	hour12: true,
+																})}
+															</p>
+														</div>
+														<CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+													</div>
+												);
+											})}
+										</div>
+									) : (
+										<div className="flex items-center justify-center py-12 text-muted-foreground">
+											<p>No export history available</p>
+										</div>
+									)}
 								</CardContent>
 							</Card>
 						</TabsContent>

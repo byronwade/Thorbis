@@ -20,8 +20,9 @@ import {
 	TrendingDown,
 	TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { saveNotificationPreferences, getNotificationPreferences } from "@/actions/report-schedules";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -137,13 +138,30 @@ export function NotificationPreferencesDialog({
 		setAlerts(alerts.filter((a) => a.id !== id));
 	};
 
+	// Load existing preferences when dialog opens
+	useEffect(() => {
+		if (open) {
+			loadPreferences();
+		}
+	}, [open, reportType]);
+
+	const loadPreferences = async () => {
+		const result = await getNotificationPreferences(reportType);
+		if (result.success && result.data) {
+			setAlerts(result.data.alerts);
+			setInAppEnabled(result.data.channels.inApp);
+			setEmailEnabled(result.data.channels.email);
+			setSmsEnabled(result.data.channels.sms);
+			setQuietHoursEnabled(result.data.quietHours.enabled);
+			setQuietStart(result.data.quietHours.start);
+			setQuietEnd(result.data.quietHours.end);
+		}
+	};
+
 	const handleSave = async () => {
 		setIsSaving(true);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
 			const preferences: NotificationPreferences = {
 				alerts,
 				channels: {
@@ -158,11 +176,22 @@ export function NotificationPreferencesDialog({
 				},
 			};
 
+			// Save to database
+			const result = await saveNotificationPreferences({
+				reportType,
+				reportTitle,
+				...preferences,
+			});
+
+			if (!result.success) {
+				throw new Error(result.error || "Failed to save preferences");
+			}
+
 			onSaved?.(preferences);
 			toast.success("Notification preferences saved");
 			setOpen(false);
 		} catch (error) {
-			toast.error("Failed to save preferences");
+			toast.error(error instanceof Error ? error.message : "Failed to save preferences");
 		} finally {
 			setIsSaving(false);
 		}

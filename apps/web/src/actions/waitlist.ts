@@ -7,8 +7,17 @@ import { env } from "@stratos/config/env";
 import WaitlistAdminNotificationEmail from "../../emails/templates/waitlist/admin-notification";
 import WaitlistSubscriptionEmail from "../../emails/templates/waitlist/subscription-confirmation";
 
-// Initialize Resend client
-const resend = new Resend(env.resend.apiKey || undefined);
+// Lazily initialize Resend client to avoid build-time errors
+let _resend: Resend | null = null;
+function getResend(): Resend | null {
+	if (!env.resend.apiKey) {
+		return null;
+	}
+	if (!_resend) {
+		_resend = new Resend(env.resend.apiKey);
+	}
+	return _resend;
+}
 
 // Cache for audience ID (avoid repeated API calls)
 let cachedAudienceId: string | null = null;
@@ -37,6 +46,8 @@ async function getWaitlistAudienceId(): Promise<string | null> {
 
 	try {
 		// List all audiences to find existing waitlist
+		const resend = getResend();
+		if (!resend) return null;
 		const { data: audiences, error: listError } = await resend.audiences.list();
 
 		if (listError) {
@@ -55,7 +66,7 @@ async function getWaitlistAudienceId(): Promise<string | null> {
 		}
 
 		// Create new waitlist audience if none exists
-		const { data: newAudience, error: createError } = await resend.audiences.create({
+		const { data: newAudience, error: createError } = await resend!.audiences.create({
 			name: "Thorbis Waitlist",
 		});
 
@@ -130,7 +141,9 @@ export async function joinWaitlist(
 				const lastName = nameParts.slice(1).join(" ") || "";
 
 				// Attempt to create contact in Resend
-				const response = await resend.contacts.create({
+				const resendClient = getResend();
+				if (!resendClient) throw new Error("Resend not configured");
+				const response = await resendClient.contacts.create({
 					email: validated.email,
 					firstName,
 					lastName,
@@ -194,7 +207,9 @@ export async function joinWaitlist(
 					const fromName =
 						env.resend.fromName || "Thorbis";
 
-					const { data, error } = await resend.emails.send({
+					const emailClient = getResend();
+					if (!emailClient) throw new Error("Resend not configured");
+					const { data, error } = await emailClient.emails.send({
 						from: `${fromName} <${fromEmail}>`,
 						to: validated.email,
 						subject: "Welcome to the Thorbis Waitlist! 🎉",
@@ -241,7 +256,9 @@ export async function joinWaitlist(
 				const fromEmail = env.resend.fromEmail || "notifications@thorbis.com";
 				const fromName = env.resend.fromName || "Thorbis";
 
-				const { data, error } = await resend.emails.send({
+				const adminEmailClient = getResend();
+				if (!adminEmailClient) throw new Error("Resend not configured");
+				const { data, error } = await adminEmailClient.emails.send({
 					from: `${fromName} <${fromEmail}>`,
 					to: "bcw1995@gmail.com",
 					subject: `New Waitlist Signup: ${validated.name}`,

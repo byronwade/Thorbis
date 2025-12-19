@@ -27,6 +27,7 @@ import {
 	Volume2,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -86,6 +87,7 @@ const ttsVoices = [
 ];
 
 export function VoicemailSettings() {
+	const { toast } = useToast();
 	const [greeting, setGreeting] = useState<VoicemailGreeting>({
 		type: "default",
 	});
@@ -118,13 +120,13 @@ export function VoicemailSettings() {
 
 		// Validate file type
 		if (!file.type.startsWith("audio/")) {
-			alert("Please upload an audio file (MP3, WAV, M4A)");
+			toast.error("Please upload an audio file (MP3, WAV, M4A)");
 			return;
 		}
 
 		// Validate file size (max 5MB)
 		if (file.size > 5 * 1024 * 1024) {
-			alert("File size must be less than 5MB");
+			toast.error("File size must be less than 5MB");
 			return;
 		}
 

@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { jwtVerify } from "jose";
 
 /**
  * Security Headers for Admin Dashboard
@@ -16,46 +15,27 @@ const SECURITY_HEADERS = {
 		"style-src 'self' 'unsafe-inline'",
 		"img-src 'self' data: https: blob:",
 		"font-src 'self' data:",
-		"connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+		"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.convex.cloud wss://*.convex.cloud https://*.convex.site",
 		"frame-ancestors 'none'",
 		"base-uri 'self'",
 		"form-action 'self'",
 	].join("; "),
 };
 
-const SESSION_COOKIE_NAME = "admin_session";
+// Better Auth session cookie names
+const SESSION_COOKIE_NAME = "better-auth.session_token";
 
 /**
- * Verify JWT token from cookie
+ * Check if user has a Better Auth session
+ * Full validation happens on the client/server side with Better Auth
  */
-async function verifyToken(token: string): Promise<boolean> {
-	try {
-		const secret = process.env.ADMIN_JWT_SECRET;
-		if (!secret) {
-			console.error("Missing ADMIN_JWT_SECRET");
-			return false;
-		}
-
-		const secretKey = new TextEncoder().encode(secret);
-		const { payload } = await jwtVerify(token, secretKey);
-
-		// Check if token is expired
-		if (payload.exp && payload.exp * 1000 < Date.now()) {
-			return false;
-		}
-
-		return true;
-	} catch (error) {
-		console.error("Token verification failed:", error);
-		return false;
-	}
+function hasSessionCookie(request: NextRequest): boolean {
+	const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+	return !!sessionToken && sessionToken.length > 0;
 }
 
 export async function middleware(request: NextRequest) {
 	const response = NextResponse.next();
-
-	// Get session cookie
-	const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
 	const isLoginPage = request.nextUrl.pathname === "/login";
 	const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard");
@@ -66,36 +46,24 @@ export async function middleware(request: NextRequest) {
 		return applySecurityHeaders(response);
 	}
 
+	const hasSession = hasSessionCookie(request);
+
 	// Verify session for protected routes
 	if (isProtectedRoute) {
-		if (!sessionToken) {
+		if (!hasSession) {
 			// No session - redirect to login
 			const url = request.nextUrl.clone();
 			url.pathname = "/login";
 			return NextResponse.redirect(url);
 		}
-
-		const isValidSession = await verifyToken(sessionToken);
-
-		if (!isValidSession) {
-			// Invalid session - clear cookie and redirect to login
-			const url = request.nextUrl.clone();
-			url.pathname = "/login";
-			const redirectResponse = NextResponse.redirect(url);
-			redirectResponse.cookies.delete(SESSION_COOKIE_NAME);
-			return redirectResponse;
-		}
+		// Session exists - let Better Auth handle full verification on client side
 	}
 
 	// If authenticated user tries to access login page, redirect to dashboard
-	if (isLoginPage && sessionToken) {
-		const isValidSession = await verifyToken(sessionToken);
-
-		if (isValidSession) {
-			const url = request.nextUrl.clone();
-			url.pathname = "/dashboard";
-			return NextResponse.redirect(url);
-		}
+	if (isLoginPage && hasSession) {
+		const url = request.nextUrl.clone();
+		url.pathname = "/dashboard";
+		return NextResponse.redirect(url);
 	}
 
 	return applySecurityHeaders(response);

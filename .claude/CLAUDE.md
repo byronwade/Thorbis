@@ -190,6 +190,29 @@ const activeFilter = useFiltersStore((state) => state.activeFilter);
 - `AppHeader` - Page headers with breadcrumbs
 - `NavGrouped` - Sidebar navigation
 
+**Generic Work Components (USE FOR ALL WORK PAGES):**
+Located in `apps/web/src/components/work/generic/`:
+- `GenericWorkTable` - Configuration-driven table replacing 20+ individual table components
+- `GenericDetailToolbar` - Configuration-driven toolbar for detail pages
+- `GenericPageContent` - Configuration-driven detail page content
+
+```typescript
+// ✅ CORRECT - Using GenericWorkTable with config
+import { GenericWorkTable } from "@/components/work/generic";
+import { paymentsTableConfig } from "@/components/work/generic/configs/payments";
+
+export function PaymentsTable({ payments }: { payments: Payment[] }) {
+  return <GenericWorkTable config={paymentsTableConfig} data={payments} />;
+}
+
+// To create a new entity table, add a config file in configs/:
+// 1. Define entity type with required fields (id, archived_at, deleted_at)
+// 2. Define columns with render functions
+// 3. Define row actions using RowActionHandlers
+// 4. Define archive config with action function
+// 5. Export the config and type
+```
+
 ```typescript
 // ✅ CORRECT - Using existing AppToolbar
 import { AppToolbar } from "@/components/layout/app-toolbar";
