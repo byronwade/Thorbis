@@ -4,9 +4,9 @@
  * Internal mutations for seeding Convex database with sample data.
  * These are only accessible from other Convex functions, not from clients.
  */
-import { internalMutation, internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
+import { internalMutation, internalQuery } from "../_generated/server";
 
 // ============================================================================
 // CLEAR DATA (for development only)
@@ -18,7 +18,7 @@ import { Id } from "../_generated/dataModel";
  */
 export const clearAllData = internalMutation({
   args: {},
-  handler: async (ctx): Promise<{ success: boolean; message: string }> => {
+  handler: async (ctx) => {
     const tables = [
       "payments",
       "invoices",
@@ -53,7 +53,7 @@ export const clearAllData = internalMutation({
       }
     }
 
-    return { success: true, message: "All data cleared" };
+    return { success: true, message: "All data cleared" } as { success: boolean; message: string };
   },
 });
 
@@ -167,7 +167,7 @@ export const seedTeamMembers = internalMutation({
       })
     ),
   },
-  handler: async (ctx, args: { companyId: Id<"companies">; members: TeamMemberInput[] }): Promise<Id<"teamMembers">[]> => {
+  handler: async (ctx, args) => {
     const memberIds: Id<"teamMembers">[] = [];
 
     for (const member of args.members) {
@@ -182,10 +182,23 @@ export const seedTeamMembers = internalMutation({
       if (existing) {
         memberIds.push(existing._id);
       } else {
+        // Validate and cast role to valid schema type
+        const validRoles: Array<"owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr"> = [
+          "owner",
+          "admin",
+          "manager",
+          "dispatcher",
+          "technician",
+          "csr",
+        ];
+        const role = validRoles.includes(member.role as any)
+          ? (member.role as "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr")
+          : "csr";
+        
         const memberId = await ctx.db.insert("teamMembers", {
           companyId: args.companyId,
           userId: member.userId,
-          role: member.role as "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr",
+          role,
           department: member.department,
           jobTitle: member.jobTitle,
           status: "active",
@@ -197,7 +210,7 @@ export const seedTeamMembers = internalMutation({
       }
     }
 
-    return memberIds;
+    return memberIds as Id<"teamMembers">[];
   },
 });
 
@@ -900,7 +913,7 @@ export const checkIfSeeded = internalQuery({
   handler: async (ctx): Promise<{ isSeeded: boolean }> => {
     const company = await ctx.db
       .query("companies")
-      .withIndex("by_slug", (q) => q.eq("slug", "demo-hvac-services"))
+      .withIndex("by_slug", (q: any) => q.eq("slug", "demo-hvac-services"))
       .unique();
 
     return { isSeeded: !!company };
